@@ -1,30 +1,39 @@
-# Codex Desktop project layer
+# Codex Desktop Project Layer
 
-This directory contains repository-scoped Codex configuration. Codex loads this layer only after the repository is trusted.
+This directory contains the shared repository-scoped Codex configuration. Codex loads it only after the repository is trusted.
 
 ## Ownership
 
-- `config.toml` owns shared project defaults for approvals, sandboxing, bounded web search, subagent concurrency, shell environment inheritance, and repository MCP servers.
-- `agents/` owns narrow project-scoped custom agents. Codex discovers standalone TOML files in this directory automatically.
-- `hooks.json` and `hooks/` own bounded lifecycle context. Hook output is observational context, never architecture or product truth.
-- `rules/` owns command approval boundaries. Read-only inspection may be automatic; destructive or external mutation remains approval-gated or forbidden.
+- `config.toml` owns non-secret project defaults, sandboxing, approvals, bounded web search, agent concurrency, environment inheritance, and repository MCP servers.
+- `agents/` owns narrow read-only specialists. The primary thread retains decision, edit, and verification responsibility.
+- `hooks.json` and `hooks/` own bounded lifecycle observations. Hook output is never product or architecture truth.
+- `rules/` owns command approval boundaries. Routine local inspection may be automatic; destructive or external mutation remains prompt-gated or forbidden.
+
+## Context routing
+
+- OpenAI or Codex behavior: `openaiDeveloperDocs` and `openai_docs_researcher`.
+- Version-sensitive third-party dependencies: `context7` and `dependency_docs_researcher`.
+- Supabase behavior: documentation-only `supabaseDocs` and `supabase_docs_researcher`.
+- Local semantic code navigation: optional Serena.
+
+The committed Supabase MCP endpoint is documentation-only. Project references, OAuth/PAT credentials, database tools, and production access remain machine-local. See [`docs/CODEX_DESKTOP.md`](../docs/CODEX_DESKTOP.md).
 
 ## Model strategy
 
-The primary thread does not pin a model in project configuration; the user or Desktop client remains free to choose the best model for the current task.
+The primary thread does not pin a model in project configuration; the Desktop user chooses the model appropriate to the task. Read-only specialists use purpose-fit models and reasoning levels:
 
-Read-only custom agents are intentionally specialized:
+- `architecture_auditor`: `gpt-5.6-terra`, high reasoning.
+- `change_reviewer`: `gpt-5.6-terra`, high reasoning.
+- `openai_docs_researcher`: `gpt-5.6-luna`, medium reasoning.
+- `dependency_docs_researcher`: `gpt-5.6-luna`, medium reasoning.
+- `supabase_docs_researcher`: `gpt-5.6-luna`, medium reasoning.
 
-- `architecture_auditor` uses `gpt-5.6-terra` with high reasoning for consequential model and boundary review.
-- `change_reviewer` uses `gpt-5.6-terra` with high reasoning for correctness and security review.
-- `openai_docs_researcher` uses `gpt-5.6-luna` with medium reasoning because authoritative retrieval matters more than expensive synthesis.
-
-Do not add a custom agent when a deterministic repository check or a built-in Codex agent already owns the job.
+Do not add a custom agent when a deterministic check or an existing specialist already owns the problem.
 
 ## Machine-local configuration
 
-Do not commit authentication, provider routing, profiles, notifications, telemetry destinations, or personal editor preferences here. Those remain in the user's Codex configuration outside the repository.
+Do not commit authentication, provider routing, project references, profiles, notifications, telemetry destinations, personal editor preferences, API keys, or database credentials. Keep those in the user's Codex configuration or an approved workstation authentication boundary.
 
 ## Verification
 
-Run `pnpm codex:check` after changing repository Codex configuration, agents, skills, hooks, rules, or scoped instructions. Run `pnpm verify:full` before merging a baseline or dependency change.
+Run `pnpm codex:check` after changing Codex configuration, agents, skills, hooks, rules, or scoped instructions. Run `pnpm verify:full` before merging a baseline or dependency change.
