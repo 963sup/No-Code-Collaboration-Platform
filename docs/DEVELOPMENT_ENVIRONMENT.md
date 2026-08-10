@@ -1,6 +1,6 @@
 # Development Environment
 
-The repository is optimized for Codex Desktop by minimizing tool choice and making instructions, session context, workspace topology, and verification machine-readable.
+The repository is optimized for Codex Desktop by minimizing tool choice and making instructions, session context, workspace topology, database lifecycle, and verification machine-readable.
 
 ## Required workstation tools
 
@@ -9,6 +9,8 @@ The repository is optimized for Codex Desktop by minimizing tool choice and maki
 - Git
 - ripgrep (`rg`) for low-cost repository search
 - jq for bounded JSON inspection
+- Supabase CLI 2.111.0 from the pinned workspace dependency
+- A running Docker-compatible container runtime for the local Supabase stack
 
 Recommended workstation tools:
 
@@ -20,24 +22,29 @@ Repomix is intentionally on-demand only. It is useful for architecture snapshots
 
 ## Bootstrap
 
-1. Trust the repository in Codex so project `.codex/` configuration can load.
+1. Trust the repository in Codex so project `.codex/` configuration, rules, hooks, and agents can load.
 2. Enable Corepack on the workstation.
 3. Run `pnpm install --frozen-lockfile` for a deterministic install from the committed `pnpm-lock.yaml`.
-4. Run `pnpm hooks:install` once per clone.
-5. Run `pnpm env:check` to verify required workstation tools with bounded JSON output.
-6. Run `pnpm codex:check` to validate repository-owned Codex agents, skills, hooks, scoped instructions, and workspace contracts.
-7. Install the Playwright Chromium binary with `pnpm browser:install` only when E2E work begins.
+4. Start a Docker-compatible container runtime before database work.
+5. Run `pnpm hooks:install` once per clone.
+6. Run `pnpm env:check` to verify required workstation tools with bounded JSON output.
+7. Run `pnpm codex:check` to validate repository-owned Codex agents, skills, hooks, scoped instructions, and workspace contracts.
+8. Run `pnpm supabase:start` only when local database work begins.
+9. Install the Playwright Chromium binary with `pnpm browser:install` only when E2E work begins.
 
-Network access remains disabled inside the default Codex workspace sandbox. Dependency installation, browser installation, remote GitHub access, and mutable infrastructure operations are explicit operations rather than silent side effects. Codex web search uses indexed mode for current external evidence without enabling shell networking.
+Network access remains disabled inside the default Codex workspace sandbox. Dependency installation, browser installation, remote GitHub access, linked Supabase operations, and mutable infrastructure operations are explicit operations rather than silent side effects. Codex web search uses indexed mode for current external evidence without enabling shell networking.
 
 ## Codex project boundaries
 
 - `project_root_markers` anchors Codex at the directory containing `pnpm-workspace.yaml`, `turbo.json`, and `.git`, including when a session starts inside a workspace package.
-- The shell environment policy applies Codex's automatic KEY, SECRET, and TOKEN name exclusions before commands run. Required credentials must be provided only through an explicit, approved boundary.
-- Root and nested `AGENTS.md` files provide durable instruction layers. A workspace package receives the root instructions plus the nearest package instructions.
+- Project `.codex/config.toml` is loaded only after the repository is trusted; machine-local auth, provider, profile, notification, and telemetry settings stay outside the repository.
+- The shell environment policy keeps Codex's automatic KEY, SECRET, and TOKEN name exclusions active before commands run. Required credentials must be provided only through an explicit, approved boundary.
+- Root and nested `AGENTS.md` files provide durable instruction layers. Codex walks from the project root to the current directory and loads at most one instruction file per directory; nearer instructions override broader guidance.
 - Project-scoped custom agents live in `.codex/agents/`: `architecture_auditor`, `change_reviewer`, and `openai_docs_researcher`.
+- `openai_docs_researcher` uses the official OpenAI Developer Docs MCP server as a read-only evidence source for version-sensitive Codex and OpenAI behavior.
 - Repository skills live in `.agents/skills/`. Use `workspace-impact-analysis` when package manifests, workspace patterns, Turbo tasks, or cross-package dependencies change.
 - `.codex/hooks.json` runs one bounded `SessionStart` hook. It reports the branch, changed-path count, lockfile/dependency availability, and up to twelve workspace packages. It supplies observations only and is never a product or architecture authority.
+- Project-local `.codex/rules/` encode command approval boundaries. Read-only inspection may be allowed; linked or destructive Supabase mutations remain approval-gated or forbidden.
 
 Use subagents selectively. They are useful when independent read-only analysis lowers uncertainty; they are wasteful when a deterministic check already answers the question.
 
@@ -48,6 +55,8 @@ Use these default gates:
 - `pnpm codex:check` — repository-owned Codex and workspace configuration contract.
 - `pnpm verify:fast` — Codex contract, formatting, linting, and strict TypeScript checks.
 - `pnpm verify:full` — fast verification plus dead-code and dependency analysis with Knip.
+- `pnpm supabase:verify` — rebuild the local database from migrations, then run database linting. Requires the local Supabase stack prerequisites.
+- `pnpm supabase:types:local` — regenerate the TypeScript projection from the applied local schema after accepted schema changes.
 - `pnpm test:e2e` — Playwright behavioral verification when E2E tests exist.
 - `pnpm turbo:graph` — bounded workspace package discovery before cross-package changes.
 
@@ -70,6 +79,22 @@ A package receives a Turbo task only when its `package.json` exposes a real exec
 
 ## Database contract
 
-Supabase CLI is the database lifecycle tool. `supabase/schemas` is current database truth, while `supabase/migrations` records append-only deployment history. Once the local schema is applicable, generate `types/database.types.ts` with `pnpm supabase:types:local`; generated database types are projections and must not be hand-authored as substitutes for schema or domain contracts.
+Supabase CLI is the database lifecycle tool. `supabase/schemas` is current database truth, while `supabase/migrations` records append-only deployment history. Do not alternate between declarative and imperative schema authoring on a per-change basis.
+
+For a normal schema change:
+
+1. Read `supabase/AGENTS.md` and edit the appropriate file under `supabase/schemas/`.
+2. Generate the migration from the declared state with `supabase db diff -f <descriptive-name>`.
+3. Review the generated SQL as a draft. Schema diffing does not reliably capture every PostgreSQL object or DML change.
+4. Run `pnpm supabase:reset` to prove migrations recreate the database from scratch.
+5. Run `pnpm supabase:lint`.
+6. Regenerate `types/database.types.ts` with `pnpm supabase:types:local` when the applied schema affects generated types.
+7. Commit the declarative schema and reviewed migration together.
+
+Do not make canonical schema changes through Studio, the SQL editor, or ad hoc local SQL and then expect declarative diffing to recover them. Linked `db push`, `db pull`, `db reset --linked`, remote SQL, and production changes cross an external trust boundary and require explicit user intent.
+
+Tables exposed through the Data API require deliberate grants and RLS. Authentication is not authorization: `TO authenticated` must still be paired with predicates that enforce resource ownership or capabilities. Never use user-editable metadata as an authorization source, never expose service-role credentials to public clients, and treat `SECURITY DEFINER` as a privileged exception rather than a permission workaround.
+
+Once the local schema is applicable, generate `types/database.types.ts` instead of hand-authoring substitutes; generated database types are projections and must not become schema or domain truth.
 
 Do not add ESLint, Prettier, Biome, Husky, lint-staged, Nx, Prisma, Drizzle, dependency-cruiser, or Madge unless a demonstrated gap cannot be solved by the existing toolchain.
