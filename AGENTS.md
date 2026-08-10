@@ -8,7 +8,7 @@ This repository defines a no-code collaboration platform by reverse-engineering 
 - A Repository may contain data, pages, workflows, documents, tasks, settings, members, permissions, activity history, and other collaborative resources.
 - GitHub is a semantic benchmark, not an implementation template. Do not add a concept merely because GitHub has it.
 - For every new concept, identify the root problem it solves, whether it is a necessary entity, its scope, relationships, invariants, and what breaks if it is removed.
-- Prefer semantic consistency, explicit boundaries, minimal models, and falsifiable decisions over preserving existing naming or UI conventions.
+- Prefer semantic consistency, explicit boundaries, minimum sufficient models, and falsifiable decisions over preserving existing naming or UI conventions.
 
 ## First-principles workflow
 
@@ -36,6 +36,24 @@ For architecture, product, data-model, permission, navigation, or interaction wo
 - Do not commit secrets, tokens, `.env` files, credentials, or private production data.
 - Treat external systems and mutable infrastructure as separate trust boundaries. Reads may be automatic only when explicitly configured; destructive or mutating actions require user intent.
 
-## Current-stage constraint
+## Toolchain contract
 
-The repository is intentionally at bootstrap stage. Do not add Turbo, Supabase, Playwright, ast-grep, Knip, Lefthook, Oxc, or other runtime/toolchain dependencies until an actual implementation creates the need for them. Add tools only when they reduce a demonstrated verification or coordination cost.
+- `pnpm` is the only JavaScript package manager for this repository.
+- TypeScript strict mode is the default type contract. Do not weaken strictness to make a change pass.
+- `oxfmt` is the only formatter and `oxlint` is the only general JavaScript/TypeScript linter. Do not add overlapping formatter/linter stacks.
+- Run `pnpm verify:fast` after normal code changes. Run `pnpm verify:full` before proposing a merge when dependencies or exports may have changed.
+- Playwright is the behavioral test boundary for user-visible browser flows. Start with Chromium; add browsers only for a demonstrated compatibility requirement.
+- Supabase schema is the source of truth for database structure. Once a schema exists, regenerate TypeScript database types instead of hand-authoring substitutes.
+- `ast-grep` rules must encode proven architecture invariants. Do not create structural rules merely because the tool is installed.
+- Knip findings should normally be fixed by removing dead code or repairing references, not hidden behind broad ignores.
+- Lefthook is a local deterministic guardrail, not a substitute for repository verification or future CI.
+- Do not add Turbo until at least two independently buildable workspaces create a real orchestration or affected-build problem.
+- Keep `rg`, `jq`, `gh`, Serena, JetBrains integrations, and Repomix as workstation/agent tools rather than application dependencies unless product code genuinely requires them.
+
+## Evidence hierarchy
+
+For external product behavior, prefer current official documentation or direct observation over memory. For this repository's target design, the current task and repository contracts are authoritative. Generated projections, agent memories, examples, and benchmark implementations must not silently redefine the target model.
+
+## Environment
+
+Use `docs/DEVELOPMENT_ENVIRONMENT.md` for the workstation bootstrap and verification entry points. If the environment is uncertain, run `pnpm env:check` and use its bounded JSON result instead of manually probing many commands.
