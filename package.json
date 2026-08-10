@@ -17,8 +17,9 @@
     "test:e2e:list": "playwright test --list",
     "browser:install": "playwright install chromium",
     "supabase:status": "supabase status",
-    "supabase:types:local": "supabase gen types typescript --local > types/supabase.generated.ts",
+    "supabase:types:local": "supabase gen types typescript --local > types/database.types.ts",
     "ast:version": "ast-grep --version",
+    "turbo:graph": "turbo ls",
     "verify:fast": "pnpm codex:check && pnpm format:check && pnpm lint && pnpm typecheck",
     "verify:full": "pnpm verify:fast && pnpm knip",
     "verify": "pnpm verify:full"
@@ -32,6 +33,7 @@
     "oxfmt": "0.42.0",
     "oxlint": "1.57.0",
     "supabase": "2.111.0",
+    "turbo": "2.10.9",
     "typescript": "5.7.2"
   },
   "engines": {

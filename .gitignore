@@ -36,6 +36,9 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
+# generated AI context
+/repomix-output.*
+
 # credentials and OS metadata
 *.pem
 .DS_Store

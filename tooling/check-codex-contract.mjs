@@ -57,8 +57,11 @@ const listDirectory = (path, options) => {
   }
 };
 
-const agentFiles = listDirectory('.codex/agents').filter((name) => name.endsWith('.toml')).sort();
-if (agentFiles.length !== 3) failures.push('.codex/agents: expected exactly three focused custom agents');
+const agentFiles = listDirectory('.codex/agents')
+  .filter((name) => name.endsWith('.toml'))
+  .toSorted();
+if (agentFiles.length !== 3)
+  failures.push('.codex/agents: expected exactly three focused custom agents');
 for (const file of agentFiles) {
   const path = `.codex/agents/${file}`;
   const content = read(path);
@@ -75,8 +78,9 @@ for (const file of agentFiles) {
 const skillDirectories = listDirectory('.agents/skills', { withFileTypes: true })
   .filter((entry) => entry.isDirectory())
   .map((entry) => entry.name)
-  .sort();
-if (skillDirectories.length !== 3) failures.push('.agents/skills: expected exactly three focused repository skills');
+  .toSorted();
+if (skillDirectories.length !== 3)
+  failures.push('.agents/skills: expected exactly three focused repository skills');
 for (const directory of skillDirectories) {
   const path = `.agents/skills/${directory}/SKILL.md`;
   const content = read(path);

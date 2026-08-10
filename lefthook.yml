@@ -3,7 +3,7 @@ glob_matcher: doublestar
 pre-commit:
   commands:
     format-staged:
-      glob: "**/*.{js,jsx,tsx,ts,mjs,cjs,mts,cts,json,jsonc,toml}"
+      glob: '**/*.{js,jsx,tsx,ts,mjs,cjs,mts,cts,json,jsonc,toml}'
       run: pnpm format:staged -- {staged_files}
       stage_fixed: true
 

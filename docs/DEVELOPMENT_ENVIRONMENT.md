@@ -53,10 +53,10 @@ Use only these default gates:
 
 ## Database contract
 
-Supabase CLI is installed as the database lifecycle tool. Once a local Supabase schema exists, generate TypeScript types with `pnpm supabase:types:local`. Generated database types are evidence derived from schema and must not be hand-authored as substitutes for a missing schema.
+Supabase CLI is installed as the database lifecycle tool. `supabase/schemas` is current database truth, while `supabase/migrations` records append-only deployment history. Once the local schema is applicable, generate `types/database.types.ts` with `pnpm supabase:types:local`; generated database types are projections and must not be hand-authored as substitutes for schema or domain contracts.
 
-## Scaling rule
+## Architecture graph
 
-Do not add Turbo while the repository has a single package or workspace. Introduce task orchestration only after two or more independently buildable workspaces create a real dependency graph or affected-build problem.
+Turbo reads the pnpm workspace package graph as the application architecture graph. Package manifests own dependency direction; `turbo.json` owns task relationships. `packages/domain` is the business-truth boundary, application packages orchestrate use cases, and web packages deliver those use cases. Add a package or task edge only when a real responsibility and executable contract justify it.
 
 Do not add ESLint, Prettier, Biome, Husky, lint-staged, Nx, Prisma, Drizzle, dependency-cruiser, or Madge unless a demonstrated gap cannot be solved by the existing toolchain.

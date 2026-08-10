@@ -1,18 +1,3 @@
 {
-  "$schema": "https://unpkg.com/knip@6/schema.json",
-  "entry": [
-    "tooling/check-environment.mjs",
-    "tooling/check-codex-contract.mjs",
-    "playwright.config.ts"
-  ],
-  "project": [
-    "tooling/**/*.mjs",
-    "types/**/*.d.ts",
-    "playwright.config.ts"
-  ],
-  "ignore": [
-    ".agents/**",
-    ".codex/**",
-    ".serena/**"
-  ]
+  "$schema": "https://unpkg.com/knip@6/schema.json"
 }

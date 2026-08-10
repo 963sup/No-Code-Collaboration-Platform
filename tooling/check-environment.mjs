@@ -7,7 +7,7 @@ const tools = [
     args: ['--version'],
     required: true,
     expected: '24.x',
-    validate: (value) => /^v24\./.test(value)
+    validate: (value) => value.startsWith('v24.')
   },
   {
     name: 'pnpm',
@@ -54,9 +54,7 @@ const results = tools.map((tool) => {
   };
 });
 
-const requiredFailures = results.filter(
-  (result) => result.required && result.status !== 'ok'
-);
+const requiredFailures = results.filter((result) => result.required && result.status !== 'ok');
 
 console.log(
   JSON.stringify(
