@@ -53,12 +53,18 @@ const section = (path, content, table) => {
 const configPath = '.codex/config.toml';
 const config = read(configPath);
 check(configPath, config, [
-  [/^#:schema https:\/\/developers\.openai\.com\/codex\/config-schema\.json$/m, 'official schema declaration is missing'],
+  [
+    /^#:schema https:\/\/developers\.openai\.com\/codex\/config-schema\.json$/m,
+    'official schema declaration is missing'
+  ],
   [/^approval_policy = "on-request"$/m, 'approval policy is not explicit'],
   [/^approvals_reviewer = "user"$/m, 'approval requests are not routed to the user'],
   [/^sandbox_mode = "workspace-write"$/m, 'workspace-write sandbox is missing'],
   [/^project_doc_max_bytes = 65536$/m, 'project instruction limit is not pinned'],
-  [/^project_root_markers = \["pnpm-workspace\.yaml", "turbo\.json", "\.git"\]$/m, 'workspace root markers are not pinned'],
+  [
+    /^project_root_markers = \["pnpm-workspace\.yaml", "turbo\.json", "\.git"\]$/m,
+    'workspace root markers are not pinned'
+  ],
   [/^web_search = "indexed"$/m, 'bounded web search is missing'],
   [/^hooks = true$/m, 'hooks are not enabled'],
   [/^multi_agent = true$/m, 'multi-agent collaboration is not enabled'],
@@ -76,13 +82,17 @@ const mcpContracts = [
 for (const [name, url, tools] of mcpContracts) {
   const content = section(configPath, config, `mcp_servers.${name}`);
   check(configPath, content, [
-    [new RegExp(`^url = "${url.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}"$`, 'm'), `${name} URL is not pinned`],
+    [
+      new RegExp(`^url = "${url.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}"$`, 'm'),
+      `${name} URL is not pinned`
+    ],
     [/^enabled = true$/m, `${name} is not enabled`],
     [/^required = false$/m, `${name} must remain optional for offline work`],
     [/^default_tools_approval_mode = "auto"$/m, `${name} documentation tools are not automatic`]
   ]);
   for (const tool of tools) {
-    if (!content.includes(`"${tool}"`)) failures.push(`${configPath}: ${name} does not allow ${tool}`);
+    if (!content.includes(`"${tool}"`))
+      failures.push(`${configPath}: ${name} does not allow ${tool}`);
   }
 }
 
@@ -93,7 +103,10 @@ const secretPatterns = [
   /authorization\s*=\s*["']/i
 ];
 for (const pattern of secretPatterns) {
-  if (pattern.test(config)) failures.push(`${configPath}: committed MCP configuration contains a secret or project binding`);
+  if (pattern.test(config))
+    failures.push(
+      `${configPath}: committed MCP configuration contains a secret or project binding`
+    );
 }
 
 const hooks = json('.codex/hooks.json');
@@ -131,19 +144,32 @@ for (const file of agentFiles) {
   }
 }
 
-check('.codex/agents/openai-docs-researcher.toml', read('.codex/agents/openai-docs-researcher.toml'), [
-  [/https:\/\/developers\.openai\.com\/mcp/, 'official OpenAI Docs MCP is missing']
-]);
-check('.codex/agents/dependency-docs-researcher.toml', read('.codex/agents/dependency-docs-researcher.toml'), [
-  [/https:\/\/mcp\.context7\.com\/mcp/, 'Context7 MCP is missing'],
-  [/"resolve-library-id"/, 'Context7 library resolution is missing'],
-  [/"query-docs"/, 'Context7 documentation query is missing']
-]);
-check('.codex/agents/supabase-docs-researcher.toml', read('.codex/agents/supabase-docs-researcher.toml'), [
-  [/https:\/\/mcp\.supabase\.com\/mcp\?read_only=true&features=docs/, 'docs-only Supabase MCP is missing'],
-  [/"search_docs"/, 'Supabase documentation search is missing'],
-  [/\/supabase\/supabase/, 'exact Supabase Context7 library ID is missing']
-]);
+check(
+  '.codex/agents/openai-docs-researcher.toml',
+  read('.codex/agents/openai-docs-researcher.toml'),
+  [[/https:\/\/developers\.openai\.com\/mcp/, 'official OpenAI Docs MCP is missing']]
+);
+check(
+  '.codex/agents/dependency-docs-researcher.toml',
+  read('.codex/agents/dependency-docs-researcher.toml'),
+  [
+    [/https:\/\/mcp\.context7\.com\/mcp/, 'Context7 MCP is missing'],
+    [/"resolve-library-id"/, 'Context7 library resolution is missing'],
+    [/"query-docs"/, 'Context7 documentation query is missing']
+  ]
+);
+check(
+  '.codex/agents/supabase-docs-researcher.toml',
+  read('.codex/agents/supabase-docs-researcher.toml'),
+  [
+    [
+      /https:\/\/mcp\.supabase\.com\/mcp\?read_only=true&features=docs/,
+      'docs-only Supabase MCP is missing'
+    ],
+    [/"search_docs"/, 'Supabase documentation search is missing'],
+    [/\/supabase\/supabase/, 'exact Supabase Context7 library ID is missing']
+  ]
+);
 
 const requiredSkills = [
   'first-principles-architecture',
@@ -160,9 +186,13 @@ for (const required of requiredSkills) {
 }
 for (const skill of skills) {
   const path = `.agents/skills/${skill}/SKILL.md`;
-  check(path, read(path), [[/^---\nname: [a-z0-9-]+\ndescription: .+\n---\n/m, 'skill frontmatter is invalid']]);
+  check(path, read(path), [
+    [/^---\nname: [a-z0-9-]+\ndescription: .+\n---\n/m, 'skill frontmatter is invalid']
+  ]);
   const metadataPath = `.agents/skills/${skill}/agents/openai.yaml`;
-  check(metadataPath, read(metadataPath), [[/^interface:\n  display_name: .+\n  short_description: .+/m, 'Desktop metadata is missing']]);
+  check(metadataPath, read(metadataPath), [
+    [/^interface:\n  display_name: .+\n  short_description: .+/m, 'Desktop metadata is missing']
+  ]);
 }
 
 const instructionScopes = [
@@ -184,26 +214,39 @@ check('pnpm-workspace.yaml', workspace, [
   [/^disallowWorkspaceCycles: true$/m, 'workspace cycles are not configured to fail'],
   [/^failIfNoMatch: true$/m, 'unmatched filters are not configured to fail']
 ]);
-if (/^\s*- ['"]?\.['"]?$/m.test(workspace)) failures.push("pnpm-workspace.yaml: remove redundant '.'");
+if (/^\s*- ['"]?\.['"]?$/m.test(workspace))
+  failures.push("pnpm-workspace.yaml: remove redundant '.'");
 
 const turbo = json('turbo.json');
-if (!turbo?.tasks?.lint?.dependsOn?.includes('^lint')) failures.push('turbo.json: lint dependency order is missing');
-if (!turbo?.tasks?.typecheck?.dependsOn?.includes('^typecheck')) failures.push('turbo.json: typecheck dependency order is missing');
+if (!turbo?.tasks?.lint?.dependsOn?.includes('^lint'))
+  failures.push('turbo.json: lint dependency order is missing');
+if (!turbo?.tasks?.typecheck?.dependsOn?.includes('^typecheck'))
+  failures.push('turbo.json: typecheck dependency order is missing');
 for (const dependency of ['tsconfig.base.json', '.oxlintrc.json']) {
-  if (!turbo?.globalDependencies?.includes(dependency)) failures.push(`turbo.json: missing ${dependency}`);
+  if (!turbo?.globalDependencies?.includes(dependency))
+    failures.push(`turbo.json: missing ${dependency}`);
 }
 
 const rootPackage = json('package.json');
-if (rootPackage?.scripts?.['turbo:graph'] !== 'turbo ls') failures.push('package.json: bounded Turbo discovery is missing');
-if (!rootPackage?.scripts?.['supabase:verify']?.includes('supabase:reset')) failures.push('package.json: migration replay is not verified');
-if (!rootPackage?.devDependencies?.turbo || !rootPackage?.devDependencies?.supabase) failures.push('package.json: baseline CLI dependencies are missing');
+if (rootPackage?.scripts?.['turbo:graph'] !== 'turbo ls')
+  failures.push('package.json: bounded Turbo discovery is missing');
+if (!rootPackage?.scripts?.['supabase:verify']?.includes('supabase:reset'))
+  failures.push('package.json: migration replay is not verified');
+if (!rootPackage?.devDependencies?.turbo || !rootPackage?.devDependencies?.supabase)
+  failures.push('package.json: baseline CLI dependencies are missing');
 const domainPackage = json('packages/domain/package.json');
-if (domainPackage?.name !== '@no-code-collaboration-platform/domain' || domainPackage?.private !== true) {
+if (
+  domainPackage?.name !== '@no-code-collaboration-platform/domain' ||
+  domainPackage?.private !== true
+) {
   failures.push('packages/domain/package.json: canonical private domain package contract changed');
 }
 
 check('README.md', read('README.md'), [
-  [/(?:Repository.*no-code collaboration container|Repository.*無代碼協作容器)/is, 'project definition is missing'],
+  [
+    /(?:Repository.*no-code collaboration container|Repository.*無代碼協作容器)/is,
+    'project definition is missing'
+  ],
   [/docs\/CODEX_DESKTOP\.md/, 'Codex Desktop documentation is not linked']
 ]);
 check('docs/CODEX_DESKTOP.md', read('docs/CODEX_DESKTOP.md'), [
@@ -235,9 +278,18 @@ check('.codex/rules/.filesystem.rules', read('.codex/rules/.filesystem.rules'), 
   [/decision = "prompt"/, 'deletion is not approval-gated']
 ]);
 check('.codex/rules/.supabase.rules', read('.codex/rules/.supabase.rules'), [
-  [/pattern = \["supabase", "db", "reset"\][\s\S]*?decision = "allow"/, 'local reset is not allowed'],
-  [/pattern = \["supabase", "db", "reset", "--linked"\][\s\S]*?decision = "forbidden"/, 'linked reset is not forbidden'],
-  [/pattern = \["supabase", "db", "push"\][\s\S]*?decision = "prompt"/, 'remote push is not approval-gated']
+  [
+    /pattern = \["supabase", "db", "reset"\][\s\S]*?decision = "allow"/,
+    'local reset is not allowed'
+  ],
+  [
+    /pattern = \["supabase", "db", "reset", "--linked"\][\s\S]*?decision = "forbidden"/,
+    'linked reset is not forbidden'
+  ],
+  [
+    /pattern = \["supabase", "db", "push"\][\s\S]*?decision = "prompt"/,
+    'remote push is not approval-gated'
+  ]
 ]);
 
 const hookRun = spawnSync(process.execPath, [resolve(root, '.codex/hooks/session-start.mjs')], {
@@ -252,9 +304,18 @@ if (hookRun.status !== 0) {
   try {
     const output = JSON.parse(hookRun.stdout);
     const context = output?.hookSpecificOutput?.additionalContext ?? '';
-    if (output?.hookSpecificOutput?.hookEventName !== 'SessionStart') failures.push('SessionStart event shape is invalid');
-    for (const expected of ['Workspace packages', 'Turbo', 'Reference context', 'OpenAI Developer Docs', 'Context7', 'Supabase Docs']) {
-      if (!context.includes(expected)) failures.push(`SessionStart hook does not report ${expected}`);
+    if (output?.hookSpecificOutput?.hookEventName !== 'SessionStart')
+      failures.push('SessionStart event shape is invalid');
+    for (const expected of [
+      'Workspace packages',
+      'Turbo',
+      'Reference context',
+      'OpenAI Developer Docs',
+      'Context7',
+      'Supabase Docs'
+    ]) {
+      if (!context.includes(expected))
+        failures.push(`SessionStart hook does not report ${expected}`);
     }
   } catch (error) {
     failures.push(`SessionStart hook did not return JSON: ${error.message}`);
@@ -264,9 +325,12 @@ if (hookRun.status !== 0) {
 const workspacePackages = ['apps', 'packages'].reduce((count, parent) => {
   const path = resolve(root, parent);
   if (!existsSync(path)) return count;
-  return count + list(path, { withFileTypes: true }).filter(
-    (entry) => entry.isDirectory() && existsSync(resolve(path, entry.name, 'package.json'))
-  ).length;
+  return (
+    count +
+    list(path, { withFileTypes: true }).filter(
+      (entry) => entry.isDirectory() && existsSync(resolve(path, entry.name, 'package.json'))
+    ).length
+  );
 }, 0);
 
 const result = {
