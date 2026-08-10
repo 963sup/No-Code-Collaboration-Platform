@@ -1,0 +1,44 @@
+# Routine read-only Git inspection. Repository writes remain approval-gated.
+
+prefix_rule(
+    pattern = ["git", ["status", "diff", "log", "show", "rev-parse", "rev-list", "merge-base", "ls-files", "ls-tree", "cat-file", "check-ignore", "blame", "describe", "name-rev", "grep"]],
+    decision = "allow",
+    justification = "Read-only Git inspection is routine for this repository",
+    match = ["git status --short", "git diff --check", "git log -5 --oneline"],
+)
+
+prefix_rule(
+    pattern = ["git", "branch", ["--list", "--show-current", "-v", "-vv"]],
+    decision = "allow",
+    justification = "Explicit branch inspection is read-only",
+)
+
+prefix_rule(
+    pattern = ["git", "remote", ["-v", "get-url"]],
+    decision = "allow",
+    justification = "Remote inspection is read-only",
+)
+
+prefix_rule(
+    pattern = ["git", "worktree", "list"],
+    decision = "allow",
+    justification = "Worktree inspection is read-only",
+)
+
+prefix_rule(
+    pattern = ["git", "reset", "--hard"],
+    decision = "forbidden",
+    justification = "Do not discard the worktree with a destructive reset",
+)
+
+prefix_rule(
+    pattern = ["git", "clean", ["-f", "-fd", "-fx", "-fdx"]],
+    decision = "forbidden",
+    justification = "Inspect and preserve untracked files; do not bulk-delete them",
+)
+
+prefix_rule(
+    pattern = ["git", "push", ["--force", "-f", "--force-with-lease"]],
+    decision = "forbidden",
+    justification = "Do not rewrite remote history autonomously",
+)

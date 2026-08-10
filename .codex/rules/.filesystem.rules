@@ -1,0 +1,7 @@
+# Destructive filesystem operations are not autonomous actions.
+
+prefix_rule(
+    pattern = [["rm", "rmdir", "del", "erase", "Remove-Item"]],
+    decision = "forbidden",
+    justification = "Preserve user and repository state; destructive deletion requires explicit human control",
+)

@@ -1,0 +1,30 @@
+project_name: "No-Code-Collaboration-Platform"
+languages:
+  - typescript
+encoding: "utf-8"
+line_ending: lf
+language_backend: JetBrains
+ignore_all_files_in_gitignore: true
+ls_workspace_folders: ["."]
+ls_additional_workspace_folders: []
+ignored_paths:
+  - ".idea/**"
+  - ".git/**"
+  - "**/node_modules/**"
+  - ".next/**"
+read_only: false
+excluded_tools: []
+included_optional_tools:
+  - jet_brains_find_declaration
+  - jet_brains_find_implementations
+  - jet_brains_find_referencing_symbols
+  - jet_brains_find_symbol
+  - jet_brains_get_symbols_overview
+  - jet_brains_list_inspections
+  - jet_brains_rename
+  - jet_brains_run_inspections
+  - jet_brains_safe_delete
+  - jet_brains_type_hierarchy
+fixed_tools: []
+initial_prompt: ""
+ignored_memory_patterns: ["_archive/.*", "_episodes/.*"]
