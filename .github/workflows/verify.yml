@@ -7,7 +7,7 @@ on:
   pull_request:
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: verify-${{ github.workflow }}-${{ github.ref }}
@@ -15,14 +15,12 @@ concurrency:
 
 jobs:
   repository:
-    name: Apply exact oxfmt result
+    name: Repository contracts
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - name: Checkout PR branch
+      - name: Checkout
         uses: actions/checkout@v4
-        with:
-          ref: codex/optimize-desktop-baseline-20260811
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -35,14 +33,34 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Format and push exact result
-        run: |
-          pnpm format
-          git add tooling/check-codex-contract.mjs
-          if git diff --cached --quiet; then
-            exit 0
-          fi
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git commit -m "style: apply oxfmt to Codex contract checker"
-          git push origin HEAD:codex/optimize-desktop-baseline-20260811
+      - name: Verify repository
+        run: pnpm verify:full
+
+  database:
+    name: Supabase contracts
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Start local Supabase
+        run: pnpm supabase:start
+
+      - name: Verify database
+        run: pnpm supabase:verify
+
+      - name: Stop local Supabase
+        if: always()
+        run: pnpm supabase:stop
