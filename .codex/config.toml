@@ -25,6 +25,7 @@ default_subagent_reasoning_effort = "medium"
 interrupt_message = true
 
 [shell_environment_policy]
+inherit = "core"
 ignore_default_excludes = false
 
 [sandbox_workspace_write]
