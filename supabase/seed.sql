@@ -1,0 +1,2 @@
+-- Deterministic local/test seed data belongs here once a vertical slice needs it.
+-- Never seed production data, credentials, or secrets.

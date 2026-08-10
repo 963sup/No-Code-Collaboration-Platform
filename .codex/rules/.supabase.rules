@@ -1,0 +1,36 @@
+# Local Supabase inspection is routine. Remote or destructive operations stay approval-gated.
+
+prefix_rule(
+    pattern = ["supabase", ["--version", "status"]],
+    decision = "allow",
+    justification = "Version and local status inspection are read-only",
+    match = ["supabase --version", "supabase status"],
+)
+
+prefix_rule(
+    pattern = ["supabase", "db", "lint"],
+    decision = "allow",
+    justification = "Database linting is read-only verification",
+    match = ["supabase db lint --local --level error"],
+)
+
+prefix_rule(
+    pattern = ["supabase", "db", "push"],
+    decision = "prompt",
+    justification = "Pushing migrations mutates a linked remote database",
+    match = ["supabase db push", "supabase db push --linked"],
+)
+
+prefix_rule(
+    pattern = ["supabase", "db", "pull"],
+    decision = "prompt",
+    justification = "Pulling from a linked database changes repository migration state and crosses an external boundary",
+    match = ["supabase db pull", "supabase db pull --linked"],
+)
+
+prefix_rule(
+    pattern = ["supabase", "db", "reset", "--linked"],
+    decision = "forbidden",
+    justification = "Do not destroy and rebuild a linked remote database from Codex; use local `supabase db reset` for reproducibility checks",
+    match = ["supabase db reset --linked"],
+)
