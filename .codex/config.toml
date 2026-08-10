@@ -1,12 +1,27 @@
+#:schema https://developers.openai.com/codex/config-schema.json
+
 approval_policy = "on-request"
 sandbox_mode = "workspace-write"
 allow_login_shell = false
 tool_output_token_limit = 8000
+project_doc_max_bytes = 65536
+web_search = "indexed"
 
 [memories]
 generate_memories = false
 use_memories = false
 disable_on_external_context = true
+
+[features]
+hooks = true
+multi_agent = true
+skill_mcp_dependency_install = false
+
+[agents]
+enabled = true
+max_concurrent_threads_per_session = 4
+default_subagent_reasoning_effort = "medium"
+interrupt_message = true
 
 [sandbox_workspace_write]
 network_access = false

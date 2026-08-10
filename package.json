@@ -3,6 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "codex:check": "node tooling/check-codex-contract.mjs",
+    "codex:session-context": "node .codex/hooks/session-start.mjs",
     "env:check": "node tooling/check-environment.mjs",
     "format": "oxfmt --write .",
     "format:staged": "oxfmt --write --no-error-on-unmatched-pattern",
@@ -17,7 +19,7 @@
     "supabase:status": "supabase status",
     "supabase:types:local": "supabase gen types typescript --local > types/supabase.generated.ts",
     "ast:version": "ast-grep --version",
-    "verify:fast": "pnpm format:check && pnpm lint && pnpm typecheck",
+    "verify:fast": "pnpm codex:check && pnpm format:check && pnpm lint && pnpm typecheck",
     "verify:full": "pnpm verify:fast && pnpm knip",
     "verify": "pnpm verify:full"
   },

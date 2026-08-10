@@ -23,9 +23,25 @@ For architecture, product, data-model, permission, navigation, or interaction wo
 7. Define the smallest discriminating test that could change the decision.
 8. Update the model when evidence contradicts the prediction.
 
+## Instruction layering
+
+- Codex loads at most one instruction file per directory from the repository root to the current working directory. Nearer scoped instructions override conflicting broader guidance.
+- Use nested `AGENTS.md` files for durable subtree rules. Use `AGENTS.override.md` only for an intentional replacement at that directory and never as an undocumented workaround.
+- A nested instruction file contains only the delta for its scope; do not duplicate the root contract.
+- When changing a scoped area, read the complete applicable instruction chain before editing.
+
+## Codex-native collaboration
+
+- The primary thread owns the final decision, edits, and verification claims.
+- Use `architecture_auditor` for independent read-only model review before consequential architecture changes.
+- Use `change_reviewer` for independent read-only review of actual diffs and affected contracts.
+- Use `openai_docs_researcher` when current OpenAI or Codex behavior must be verified against official documentation.
+- Use repository skills when their descriptions match the task. Do not invoke every skill or subagent by default; parallelism must reduce uncertainty, not multiply context.
+- Session hooks may report dynamic workspace state, but hooks, memories, and generated context are never canonical product or architecture evidence.
+
 ## Codex operating rules
 
-- Read the applicable `AGENTS.md` chain before editing. The nearest file wins for its subtree.
+- Read the applicable `AGENTS.md` chain before editing. The nearest applicable instruction wins on conflict.
 - Inspect repository state and relevant contracts before changing behavior.
 - Make the smallest sufficient reversible change. Do not introduce speculative services, stores, APIs, dependencies, or frameworks.
 - Prefer machine-verifiable evidence over prose claims.
@@ -41,6 +57,7 @@ For architecture, product, data-model, permission, navigation, or interaction wo
 - `pnpm` is the only JavaScript package manager for this repository.
 - TypeScript strict mode is the default type contract. Do not weaken strictness to make a change pass.
 - `oxfmt` is the only formatter and `oxlint` is the only general JavaScript/TypeScript linter. Do not add overlapping formatter/linter stacks.
+- Run `pnpm codex:check` when Codex configuration, agents, skills, hooks, or scoped instructions change.
 - Run `pnpm verify:fast` after normal code changes. Run `pnpm verify:full` before proposing a merge when dependencies or exports may have changed.
 - Playwright is the behavioral test boundary for user-visible browser flows. Start with Chromium; add browsers only for a demonstrated compatibility requirement.
 - Supabase schema is the source of truth for database structure. Once a schema exists, regenerate TypeScript database types instead of hand-authoring substitutes.
@@ -52,8 +69,8 @@ For architecture, product, data-model, permission, navigation, or interaction wo
 
 ## Evidence hierarchy
 
-For external product behavior, prefer current official documentation or direct observation over memory. For this repository's target design, the current task and repository contracts are authoritative. Generated projections, agent memories, examples, and benchmark implementations must not silently redefine the target model.
+For external product behavior, prefer current official documentation or direct observation over memory. For this repository's target design, the current task and repository contracts are authoritative. Generated projections, agent memories, examples, hooks, and benchmark implementations must not silently redefine the target model.
 
 ## Environment
 
-Use `docs/DEVELOPMENT_ENVIRONMENT.md` for the workstation bootstrap and verification entry points. If the environment is uncertain, run `pnpm env:check` and use its bounded JSON result instead of manually probing many commands.
+Use `docs/README.md` as the documentation router and `docs/DEVELOPMENT_ENVIRONMENT.md` for workstation bootstrap and verification entry points. If the environment is uncertain, run `pnpm env:check` and use its bounded JSON result instead of manually probing many commands.
