@@ -62,6 +62,7 @@ const context = [
     ? 'node_modules is present; package-based checks may be available.'
     : 'node_modules is absent; do not claim package-based verification ran.',
   `Git branch: ${branch}; changed paths: ${changedPaths}.`,
+  'Reference context: use OpenAI Developer Docs for OpenAI/Codex, Context7 for version-sensitive dependencies, and Supabase Docs for official Supabase behavior. The committed Supabase MCP is documentation-only; project-linked access remains machine-local.',
   'Use pnpm codex:check for Codex contracts, pnpm verify:fast after normal changes, and the narrowest package or domain-specific check that can falsify the change.'
 ].join(' ');
 

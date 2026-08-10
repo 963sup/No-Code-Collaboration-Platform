@@ -1,17 +1,31 @@
-# Local Supabase inspection is routine. Remote or destructive operations stay approval-gated.
+# Routine local Supabase lifecycle and verification are allowed. Remote or destructive operations stay gated.
 
 prefix_rule(
-    pattern = ["supabase", ["--version", "status"]],
+    pattern = ["supabase", ["--version", "status", "start", "stop"]],
     decision = "allow",
-    justification = "Version and local status inspection are read-only",
-    match = ["supabase --version", "supabase status"],
+    justification = "Version, status, and local container lifecycle operations are bounded workstation actions",
+    match = ["supabase --version", "supabase status", "supabase start", "supabase stop"],
 )
 
 prefix_rule(
     pattern = ["supabase", "db", "lint"],
     decision = "allow",
-    justification = "Database linting is read-only verification",
+    justification = "Database linting is read-only local verification",
     match = ["supabase db lint --local --level error"],
+)
+
+prefix_rule(
+    pattern = ["supabase", "db", "reset"],
+    decision = "allow",
+    justification = "Local reset proves that committed migration history recreates the development database",
+    match = ["supabase db reset"],
+)
+
+prefix_rule(
+    pattern = ["supabase", "gen", "types", "typescript", "--local"],
+    decision = "allow",
+    justification = "Local type generation produces a derived projection of the applied schema",
+    match = ["supabase gen types typescript --local"],
 )
 
 prefix_rule(

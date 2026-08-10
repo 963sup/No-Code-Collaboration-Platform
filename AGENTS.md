@@ -44,9 +44,11 @@ For architecture, product, data-model, permission, navigation, or interaction wo
 - The primary thread owns the final decision, edits, and verification claims.
 - Use `architecture_auditor` for independent read-only model review before consequential architecture changes.
 - Use `change_reviewer` for independent read-only review of actual diffs and affected contracts.
-- Use `openai_docs_researcher` when current OpenAI or Codex behavior must be verified against official documentation.
+- Use `openai_docs_researcher` when current OpenAI or Codex behavior must be verified against official OpenAI documentation.
+- Use `dependency_docs_researcher` for version-sensitive third-party library or tooling behavior through Context7.
+- Use `supabase_docs_researcher` for current Supabase CLI, PostgreSQL, Auth, RLS, or MCP behavior. The committed Supabase MCP is documentation-only; project-linked access remains machine-local.
 - Use repository skills when their descriptions match the task. Do not invoke every skill or subagent by default; parallelism must reduce uncertainty, not multiply context.
-- Session hooks may report dynamic workspace state, but hooks, memories, and generated context are never canonical product or architecture evidence.
+- Session hooks may report dynamic workspace state, but hooks, memories, generated context, and agent output are never canonical product or architecture evidence.
 
 ## Codex operating rules
 
@@ -58,7 +60,7 @@ For architecture, product, data-model, permission, navigation, or interaction wo
 - Never dump complete build logs, generated files, lockfiles, recursive listings, or repository-wide diffs into context when a smaller excerpt is sufficient.
 - Validate the narrowest affected scope first, then broaden only when impact requires it.
 - Before finishing a code-changing task, inspect `git diff`, `git diff --check`, `git status --short`, and untracked files when those commands are available.
-- Do not commit secrets, tokens, `.env` files, credentials, or private production data.
+- Do not commit secrets, tokens, `.env` files, credentials, project references, or private production data.
 - Treat external systems and mutable infrastructure as separate trust boundaries. Reads may be automatic only when explicitly configured; destructive or mutating actions require user intent.
 
 ## Toolchain contract
@@ -78,8 +80,8 @@ For architecture, product, data-model, permission, navigation, or interaction wo
 
 ## Evidence hierarchy
 
-For external product behavior, prefer current official documentation or direct observation over memory. For this repository's target design, the current task and repository contracts are authoritative. Generated projections, agent memories, examples, hooks, and benchmark implementations must not silently redefine the target model.
+For external product behavior, prefer current official documentation or direct observation over memory. Route current OpenAI/Codex questions to OpenAI Developer Docs, version-sensitive dependency questions to Context7, and Supabase questions to Supabase Docs. These sources describe external systems; the current task, repository contracts, accepted ADRs, and executable evidence remain authoritative for this platform's target design. Generated projections, agent memories, examples, hooks, and benchmark implementations must not silently redefine the target model.
 
 ## Environment
 
-Use `docs/README.md` as the documentation router and `docs/DEVELOPMENT_ENVIRONMENT.md` for workstation bootstrap and verification entry points. If the environment is uncertain, run `pnpm env:check` and use its bounded JSON result instead of manually probing many commands.
+Use `docs/README.md` as the documentation router, `docs/CODEX_DESKTOP.md` for Codex context and trust boundaries, and `docs/DEVELOPMENT_ENVIRONMENT.md` for workstation bootstrap and verification entry points. If the environment is uncertain, run `pnpm env:check` and use its bounded JSON result instead of manually probing many commands.

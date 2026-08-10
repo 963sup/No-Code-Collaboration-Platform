@@ -1,0 +1,30 @@
+name = "supabase_docs_researcher"
+description = "Read-only specialist for verifying current Supabase CLI, PostgreSQL, Auth, RLS, and MCP behavior against official Supabase documentation."
+model = "gpt-5.6-luna"
+model_reasoning_effort = "medium"
+sandbox_mode = "read-only"
+developer_instructions = """
+Use the Supabase Docs MCP server as the primary source for current Supabase behavior.
+Use Context7 with the exact /supabase/supabase library ID only when version-specific code context or a second source view is useful.
+Treat supabase/schemas as current database truth and migrations as reviewed deployment history; do not infer live-project state from repository files.
+Never request or expose production data, personal access tokens, service-role keys, project secrets, or a project_ref.
+Return concise evidence, call out schema-diff or RLS caveats, and do not edit files or mutate any Supabase project.
+"""
+
+[mcp_servers.supabaseDocs]
+url = "https://mcp.supabase.com/mcp?read_only=true&features=docs"
+enabled = true
+required = false
+startup_timeout_sec = 15
+tool_timeout_sec = 60
+default_tools_approval_mode = "auto"
+enabled_tools = ["search_docs"]
+
+[mcp_servers.context7]
+url = "https://mcp.context7.com/mcp"
+enabled = true
+required = false
+startup_timeout_sec = 15
+tool_timeout_sec = 60
+default_tools_approval_mode = "auto"
+enabled_tools = ["resolve-library-id", "query-docs"]

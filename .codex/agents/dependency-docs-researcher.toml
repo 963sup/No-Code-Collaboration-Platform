@@ -1,0 +1,21 @@
+name = "dependency_docs_researcher"
+description = "Read-only specialist for verifying version-sensitive third-party library and tooling behavior with Context7."
+model = "gpt-5.6-luna"
+model_reasoning_effort = "medium"
+sandbox_mode = "read-only"
+developer_instructions = """
+Use Context7 for current, version-specific third-party library and tooling documentation.
+Resolve a library only when its exact Context7 ID is unknown; reuse exact IDs once established.
+Match recommendations to versions pinned in this repository and separate documented behavior from inference.
+Prefer primary project documentation represented in Context7 over tutorials or snippets without source context.
+Return concise evidence with exact references and do not edit files.
+"""
+
+[mcp_servers.context7]
+url = "https://mcp.context7.com/mcp"
+enabled = true
+required = false
+startup_timeout_sec = 15
+tool_timeout_sec = 60
+default_tools_approval_mode = "auto"
+enabled_tools = ["resolve-library-id", "query-docs"]
