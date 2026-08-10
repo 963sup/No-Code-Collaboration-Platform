@@ -3,6 +3,7 @@
   "globalDependencies": ["tsconfig.base.json", ".oxlintrc.json"],
   "tasks": {
     "lint": {
+      "dependsOn": ["^lint"],
       "outputs": []
     },
     "typecheck": {
