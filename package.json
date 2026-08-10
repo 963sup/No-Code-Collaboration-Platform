@@ -1,0 +1,40 @@
+{
+  "name": "no-code-collaboration-platform",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "env:check": "node tooling/check-environment.mjs",
+    "format": "oxfmt --write .",
+    "format:staged": "oxfmt --write --no-error-on-unmatched-pattern",
+    "format:check": "oxfmt --check .",
+    "lint": "oxlint .",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "knip": "knip --cache --treat-config-hints-as-errors",
+    "hooks:install": "lefthook install",
+    "test:e2e": "playwright test",
+    "test:e2e:list": "playwright test --list",
+    "browser:install": "playwright install chromium",
+    "supabase:status": "supabase status",
+    "supabase:types:local": "supabase gen types typescript --local > types/supabase.generated.ts",
+    "ast:version": "ast-grep --version",
+    "verify:fast": "pnpm format:check && pnpm lint && pnpm typecheck",
+    "verify:full": "pnpm verify:fast && pnpm knip",
+    "verify": "pnpm verify:full"
+  },
+  "devDependencies": {
+    "@ast-grep/cli": "0.45.1",
+    "@playwright/test": "1.62.1",
+    "@types/node": "24.13.3",
+    "knip": "6.29.0",
+    "lefthook": "2.1.10",
+    "oxfmt": "0.42.0",
+    "oxlint": "1.57.0",
+    "supabase": "2.111.0",
+    "typescript": "5.7.2"
+  },
+  "engines": {
+    "node": "24.x",
+    "pnpm": "11.20.0"
+  },
+  "packageManager": "pnpm@11.20.0"
+}

@@ -1,0 +1,23 @@
+{
+  "$schema": "./node_modules/oxfmt/configuration_schema.json",
+  "arrowParens": "always",
+  "bracketSpacing": true,
+  "semi": true,
+  "useTabs": false,
+  "trailingComma": "none",
+  "jsxSingleQuote": true,
+  "singleQuote": true,
+  "tabWidth": 2,
+  "endOfLine": "lf",
+  "ignorePatterns": [
+    ".agents/**",
+    ".codex/**",
+    ".serena/**",
+    "node_modules/**",
+    "playwright-report/**",
+    "test-results/**",
+    "supabase/.temp/**",
+    "pnpm-lock.yaml",
+    "**/*.md"
+  ]
+}

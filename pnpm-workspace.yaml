@@ -1,0 +1,6 @@
+packages:
+  - "."
+
+allowBuilds:
+  "@ast-grep/cli": true
+  lefthook: true
