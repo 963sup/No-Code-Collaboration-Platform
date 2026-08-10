@@ -5,6 +5,7 @@ sandbox_mode = "workspace-write"
 allow_login_shell = false
 tool_output_token_limit = 8000
 project_doc_max_bytes = 65536
+project_root_markers = ["pnpm-workspace.yaml", "turbo.json", ".git"]
 web_search = "indexed"
 
 [memories]
@@ -22,6 +23,9 @@ enabled = true
 max_concurrent_threads_per_session = 4
 default_subagent_reasoning_effort = "medium"
 interrupt_message = true
+
+[shell_environment_policy]
+ignore_default_excludes = false
 
 [sandbox_workspace_write]
 network_access = false

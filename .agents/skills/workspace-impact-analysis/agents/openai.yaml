@@ -1,0 +1,6 @@
+interface:
+  display_name: "Workspace Impact Analysis"
+  short_description: "Map pnpm and Turbo package impact before cross-package changes."
+  default_prompt: "Analyze the current change against the pnpm workspace and Turbo task graph, then report affected packages, dependency direction, and the narrowest sufficient checks."
+policy:
+  allow_implicit_invocation: true

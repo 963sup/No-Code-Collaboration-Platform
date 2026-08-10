@@ -1,7 +1,13 @@
 {
   "$schema": "https://turborepo.dev/schema.json",
+  "globalDependencies": ["tsconfig.base.json", ".oxlintrc.json"],
   "tasks": {
-    "lint": {},
-    "typecheck": {}
+    "lint": {
+      "outputs": []
+    },
+    "typecheck": {
+      "dependsOn": ["^typecheck"],
+      "outputs": []
+    }
   }
 }

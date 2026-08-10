@@ -9,6 +9,7 @@
 /blob-report/
 
 # framework/build output
+/.turbo/
 /.next/
 /out/
 /build/
