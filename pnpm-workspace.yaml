@@ -1,7 +1,9 @@
 packages:
-  - '.'
   - 'apps/*'
   - 'packages/*'
+
+disallowWorkspaceCycles: true
+failIfNoMatch: true
 
 allowBuilds:
   '@ast-grep/cli': true
