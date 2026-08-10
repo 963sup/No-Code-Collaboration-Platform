@@ -1,6 +1,7 @@
 #:schema https://developers.openai.com/codex/config-schema.json
 
 approval_policy = "on-request"
+approvals_reviewer = "user"
 sandbox_mode = "workspace-write"
 allow_login_shell = false
 tool_output_token_limit = 8000
@@ -31,6 +32,36 @@ ignore_default_excludes = false
 [sandbox_workspace_write]
 network_access = false
 
+# Authoritative OpenAI and Codex documentation. No repository secret is required.
+[mcp_servers.openaiDeveloperDocs]
+url = "https://developers.openai.com/mcp"
+enabled = true
+required = false
+startup_timeout_sec = 10
+tool_timeout_sec = 60
+default_tools_approval_mode = "auto"
+
+# Version-sensitive third-party documentation. Keep API keys in machine-local config.
+[mcp_servers.context7]
+url = "https://mcp.context7.com/mcp"
+enabled = true
+required = false
+startup_timeout_sec = 15
+tool_timeout_sec = 60
+default_tools_approval_mode = "auto"
+enabled_tools = ["resolve-library-id", "query-docs"]
+
+# Documentation-only Supabase context. Project refs, PATs, and database tools stay machine-local.
+[mcp_servers.supabaseDocs]
+url = "https://mcp.supabase.com/mcp?read_only=true&features=docs"
+enabled = true
+required = false
+startup_timeout_sec = 15
+tool_timeout_sec = 60
+default_tools_approval_mode = "auto"
+enabled_tools = ["search_docs"]
+
+# Local semantic code navigation. Write-capable tools remain approval-gated.
 [mcp_servers.serena]
 enabled = true
 required = false
