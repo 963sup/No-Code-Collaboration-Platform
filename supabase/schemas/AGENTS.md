@@ -15,7 +15,10 @@ This directory owns current PostgreSQL schema truth and the database enforcement
 - End-user authorization MUST never depend on service-role bypass, user-editable metadata, presentation context, or hidden UI controls.
 - Declarative schema changes MUST be accompanied by an append-only accepted migration and attack-path regression tests before merge.
 - Schema and migration files are local database contracts. Their presence MUST NOT be used as evidence that a Supabase Cloud project exists or that a remote deployment occurred.
-- Destructive Organization or Repository deletion remains blocked by `GAP-LIFECYCLE-001`; narrowed authority is containment, not acceptance of a destructive product lifecycle.
+- Organization and Repository hard deletion MUST remain unavailable to end-user roles until an accepted lifecycle contract defines retention, restore, redaction, containment fate, historical continuity, and recovery behavior.
+- A missing lifecycle MUST fail closed through both table privileges and RLS policy absence; owner or administrator authority alone cannot make an undefined destructive transition valid.
+- `GAP-LIFECYCLE-001` remains the authoritative evidence record for Organization and Repository deletion and may be closed only after exact-head verification proves this fail-closed boundary.
+- Resource destructive lifecycle remains a separate open question; `resource.delete` MUST NOT be treated as evidence that archive, restore, retention, or historical guarantees are accepted.
 
 ## Projection rule
 
