@@ -22,6 +22,7 @@ This directory holds the target architecture for a platform that reverse-enginee
 14. Every persistent Parallel Route slot, including implicit `children`, has a meaningful hard-navigation fallback.
 15. Operation capability and role delegation are distinct. Every role mutation evaluates actor authority, current role, and proposed role.
 16. Organization owner is protected governance authority, and every Organization that still exists retains at least one owner.
+17. Organization and Repository hard deletion are unavailable to end-user roles until an accepted lifecycle defines containment fate, historical continuity, retention, restore, redaction, and recovery behavior.
 
 ## Decision process
 
@@ -35,5 +36,6 @@ An accepted ADR must state the decision, evidence, constraints, assumptions, alt
 - [`ADR-002-executable-application-baseline.md`](./ADR-002-executable-application-baseline.md) defines the initial apps/packages graph, Next.js route groups, shadcn/ui role, and verification chain.
 - [`ADR-003-repository-workspace-parallel-composition.md`](./ADR-003-repository-workspace-parallel-composition.md) defines the first Repository Parallel Route workspace, meaningful hard-navigation recovery, and its authorization-aware read boundary.
 - [`ADR-004-authority-delegation-invariants.md`](./ADR-004-authority-delegation-invariants.md) separates operation capability from role delegation and defines ownership continuity.
+- [`ADR-005-defer-destructive-container-deletion.md`](./ADR-005-defer-destructive-container-deletion.md) removes end-user Organization and Repository hard deletion until explicit lifecycle semantics are accepted.
 
 No final bounded-context map is declared yet. Domain modules must continue to be justified by coherent business problems rather than symmetry.
