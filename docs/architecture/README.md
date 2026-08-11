@@ -14,7 +14,7 @@ This directory holds the target architecture for a platform that reverse-enginee
 6. No bounded context, service, datastore, or integration exists until its necessity and ownership are demonstrated.
 7. Turbo projects the application architecture graph from pnpm workspace packages and their declared dependencies.
 8. `packages/domain` owns business truth; `packages/application` orchestrates use cases and defines ports; `apps/web` is delivery and composition only.
-9. `packages/infrastructure/supabase` is the current infrastructure adapter; `supabase/schemas` owns database truth; migrations are deployment history; generated types are infrastructure projections; grants and RLS enforce database access.
+9. `packages/infrastructure/supabase` is the selected infrastructure adapter; `supabase/schemas` owns current database truth; migrations are replayable transition history; generated types are infrastructure projections; grants and RLS enforce database access.
 10. Supabase clients, DTOs, and generated database types do not cross into Domain, Application, or UI. Next.js wires provider adapters only at its composition boundary.
 11. `packages/ui` owns source-controlled presentation primitives. shadcn/ui accelerates implementation without defining product semantics.
 12. Next.js route groups express layout and access context only; they are neither URL segments nor business boundaries.
@@ -22,6 +22,10 @@ This directory holds the target architecture for a platform that reverse-enginee
 14. Every persistent Parallel Route slot, including implicit `children`, has a meaningful hard-navigation fallback.
 15. Operation capability and role delegation are distinct. Every role mutation evaluates actor authority, current role, and proposed role.
 16. Organization owner is protected governance authority, and every Organization that still exists retains at least one owner.
+17. A selected infrastructure adapter is not evidence that an external environment has been provisioned.
+18. A migration artifact proves a reviewed transition exists; only an environment-specific migration ledger and provider evidence prove that it was applied there.
+19. Local and CI database verification prove reproducibility and enforcement against disposable infrastructure, not preview or production validation.
+20. Default package scripts and verification workflows remain local-only until a separately accepted deployment boundary defines environment ownership, credentials, recovery, and evidence.
 
 ## Decision process
 
@@ -35,5 +39,6 @@ An accepted ADR must state the decision, evidence, constraints, assumptions, alt
 - [`ADR-002-executable-application-baseline.md`](./ADR-002-executable-application-baseline.md) defines the initial apps/packages graph, Next.js route groups, shadcn/ui role, and verification chain.
 - [`ADR-003-repository-workspace-parallel-composition.md`](./ADR-003-repository-workspace-parallel-composition.md) defines the first Repository Parallel Route workspace, meaningful hard-navigation recovery, and its authorization-aware read boundary.
 - [`ADR-004-authority-delegation-invariants.md`](./ADR-004-authority-delegation-invariants.md) separates operation capability from role delegation and defines ownership continuity.
+- [`ADR-005-local-first-supabase-lifecycle.md`](./ADR-005-local-first-supabase-lifecycle.md) separates database contracts, replayable migrations, provisioned environments, and applied deployment evidence.
 
 No final bounded-context map is declared yet. Domain modules must continue to be justified by coherent business problems rather than symmetry.

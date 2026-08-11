@@ -8,7 +8,7 @@ This directory separates product meaning, target design, domain semantics, known
 - [`IMPLEMENTATION_GAPS.md`](./IMPLEMENTATION_GAPS.md): evidence-backed differences between target contracts and current executable behavior, including risk, containment, and closure evidence.
 - [`architecture/`](./architecture/README.md): target architecture, ownership and dependency boundaries, invariants, and accepted ADRs.
 - [`domains/`](./domains/README.md): candidate and accepted problem contracts. A document here does not create a package, service, or bounded context by itself.
-- [`operations/RUNBOOK.md`](./operations/RUNBOOK.md): production release, recovery, incident, data-protection, and validation procedures.
+- [`operations/RUNBOOK.md`](./operations/RUNBOOK.md): production release, recovery, incident, data-protection, environment-provisioning, and validation procedures.
 - [`DEVELOPMENT_ENVIRONMENT.md`](./DEVELOPMENT_ENVIRONMENT.md): workstation bootstrap and deterministic local verification entry points.
 - [`CODEX_DESKTOP.md`](./CODEX_DESKTOP.md): Codex Desktop project configuration, MCP context routing, trust boundaries, and verification.
 
@@ -56,13 +56,16 @@ No single document is authoritative for every question.
 | What are the target ownership and dependency boundaries? | `docs/architecture/README.md` and accepted ADRs |
 | Where does current executable behavior differ from a target contract? | `docs/IMPLEMENTATION_GAPS.md`, backed by exact code, schema, policy, test, provider, or incident evidence |
 | What is the current desired database structure? | `supabase/schemas/*.sql` |
-| How did the database change over time? | Reviewed append-only migrations |
+| How can an empty database be rebuilt? | Reviewed accepted migrations plus deterministic local seed data |
+| Which migrations are applied in a persistent environment? | That environment's migration ledger and direct provider evidence |
 | What does the current implementation do? | Executable code, policies, and tests |
 | What is actually happening in production? | Direct observation, provider telemetry, deployment evidence, and incident records |
-| How should an operator release or recover the system? | `docs/operations/RUNBOOK.md`, after its preconditions are verified |
+| How should an operator provision, release, or recover an environment? | `docs/operations/RUNBOOK.md`, after its preconditions are verified |
 | How does an external dependency behave? | Current official documentation for that external system |
 
 Generated diagrams, generated types, snapshots, agent output, and session context are projections or evidence. They cannot silently redefine the target model.
+
+A selected provider is not proof of a provisioned environment. A migration file is not proof of an applied migration. Local or CI verification is not production validation.
 
 ## Repository work instruction order
 
