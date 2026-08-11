@@ -1,5 +1,11 @@
 # Domain
 
-This package is the sole owner of business truth: canonical concepts, invariants, state transitions, and domain decisions for the no-code collaboration platform.
+This package owns business truth for the no-code collaboration platform. It contains framework-independent concepts, invariants, policies, and deterministic state transitions.
 
-It must remain independent of Supabase, application orchestration, and web delivery. No internal domain module is accepted until a coherent business problem, vocabulary, ownership boundary, lifecycle, and falsifiable invariant justify it.
+Current executable baseline:
+
+- Repository roles are convenience bundles.
+- Capabilities are the authorization vocabulary.
+- Role precedence and capability evaluation are deterministic and independently tested.
+
+Persistence rows, generated database types, HTTP concerns, React, Next.js, and Supabase clients do not belong here.

@@ -1,5 +1,5 @@
 {
-  "name": "@no-code-collaboration-platform/domain",
+  "name": "@no-code-collaboration-platform/application",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -11,5 +11,8 @@
     "lint": "oxlint src tests",
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "test": "vitest run --root ."
+  },
+  "dependencies": {
+    "@no-code-collaboration-platform/domain": "workspace:*"
   }
 }
