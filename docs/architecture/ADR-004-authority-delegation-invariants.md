@@ -34,23 +34,24 @@ The accepted delegation scopes are:
 
 Organization owner is a protected governance role. An Organization that still exists must retain at least one owner. Repository grant attribution must identify the authenticated actor.
 
-Changing the existing Organization DELETE policy from admin-or-owner to owner-only is least-privilege containment of the current database path. It does not accept destructive Organization or Repository deletion as a supported product lifecycle. [`GAP-LIFECYCLE-001`](../IMPLEMENTATION_GAPS.md#gap-lifecycle-001--destructive-organization-and-repository-lifecycle-is-not-accepted) remains open until its independent lifecycle and recovery evidence exists.
+ADR-005 removes Organization and Repository hard deletion from end-user authority until a separate lifecycle contract is accepted. The parent-cascade case retained by this ADR is only a privileged database-mechanics test proving that the owner-continuity trigger does not falsely block deletion of a parent row that no longer exists. It is not a product authorization path.
 
 ## Problem and success condition
 
 The original capability model correctly distinguished Repository manager from admin for `repository.manage`, but it gave manager `member.manage`. Database RLS then projected that single capability as unrestricted mutation access to `repository_user_grants`. A manager could therefore change a grant to `admin` and acquire `repository.manage`.
 
-Organization membership policies similarly treated `admin` and `owner` as one management class. An admin could create owner authority, alter an owner relationship, or reach the current Organization DELETE path.
+Organization membership policies similarly treated `admin` and `owner` as one management class. An admin could create owner authority, alter an owner relationship, or reach the then-exposed Organization DELETE path.
 
 The decision succeeds when:
 
 - operation capability cannot be converted into higher authority;
-- Organization admins cannot control owners or reach owner-only governance operations;
+- Organization admins cannot control owners;
 - Repository managers cannot control manager or admin grants;
 - the last Organization owner cannot be removed under concurrent transactions;
 - legitimate lower-role delegation remains available;
-- Domain decisions and database enforcement return the same answers for the same transition matrix; and
-- narrowing DELETE authority is not mistaken for accepting a destructive lifecycle.
+- Domain decisions and database enforcement return the same answers for the same transition matrix;
+- the owner-continuity trigger permits a privileged parent cascade without implying end-user deletion authority; and
+- delegation semantics remain independent from lifecycle acceptance.
 
 ## Evidence ledger
 
@@ -59,8 +60,8 @@ The decision succeeds when:
 - Domain role bundles describe what an effective role may do but did not describe what authority it may delegate.
 - Existing RLS checked only the actor capability and did not constrain the current or proposed target role.
 - Existing tests covered read visibility and basic capability bundles but not self-escalation or higher-role mutation.
-- Organization deletion used the same admin-or-owner predicate as ordinary administration.
-- The product lifecycle contract does not yet accept destructive Organization or Repository deletion.
+- Organization deletion historically used the same admin-or-owner predicate as ordinary administration.
+- The product lifecycle contract does not accept destructive Organization or Repository deletion.
 
 ### Constraints
 
@@ -69,7 +70,7 @@ The decision succeeds when:
 - Public table privileges and RLS remain separate controls.
 - User-facing mutations must not depend on service-role bypass.
 - Schema files remain current database truth; migrations remain append-only history.
-- This authorization repair cannot close or weaken `GAP-LIFECYCLE-001`.
+- This authorization decision cannot define, close, or weaken destructive lifecycle semantics.
 
 ### Assumptions
 
@@ -130,9 +131,9 @@ WITH CHECK
 → validates the proposed target role
 ```
 
-For INSERT, `WITH CHECK` validates the proposed role and authenticated actor attribution. For DELETE, `USING` validates the existing role.
+For INSERT, `WITH CHECK` validates the proposed role and authenticated actor attribution. For DELETE, `USING` validates the existing membership or grant role when that relationship deletion is an accepted operation.
 
-Owner continuity is cross-row and concurrency sensitive. A trigger locks the owning Organization row before removing or demoting an owner, then verifies that another owner remains. Cascading membership deletion caused by deleting the Organization is allowed at the database mechanism boundary because the governed Organization no longer exists. That mechanism test prevents a false-positive continuity failure; it does not make destructive deletion a production-validated capability.
+Owner continuity is cross-row and concurrency sensitive. A trigger locks the owning Organization row before removing or demoting an owner, then verifies that another owner remains. Cascading membership deletion caused by a privileged database deletion of the Organization is allowed at the database mechanism boundary because the governed Organization no longer exists. That mechanism test prevents a false-positive continuity failure; ADR-005 independently denies Organization and Repository hard deletion to end-user roles.
 
 ## Alternatives rejected
 
@@ -142,7 +143,7 @@ Owner continuity is cross-row and concurrency sensitive. A trigger locks the own
 - Enforce only in RLS: protects storage but leaves the canonical Domain model unable to explain or test the business rule.
 - Add a separate authorization service: introduces a new distributed authority without evidence that PostgreSQL plus the modular monolith is insufficient.
 - Require UI role filtering: hides dangerous choices but does not secure the mutation boundary.
-- Treat owner-only DELETE as lifecycle acceptance: confuses access authority with retention, audit continuity, recovery, and user-visible lifecycle behavior.
+- Treat owner authority as lifecycle acceptance: confuses access delegation with retention, audit continuity, recovery, and user-visible lifecycle behavior.
 
 ## Consequences
 
@@ -151,15 +152,16 @@ Benefits:
 - authority cannot be minted from a lower management capability;
 - owner and admin become semantically distinct;
 - database enforcement matches the Domain transition matrix;
-- negative attack-path tests become part of the authorization contract; and
-- the destructive lifecycle gap remains visible rather than being accidentally closed by an RLS change.
+- negative attack-path tests become part of the authorization contract;
+- parent-cascade mechanics remain testable without exposing a product DELETE path; and
+- destructive lifecycle decisions remain independently reviewable.
 
 Costs:
 
 - role changes require explicit old/new-role reasoning;
 - owner continuity requires a database lock and trigger;
 - future role additions must update Domain, SQL projection, migration, and tests together; and
-- Organization deletion remains unavailable as a production-validated capability until a separate lifecycle decision closes `GAP-LIFECYCLE-001`.
+- Organization and Repository hard deletion remain unavailable to end users until a separate lifecycle decision is accepted.
 
 ## Falsification conditions
 
@@ -169,16 +171,17 @@ Do not reopen merely because another product uses different role names. Reopen o
 
 ## Minimum discriminating test
 
-The model is accepted only if all of the following hold through real boundaries:
+The model is accepted only if all of the following hold through the appropriate boundaries:
 
 - Organization admin self-promotion to owner is denied.
-- Organization admin mutation or deletion of an owner is denied.
+- Organization admin mutation or deletion of an owner relationship is denied.
 - Repository manager self-promotion or promotion of another grant to admin is denied.
 - Repository manager can still create viewer and contributor grants.
 - Repository admin can create an admin grant.
 - Removing or demoting the last owner is denied.
 - Removing an owner when another owner remains is allowed.
-- The owner-only database cascade path is not falsely blocked by the continuity trigger, while `GAP-LIFECYCLE-001` remains open.
+- A privileged parent cascade is not falsely blocked by the continuity trigger.
+- Organization and Repository hard deletion remain denied to end-user roles under ADR-005.
 - forged `granted_by` attribution is denied.
 
 Any mismatch between Domain tests and pgTAP enforcement tests reopens the earliest inconsistent boundary.
