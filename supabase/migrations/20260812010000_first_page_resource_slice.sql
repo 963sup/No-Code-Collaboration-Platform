@@ -33,9 +33,9 @@ begin
     select 1
     from public.resources
     where kind = 'page'
-      and char_length(btrim(title)) = 0
+      and not (title ~ '[^[:space:]]')
   ) then
-    raise exception 'existing Page title is empty after trimming'
+    raise exception 'existing Page title contains only whitespace'
       using errcode = '23514';
   end if;
 end;
@@ -53,7 +53,10 @@ alter table public.resources
   drop constraint resources_title_length;
 
 alter table public.resources
-  add constraint resources_title_length check (char_length(btrim(title)) between 1 and 240);
+  add constraint resources_title_length check (
+    char_length(title) between 1 and 240
+    and title ~ '[^[:space:]]'
+  );
 
 alter table public.resources
   add constraint resources_page_content_shape check (
