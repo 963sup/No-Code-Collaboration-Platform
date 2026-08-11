@@ -8,7 +8,14 @@ const packagePrefix = '@no-code-collaboration-platform/';
 const packageRules = {
   'packages/domain': {
     internal: new Set(),
-    forbidden: ['next', 'react', '@supabase/', `${packagePrefix}application`, `${packagePrefix}supabase`, `${packagePrefix}ui`]
+    forbidden: [
+      'next',
+      'react',
+      '@supabase/',
+      `${packagePrefix}application`,
+      `${packagePrefix}supabase`,
+      `${packagePrefix}ui`
+    ]
   },
   'packages/application': {
     internal: new Set([`${packagePrefix}domain`]),
@@ -20,7 +27,13 @@ const packageRules = {
   },
   'packages/ui': {
     internal: new Set(),
-    forbidden: ['next', '@supabase/', `${packagePrefix}application`, `${packagePrefix}domain`, `${packagePrefix}supabase`]
+    forbidden: [
+      'next',
+      '@supabase/',
+      `${packagePrefix}application`,
+      `${packagePrefix}domain`,
+      `${packagePrefix}supabase`
+    ]
   },
   'apps/web': {
     internal: new Set([
@@ -84,7 +97,9 @@ for (const [scope, rules] of Object.entries(packageRules)) {
         scope !== 'packages/supabase' &&
         (specifier.includes('database-types') || specifier.includes('generated/database.types'))
       ) {
-        failures.push(`${path}: generated database types may only be imported by packages/supabase`);
+        failures.push(
+          `${path}: generated database types may only be imported by packages/supabase`
+        );
       }
     }
   }

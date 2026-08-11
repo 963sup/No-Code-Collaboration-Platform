@@ -3,25 +3,18 @@ import { resolve } from 'node:path';
 import { spawnSync } from 'node:child_process';
 
 const mode = process.argv[2];
-const outputPath = resolve(
-  process.cwd(),
-  'packages/supabase/src/generated/database.types.ts'
-);
+const outputPath = resolve(process.cwd(), 'packages/supabase/src/generated/database.types.ts');
 
 if (!['check', 'write'].includes(mode)) {
   throw new Error('Usage: node tooling/database-types.mjs <check|write>');
 }
 
-const result = spawnSync(
-  'pnpm',
-  ['exec', 'supabase', 'gen', 'types', 'typescript', '--local'],
-  {
-    cwd: process.cwd(),
-    encoding: 'utf8',
-    timeout: 120_000,
-    windowsHide: true
-  }
-);
+const result = spawnSync('pnpm', ['exec', 'supabase', 'gen', 'types', 'typescript', '--local'], {
+  cwd: process.cwd(),
+  encoding: 'utf8',
+  timeout: 120_000,
+  windowsHide: true
+});
 
 if (result.status !== 0) {
   process.stderr.write(result.stderr || result.stdout);
