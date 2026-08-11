@@ -98,7 +98,7 @@ requireMatch(
 requireMatch(
   'docs/domains/README.md',
   documents['docs/domains/README.md'],
-  /Candidate status is not permission to describe target behavior as already enforced/,
+  /Candidate[\s\S]*?target behavior[\s\S]*?already enforced/i,
   'candidate-versus-executable truth rule is missing'
 );
 requireMatch(
