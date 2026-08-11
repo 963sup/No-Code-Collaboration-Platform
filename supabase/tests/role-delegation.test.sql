@@ -34,8 +34,8 @@ values
   ),
   (
     '10000000-0000-0000-0000-000000000103',
-    'deletable-organization',
-    'Deletable Organization',
+    'cascade-mechanics-organization',
+    'Cascade Mechanics Organization',
     '00000000-0000-0000-0000-000000000101'
   );
 
@@ -146,15 +146,14 @@ select is(
   'organization admin cannot delete an owner relationship'
 );
 
-with changed as (
-  delete from public.organizations
-  where id = '10000000-0000-0000-0000-000000000101'
-  returning 1
-)
-select is(
-  (select count(*)::integer from changed),
-  0,
-  'organization admin cannot delete the organization'
+select throws_ok(
+  $$
+    delete from public.organizations
+    where id = '10000000-0000-0000-0000-000000000101'
+  $$,
+  '42501',
+  'permission denied for table organizations',
+  'organization admin cannot invoke an unaccepted destructive lifecycle'
 );
 
 select lives_ok(
@@ -220,6 +219,8 @@ select throws_ok(
   'last organization owner cannot be deleted'
 );
 
+reset role;
+
 with changed as (
   delete from public.organizations
   where id = '10000000-0000-0000-0000-000000000103'
@@ -228,9 +229,10 @@ with changed as (
 select is(
   (select count(*)::integer from changed),
   1,
-  'organization owner can delete an organization without continuity blocking its cascade'
+  'owner-continuity trigger permits privileged parent cascade mechanics'
 );
 
+set local role authenticated;
 select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-000000000104', true);
 
 select throws_ok(
