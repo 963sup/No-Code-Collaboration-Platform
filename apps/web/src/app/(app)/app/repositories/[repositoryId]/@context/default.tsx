@@ -1,3 +1,1 @@
-export default function RepositoryContextDefault() {
-  return null;
-}
+export { default } from './page';

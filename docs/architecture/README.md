@@ -19,6 +19,9 @@ This directory holds the target architecture for a platform that reverse-enginee
 11. `packages/ui` owns source-controlled presentation primitives. shadcn/ui accelerates implementation without defining product semantics.
 12. Next.js route groups express layout and access context only; they are neither URL segments nor business boundaries.
 13. Next.js Parallel Route slots express simultaneous presentation responsibilities. They never create Domain entities, aggregates, principals, or authorization facts.
+14. Every persistent Parallel Route slot, including implicit `children`, has a meaningful hard-navigation fallback.
+15. Operation capability and role delegation are distinct. Every role mutation evaluates actor authority, current role, and proposed role.
+16. Organization owner is protected governance authority, and every Organization that still exists retains at least one owner.
 
 ## Decision process
 
@@ -30,6 +33,7 @@ An accepted ADR must state the decision, evidence, constraints, assumptions, alt
 
 - [`ADR-001-architecture-truth-boundaries.md`](./ADR-001-architecture-truth-boundaries.md) defines the architecture graph and source-of-truth boundaries.
 - [`ADR-002-executable-application-baseline.md`](./ADR-002-executable-application-baseline.md) defines the initial apps/packages graph, Next.js route groups, shadcn/ui role, and verification chain.
-- [`ADR-003-repository-workspace-parallel-composition.md`](./ADR-003-repository-workspace-parallel-composition.md) defines the first Repository Parallel Route workspace and its authorization-aware read boundary.
+- [`ADR-003-repository-workspace-parallel-composition.md`](./ADR-003-repository-workspace-parallel-composition.md) defines the first Repository Parallel Route workspace, meaningful hard-navigation recovery, and its authorization-aware read boundary.
+- [`ADR-004-authority-delegation-invariants.md`](./ADR-004-authority-delegation-invariants.md) separates operation capability from role delegation and defines ownership continuity.
 
 No final bounded-context map is declared yet. Domain modules must continue to be justified by coherent business problems rather than symmetry.
