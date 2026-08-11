@@ -148,7 +148,10 @@ const runbookPath = 'docs/operations/RUNBOOK.md';
 const runbook = read(runbookPath);
 for (const [pattern, message] of [
   [/No Supabase Cloud project is provisioned/i, 'Cloud provisioning status is missing'],
-  [/migration ledger.*prove.*applied/is, 'environment-specific applied migration evidence is missing'],
+  [
+    /migration ledger.*prove.*applied/is,
+    'environment-specific applied migration evidence is missing'
+  ],
   [/Persistent database provisioning gate/i, 'persistent database provisioning gate is missing']
 ]) {
   requireMatch(runbookPath, runbook, pattern, message);

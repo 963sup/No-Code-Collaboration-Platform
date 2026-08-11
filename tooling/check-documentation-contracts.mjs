@@ -113,8 +113,14 @@ const lifecycleAdr = documents[lifecycleAdrPath];
 for (const [pattern, message] of [
   [/^- Status: Accepted$/m, 'ADR is not accepted'],
   [/Migration artifact\s*≠\s*Applied deployment/u, 'migration/deployment distinction is missing'],
-  [/Selected provider\s*≠\s*Provisioned environment/u, 'provider/provisioning distinction is missing'],
-  [/Local verification\s*≠\s*Production validation/u, 'verification/production distinction is missing'],
+  [
+    /Selected provider\s*≠\s*Provisioned environment/u,
+    'provider/provisioning distinction is missing'
+  ],
+  [
+    /Local verification\s*≠\s*Production validation/u,
+    'verification/production distinction is missing'
+  ],
   [/^## Initial remote baseline gate$/m, 'initial remote baseline gate is missing']
 ]) {
   requireMatch(lifecycleAdrPath, lifecycleAdr, pattern, message);
