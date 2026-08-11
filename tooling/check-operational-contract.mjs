@@ -34,6 +34,15 @@ for (const [pattern, message] of [
   requireMatch(environmentPath, environment, pattern, message);
 }
 
+const packagePath = 'package.json';
+const packageJson = read(packagePath);
+requireMatch(
+  packagePath,
+  packageJson,
+  /"lint"\s*:\s*"[^"]*oxlint[^"]*\.codex\/hooks[^"]*"/u,
+  'Codex hook scripts are outside the root lint boundary'
+);
+
 const agentsPath = 'AGENTS.md';
 const agents = read(agentsPath);
 for (const [pattern, message] of [
