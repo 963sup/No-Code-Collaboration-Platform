@@ -108,6 +108,7 @@ for (const [scope, rules] of Object.entries(packageRules)) {
 }
 
 const repositoryWorkspaceRoute = 'apps/web/src/app/(app)/app/repositories/[repositoryId]';
+const repositoryResourcesRoute = `${repositoryWorkspaceRoute}/@workspace/resources`;
 const persistentParallelRouteDefaults = [
   `${repositoryWorkspaceRoute}/default.tsx`,
   `${repositoryWorkspaceRoute}/@navigation/default.tsx`,
@@ -117,7 +118,9 @@ const persistentParallelRouteDefaults = [
 ];
 const requiredParallelRouteFiles = [
   `${repositoryWorkspaceRoute}/layout.tsx`,
-  `${repositoryWorkspaceRoute}/@workspace/resources/page.tsx`,
+  `${repositoryResourcesRoute}/page.tsx`,
+  `${repositoryResourcesRoute}/[pageId]/page.tsx`,
+  `${repositoryResourcesRoute}/actions.ts`,
   ...persistentParallelRouteDefaults
 ];
 
@@ -159,15 +162,58 @@ if (existsSync(resolve(root, repositoryNavigationPath))) {
   }
 }
 
-const repositoryResourcesPath = `${repositoryWorkspaceRoute}/@workspace/resources/page.tsx`;
+const repositoryResourcesPath = `${repositoryResourcesRoute}/page.tsx`;
 if (existsSync(resolve(root, repositoryResourcesPath))) {
   const content = readFileSync(resolve(root, repositoryResourcesPath), 'utf8');
   if (!content.includes('requireAccessibleRepository')) {
     failures.push(
       `${repositoryResourcesPath}: nested workspace route must use the ` +
-        'authorization-aware read path'
+        'authorization-aware Repository read path'
     );
   }
+  if (!content.includes('ListAccessiblePages')) {
+    failures.push(`${repositoryResourcesPath}: Page Resource read model is missing`);
+  }
+  if (content.includes('RepositoryResourceKindGrid')) {
+    failures.push(`${repositoryResourcesPath}: speculative Resource kind grid must not remain`);
+  }
+}
+
+const pageDetailPath = `${repositoryResourcesRoute}/[pageId]/page.tsx`;
+if (existsSync(resolve(root, pageDetailPath))) {
+  const content = readFileSync(resolve(root, pageDetailPath), 'utf8');
+  if (!content.includes('requireAccessibleRepository')) {
+    failures.push(`${pageDetailPath}: Page route must resolve its Repository boundary`);
+  }
+  if (!content.includes('GetAccessiblePage')) {
+    failures.push(`${pageDetailPath}: Page route must use the authorization-aware Page query`);
+  }
+  if (!content.includes('updatePage')) {
+    failures.push(`${pageDetailPath}: Page route must submit through the Page update action`);
+  }
+}
+
+const pageActionsPath = `${repositoryResourcesRoute}/actions.ts`;
+if (existsSync(resolve(root, pageActionsPath))) {
+  const content = readFileSync(resolve(root, pageActionsPath), 'utf8');
+  for (const symbol of ['CreatePage', 'UpdatePage', 'revalidatePath']) {
+    if (!content.includes(symbol)) {
+      failures.push(`${pageActionsPath}: ${symbol} boundary is missing`);
+    }
+  }
+}
+
+const activityPath = `${repositoryWorkspaceRoute}/@activity/page.tsx`;
+if (existsSync(resolve(root, activityPath))) {
+  const content = readFileSync(resolve(root, activityPath), 'utf8');
+  if (!content.includes('ListRepositoryActivity')) {
+    failures.push(`${activityPath}: Activity must project immutable Repository facts`);
+  }
+}
+
+const speculativeResourceGridPath = `${repositoryWorkspaceRoute}/_components/repository-resource-kind-grid.tsx`;
+if (existsSync(resolve(root, speculativeResourceGridPath))) {
+  failures.push(`${speculativeResourceGridPath}: speculative Resource kind grid must be removed`);
 }
 
 const result = {

@@ -32,7 +32,7 @@ grant update (role) on table public.repository_user_grants to authenticated;
 
 grant select on table public.resources to anon, authenticated;
 grant insert, delete on table public.resources to authenticated;
-grant update (title, content, updated_at) on table public.resources to authenticated;
+grant update (title, content) on table public.resources to authenticated;
 
 grant select on table public.activity_events to authenticated;
 

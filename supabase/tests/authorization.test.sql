@@ -119,8 +119,8 @@ where id = '20000000-0000-0000-0000-000000000001';
 
 select is(
   (select count(*)::integer from public.activity_events),
-  2,
-  'ordinary updates do not fabricate creation events'
+  3,
+  'accepted Resource updates emit one update fact without fabricating creation facts'
 );
 
 reset role;

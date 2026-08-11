@@ -18,7 +18,13 @@ This directory owns current PostgreSQL schema truth and the database enforcement
 - Organization and Repository hard deletion MUST remain unavailable to end-user roles until an accepted lifecycle contract defines retention, restore, redaction, containment fate, historical continuity, and recovery behavior.
 - A missing lifecycle MUST fail closed through both table privileges and RLS policy absence; owner or administrator authority alone cannot make an undefined destructive transition valid.
 - `GAP-LIFECYCLE-001` remains the authoritative evidence record for Organization and Repository deletion and may be closed only after exact-head verification proves this fail-closed boundary.
-- Resource destructive lifecycle remains a separate open question; `resource.delete` MUST NOT be treated as evidence that archive, restore, retention, or historical guarantees are accepted.
+- `GAP-LIFECYCLE-002` remains Open; `resource.delete` MUST NOT be treated as evidence that Page archive, restore, retention, purge, redaction, or historical guarantees are accepted.
+- The accepted Page content projection MUST remain exactly one JSON object containing one string field named `body`; additional keys or non-string bodies are invalid.
+- Page title enforcement MUST reject a title whose trimmed content is empty.
+- `resources.updated_at` is server-managed Page concurrency evidence for accepted update paths; authenticated clients MUST NOT directly assign it.
+- A no-op Page update MUST NOT advance `updated_at` or fabricate `resource.updated`.
+- A meaningful Page create or update and its required immutable fact MUST commit in one PostgreSQL transaction. Fact failure MUST abort the Resource transition.
+- `resource.updated` facts MUST attribute the current authenticated actor, MUST NOT duplicate Page body content, and MUST NOT be emitted for no-op updates.
 
 ## Projection rule
 

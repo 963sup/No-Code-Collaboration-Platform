@@ -1,12 +1,13 @@
 import {
+  buttonVariants,
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle
 } from '@no-code-collaboration-platform/ui';
+import Link from 'next/link';
 
-import { RepositoryResourceKindGrid } from '../_components/repository-resource-kind-grid';
 import { requireAccessibleRepository } from '../_queries/get-accessible-repository';
 
 interface RepositoryWorkspaceProps {
@@ -23,22 +24,24 @@ export default async function RepositoryWorkspace({ params }: RepositoryWorkspac
         <CardHeader>
           <CardTitle>Repository workspace</CardTitle>
           <CardDescription>
-            {repository.name} is the stable collaboration boundary. Resource capabilities can evolve
-            without changing its identity.
+            {repository.name} is the stable collaboration boundary. Pages are its first accepted
+            collaborative Resource kind.
           </CardDescription>
         </CardHeader>
-        <CardContent id='resources'>
-          <RepositoryResourceKindGrid />
+        <CardContent>
+          <Link className={buttonVariants()} href={`/app/repositories/${repository.id}/resources`}>
+            Open Pages
+          </Link>
         </CardContent>
       </Card>
 
       <Card className='border-dashed'>
         <CardHeader>
-          <CardTitle>Minimum sufficient surface</CardTitle>
+          <CardTitle>First executable work unit</CardTitle>
           <CardDescription>
-            This slot intentionally contains no fabricated resources. The next vertical slice must
-            add a real Application query, an authorization rule, and a discriminating test before a
-            resource type appears here.
+            Page creation, reading, updating, Repository authority, optimistic concurrency, and
+            immutable activity facts now form one verified collaboration loop. Additional Resource
+            kinds remain deferred until they prove distinct behavior and lifecycle requirements.
           </CardDescription>
         </CardHeader>
       </Card>

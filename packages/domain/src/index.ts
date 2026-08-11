@@ -1,16 +1,36 @@
 export {
+  repositoryCapabilities,
+  repositoryRoles,
   hasRepositoryCapability,
   highestRepositoryRole,
-  repositoryCapabilities,
-  repositoryRoles
+  type RepositoryCapability,
+  type RepositoryRole
 } from './access/capability';
-export type { RepositoryCapability, RepositoryRole } from './access/capability';
 export {
+  organizationRoles,
   canMutateOrganizationMembership,
   canMutateRepositoryGrant,
-  organizationRoles,
-  preservesOrganizationOwnership
+  preservesOrganizationOwnership,
+  type OrganizationRole
 } from './access/delegation';
-export type { OrganizationRole } from './access/delegation';
-export { isRepositorySlug, repositoryVisibilities } from './repository/repository';
-export type { RepositorySummary, RepositoryVisibility } from './repository/repository';
+export { effectiveRepositoryRole, type RepositoryAuthoritySources } from './access/authority';
+export type { ActivityEventSummary } from './activity/activity-event';
+export {
+  createPageDraft,
+  createPageUpdate,
+  isPageContent,
+  isPageTitle,
+  pageResourceKind,
+  pageTitleMaxLength,
+  type PageContent,
+  type PageDetail,
+  type PageDraft,
+  type PageSummary,
+  type PageUpdate
+} from './resource/page';
+export {
+  isRepositorySlug,
+  repositoryVisibilities,
+  type RepositorySummary,
+  type RepositoryVisibility
+} from './repository/repository';

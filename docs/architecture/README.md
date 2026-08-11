@@ -27,6 +27,9 @@ This directory holds the target architecture for a platform that reverse-enginee
 19. Local and CI database verification prove reproducibility and enforcement against disposable infrastructure, not preview or production validation.
 20. Default package scripts and verification workflows remain local-only until a separately accepted deployment boundary defines environment ownership, credentials, recovery, and evidence.
 21. Organization and Repository hard deletion are unavailable to end-user roles until an accepted lifecycle defines containment fate, historical continuity, retention, restore, redaction, and recovery behavior.
+22. Page is the first accepted Resource implementation; its create/update commands require explicit Domain Capability decisions, independent RLS enforcement, exact content shape, optimistic concurrency evidence, and same-transaction immutable facts.
+23. A Resource subtype may use shared persistence only while its invariants remain explicit and no second subtype proves an independent storage lifecycle.
+24. Resource hard deletion remains unaccepted while `GAP-LIFECYCLE-002` is open; the presence of `resource.delete` cannot make an undefined Page lifecycle valid.
 
 ## Decision process
 
@@ -42,5 +45,6 @@ An accepted ADR must state the decision, evidence, constraints, assumptions, alt
 - [`ADR-004-authority-delegation-invariants.md`](./ADR-004-authority-delegation-invariants.md) separates operation capability from role delegation and defines ownership continuity.
 - [`ADR-005-local-first-supabase-lifecycle.md`](./ADR-005-local-first-supabase-lifecycle.md) separates database contracts, replayable migrations, provisioned environments, and applied deployment evidence.
 - [`ADR-006-defer-destructive-container-deletion.md`](./ADR-006-defer-destructive-container-deletion.md) removes end-user Organization and Repository hard deletion until explicit lifecycle semantics are accepted.
+- [`ADR-007-first-page-resource-vertical-slice.md`](./ADR-007-first-page-resource-vertical-slice.md) defines the first executable Page collaboration loop, explicit authority decision, typed persistence, optimistic concurrency, and immutable fact projection.
 
 No final bounded-context map is declared yet. Domain modules must continue to be justified by coherent business problems rather than symmetry.

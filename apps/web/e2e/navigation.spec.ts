@@ -1,4 +1,11 @@
-import { expect, test } from '@playwright/test';
+import { expect, test, type Page } from '@playwright/test';
+
+async function expectSignInRedirect(page: Page, nextPath: string) {
+  await expect(page).toHaveURL(/\/sign-in/u);
+  const location = new URL(page.url());
+  expect(location.pathname).toBe('/sign-in');
+  expect(location.searchParams.get('next')).toBe(nextPath);
+}
 
 test('public route presents the product model', async ({ page }) => {
   await page.goto('/');
@@ -22,7 +29,7 @@ test('auth route is grouped without changing its URL', async ({ page }) => {
 test('protected app route redirects an unauthenticated actor', async ({ page }) => {
   await page.goto('/app');
 
-  await expect(page).toHaveURL(/\/sign-in\?next=%2Fapp$/u);
+  await expectSignInRedirect(page, '/app');
 });
 
 test('nested Repository workspace preserves the requested URL through authentication', async ({
@@ -32,9 +39,7 @@ test('nested Repository workspace preserves the requested URL through authentica
 
   await page.goto(repositoryPath);
 
-  await expect(page).toHaveURL(
-    new RegExp(`/sign-in\\?next=${encodeURIComponent(repositoryPath)}$`, 'u')
-  );
+  await expectSignInRedirect(page, repositoryPath);
 });
 
 test('hard navigation preserves a nested Parallel Route destination through authentication', async ({
@@ -44,7 +49,15 @@ test('hard navigation preserves a nested Parallel Route destination through auth
 
   await page.goto(resourcesPath);
 
-  await expect(page).toHaveURL(
-    new RegExp(`/sign-in\\?next=${encodeURIComponent(resourcesPath)}$`, 'u')
-  );
+  await expectSignInRedirect(page, resourcesPath);
+});
+
+test('Page workspace identity survives authentication redirect', async ({ page }) => {
+  const pagePath =
+    '/app/repositories/00000000-0000-4000-8000-000000000001/resources/' +
+    '00000000-0000-4000-8000-000000000002';
+
+  await page.goto(pagePath);
+
+  await expectSignInRedirect(page, pagePath);
 });

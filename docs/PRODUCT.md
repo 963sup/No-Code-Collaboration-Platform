@@ -3,7 +3,7 @@
 - Status: Canonical
 - Contract owner: Repository owner
 - Scope: Product meaning and semantic boundaries
-- Last reviewed: 2026-08-11
+- Last reviewed: 2026-08-12
 
 > 逆向 GitHub 產品語意，從第一性原理重建以 Repository 為無代碼協作容器的企業協作平台。
 
@@ -48,13 +48,14 @@ A familiar name is not evidence that the concept belongs in this platform.
 | Context | Selected view, filter, or navigation scope | Identity, ownership, or server-side authorization fact |
 | Collaborator | Derived label for a User with effective Repository access | Persistent User subtype or independent entity |
 
-The currently implemented authority model has User principals and direct Repository grants. Group principals, policy caps, and other authority sources require separate evidence before they enter the accepted model.
+The currently implemented authority model has User principals, direct Repository grants, and one explicit governance-derived authority source: an Organization `owner` or `admin` derives Repository `admin` authority for Repositories owned by that Organization. Ordinary Organization membership does not create Repository access. Team/group principals, Organization-wide base permissions for ordinary members, policy caps, and other authority sources require separate evidence before they enter the accepted model.
 
 ## Core relationships
 
 - A User may have a Membership relationship with an Organization.
 - An Organization owns Repositories.
 - A Principal may receive a Grant to a Repository.
+- Organization owner/admin governance authority may derive Repository admin authority without fabricating a direct Grant.
 - A Repository contains Resources.
 - A Role expands into Capabilities.
 - An authenticated User performs actions; accepted actions may produce Activity Events.
@@ -66,7 +67,7 @@ The currently implemented authority model has User principals and direct Reposit
 2. GitHub behavior is benchmark evidence. It cannot override an accepted target contract.
 3. Every persistent entity must have a distinct identity, lifecycle, owner, invariants, and a demonstrated removal cost.
 4. Every Resource belongs to exactly one Repository at a time until an explicit transfer or cross-repository model is accepted.
-5. Organization ownership, User membership, Principal grants, Role bundles, and effective Capabilities remain separate relationships.
+5. Organization ownership, User membership, Principal grants, Role bundles, and effective Capabilities remain separate relationships even when an accepted governance relationship contributes authority.
 6. Authentication proves who the actor is; it does not prove access to a Repository or Resource.
 7. Server-side authorization derives from accepted authority sources and constraints. A UI-selected context may filter or explain access but cannot change authorization facts.
 8. Capability is the decision primitive. Role is an assignment and explanation mechanism.
@@ -108,6 +109,7 @@ These concepts are intentionally not accepted merely because mature products con
 - **Team**: introduce only when an Organization-scoped group principal needs its own membership lifecycle and grant behavior.
 - **Enterprise**: introduce only when cross-Organization governance, policy, audit, billing, or lifecycle requires an independent boundary. “Enterprise-grade” is a quality requirement, not proof of an Enterprise entity.
 - **Personal Repository namespace**: introduce only when ownership outside an Organization is a demonstrated use case.
+- **Organization base permissions for ordinary members**: introduce only when ordinary membership must contribute Repository authority independently of a direct or group Grant.
 - **Custom roles, explicit deny, nested groups, and policy precedence**: introduce only after capability union and simple policy constraints are insufficient.
 - **Fork, branch, commit, pull request, and merge**: do not inherit these Git concepts without a no-code collaboration problem that requires them.
 - **Generic plugin runtime**: do not create one before multiple integrations prove a stable extension contract.
