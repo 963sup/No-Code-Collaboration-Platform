@@ -1,49 +1,75 @@
-# Domain: Name
+# Domain Contract: Name
 
-## Problem owned
+- Status: Candidate
+- Contract owner:
+- Last reviewed: YYYY-MM-DD
 
-What coherent problem and outcome does this domain own?
+## Problem owned and success condition
+
+What coherent business problem and outcome does this contract own? What observation would show the boundary is useful?
+
+## Evidence ledger
+
+### Observations
+
+What has been directly observed in product behavior, implementation, or user need?
+
+### Constraints
+
+What must remain true?
+
+### Assumptions
+
+What is temporarily believed but not yet sufficiently proven?
+
+### Unknowns
+
+What unresolved information could change the model?
+
+### Value choices
+
+What trade-offs are intentionally preferred?
 
 ## Boundary and owner
 
-Define what is inside, what is outside, and who owns the contract.
+Define what is inside, what is outside, which lifecycle this contract owns, and who may change the contract.
 
 ## Vocabulary
 
-List canonical terms and any required external aliases.
+List canonical terms and any external aliases. Use one term per concept.
 
-## Entities and relationships
+## Entities, relationships, and derived concepts
 
-Describe persistent identities, relationships, cardinality, and lifecycle ownership.
+Describe persistent identities, relationships, cardinality, lifecycle ownership, and concepts that must remain derived rather than becoming entities.
 
 ## States and transitions
 
-Define valid states, commands, transition rules, and failure behavior.
+Define valid states, commands, transition rules, failure behavior, and concurrency requirements.
 
 ## Invariants
 
-State conditions that must always hold.
+State conditions that must always hold regardless of UI, provider, or storage implementation.
 
-## Actors, principals, and permissions
+## Actors, principals, contexts, and permissions
 
-Separate authenticated actors, effective principals, contextual views, and server-side authorization facts.
+Separate authenticated actors, authority-bearing principals, selected contexts, resource targets, and server-side authorization facts.
 
 ## Events and workflows
 
-List meaningful domain events, triggers, consumers, feedback loops, and delays.
+List meaningful domain events, triggers, consumers, feedback loops, delays, and idempotency requirements.
 
-## Dependencies
+## Dependencies and failure behavior
 
-For every dependency, state direction, contract, trust boundary, and behavior when unavailable.
+For every dependency, state direction, contract, trust boundary, timeout or unavailability behavior, and the owner of translation.
 
-## Evidence, assumptions, and unknowns
+## Alternatives and removal test
 
-Separate observed facts from inherited conventions and unresolved questions.
+Include the do-nothing model and simpler alternatives. State what breaks if this domain contract is removed.
+
+## Falsification conditions
+
+What evidence would show that the boundary, vocabulary, or causal model is wrong?
 
 ## Minimum discriminating tests
 
-Define tests that can falsify the domain boundary or its key invariants.
-
-## Implementation mapping
-
-Leave empty until implementation exists. Link to code, schema, and tests without turning this document into a status diary.
+Define the smallest tests, thresholds, and stopping rules that can reject the leading assumptions or invariants.
