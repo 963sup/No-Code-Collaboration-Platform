@@ -3,6 +3,7 @@ import type { RepositorySummary } from '@no-code-collaboration-platform/domain';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
 import type { Database } from '../generated/database.types';
+import { mapSupabaseRepositoryRow } from '../mappers/supabase-repository-mapper';
 
 export class SupabaseRepositoryReader implements RepositoryReader {
   public constructor(private readonly client: SupabaseClient<Database>) {}
@@ -15,13 +16,6 @@ export class SupabaseRepositoryReader implements RepositoryReader {
 
     if (error) throw new Error('Unable to list accessible repositories.', { cause: error });
 
-    return data.map((repository) => ({
-      id: repository.id,
-      organizationId: repository.organization_id,
-      slug: repository.slug,
-      name: repository.name,
-      description: repository.description,
-      visibility: repository.visibility
-    }));
+    return data.map(mapSupabaseRepositoryRow);
   }
 }

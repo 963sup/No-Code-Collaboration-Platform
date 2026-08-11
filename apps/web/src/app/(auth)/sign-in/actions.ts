@@ -1,9 +1,10 @@
 'use server';
 
+import { SignInWithPassword } from '@no-code-collaboration-platform/application';
 import { redirect } from 'next/navigation';
 import { z } from 'zod';
 
-import { createWebServerClient } from '@/lib/supabase/server';
+import { createRequestServices } from '@/composition/create-request-services';
 
 const signInSchema = z.object({
   email: z.email(),
@@ -28,14 +29,14 @@ export async function signIn(formData: FormData) {
     redirect(`/sign-in?error=invalid-input&next=${encodeURIComponent(next)}`);
   }
 
-  const supabase = await createWebServerClient();
-  const { error } = await supabase.auth.signInWithPassword({
+  const { identityProvider } = await createRequestServices();
+  const result = await new SignInWithPassword(identityProvider).execute({
     email: parsed.data.email,
     password: parsed.data.password
   });
 
-  if (error) {
-    redirect(`/sign-in?error=invalid-credentials&next=${encodeURIComponent(next)}`);
+  if (!result.ok) {
+    redirect(`/sign-in?error=${result.reason}&next=${encodeURIComponent(next)}`);
   }
 
   redirect(next);

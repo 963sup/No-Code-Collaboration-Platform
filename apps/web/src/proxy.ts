@@ -1,9 +1,9 @@
 import type { NextRequest } from 'next/server';
 
-import { updateSupabaseSession } from '@/lib/supabase/update-session';
+import { refreshSession } from '@/composition/refresh-session';
 
 export function proxy(request: NextRequest) {
-  return updateSupabaseSession(request);
+  return refreshSession(request);
 }
 
 export const config = {

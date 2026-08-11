@@ -1,22 +1,23 @@
+import { GetCurrentIdentity } from '@no-code-collaboration-platform/application';
 import { Button } from '@no-code-collaboration-platform/ui';
 import { Boxes, LayoutDashboard } from 'lucide-react';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import type { ReactNode } from 'react';
 
-import { createWebServerClient } from '@/lib/supabase/server';
+import { createRequestServices } from '@/composition/create-request-services';
 
 import { signOut } from './actions';
 
 export const dynamic = 'force-dynamic';
 
 export default async function AppLayout({ children }: Readonly<{ children: ReactNode }>) {
-  const supabase = await createWebServerClient();
-  const { data, error } = await supabase.auth.getClaims();
+  const { identityProvider } = await createRequestServices();
+  const identity = await new GetCurrentIdentity(identityProvider).execute();
 
-  if (error || !data?.claims) redirect('/sign-in?next=/app');
+  if (!identity) redirect('/sign-in?next=/app');
 
-  const email = typeof data.claims.email === 'string' ? data.claims.email : 'Authenticated actor';
+  const email = identity.email ?? 'Authenticated actor';
 
   return (
     <div className='min-h-dvh bg-muted/25'>

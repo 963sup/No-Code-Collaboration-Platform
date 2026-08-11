@@ -18,7 +18,8 @@ export const metadata: Metadata = {
 
 const errorMessages = {
   'invalid-input': 'Enter a valid email address and a password with at least eight characters.',
-  'invalid-credentials': 'The email or password could not be verified.'
+  'invalid-credentials': 'The email or password could not be verified.',
+  'provider-unavailable': 'The identity service is temporarily unavailable. Try again.'
 } as const;
 
 type SignInSearchParams = Promise<{

@@ -75,7 +75,7 @@ A package receives a Turbo task only when its `package.json` exposes a real exec
 3. identify direct dependencies and dependents;
 4. run the narrowest package tasks that can falsify the change.
 
-`packages/domain` is the business-truth boundary. Application packages orchestrate use cases; web packages deliver them. Add a package or dependency edge only when a real responsibility and executable contract justify it.
+`packages/domain` is the business-truth boundary. `packages/application` orchestrates use cases and defines provider-neutral ports. `packages/infrastructure/supabase` implements those ports for the current provider. `apps/web` delivers use cases and wires adapters only in its composition boundary. Add a package or dependency edge only when a real responsibility and executable contract justify it.
 
 ## Database contract
 
@@ -88,13 +88,13 @@ For a normal schema change:
 3. Review the generated SQL as a draft. Schema diffing does not reliably capture every PostgreSQL object or DML change.
 4. Run `pnpm supabase:reset` to prove migrations recreate the database from scratch.
 5. Run `pnpm supabase:lint`.
-6. Regenerate `packages/supabase/src/generated/database.types.ts` with `pnpm supabase:types:local` when the applied schema affects generated types.
+6. Regenerate `packages/infrastructure/supabase/src/generated/database.types.ts` with `pnpm supabase:types:local` when the applied schema affects generated types.
 7. Commit the declarative schema and reviewed migration together.
 
 Do not make canonical schema changes through Studio, the SQL editor, or ad hoc local SQL and then expect declarative diffing to recover them. Linked `db push`, `db pull`, `db reset --linked`, remote SQL, and production changes cross an external trust boundary and require explicit user intent.
 
 Tables exposed through the Data API require deliberate grants and RLS. Authentication is not authorization: `TO authenticated` must still be paired with predicates that enforce resource ownership or capabilities. Never use user-editable metadata as an authorization source, never expose service-role credentials to public clients, and treat `SECURITY DEFINER` as a privileged exception rather than a permission workaround.
 
-Once the local schema is applicable, generate `packages/supabase/src/generated/database.types.ts` instead of hand-authoring substitutes; generated database types are projections and must not become schema or domain truth.
+Once the local schema is applicable, generate `packages/infrastructure/supabase/src/generated/database.types.ts` instead of hand-authoring substitutes; generated database types are projections and must not become schema or domain truth.
 
 Do not add ESLint, Prettier, Biome, Husky, lint-staged, Nx, Prisma, Drizzle, dependency-cruiser, or Madge unless a demonstrated gap cannot be solved by the existing toolchain.

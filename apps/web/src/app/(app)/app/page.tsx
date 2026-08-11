@@ -1,5 +1,4 @@
 import { ListAccessibleRepositories } from '@no-code-collaboration-platform/application';
-import { SupabaseRepositoryReader } from '@no-code-collaboration-platform/supabase';
 import {
   Card,
   CardContent,
@@ -9,17 +8,15 @@ import {
 } from '@no-code-collaboration-platform/ui';
 import type { Metadata } from 'next';
 
-import { createWebServerClient } from '@/lib/supabase/server';
+import { createRequestServices } from '@/composition/create-request-services';
 
 export const metadata: Metadata = {
   title: 'Workspace'
 };
 
 export default async function AppHomePage() {
-  const supabase = await createWebServerClient();
-  const repositories = await new ListAccessibleRepositories(
-    new SupabaseRepositoryReader(supabase)
-  ).execute();
+  const { repositoryReader } = await createRequestServices();
+  const repositories = await new ListAccessibleRepositories(repositoryReader).execute();
 
   return (
     <div className='mx-auto max-w-6xl space-y-8'>

@@ -14,8 +14,11 @@ This repository defines a no-code collaboration platform by reverse-engineering 
 
 - Turbo is the application architecture graph. Workspace package manifests define architectural nodes and dependency edges; `turbo.json` defines task relationships over that graph.
 - `packages/domain` owns business truth: canonical concepts, invariants, state transitions, and domain decisions. It must not depend on Supabase, application orchestration, or web delivery.
+- `packages/application` owns use-case orchestration and provider-neutral Ports. It may depend on Domain but never on Next.js, Supabase SDKs, clients, DTOs, or generated database types.
+- `packages/infrastructure/supabase` is the current Supabase adapter boundary. It implements Application Ports and owns provider-specific clients, queries, mappers, DTOs, and generated database projections.
+- `apps/web` is the Next.js delivery and composition boundary. Supabase adapters may be wired only in `apps/web/src/composition`; routes, layouts, actions, handlers, and components call Application use cases instead of provider clients.
 - `supabase/schemas` owns current database truth. `supabase/migrations` is append-only deployment history derived from reviewed schema changes, not an alternate current model.
-- `packages/supabase/src/generated/database.types.ts` is a generated projection of the applied database schema. Never hand-author it as business truth or database truth.
+- `packages/infrastructure/supabase/src/generated/database.types.ts` is a generated projection of the applied database schema. Never hand-author it as business truth or database truth.
 - RLS is database enforcement. Grants determine API reachability; RLS determines row access. Neither replaces domain authorization semantics.
 - Application code owns use-case orchestration. Web code is a delivery mechanism and must not become the owner of business rules or persistence truth.
 
