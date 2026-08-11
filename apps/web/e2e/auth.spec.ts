@@ -71,10 +71,7 @@ test('registration proves email ownership before creating an authenticated sessi
   await page.getByRole('button', { name: 'Create account' }).click();
 
   await expect(page).toHaveURL(
-    new RegExp(
-      `/verify-email\\?email=${encodeURIComponent(email)}&next=%2Fapp&notice=sent$`,
-      'u'
-    )
+    new RegExp(`/verify-email\\?email=${encodeURIComponent(email)}&next=%2Fapp&notice=sent$`, 'u')
   );
 
   const code = await readVerificationCode(request, email);

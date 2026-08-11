@@ -10,10 +10,7 @@ import {
 import type { Metadata } from 'next';
 import Link from 'next/link';
 
-import {
-  buildPath,
-  resolvePostAuthDestination
-} from '@/auth/auth-navigation';
+import { buildPath, resolvePostAuthDestination } from '@/auth/auth-navigation';
 
 export const metadata: Metadata = {
   title: 'Authentication error'
@@ -50,10 +47,7 @@ export default async function AuthErrorPage({
         <CardDescription>{message}</CardDescription>
       </CardHeader>
       <CardContent>
-        <Link
-          className={cn(buttonVariants(), 'w-full')}
-          href={buildPath('/sign-in', { next })}
-        >
+        <Link className={cn(buttonVariants(), 'w-full')} href={buildPath('/sign-in', { next })}>
           Return to sign in
         </Link>
       </CardContent>

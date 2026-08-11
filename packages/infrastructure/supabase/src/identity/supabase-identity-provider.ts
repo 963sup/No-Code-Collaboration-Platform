@@ -14,10 +14,7 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '../generated/database.types';
 import { mapSupabaseIdentity } from '../mappers/supabase-identity-mapper';
 
-const RATE_LIMIT_CODES = new Set([
-  'over_email_send_rate_limit',
-  'over_request_rate_limit'
-]);
+const RATE_LIMIT_CODES = new Set(['over_email_send_rate_limit', 'over_request_rate_limit']);
 
 const PROVIDER_UNAVAILABLE_CODES = new Set(['request_timeout', 'unexpected_failure']);
 

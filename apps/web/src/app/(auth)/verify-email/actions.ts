@@ -1,16 +1,10 @@
 'use server';
 
-import {
-  ResendEmailVerification,
-  VerifyEmail
-} from '@no-code-collaboration-platform/application';
+import { ResendEmailVerification, VerifyEmail } from '@no-code-collaboration-platform/application';
 import { redirect } from 'next/navigation';
 import { z } from 'zod';
 
-import {
-  buildPath,
-  resolvePostAuthDestination
-} from '@/auth/auth-navigation';
+import { buildPath, resolvePostAuthDestination } from '@/auth/auth-navigation';
 import { createRequestServices } from '@/composition/create-request-services';
 
 const emailSchema = z.email().max(320);

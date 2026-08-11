@@ -2,10 +2,7 @@ import { GetCurrentIdentity } from '@no-code-collaboration-platform/application'
 import { createSupabaseServerAdapters } from '@no-code-collaboration-platform/supabase';
 import { type NextRequest, NextResponse } from 'next/server';
 
-import {
-  classifyRouteAccess,
-  resolvePostAuthDestination
-} from '@/auth/auth-navigation';
+import { classifyRouteAccess, resolvePostAuthDestination } from '@/auth/auth-navigation';
 
 import { getSupabasePublicConfig } from './supabase-config';
 
