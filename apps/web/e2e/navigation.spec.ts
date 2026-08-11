@@ -40,8 +40,7 @@ test('nested Repository workspace preserves the requested URL through authentica
 test(
   'hard navigation preserves a nested Parallel Route destination through authentication',
   async ({ page }) => {
-    const resourcesPath =
-      '/app/repositories/00000000-0000-4000-8000-000000000001/resources';
+    const resourcesPath = '/app/repositories/00000000-0000-4000-8000-000000000001/resources';
 
     await page.goto(resourcesPath);
 

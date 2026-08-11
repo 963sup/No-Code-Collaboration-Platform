@@ -1,8 +1,4 @@
-import {
-  hasRepositoryCapability,
-  repositoryRoles,
-  type RepositoryRole
-} from './capability';
+import { hasRepositoryCapability, repositoryRoles, type RepositoryRole } from './capability';
 
 export const organizationRoles = ['member', 'admin', 'owner'] as const;
 
@@ -16,9 +12,7 @@ const organizationDelegationByRole: Readonly<
   owner: organizationRoles
 };
 
-const repositoryDelegationByRole: Readonly<
-  Record<RepositoryRole, readonly RepositoryRole[]>
-> = {
+const repositoryDelegationByRole: Readonly<Record<RepositoryRole, readonly RepositoryRole[]>> = {
   viewer: [],
   contributor: [],
   manager: ['viewer', 'contributor'],
@@ -57,11 +51,7 @@ export function canMutateRepositoryGrant(
 ): boolean {
   return (
     hasRepositoryCapability(actorRole, 'member.manage') &&
-    canMutateRoleWithinScope(
-      currentRole,
-      proposedRole,
-      repositoryDelegationByRole[actorRole]
-    )
+    canMutateRoleWithinScope(currentRole, proposedRole, repositoryDelegationByRole[actorRole])
   );
 }
 

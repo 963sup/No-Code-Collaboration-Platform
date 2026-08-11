@@ -107,8 +107,7 @@ for (const [scope, rules] of Object.entries(packageRules)) {
   }
 }
 
-const repositoryWorkspaceRoute =
-  'apps/web/src/app/(app)/app/repositories/[repositoryId]';
+const repositoryWorkspaceRoute = 'apps/web/src/app/(app)/app/repositories/[repositoryId]';
 const persistentParallelRouteDefaults = [
   `${repositoryWorkspaceRoute}/default.tsx`,
   `${repositoryWorkspaceRoute}/@navigation/default.tsx`,
