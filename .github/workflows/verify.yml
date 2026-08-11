@@ -17,7 +17,7 @@ jobs:
   repository:
     name: Repository contracts
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -55,11 +55,50 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Start local Supabase
-        run: pnpm supabase:start
+      - name: Start minimal local Supabase stack
+        run: pnpm supabase:start:ci
 
       - name: Verify database
         run: pnpm supabase:verify
+
+      - name: Stop local Supabase
+        if: always()
+        run: pnpm supabase:stop
+
+  browser:
+    name: Browser contracts
+    needs: [repository, database]
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .node-version
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Start minimal local Supabase stack
+        run: pnpm supabase:start:ci
+
+      - name: Export local Supabase environment
+        run: pnpm supabase:env:github
+
+      - name: Build web application
+        run: pnpm build
+
+      - name: Install Chromium
+        run: pnpm browser:install:ci
+
+      - name: Verify browser behavior
+        run: pnpm test:e2e
 
       - name: Stop local Supabase
         if: always()

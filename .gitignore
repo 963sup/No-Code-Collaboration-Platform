@@ -1,19 +1,19 @@
 # dependencies
-/node_modules/
+**/node_modules/
 /.pnpm-store/
 
 # testing
-/coverage/
+**/coverage/
 /playwright-report/
 /test-results/
 /blob-report/
 
 # framework/build output
-/.turbo/
-/.next/
-/out/
-/build/
-/dist/
+**/.turbo/
+**/.next/
+**/out/
+**/build/
+**/dist/
 
 # local environment
 .env
@@ -22,6 +22,7 @@
 
 # Supabase local state
 /supabase/.temp/
+/supabase/.branches/
 
 # deployment
 .vercel/

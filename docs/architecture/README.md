@@ -13,8 +13,10 @@ This directory holds the target architecture for a platform that reverse-enginee
 5. Generated diagrams and implementation snapshots cannot override an accepted semantic contract.
 6. No bounded context, service, datastore, or integration exists until its necessity and ownership are demonstrated.
 7. Turbo projects the application architecture graph from pnpm workspace packages and their declared dependencies.
-8. `packages/domain` owns business truth; application code orchestrates use cases; web code is delivery only.
-9. `supabase/schemas` owns database truth; migrations are deployment history; generated database types are projections; grants and RLS enforce database access.
+8. `packages/domain` owns business truth; `packages/application` orchestrates use cases; `apps/web` is delivery and composition only.
+9. `packages/supabase` is an adapter; `supabase/schemas` owns database truth; migrations are deployment history; generated types are projections; grants and RLS enforce database access.
+10. `packages/ui` owns source-controlled presentation primitives. shadcn/ui accelerates implementation without defining product semantics.
+11. Next.js route groups express layout and access context only; they are neither URL segments nor business boundaries.
 
 ## Decision process
 
@@ -25,5 +27,6 @@ An accepted ADR must state the decision, evidence, constraints, assumptions, alt
 ## Accepted decisions
 
 - [`ADR-001-architecture-truth-boundaries.md`](./ADR-001-architecture-truth-boundaries.md) defines the architecture graph and source-of-truth boundaries.
+- [`ADR-002-executable-application-baseline.md`](./ADR-002-executable-application-baseline.md) defines the initial apps/packages graph, Next.js route groups, shadcn/ui role, and verification chain.
 
-No final bounded-context map is declared yet. The `packages/domain` boundary is accepted, but its internal modules must still be justified by coherent business problems rather than guessed in advance.
+No final bounded-context map is declared yet. Domain modules must continue to be justified by coherent business problems rather than symmetry.
