@@ -17,14 +17,14 @@ revoke all on table public.activity_events from anon, authenticated;
 grant select on table public.profiles to authenticated;
 grant update (display_name, avatar_url, updated_at) on table public.profiles to authenticated;
 
-grant select, insert, delete on table public.organizations to authenticated;
+grant select, insert on table public.organizations to authenticated;
 grant update (slug, name, updated_at) on table public.organizations to authenticated;
 
 grant select, insert, delete on table public.organization_memberships to authenticated;
 grant update (role) on table public.organization_memberships to authenticated;
 
 grant select on table public.repositories to anon, authenticated;
-grant insert, delete on table public.repositories to authenticated;
+grant insert on table public.repositories to authenticated;
 grant update (slug, name, description, visibility, updated_at) on table public.repositories to authenticated;
 
 grant select, insert, delete on table public.repository_user_grants to authenticated;
@@ -35,6 +35,9 @@ grant insert, delete on table public.resources to authenticated;
 grant update (title, content, updated_at) on table public.resources to authenticated;
 
 grant select on table public.activity_events to authenticated;
+
+-- Organization and Repository hard deletion deliberately have no end-user DELETE grant or
+-- RLS policy until an accepted lifecycle defines retention, restore, and historical continuity.
 
 create policy profiles_select_self
 on public.profiles
@@ -67,12 +70,6 @@ for update
 to authenticated
 using ((select private.is_organization_admin(id)))
 with check ((select private.is_organization_admin(id)));
-
-create policy organizations_delete_owner
-on public.organizations
-for delete
-to authenticated
-using ((select private.is_organization_owner(id)));
 
 create policy organization_memberships_select_member
 on public.organization_memberships
@@ -128,12 +125,6 @@ for update
 to authenticated
 using ((select private.has_repository_capability(id, 'repository.manage')))
 with check ((select private.has_repository_capability(id, 'repository.manage')));
-
-create policy repositories_delete_manager
-on public.repositories
-for delete
-to authenticated
-using ((select private.has_repository_capability(id, 'repository.manage')));
 
 create policy repository_user_grants_select_viewer
 on public.repository_user_grants
