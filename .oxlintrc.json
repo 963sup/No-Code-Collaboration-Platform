@@ -33,6 +33,12 @@
       "rules": {
         "no-console": "off"
       }
+    },
+    {
+      "files": ["apps/web/src/app/layout.tsx"],
+      "rules": {
+        "import/no-unassigned-import": "off"
+      }
     }
   ]
 }
