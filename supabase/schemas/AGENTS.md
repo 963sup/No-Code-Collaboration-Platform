@@ -13,6 +13,7 @@ This directory owns current PostgreSQL schema truth and the database enforcement
 - Actor attribution fields such as `granted_by` MUST be derived from or equal the authenticated actor and may not be client-forged.
 - Authorization helper functions belong in a non-exposed schema. `SECURITY DEFINER` is permitted only for an explicit RLS boundary, with `search_path = ''`, fully qualified relations, caller-aware logic, and least-privilege `EXECUTE` grants.
 - End-user authorization MUST never depend on service-role bypass, user-editable metadata, presentation context, or hidden UI controls.
+- Owner-only Organization DELETE enforcement is least-privilege containment, not acceptance of a destructive lifecycle. `GAP-LIFECYCLE-001` remains authoritative until its closure evidence exists.
 - Declarative schema changes MUST be accompanied by an append-only migration and attack-path regression tests before merge.
 
 ## Projection rule
