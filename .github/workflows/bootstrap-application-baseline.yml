@@ -40,6 +40,7 @@ jobs:
           pnpm --filter @no-code-collaboration-platform/web add --save-dev --save-exact @tailwindcss/postcss@latest tailwindcss@latest @types/react@latest @types/react-dom@latest
           pnpm --filter @no-code-collaboration-platform/supabase add --save-exact @supabase/supabase-js@latest @supabase/ssr@latest
           pnpm --filter @no-code-collaboration-platform/ui add --save-exact class-variance-authority@latest clsx@latest tailwind-merge@latest
+          pnpm --filter @no-code-collaboration-platform/ui add --save-dev --save-exact @types/react@latest
           pnpm add --workspace-root --save-dev --save-exact vitest@latest shadcn@latest
 
       - name: Update generated-type references
