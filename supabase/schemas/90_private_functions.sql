@@ -10,6 +10,18 @@ security invoker
 set search_path = ''
 as $$
 begin
+  new.updated_at := timezone('utc', now());
+  return new;
+end;
+$$;
+
+create function private.touch_resource_updated_at()
+returns trigger
+language plpgsql
+security invoker
+set search_path = ''
+as $$
+begin
   new.updated_at := timezone('utc', statement_timestamp());
   return new;
 end;
@@ -396,7 +408,7 @@ create trigger resources_touch_updated_at
 before update of title, content on public.resources
 for each row
 when (old.title is distinct from new.title or old.content is distinct from new.content)
-execute function private.touch_updated_at();
+execute function private.touch_resource_updated_at();
 
 create trigger repository_created_activity
 after insert on public.repositories

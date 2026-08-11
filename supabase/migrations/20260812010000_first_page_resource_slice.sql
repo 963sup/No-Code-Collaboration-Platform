@@ -1,4 +1,4 @@
-create or replace function private.touch_updated_at()
+create function private.touch_resource_updated_at()
 returns trigger
 language plpgsql
 security invoker
@@ -76,7 +76,7 @@ create trigger resources_touch_updated_at
 before update of title, content on public.resources
 for each row
 when (old.title is distinct from new.title or old.content is distinct from new.content)
-execute function private.touch_updated_at();
+execute function private.touch_resource_updated_at();
 
 create function private.record_resource_updated()
 returns trigger
@@ -124,4 +124,5 @@ for each row
 when (old.title is distinct from new.title or old.content is distinct from new.content)
 execute function private.record_resource_updated();
 
+revoke all on function private.touch_resource_updated_at() from public, anon, authenticated;
 revoke all on function private.record_resource_updated() from public, anon, authenticated;
