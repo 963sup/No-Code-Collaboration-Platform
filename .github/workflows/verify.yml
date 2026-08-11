@@ -55,8 +55,8 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Start local Supabase
-        run: pnpm supabase:start
+      - name: Start minimal local Supabase stack
+        run: pnpm supabase:start:ci
 
       - name: Verify database
         run: pnpm supabase:verify
@@ -85,8 +85,8 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Start local Supabase
-        run: pnpm supabase:start
+      - name: Start minimal local Supabase stack
+        run: pnpm supabase:start:ci
 
       - name: Export local Supabase environment
         run: pnpm supabase:env:github

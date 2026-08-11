@@ -37,11 +37,11 @@ jobs:
       - name: Resolve current application dependencies
         run: |
           pnpm --filter @no-code-collaboration-platform/web add --save-exact next@latest react@latest react-dom@latest lucide-react@latest zod@latest
-          pnpm --filter @no-code-collaboration-platform/web add --save-dev --save-exact @tailwindcss/postcss@latest tailwindcss@latest @types/react@latest @types/react-dom@latest
+          pnpm --filter @no-code-collaboration-platform/web add --save-dev --save-exact @tailwindcss/postcss@latest @types/react@latest @types/react-dom@latest shadcn@latest
           pnpm --filter @no-code-collaboration-platform/supabase add --save-exact @supabase/supabase-js@latest @supabase/ssr@latest
           pnpm --filter @no-code-collaboration-platform/ui add --save-exact class-variance-authority@latest clsx@latest tailwind-merge@latest
-          pnpm --filter @no-code-collaboration-platform/ui add --save-dev --save-exact @types/react@latest
-          pnpm add --workspace-root --save-dev --save-exact vitest@latest shadcn@latest
+          pnpm --filter @no-code-collaboration-platform/ui add --save-dev --save-exact @types/react@latest tailwindcss@latest
+          pnpm add --workspace-root --save-dev --save-exact vitest@latest
 
       - name: Update generated-type references
         run: |
@@ -61,8 +61,8 @@ jobs:
               path.write_text(text)
           PY
 
-      - name: Start local Supabase
-        run: pnpm supabase:start
+      - name: Start minimal local Supabase stack
+        run: pnpm supabase:start:ci
 
       - name: Generate initial migration
         run: |

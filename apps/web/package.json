@@ -8,11 +8,11 @@
     "build": "next build",
     "start": "next start",
     "lint": "oxlint src e2e next.config.ts postcss.config.mjs",
-    "typecheck": "tsc --noEmit -p tsconfig.json"
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "ui:add": "shadcn add"
   },
   "dependencies": {
     "@no-code-collaboration-platform/application": "workspace:*",
-    "@no-code-collaboration-platform/domain": "workspace:*",
     "@no-code-collaboration-platform/supabase": "workspace:*",
     "@no-code-collaboration-platform/ui": "workspace:*"
   }
