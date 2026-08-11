@@ -93,7 +93,12 @@ requireMatch(
   'provider/provisioning truth boundary is missing'
 );
 
-for (const gapId of ['GAP-AUTH-001', 'GAP-IDENTITY-001', 'GAP-LIFECYCLE-001']) {
+for (const gapId of [
+  'GAP-AUTH-001',
+  'GAP-IDENTITY-001',
+  'GAP-LIFECYCLE-001',
+  'GAP-LIFECYCLE-002'
+]) {
   requireMatch(
     'docs/IMPLEMENTATION_GAPS.md',
     gapRegister,
@@ -131,7 +136,13 @@ requireMatch(
   'docs/IMPLEMENTATION_GAPS.md',
   gapRegister,
   /### GAP-LIFECYCLE-001[\s\S]*?- Status: Open/i,
-  'GAP-LIFECYCLE-001 must remain open until lifecycle evidence exists'
+  'GAP-LIFECYCLE-001 must remain open until exact-head lifecycle evidence exists'
+);
+requireMatch(
+  'docs/IMPLEMENTATION_GAPS.md',
+  gapRegister,
+  /### GAP-LIFECYCLE-002[\s\S]*?- Status: Open/i,
+  'GAP-LIFECYCLE-002 must remain open until Resource lifecycle evidence exists'
 );
 
 const lifecycleAdrPath = 'docs/architecture/ADR-005-local-first-supabase-lifecycle.md';
@@ -217,8 +228,8 @@ requireMatch(
 const result = {
   ok: failures.length === 0,
   requiredDocuments: requiredDocuments.length,
-  registeredGaps: 3,
-  openGaps: 2,
+  registeredGaps: 4,
+  openGaps: 3,
   closedGaps: 1,
   failures
 };
