@@ -1,10 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import {
-  hasRepositoryCapability,
-  highestRepositoryRole,
-  isRepositorySlug
-} from '../src/index';
+import { hasRepositoryCapability, highestRepositoryRole, isRepositorySlug } from '../src/index';
 
 describe('repository capability policy', () => {
   it('keeps viewer access read-only', () => {

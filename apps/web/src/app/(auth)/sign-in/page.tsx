@@ -1,4 +1,13 @@
-import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Input, Label } from '@no-code-collaboration-platform/ui';
+import {
+  Button,
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+  Input,
+  Label
+} from '@no-code-collaboration-platform/ui';
 import type { Metadata } from 'next';
 
 import { signIn } from './actions';
@@ -26,7 +35,9 @@ export default async function SignInPage({ searchParams }: { searchParams: SignI
     <Card>
       <CardHeader>
         <CardTitle>Sign in</CardTitle>
-        <CardDescription>Authenticate as the actor before entering a Repository context.</CardDescription>
+        <CardDescription>
+          Authenticate as the actor before entering a Repository context.
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <form action={signIn} className='space-y-5'>
@@ -37,7 +48,14 @@ export default async function SignInPage({ searchParams }: { searchParams: SignI
           </div>
           <div className='space-y-2'>
             <Label htmlFor='password'>Password</Label>
-            <Input autoComplete='current-password' id='password' minLength={8} name='password' required type='password' />
+            <Input
+              autoComplete='current-password'
+              id='password'
+              minLength={8}
+              name='password'
+              required
+              type='password'
+            />
           </div>
           {message ? (
             <p aria-live='polite' className='text-sm text-destructive' role='alert'>

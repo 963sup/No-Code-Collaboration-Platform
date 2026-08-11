@@ -14,9 +14,7 @@ export const repositoryCapabilities = [
 
 export type RepositoryCapability = (typeof repositoryCapabilities)[number];
 
-const capabilitiesByRole: Readonly<
-  Record<RepositoryRole, readonly RepositoryCapability[]>
-> = {
+const capabilitiesByRole: Readonly<Record<RepositoryRole, readonly RepositoryCapability[]>> = {
   viewer: ['repository.view', 'resource.view'],
   contributor: ['repository.view', 'resource.view', 'resource.create', 'resource.update'],
   manager: [
@@ -44,9 +42,7 @@ export function hasRepositoryCapability(
   return capabilitiesByRole[role].includes(capability);
 }
 
-export function highestRepositoryRole(
-  roles: readonly RepositoryRole[]
-): RepositoryRole | null {
+export function highestRepositoryRole(roles: readonly RepositoryRole[]): RepositoryRole | null {
   return roles.reduce<RepositoryRole | null>((highest, candidate) => {
     if (highest === null || roleRank[candidate] > roleRank[highest]) return candidate;
     return highest;

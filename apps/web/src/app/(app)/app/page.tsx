@@ -1,6 +1,12 @@
 import { ListAccessibleRepositories } from '@no-code-collaboration-platform/application';
 import { SupabaseRepositoryReader } from '@no-code-collaboration-platform/supabase';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@no-code-collaboration-platform/ui';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle
+} from '@no-code-collaboration-platform/ui';
 import type { Metadata } from 'next';
 
 import { createWebServerClient } from '@/lib/supabase/server';
@@ -18,7 +24,9 @@ export default async function AppHomePage() {
   return (
     <div className='mx-auto max-w-6xl space-y-8'>
       <div className='space-y-2'>
-        <p className='text-sm font-medium text-muted-foreground'>Authenticated application context</p>
+        <p className='text-sm font-medium text-muted-foreground'>
+          Authenticated application context
+        </p>
         <h1 className='text-3xl font-semibold tracking-tight'>Repositories</h1>
         <p className='max-w-2xl text-muted-foreground'>
           RLS exposes only the no-code collaboration containers available to the current actor.
@@ -30,7 +38,8 @@ export default async function AppHomePage() {
           <CardHeader>
             <CardTitle>No accessible repositories</CardTitle>
             <CardDescription>
-              The first product slice will create an Organization, Repository, Page resource, and explicit grant.
+              The first product slice will create an Organization, Repository, Page resource, and
+              explicit grant.
             </CardDescription>
           </CardHeader>
         </Card>

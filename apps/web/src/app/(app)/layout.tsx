@@ -38,7 +38,10 @@ export default async function AppLayout({ children }: Readonly<{ children: React
       <div className='grid min-h-[calc(100dvh-4rem)] md:grid-cols-[15rem_1fr]'>
         <aside className='border-r bg-background p-4'>
           <nav aria-label='Application navigation' className='space-y-1'>
-            <Link className='flex items-center gap-3 rounded-md bg-accent px-3 py-2 text-sm font-medium' href='/app'>
+            <Link
+              className='flex items-center gap-3 rounded-md bg-accent px-3 py-2 text-sm font-medium'
+              href='/app'
+            >
               <LayoutDashboard aria-hidden='true' className='size-4' />
               Overview
             </Link>
