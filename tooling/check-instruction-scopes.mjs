@@ -46,6 +46,14 @@ const invariantContracts = {
       'operational truth boundary is missing'
     ],
     [
+      /selected adapter is not a provisioned environment/i,
+      'adapter/provisioning distinction is missing'
+    ],
+    [
+      /migration file is not an applied deployment/i,
+      'migration/applied-deployment distinction is missing'
+    ],
+    [
       /Direct production mutation requires explicit user intent/i,
       'production mutation approval boundary is missing'
     ]
@@ -65,8 +73,23 @@ const invariantContracts = {
       'transition-matrix test invariant is missing'
     ]
   ],
+  'supabase/AGENTS.md': [
+    [/no Supabase Cloud project is provisioned/i, 'local-only provisioning status is missing'],
+    [
+      /file presence.*MUST NOT.*remote deployment/is,
+      'migration/deployment evidence boundary is missing'
+    ],
+    [
+      /Default package scripts and ordinary CI MUST NOT.*remote/is,
+      'ordinary verification remote-mutation boundary is missing'
+    ]
+  ],
   'supabase/migrations/AGENTS.md': [
-    [/append-only deployment history/i, 'append-only migration invariant is missing'],
+    [
+      /append-only accepted replayable database transition history/i,
+      'accepted replayable migration invariant is missing'
+    ],
+    [/migration ledger.*provider evidence/is, 'environment applied-state evidence is missing'],
     [/remote Supabase project/i, 'remote mutation boundary is missing']
   ],
   'supabase/schemas/AGENTS.md': [
@@ -79,7 +102,11 @@ const invariantContracts = {
       'Repository delegation ceiling is missing'
     ],
     [/retain at least one owner/i, 'database owner continuity invariant is missing'],
-    [/GAP-LIFECYCLE-001/i, 'destructive lifecycle gap boundary is missing']
+    [/GAP-LIFECYCLE-001/i, 'destructive lifecycle gap boundary is missing'],
+    [
+      /MUST NOT be used as evidence.*remote deployment/is,
+      'schema/deployment evidence boundary is missing'
+    ]
   ],
   'supabase/tests/AGENTS.md': [
     [/original attack path/i, 'attack-path regression invariant is missing'],

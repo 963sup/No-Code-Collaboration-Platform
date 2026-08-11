@@ -19,10 +19,12 @@ function requireMatch(path, content, pattern, message) {
 }
 
 const requiredDocuments = [
+  'README.md',
   'docs/AGENTS.md',
   'docs/PRODUCT.md',
   'docs/IMPLEMENTATION_GAPS.md',
   'docs/README.md',
+  'docs/architecture/ADR-005-local-first-supabase-lifecycle.md',
   'docs/domains/DOMAIN_TEMPLATE.md',
   'docs/domains/access-authority.md',
   'docs/domains/repository-collaboration.md',
@@ -31,7 +33,19 @@ const requiredDocuments = [
 ];
 
 const documents = Object.fromEntries(requiredDocuments.map((path) => [path, read(path)]));
-const gapRegister = documents['docs/IMPLEMENTATION_GAPS.md'];
+
+requireMatch(
+  'README.md',
+  documents['README.md'],
+  /No Supabase Cloud project is provisioned/i,
+  'current database provisioning status is missing'
+);
+requireMatch(
+  'README.md',
+  documents['README.md'],
+  /migration ledger.*proves.*applied/is,
+  'migration application evidence boundary is missing'
+);
 
 requireMatch(
   'docs/PRODUCT.md',
@@ -70,11 +84,17 @@ requireMatch(
   /open authorization or data-integrity gap/is,
   'production-blocking gap rule is missing'
 );
+requireMatch(
+  'docs/README.md',
+  documents['docs/README.md'],
+  /selected provider is not proof of a provisioned environment/i,
+  'provider/provisioning truth boundary is missing'
+);
 
 for (const gapId of ['GAP-AUTH-001', 'GAP-LIFECYCLE-001']) {
   requireMatch(
     'docs/IMPLEMENTATION_GAPS.md',
-    gapRegister,
+    documents['docs/IMPLEMENTATION_GAPS.md'],
     new RegExp(`^### ${gapId}\\b`, 'm'),
     `${gapId} is missing`
   );
@@ -82,29 +102,23 @@ for (const gapId of ['GAP-AUTH-001', 'GAP-LIFECYCLE-001']) {
 for (const section of ['Direct evidence', 'Temporary containment', 'Closure evidence']) {
   requireMatch(
     'docs/IMPLEMENTATION_GAPS.md',
-    gapRegister,
+    documents['docs/IMPLEMENTATION_GAPS.md'],
     new RegExp(`^#### ${section}$`, 'm'),
     `${section} section is missing`
   );
 }
-requireMatch(
-  'docs/IMPLEMENTATION_GAPS.md',
-  gapRegister,
-  /### GAP-AUTH-001[\s\S]*?- Status: Closed/i,
-  'GAP-AUTH-001 must retain its verified closed status'
-);
-requireMatch(
-  'docs/IMPLEMENTATION_GAPS.md',
-  gapRegister,
-  /### GAP-AUTH-001[\s\S]*?02f33f4ba75cc250378a6fba38f4b926eb62c355[\s\S]*?31505215295/i,
-  'GAP-AUTH-001 exact commit and CI closure evidence is missing'
-);
-requireMatch(
-  'docs/IMPLEMENTATION_GAPS.md',
-  gapRegister,
-  /### GAP-LIFECYCLE-001[\s\S]*?- Status: Open/i,
-  'GAP-LIFECYCLE-001 must remain open until lifecycle evidence exists'
-);
+
+const lifecycleAdrPath = 'docs/architecture/ADR-005-local-first-supabase-lifecycle.md';
+const lifecycleAdr = documents[lifecycleAdrPath];
+for (const [pattern, message] of [
+  [/^- Status: Accepted$/m, 'ADR is not accepted'],
+  [/Migration artifact\s*≠\s*Applied deployment/u, 'migration/deployment distinction is missing'],
+  [/Selected provider\s*≠\s*Provisioned environment/u, 'provider/provisioning distinction is missing'],
+  [/Local verification\s*≠\s*Production validation/u, 'verification/production distinction is missing'],
+  [/^## Initial remote baseline gate$/m, 'initial remote baseline gate is missing']
+]) {
+  requireMatch(lifecycleAdrPath, lifecycleAdr, pattern, message);
+}
 
 requireMatch(
   'docs/domains/DOMAIN_TEMPLATE.md',
@@ -149,13 +163,17 @@ requireMatch(
   /^## Current production gates$/m,
   'production gates are missing'
 );
+requireMatch(
+  'docs/operations/RUNBOOK.md',
+  documents['docs/operations/RUNBOOK.md'],
+  /No Supabase Cloud project is provisioned/i,
+  'Cloud provisioning status is missing'
+);
 
 const result = {
   ok: failures.length === 0,
   requiredDocuments: requiredDocuments.length,
   registeredGaps: 2,
-  openGaps: 1,
-  closedGaps: 1,
   failures
 };
 

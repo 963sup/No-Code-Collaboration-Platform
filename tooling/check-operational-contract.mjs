@@ -1,4 +1,4 @@
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { resolve } from 'node:path';
 
 const root = process.cwd();
@@ -15,6 +15,10 @@ function read(path) {
 
 function requireMatch(path, content, pattern, message) {
   if (!pattern.test(content)) failures.push(`${path}: ${message}`);
+}
+
+function forbidMatch(path, content, pattern, message) {
+  if (pattern.test(content)) failures.push(`${path}: ${message}`);
 }
 
 const environmentPath = '.codex/environments/environment.toml';
@@ -41,6 +45,12 @@ requireMatch(
   packageJson,
   /"lint"\s*:\s*"[^"]*oxlint[^"]*\.codex\/hooks[^"]*"/u,
   'Codex hook scripts are outside the root lint boundary'
+);
+requireMatch(
+  packagePath,
+  packageJson,
+  /"supabase:reset"\s*:\s*"supabase db reset --local"/u,
+  'Supabase reset must explicitly target the local database'
 );
 
 const agentsPath = 'AGENTS.md';
@@ -88,11 +98,69 @@ for (const jobName of ['repository', 'database']) {
   }
 }
 
+const workflowDirectory = resolve(root, '.github/workflows');
+const workflowPaths = existsSync(workflowDirectory)
+  ? readdirSync(workflowDirectory)
+      .filter((name) => /\.ya?ml$/u.test(name))
+      .map((name) => `.github/workflows/${name}`)
+  : [];
+
+const localOnlySurfaces = new Map([
+  [packagePath, packageJson],
+  ...workflowPaths.map((path) => [path, read(path)])
+]);
+
+const remoteOperationPatterns = [
+  [/\bsupabase\s+link\b/u, 'ordinary scripts may not link a remote Supabase project'],
+  [/\bsupabase\s+db\s+push\b/u, 'ordinary scripts may not push to a remote database'],
+  [/\bsupabase\s+db\s+pull\b/u, 'ordinary scripts may not pull from a remote database'],
+  [
+    /\bsupabase\s+db\s+reset\b[^\n"']*--linked\b/u,
+    'ordinary scripts may not reset a linked database'
+  ],
+  [/\bsupabase\s+functions\s+deploy\b/u, 'ordinary scripts may not deploy Edge Functions'],
+  [/\bsupabase\s+secrets\s+set\b/u, 'ordinary scripts may not mutate remote secrets'],
+  [/--project-ref\b/u, 'ordinary scripts may not select a remote Supabase project']
+];
+
+const remoteCredentialPatterns = [
+  [/\bSUPABASE_ACCESS_TOKEN\b/u, 'remote Supabase access token identifier is forbidden'],
+  [/\bSUPABASE_PROJECT_(?:ID|REF)\b/u, 'remote Supabase project identifier is forbidden'],
+  [/\bSUPABASE_DB_PASSWORD\b/u, 'remote Supabase database password identifier is forbidden']
+];
+
+for (const [path, content] of localOnlySurfaces) {
+  for (const [pattern, message] of [...remoteOperationPatterns, ...remoteCredentialPatterns]) {
+    forbidMatch(path, content, pattern, message);
+  }
+}
+
+const rootReadmePath = 'README.md';
+const rootReadme = read(rootReadmePath);
+requireMatch(
+  rootReadmePath,
+  rootReadme,
+  /No Supabase Cloud project is provisioned/i,
+  'local-only database provisioning status is missing'
+);
+
+const runbookPath = 'docs/operations/RUNBOOK.md';
+const runbook = read(runbookPath);
+for (const [pattern, message] of [
+  [/No Supabase Cloud project is provisioned/i, 'Cloud provisioning status is missing'],
+  [/migration ledger.*prove.*applied/is, 'environment-specific applied migration evidence is missing'],
+  [/Persistent database provisioning gate/i, 'persistent database provisioning gate is missing']
+]) {
+  requireMatch(runbookPath, runbook, pattern, message);
+}
+
 const result = {
   ok: failures.length === 0,
   environment: Boolean(environment.trim()),
   reviewRules: 3,
   workflowActions: [...workflow.matchAll(/^\s*uses:/gmu)].length,
+  workflowFiles: workflowPaths.length,
+  remoteOperationPatterns: remoteOperationPatterns.length,
   failures
 };
 
