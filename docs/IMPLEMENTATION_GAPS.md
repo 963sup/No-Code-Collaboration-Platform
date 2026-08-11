@@ -2,7 +2,7 @@
 
 - Status: Active evidence register
 - Register owner: Project maintainer until an explicit governance owner is assigned
-- Last reviewed: 2026-08-11
+- Last reviewed: 2026-08-12
 
 ## Purpose
 
@@ -33,40 +33,62 @@ The register answers:
 
 ## Open gaps
 
-### GAP-LIFECYCLE-001 — Destructive Organization and Repository lifecycle is not accepted
+No open authorization or data-integrity gaps are currently registered. This does not imply production validation: no Supabase Cloud project is provisioned, and persistent-environment, release, recovery, and operational evidence remain governed by [`operations/RUNBOOK.md`](./operations/RUNBOOK.md).
 
-- Status: Open
+## Closed gaps
+
+### GAP-LIFECYCLE-001 — Destructive Organization and Repository lifecycle was not accepted
+
+- Status: Closed
 - Affected contracts: [`PRODUCT.md`](./PRODUCT.md) and [`domains/repository-collaboration.md`](./domains/repository-collaboration.md)
 - Affected invariants: Product Activity Event durability and Repository containment/history invariants
 - Risk class: Data integrity, audit continuity, and recovery
+- Closed by: Pull request [#16](https://github.com/963sup/No-Code-Collaboration-Platform/pull/16)
 
 #### Direct evidence
 
-- `supabase/schemas/99_rls.sql` still exposes Organization and Repository DELETE operations to authenticated actors who satisfy the narrowed owner or Repository-admin authority policies.
-- Repository, Resource, grant, membership, and Activity Event foreign keys use cascading deletion across the containment graph.
-- No accepted lifecycle contract currently defines tombstones, retention, redaction, restore behavior, event continuity, user-visible consequences, or recovery objectives for destructive deletion.
-- ADR-004 narrows Organization DELETE authority to owner-only as least-privilege containment; it explicitly does not accept destructive deletion as a product lifecycle.
+At detection time:
+
+- `supabase/schemas/99_rls.sql` granted Organization and Repository DELETE operations to authenticated actors who satisfied owner or Repository-admin authority policies.
+- Repository, Resource, grant, membership, and Activity Event foreign keys used cascading deletion across the containment graph.
+- No accepted lifecycle contract defined tombstones, retention, redaction, restore behavior, event continuity, user-visible consequences, or recovery objectives for destructive deletion.
+- ADR-004 narrowed Organization DELETE authority as least-privilege containment but explicitly did not accept destructive deletion as a product lifecycle.
 
 #### Predicted failure
 
-A permitted hard delete can erase contained Resources, grants, and Activity Events even though the target product model treats Activity Events as historical facts and requires destructive transitions to preserve accepted audit and recovery guarantees.
+A permitted hard delete could erase contained Resources, grants, and Activity Events even though the target product model treats Activity Events as historical facts and requires destructive transitions to preserve accepted audit and recovery guarantees.
 
 #### Temporary containment
 
-- Organization and Repository hard deletion are not production-validated capabilities while this gap is open.
-- No UI, API, runbook, or operator procedure may describe destructive deletion as supported merely because a database policy currently permits it.
-- Production readiness remains blocked until the delete path is removed or an explicit lifecycle contract is accepted and verified.
+Before closure:
+
+- Organization and Repository hard deletion were not production-validated capabilities.
+- No UI, API, runbook, or operator procedure could describe destructive deletion as supported merely because a database policy permitted it.
+- Production readiness remained blocked until the delete path was removed or an explicit lifecycle was accepted and verified.
+
+#### Resolution
+
+The capability-removal alternative was selected rather than inventing an incomplete soft-delete lifecycle:
+
+- [`architecture/ADR-006-defer-destructive-container-deletion.md`](./architecture/ADR-006-defer-destructive-container-deletion.md) defines Organization and Repository hard deletion as unaccepted transitions.
+- `supabase/schemas/99_rls.sql` no longer grants `DELETE` on `public.organizations` or `public.repositories` to `authenticated` and no longer defines DELETE policies for those boundaries.
+- `supabase/migrations/20260812000000_disable_destructive_container_deletion.sql` revokes the existing privileges and drops the existing policies as an append-only accepted replayable transition.
+- `supabase/tests/destructive-lifecycle.test.sql` proves Organization and Repository non-destructive administration remains available while authenticated hard deletion fails with SQLSTATE `42501` and preserves the Repository, contained Page Resource, Activity Events, and Organization.
+- `supabase/tests/role-delegation.test.sql` now separates authenticated lifecycle authorization from privileged parent-cascade mechanics, preserving the owner-continuity trigger contract without reintroducing an end-user DELETE path.
+- `supabase/schemas/AGENTS.md` and the architecture catalog make the fail-closed lifecycle boundary durable.
 
 #### Closure evidence
 
-Choose and verify one coherent model:
+- Closing executable head: [`d6c6f36477d0082e10f116069dfb5b2a33d13179`](https://github.com/963sup/No-Code-Collaboration-Platform/commit/d6c6f36477d0082e10f116069dfb5b2a33d13179)
+- Migration: `supabase/migrations/20260812000000_disable_destructive_container_deletion.sql`
+- Lifecycle regression suite: `supabase/tests/destructive-lifecycle.test.sql`, including 8 negative and legitimate positive-control assertions
+- Delegation compatibility suite: `supabase/tests/role-delegation.test.sql`, including 19 authority, continuity, attribution, and privileged cascade-mechanics assertions
+- Exact-head verification: [GitHub Actions Verify #56](https://github.com/963sup/No-Code-Collaboration-Platform/actions/runs/31514573942)
+- Passed gates: Workflow guardrails, Repository contracts, Supabase contracts, and Browser contracts
+- Database evidence: accepted migrations replayed from an empty disposable local database; database lint, all pgTAP suites, and generated database type consistency passed
+- Remote boundary: no linked or remote Supabase project was accessed, provisioned, or mutated; the migration is Accepted replayable history, not evidence of an Applied remote deployment
 
-1. **Remove the capability**: revoke or deny destructive deletion until a demonstrated lifecycle requires it; or
-2. **Accept the lifecycle**: define authority, confirmation, idempotency, containment fate, historical retention or lawful redaction, tombstones, restore behavior, backup expectations, concurrency, user communication, and audit evidence.
-
-In either model, schema constraints, RLS, Domain/Application behavior, pgTAP tests, recovery tests, and production gates must agree.
-
-## Closed gaps
+Closing this executable gap removes an unsafe product capability; it does not accept archive, restore, purge, redaction, legal hold, or destructive lifecycle semantics. A future lifecycle requirement must reopen the model through a new evidence-backed decision and complete transition, retention, recovery, and user-communication contracts.
 
 ### GAP-AUTH-001 — Authority mutation conflated operation capability and delegation authority
 
@@ -97,7 +119,7 @@ At detection time:
 - Repository Managers may manage only Viewer and Contributor grants; Organization Admins may manage only Member and Admin relationships.
 - `supabase/schemas/90_private_functions.sql` projects the same role ceilings through private, caller-aware helper functions.
 - `supabase/schemas/99_rls.sql` uses `USING` for the existing target Role and `WITH CHECK` for the proposed Role, and binds Repository grant attribution to the authenticated actor.
-- A serialized owner-continuity trigger protects the last Organization owner while allowing valid owner transfer and database cascade mechanics.
+- A serialized owner-continuity trigger protects the last Organization owner while allowing valid owner transfer and privileged database cascade mechanics.
 - Scoped `AGENTS.md` contracts and machine checks make the authority, RLS, test, and migration invariants durable.
 
 #### Closure evidence
