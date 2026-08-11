@@ -81,7 +81,7 @@ test('registration proves email ownership before creating an authenticated sessi
 
   await expect(page).toHaveURL(/\/app$/u);
   await expect(
-    page.getByRole('heading', { exact: true, name: 'Repositories' })
+    page.getByRole('heading', { name: 'Repositories', exact: true })
   ).toBeVisible();
 
   await page.getByRole('button', { name: 'Sign out' }).click();
