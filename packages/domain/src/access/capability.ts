@@ -14,7 +14,9 @@ export const repositoryCapabilities = [
 
 export type RepositoryCapability = (typeof repositoryCapabilities)[number];
 
-const capabilitiesByRole = {
+const capabilitiesByRole: Readonly<
+  Record<RepositoryRole, readonly RepositoryCapability[]>
+> = {
   viewer: ['repository.view', 'resource.view'],
   contributor: ['repository.view', 'resource.view', 'resource.create', 'resource.update'],
   manager: [
@@ -26,7 +28,7 @@ const capabilitiesByRole = {
     'member.manage'
   ],
   admin: repositoryCapabilities
-} as const satisfies Record<RepositoryRole, readonly RepositoryCapability[]>;
+};
 
 const roleRank = {
   viewer: 10,
