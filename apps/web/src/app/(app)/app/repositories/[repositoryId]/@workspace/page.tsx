@@ -29,10 +29,7 @@ export default async function RepositoryWorkspace({ params }: RepositoryWorkspac
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Link
-            className={buttonVariants()}
-            href={`/app/repositories/${repository.id}/resources`}
-          >
+          <Link className={buttonVariants()} href={`/app/repositories/${repository.id}/resources`}>
             Open Pages
           </Link>
         </CardContent>
