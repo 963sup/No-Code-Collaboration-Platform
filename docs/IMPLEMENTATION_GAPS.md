@@ -2,7 +2,7 @@
 
 - Status: Active evidence register
 - Register owner: Project maintainer until an explicit governance owner is assigned
-- Last reviewed: 2026-08-11
+- Last reviewed: 2026-08-12
 
 ## Purpose
 
@@ -65,6 +65,42 @@ Choose and verify one coherent model:
 2. **Accept the lifecycle**: define authority, confirmation, idempotency, containment fate, historical retention or lawful redaction, tombstones, restore behavior, backup expectations, concurrency, user communication, and audit evidence.
 
 In either model, schema constraints, RLS, Domain/Application behavior, pgTAP tests, recovery tests, and production gates must agree.
+
+### GAP-IDENTITY-001 — Identity lifecycle stops after verified Session establishment
+
+- Status: Open
+- Affected contract: [`domains/identity-lifecycle.md`](./domains/identity-lifecycle.md)
+- Affected invariants: recoverability, Product Actor readiness, invitation continuity, and production provider evidence
+- Risk class: Identity availability, incomplete product entry, and operational readiness
+
+#### Direct evidence
+
+- The executable slice implements password registration, email verification, Session establishment, current-Session sign-out, and Profile creation through the existing `auth.users` trigger.
+- No Application use case or human-facing route currently implements password recovery, password reset, Product Actor readiness, onboarding, Organization invitation acceptance, email change, MFA, Session listing, or selective revocation UI.
+- The repository contains local Auth configuration and a Mailpit browser contract, but the connected Supabase tool reports no hosted project. Production Auth provider settings, redirect allowlists, SMTP, CAPTCHA, notification templates, and Session policies therefore have no direct environment evidence.
+- Open registration intentionally creates no Organization membership or Repository Grant.
+
+#### Predicted failure
+
+A User who loses a credential, requires onboarding, or arrives through an Organization invitation cannot complete that lifecycle through the current product. A local passing flow could also be incorrectly described as production-ready even when hosted Auth delivery and redirect behavior differ.
+
+#### Temporary containment
+
+- The product exposes only the implemented registration, verification, sign-in, and current-Session sign-out paths.
+- Unsupported recovery, onboarding, invitation, MFA, OAuth, SSO, and account-security behavior is not linked or described as available.
+- Registration does not create collaboration authority; authenticated Users without persisted Memberships or Grants remain unauthorized by RLS.
+- Production identity readiness remains blocked until hosted configuration and delivery are directly verified.
+
+#### Closure evidence
+
+Close this gap only after:
+
+1. password recovery and reset are implemented and verified without account enumeration;
+2. Product Actor readiness and onboarding have one authoritative state model;
+3. Organization invitations survive sign-in, registration, and verification without implicitly granting invalid Memberships;
+4. credential and Session security operations have explicit scope and reauthentication rules;
+5. hosted Supabase redirect, SMTP, abuse-protection, template, notification, and Session settings are verified against the intended production project; and
+6. Application, adapter, browser, provider, and operational tests produce consistent evidence.
 
 ## Closed gaps
 

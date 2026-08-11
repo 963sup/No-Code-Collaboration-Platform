@@ -16,24 +16,26 @@ import {
   resolvePostAuthDestination
 } from '@/auth/auth-navigation';
 
-import { signIn } from './actions';
+import { signUp } from './actions';
 
 export const metadata: Metadata = {
-  title: 'Sign in'
+  title: 'Create account'
 };
 
 const errorMessages = {
-  'invalid-input': 'Enter a valid email address and password.',
-  'invalid-credentials': 'The email or password could not be verified.',
-  'provider-unavailable': 'The identity service is temporarily unavailable. Try again.'
+  'invalid-input': 'Enter a valid email address and a password with at least eight characters.',
+  'provider-unavailable': 'The identity service is temporarily unavailable. Try again.',
+  'rate-limited': 'Too many attempts were made. Try again later.',
+  'registration-disabled': 'Account registration is not available.',
+  'weak-password': 'Choose a stronger password with at least eight characters.'
 } as const;
 
-type SignInSearchParams = Promise<{
+type SignUpSearchParams = Promise<{
   error?: string;
   next?: string;
 }>;
 
-export default async function SignInPage({ searchParams }: { searchParams: SignInSearchParams }) {
+export default async function SignUpPage({ searchParams }: { searchParams: SignUpSearchParams }) {
   const parameters = await searchParams;
   const next = resolvePostAuthDestination(parameters.next);
   const error = parameters.error as keyof typeof errorMessages | undefined;
@@ -42,13 +44,13 @@ export default async function SignInPage({ searchParams }: { searchParams: SignI
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Sign in</CardTitle>
+        <CardTitle>Create your account</CardTitle>
         <CardDescription>
-          Sign in to access your organizations and repositories.
+          Create an identity first. Organization and Repository access are granted separately.
         </CardDescription>
       </CardHeader>
       <CardContent className='space-y-6'>
-        <form action={signIn} className='space-y-5'>
+        <form action={signUp} className='space-y-5'>
           <input name='next' type='hidden' value={next} />
           <div className='space-y-2'>
             <Label htmlFor='email'>Email</Label>
@@ -64,13 +66,15 @@ export default async function SignInPage({ searchParams }: { searchParams: SignI
           <div className='space-y-2'>
             <Label htmlFor='password'>Password</Label>
             <Input
-              autoComplete='current-password'
+              autoComplete='new-password'
               id='password'
               maxLength={1024}
+              minLength={8}
               name='password'
               required
               type='password'
             />
+            <p className='text-xs text-muted-foreground'>Use at least eight characters.</p>
           </div>
           {message ? (
             <p aria-live='polite' className='text-sm text-destructive' role='alert'>
@@ -78,16 +82,16 @@ export default async function SignInPage({ searchParams }: { searchParams: SignI
             </p>
           ) : null}
           <Button className='w-full' type='submit'>
-            Sign in
+            Create account
           </Button>
         </form>
         <p className='text-center text-sm text-muted-foreground'>
-          New to the platform?{' '}
+          Already have an account?{' '}
           <Link
             className='font-medium text-foreground underline-offset-4 hover:underline'
-            href={buildPath('/sign-up', { next })}
+            href={buildPath('/sign-in', { next })}
           >
-            Create an account
+            Sign in
           </Link>
         </p>
       </CardContent>
