@@ -53,4 +53,4 @@ pnpm test:e2e
 pnpm supabase:stop
 ```
 
-Documentation starts at [`docs/README.md`](./docs/README.md). Codex Desktop configuration is documented in [`docs/CODEX_DESKTOP.md`](./docs/CODEX_DESKTOP.md).
+Product meaning is defined in [`docs/PRODUCT.md`](./docs/PRODUCT.md). Documentation starts at [`docs/README.md`](./docs/README.md), production operations at [`docs/operations/RUNBOOK.md`](./docs/operations/RUNBOOK.md), and Codex Desktop configuration at [`docs/CODEX_DESKTOP.md`](./docs/CODEX_DESKTOP.md).
