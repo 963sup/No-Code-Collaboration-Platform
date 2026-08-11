@@ -12,6 +12,7 @@ const instructionScopes = [
   'docs/AGENTS.md',
   'docs/architecture/AGENTS.md',
   'docs/domains/AGENTS.md',
+  'docs/operations/AGENTS.md',
   'packages/application/AGENTS.md',
   'packages/domain/AGENTS.md',
   'packages/domain/src/access/AGENTS.md',
@@ -37,6 +38,16 @@ const invariantContracts = {
     [
       /may grant, revoke, or reinterpret Repository authority/i,
       'route authorization boundary is missing'
+    ]
+  ],
+  'docs/operations/AGENTS.md': [
+    [
+      /Never present an untested command or provider assumption as operational truth/i,
+      'operational truth boundary is missing'
+    ],
+    [
+      /Direct production mutation requires explicit user intent/i,
+      'production mutation approval boundary is missing'
     ]
   ],
   'packages/domain/src/access/AGENTS.md': [
@@ -67,7 +78,8 @@ const invariantContracts = {
       /Repository managers MUST NOT.*manager or admin grants/is,
       'Repository delegation ceiling is missing'
     ],
-    [/retain at least one owner/i, 'database owner continuity invariant is missing']
+    [/retain at least one owner/i, 'database owner continuity invariant is missing'],
+    [/GAP-LIFECYCLE-001/i, 'destructive lifecycle gap boundary is missing']
   ],
   'supabase/tests/AGENTS.md': [
     [/original attack path/i, 'attack-path regression invariant is missing'],
