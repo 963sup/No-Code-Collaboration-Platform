@@ -1,0 +1,19 @@
+{
+  "name": "@no-code-collaboration-platform/web",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "oxlint src e2e next.config.ts postcss.config.mjs",
+    "typecheck": "tsc --noEmit -p tsconfig.json"
+  },
+  "dependencies": {
+    "@no-code-collaboration-platform/application": "workspace:*",
+    "@no-code-collaboration-platform/domain": "workspace:*",
+    "@no-code-collaboration-platform/supabase": "workspace:*",
+    "@no-code-collaboration-platform/ui": "workspace:*"
+  }
+}
