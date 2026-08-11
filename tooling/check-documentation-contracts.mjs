@@ -25,6 +25,7 @@ const requiredDocuments = [
   'docs/README.md',
   'docs/domains/DOMAIN_TEMPLATE.md',
   'docs/domains/access-authority.md',
+  'docs/domains/identity-lifecycle.md',
   'docs/domains/repository-collaboration.md',
   'docs/operations/AGENTS.md',
   'docs/operations/RUNBOOK.md'
@@ -71,7 +72,7 @@ requireMatch(
   'production-blocking gap rule is missing'
 );
 
-for (const gapId of ['GAP-AUTH-001', 'GAP-LIFECYCLE-001']) {
+for (const gapId of ['GAP-AUTH-001', 'GAP-IDENTITY-001', 'GAP-LIFECYCLE-001']) {
   requireMatch(
     'docs/IMPLEMENTATION_GAPS.md',
     gapRegister,
@@ -102,6 +103,12 @@ requireMatch(
 requireMatch(
   'docs/IMPLEMENTATION_GAPS.md',
   gapRegister,
+  /### GAP-IDENTITY-001[\s\S]*?- Status: Open/i,
+  'GAP-IDENTITY-001 must remain open until the full identity lifecycle is verified'
+);
+requireMatch(
+  'docs/IMPLEMENTATION_GAPS.md',
+  gapRegister,
   /### GAP-LIFECYCLE-001[\s\S]*?- Status: Open/i,
   'GAP-LIFECYCLE-001 must remain open until lifecycle evidence exists'
 );
@@ -117,6 +124,18 @@ requireMatch(
   documents['docs/domains/access-authority.md'],
   /Operation capability and role-delegation authority are distinct authorization decisions/,
   'delegation authority distinction is missing'
+);
+requireMatch(
+  'docs/domains/identity-lifecycle.md',
+  documents['docs/domains/identity-lifecycle.md'],
+  /Authentication\s*≠\s*Authorization/,
+  'identity and authorization separation is missing'
+);
+requireMatch(
+  'docs/domains/identity-lifecycle.md',
+  documents['docs/domains/identity-lifecycle.md'],
+  /Registration never creates Organization membership, Team membership, Repository Grant, or Resource authority/,
+  'registration authority invariant is missing'
 );
 requireMatch(
   'docs/domains/repository-collaboration.md',
@@ -153,8 +172,8 @@ requireMatch(
 const result = {
   ok: failures.length === 0,
   requiredDocuments: requiredDocuments.length,
-  registeredGaps: 2,
-  openGaps: 1,
+  registeredGaps: 3,
+  openGaps: 2,
   closedGaps: 1,
   failures
 };

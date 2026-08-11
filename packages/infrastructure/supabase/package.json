@@ -8,8 +8,9 @@
     ".": "./src/index.ts"
   },
   "scripts": {
-    "lint": "oxlint src",
-    "typecheck": "tsc --noEmit -p tsconfig.json"
+    "lint": "oxlint src tests",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test": "vitest run --root ."
   },
   "dependencies": {
     "@no-code-collaboration-platform/application": "workspace:*",

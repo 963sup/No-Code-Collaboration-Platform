@@ -2,6 +2,11 @@ import { GetCurrentIdentity } from '@no-code-collaboration-platform/application'
 import { createSupabaseServerAdapters } from '@no-code-collaboration-platform/supabase';
 import { type NextRequest, NextResponse } from 'next/server';
 
+import {
+  classifyRouteAccess,
+  resolvePostAuthDestination
+} from '@/auth/auth-navigation';
+
 import { getSupabasePublicConfig } from './supabase-config';
 
 function applyCacheHeaders(response: NextResponse) {
@@ -9,10 +14,6 @@ function applyCacheHeaders(response: NextResponse) {
   response.headers.set('Expires', '0');
   response.headers.set('Pragma', 'no-cache');
   return response;
-}
-
-function isAppRoute(pathname: string) {
-  return pathname === '/app' || pathname.startsWith('/app/');
 }
 
 export async function refreshSession(request: NextRequest) {
@@ -55,8 +56,9 @@ export async function refreshSession(request: NextRequest) {
   });
 
   const identity = await new GetCurrentIdentity(identityProvider).execute();
+  const routeAccess = classifyRouteAccess(request.nextUrl.pathname);
 
-  if (!identity && isAppRoute(request.nextUrl.pathname)) {
+  if (!identity && routeAccess === 'authenticated') {
     const signInUrl = request.nextUrl.clone();
     signInUrl.pathname = '/sign-in';
     signInUrl.search = '';
@@ -64,11 +66,9 @@ export async function refreshSession(request: NextRequest) {
     return createRedirectResponse(signInUrl);
   }
 
-  if (identity && request.nextUrl.pathname === '/sign-in') {
-    const appUrl = request.nextUrl.clone();
-    appUrl.pathname = '/app';
-    appUrl.search = '';
-    return createRedirectResponse(appUrl);
+  if (identity && routeAccess === 'anonymous-only') {
+    const destination = resolvePostAuthDestination(request.nextUrl.searchParams.get('next'));
+    return createRedirectResponse(new URL(destination, request.url));
   }
 
   return response;
