@@ -12,10 +12,7 @@ import type {
 import type { SupabaseClient } from '@supabase/supabase-js';
 
 import type { Database } from '../generated/database.types';
-import {
-  mapSupabasePageRow,
-  mapSupabasePageSummaryRow
-} from '../mappers/supabase-page-mapper';
+import { mapSupabasePageRow, mapSupabasePageSummaryRow } from '../mappers/supabase-page-mapper';
 
 const pageProjection =
   'id, repository_id, kind, title, content, created_by, created_at, updated_at';

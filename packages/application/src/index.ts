@@ -20,11 +20,7 @@ export type {
   IdentityProvider,
   PasswordCredentials
 } from './ports/identity-provider';
-export type {
-  AccessiblePageQuery,
-  PageReader,
-  PageWriter
-} from './ports/page-repository';
+export type { AccessiblePageQuery, PageReader, PageWriter } from './ports/page-repository';
 export type {
   RepositoryAuthoritySourceQuery,
   RepositoryAuthoritySourceReader

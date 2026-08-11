@@ -72,12 +72,7 @@ export function createPageUpdate(input: {
   readonly title: string;
 }): PageUpdate | null {
   const title = input.title.trim();
-  if (
-    !input.expectedUpdatedAt ||
-    !input.id ||
-    !input.repositoryId ||
-    !isPageTitle(title)
-  ) {
+  if (!input.expectedUpdatedAt || !input.id || !input.repositoryId || !isPageTitle(title)) {
     return null;
   }
 

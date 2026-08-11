@@ -14,9 +14,7 @@ function mapPayload(payload: Json): Readonly<Record<string, unknown>> {
   return payload;
 }
 
-export function mapSupabaseActivityEventRow(
-  row: ActivityEventProjectionRow
-): ActivityEventSummary {
+export function mapSupabaseActivityEventRow(row: ActivityEventProjectionRow): ActivityEventSummary {
   return {
     actorId: row.actor_id,
     eventType: row.event_type,

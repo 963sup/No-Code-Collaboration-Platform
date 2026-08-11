@@ -29,7 +29,9 @@ describe('Page queries', () => {
       listAccessiblePages
     };
 
-    await expect(new ListAccessiblePages(reader).execute(page.repositoryId)).resolves.toEqual([page]);
+    await expect(new ListAccessiblePages(reader).execute(page.repositoryId)).resolves.toEqual([
+      page
+    ]);
     expect(listAccessiblePages).toHaveBeenCalledWith(page.repositoryId);
   });
 

@@ -91,8 +91,8 @@ export default async function RepositoryResources({
                   >
                     <span className='font-medium'>{page.title}</span>
                     <span className='mt-1 block text-xs text-muted-foreground'>
-                      Updated {new Date(page.updatedAt).toLocaleString('en-US', { timeZone: 'UTC' })}{' '}
-                      UTC
+                      Updated{' '}
+                      {new Date(page.updatedAt).toLocaleString('en-US', { timeZone: 'UTC' })} UTC
                     </span>
                   </Link>
                 </li>

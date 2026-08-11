@@ -13,10 +13,7 @@ export {
   preservesOrganizationOwnership,
   type OrganizationRole
 } from './access/delegation';
-export {
-  effectiveRepositoryRole,
-  type RepositoryAuthoritySources
-} from './access/authority';
+export { effectiveRepositoryRole, type RepositoryAuthoritySources } from './access/authority';
 export type { ActivityEventSummary } from './activity/activity-event';
 export {
   createPageDraft,

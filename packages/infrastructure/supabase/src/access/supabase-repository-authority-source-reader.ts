@@ -7,9 +7,7 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 
 import type { Database } from '../generated/database.types';
 
-export class SupabaseRepositoryAuthoritySourceReader
-  implements RepositoryAuthoritySourceReader
-{
+export class SupabaseRepositoryAuthoritySourceReader implements RepositoryAuthoritySourceReader {
   public constructor(private readonly client: SupabaseClient<Database>) {}
 
   public async readRepositoryAuthoritySources(

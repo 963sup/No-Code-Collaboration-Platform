@@ -10,14 +10,7 @@ type ResourceRow = Database['public']['Tables']['resources']['Row'];
 
 type PageProjectionRow = Pick<
   ResourceRow,
-  | 'content'
-  | 'created_at'
-  | 'created_by'
-  | 'id'
-  | 'kind'
-  | 'repository_id'
-  | 'title'
-  | 'updated_at'
+  'content' | 'created_at' | 'created_by' | 'id' | 'kind' | 'repository_id' | 'title' | 'updated_at'
 >;
 
 export function mapSupabasePageRow(row: PageProjectionRow): PageDetail {
