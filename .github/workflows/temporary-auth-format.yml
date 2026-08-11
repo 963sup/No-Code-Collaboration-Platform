@@ -1,0 +1,69 @@
+name: Temporary auth format snapshot
+
+on:
+  push:
+    branches:
+      - review/auth-format-snapshot
+
+permissions:
+  contents: write
+
+jobs:
+  format:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Setup Node.js
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        with:
+          node-version-file: .node-version
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Format reviewed Auth files
+        run: |
+          pnpm exec oxfmt --write \
+            'apps/web/e2e/auth.spec.ts' \
+            'apps/web/src/app/(auth)/auth/error/page.tsx' \
+            'apps/web/src/app/(auth)/sign-in/actions.ts' \
+            'apps/web/src/app/(auth)/sign-in/page.tsx' \
+            'apps/web/src/app/(auth)/sign-up/actions.ts' \
+            'apps/web/src/app/(auth)/sign-up/page.tsx' \
+            'apps/web/src/app/(auth)/verify-email/actions.ts' \
+            'apps/web/src/app/(auth)/verify-email/page.tsx' \
+            'apps/web/src/app/auth/confirm/route.ts' \
+            'apps/web/src/composition/refresh-session.ts' \
+            'packages/application/src/commands/resend-email-verification.ts' \
+            'packages/infrastructure/supabase/src/identity/supabase-identity-provider.ts'
+
+      - name: Commit formatter snapshot
+        run: |
+          if git diff --quiet; then
+            echo 'No formatter changes were required.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- \
+            'apps/web/e2e/auth.spec.ts' \
+            'apps/web/src/app/(auth)/auth/error/page.tsx' \
+            'apps/web/src/app/(auth)/sign-in/actions.ts' \
+            'apps/web/src/app/(auth)/sign-in/page.tsx' \
+            'apps/web/src/app/(auth)/sign-up/actions.ts' \
+            'apps/web/src/app/(auth)/sign-up/page.tsx' \
+            'apps/web/src/app/(auth)/verify-email/actions.ts' \
+            'apps/web/src/app/(auth)/verify-email/page.tsx' \
+            'apps/web/src/app/auth/confirm/route.ts' \
+            'apps/web/src/composition/refresh-session.ts' \
+            'packages/application/src/commands/resend-email-verification.ts' \
+            'packages/infrastructure/supabase/src/identity/supabase-identity-provider.ts'
+          git commit -m 'chore: capture oxfmt auth snapshot'
+          git push origin HEAD:review/auth-format-snapshot
