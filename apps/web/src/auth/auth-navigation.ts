@@ -1,4 +1,4 @@
-export const DEFAULT_AUTHENTICATED_PATH = '/app';
+const DEFAULT_AUTHENTICATED_PATH = '/app';
 
 const INTERNAL_ORIGIN = 'https://auth-navigation.invalid';
 const MAX_INTERNAL_PATH_LENGTH = 2048;
@@ -42,7 +42,7 @@ export function buildPath(
   return query ? `${pathname}?${query}` : pathname;
 }
 
-export function resolveSafeNextPath(value: string | null | undefined) {
+function resolveSafeNextPath(value: string | null | undefined) {
   const candidate = value?.trim();
 
   if (
