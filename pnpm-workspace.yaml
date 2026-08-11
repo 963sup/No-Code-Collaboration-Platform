@@ -1,4 +1,11 @@
 packages:
-  - "apps/*"
-  - "packages/*"
-  - "packages/infrastructure/*"
+  - 'apps/*'
+  - 'packages/*'
+  - 'packages/infrastructure/*'
+
+disallowWorkspaceCycles: true
+failIfNoMatch: true
+
+allowBuilds:
+  '@ast-grep/cli': true
+  lefthook: true
