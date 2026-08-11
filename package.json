@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "turbo run dev --filter=@no-code-collaboration-platform/web",
     "build": "turbo run build",
-    "codex:check": "node tooling/check-codex-contract.mjs && node tooling/check-operational-contract.mjs",
+    "codex:check": "node tooling/check-codex-contract.mjs && node tooling/check-operational-contract.mjs && node tooling/check-instruction-scopes.mjs",
     "codex:session-context": "node .codex/hooks/session-start.mjs",
     "env:check": "node tooling/check-environment.mjs",
     "architecture:check": "node tooling/check-architecture.mjs",

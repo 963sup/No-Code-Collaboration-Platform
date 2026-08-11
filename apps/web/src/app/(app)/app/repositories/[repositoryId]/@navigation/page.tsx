@@ -27,14 +27,14 @@ export default async function RepositoryNavigation({ params }: RepositoryNavigat
         </p>
         <Link
           className='flex items-center gap-3 rounded-md bg-accent px-3 py-2 text-sm font-medium'
-          href={`${repositoryPath}#workspace`}
+          href={repositoryPath}
         >
           <LayoutGrid aria-hidden='true' className='size-4' />
           Workspace
         </Link>
         <Link
           className='flex items-center gap-3 rounded-md px-3 py-2 text-sm text-muted-foreground hover:bg-accent hover:text-foreground'
-          href={`${repositoryPath}#resources`}
+          href={`${repositoryPath}/resources`}
         >
           <Shapes aria-hidden='true' className='size-4' />
           Resources

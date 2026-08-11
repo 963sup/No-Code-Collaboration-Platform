@@ -107,6 +107,70 @@ for (const [scope, rules] of Object.entries(packageRules)) {
   }
 }
 
+const repositoryWorkspaceRoute =
+  'apps/web/src/app/(app)/app/repositories/[repositoryId]';
+const persistentParallelRouteDefaults = [
+  `${repositoryWorkspaceRoute}/default.tsx`,
+  `${repositoryWorkspaceRoute}/@navigation/default.tsx`,
+  `${repositoryWorkspaceRoute}/@workspace/default.tsx`,
+  `${repositoryWorkspaceRoute}/@context/default.tsx`,
+  `${repositoryWorkspaceRoute}/@activity/default.tsx`
+];
+const requiredParallelRouteFiles = [
+  `${repositoryWorkspaceRoute}/layout.tsx`,
+  `${repositoryWorkspaceRoute}/@workspace/resources/page.tsx`,
+  ...persistentParallelRouteDefaults
+];
+
+for (const path of requiredParallelRouteFiles) {
+  if (!existsSync(resolve(root, path))) {
+    failures.push(`${path}: required Repository Parallel Route contract is missing`);
+  }
+}
+
+const repositoryLayoutPath = `${repositoryWorkspaceRoute}/layout.tsx`;
+if (existsSync(resolve(root, repositoryLayoutPath))) {
+  const content = readFileSync(resolve(root, repositoryLayoutPath), 'utf8');
+  for (const slot of ['children', 'navigation', 'workspace', 'context', 'activity']) {
+    if (!new RegExp(`\\b${slot}\\b`, 'u').test(content)) {
+      failures.push(`${repositoryLayoutPath}: layout does not render the ${slot} slot`);
+    }
+  }
+}
+
+for (const path of persistentParallelRouteDefaults) {
+  if (!existsSync(resolve(root, path))) continue;
+  const content = readFileSync(resolve(root, path), 'utf8');
+  if (!content.trim()) failures.push(`${path}: persistent slot default is empty`);
+  if (/return\s+null/u.test(content)) {
+    failures.push(`${path}: persistent slot default may not silently return null`);
+  }
+}
+
+const repositoryNavigationPath = `${repositoryWorkspaceRoute}/@navigation/page.tsx`;
+if (existsSync(resolve(root, repositoryNavigationPath))) {
+  const content = readFileSync(resolve(root, repositoryNavigationPath), 'utf8');
+  if (content.includes('#resources')) {
+    failures.push(
+      `${repositoryNavigationPath}: independently addressable resources must use a route segment`
+    );
+  }
+  if (!content.includes('href={`${repositoryPath}/resources`}')) {
+    failures.push(`${repositoryNavigationPath}: resources route link is missing`);
+  }
+}
+
+const repositoryResourcesPath = `${repositoryWorkspaceRoute}/@workspace/resources/page.tsx`;
+if (existsSync(resolve(root, repositoryResourcesPath))) {
+  const content = readFileSync(resolve(root, repositoryResourcesPath), 'utf8');
+  if (!content.includes('requireAccessibleRepository')) {
+    failures.push(
+      `${repositoryResourcesPath}: nested workspace route must use the ` +
+        'authorization-aware read path'
+    );
+  }
+}
+
 const result = {
   ok: failures.length === 0,
   scopes: Object.keys(packageRules).length,

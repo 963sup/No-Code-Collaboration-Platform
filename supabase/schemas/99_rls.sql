@@ -68,11 +68,11 @@ to authenticated
 using ((select private.is_organization_admin(id)))
 with check ((select private.is_organization_admin(id)));
 
-create policy organizations_delete_admin
+create policy organizations_delete_owner
 on public.organizations
 for delete
 to authenticated
-using ((select private.is_organization_admin(id)));
+using ((select private.is_organization_owner(id)));
 
 create policy organization_memberships_select_member
 on public.organization_memberships
@@ -80,24 +80,32 @@ for select
 to authenticated
 using ((select private.is_organization_member(organization_id)));
 
-create policy organization_memberships_insert_admin
+create policy organization_memberships_insert_delegated
 on public.organization_memberships
 for insert
 to authenticated
-with check ((select private.is_organization_admin(organization_id)));
+with check (
+  (select private.can_manage_organization_membership(organization_id, role))
+);
 
-create policy organization_memberships_update_admin
+create policy organization_memberships_update_delegated
 on public.organization_memberships
 for update
 to authenticated
-using ((select private.is_organization_admin(organization_id)))
-with check ((select private.is_organization_admin(organization_id)));
+using (
+  (select private.can_manage_organization_membership(organization_id, role))
+)
+with check (
+  (select private.can_manage_organization_membership(organization_id, role))
+);
 
-create policy organization_memberships_delete_admin
+create policy organization_memberships_delete_delegated
 on public.organization_memberships
 for delete
 to authenticated
-using ((select private.is_organization_admin(organization_id)));
+using (
+  (select private.can_manage_organization_membership(organization_id, role))
+);
 
 create policy repositories_select_visible
 on public.repositories
@@ -133,24 +141,33 @@ for select
 to authenticated
 using ((select private.has_repository_capability(repository_id, 'repository.view')));
 
-create policy repository_user_grants_insert_manager
+create policy repository_user_grants_insert_delegated
 on public.repository_user_grants
 for insert
 to authenticated
-with check ((select private.has_repository_capability(repository_id, 'member.manage')));
+with check (
+  (select auth.uid()) = granted_by
+  and (select private.can_manage_repository_grant(repository_id, role))
+);
 
-create policy repository_user_grants_update_manager
+create policy repository_user_grants_update_delegated
 on public.repository_user_grants
 for update
 to authenticated
-using ((select private.has_repository_capability(repository_id, 'member.manage')))
-with check ((select private.has_repository_capability(repository_id, 'member.manage')));
+using (
+  (select private.can_manage_repository_grant(repository_id, role))
+)
+with check (
+  (select private.can_manage_repository_grant(repository_id, role))
+);
 
-create policy repository_user_grants_delete_manager
+create policy repository_user_grants_delete_delegated
 on public.repository_user_grants
 for delete
 to authenticated
-using ((select private.has_repository_capability(repository_id, 'member.manage')));
+using (
+  (select private.can_manage_repository_grant(repository_id, role))
+);
 
 create policy resources_select_visible
 on public.resources

@@ -1,3 +1,1 @@
-export default function RepositoryNavigationDefault() {
-  return null;
-}
+export { default } from './page';

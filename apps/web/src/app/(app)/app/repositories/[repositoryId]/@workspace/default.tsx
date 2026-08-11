@@ -1,3 +1,1 @@
-export default function RepositoryWorkspaceDefault() {
-  return null;
-}
+export { default } from './page';
