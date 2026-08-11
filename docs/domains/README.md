@@ -20,6 +20,7 @@ A Candidate contract may intentionally lead the executable baseline, but every o
 
 - [`repository-collaboration.md`](./repository-collaboration.md): Repository identity, ownership relation, Resource containment, and collaboration-boundary invariants.
 - [`access-authority.md`](./access-authority.md): Principal grants, Role bundles, Capabilities, delegation, and authorization explanation.
+- [`page-resource.md`](./page-resource.md): first Page work unit, create/update transitions, optimistic concurrency, and immutable transition facts.
 
 ### Accepted contracts
 

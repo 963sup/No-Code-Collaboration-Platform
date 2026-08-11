@@ -33,7 +33,7 @@ test('nested Repository workspace preserves the requested URL through authentica
   await page.goto(repositoryPath);
 
   await expect(page).toHaveURL(
-    new RegExp(`/sign-in\\?next=${encodeURIComponent(repositoryPath)}$`, 'u')
+    new RegExp(`/sign-in\?next=${encodeURIComponent(repositoryPath)}$`, 'u')
   );
 });
 
@@ -45,6 +45,16 @@ test('hard navigation preserves a nested Parallel Route destination through auth
   await page.goto(resourcesPath);
 
   await expect(page).toHaveURL(
-    new RegExp(`/sign-in\\?next=${encodeURIComponent(resourcesPath)}$`, 'u')
+    new RegExp(`/sign-in\?next=${encodeURIComponent(resourcesPath)}$`, 'u')
   );
+});
+
+test('Page workspace identity survives authentication redirect', async ({ page }) => {
+  const pagePath =
+    '/app/repositories/00000000-0000-4000-8000-000000000001/resources/' +
+    '00000000-0000-4000-8000-000000000002';
+
+  await page.goto(pagePath);
+
+  await expect(page).toHaveURL(new RegExp(`/sign-in\?next=${encodeURIComponent(pagePath)}$`, 'u'));
 });
