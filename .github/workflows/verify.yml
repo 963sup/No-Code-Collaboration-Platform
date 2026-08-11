@@ -26,8 +26,8 @@ jobs:
 
       - name: Install actionlint
         env:
-          ACTIONLINT_VERSION: "1.7.12"
-          ACTIONLINT_SHA256: "8aca8db96f1b94770f1b0d72b6dddcb1ebb8123cb3712530b08cc387b349a3d8"
+          ACTIONLINT_VERSION: '1.7.12'
+          ACTIONLINT_SHA256: '8aca8db96f1b94770f1b0d72b6dddcb1ebb8123cb3712530b08cc387b349a3d8'
         run: |
           set -euo pipefail
           archive="actionlint_${ACTIONLINT_VERSION}_linux_amd64.tar.gz"
@@ -45,11 +45,11 @@ jobs:
       - name: Analyze GitHub Actions security
         uses: zizmorcore/zizmor-action@3dc1ecc9bcb9e94e9b2c709687979e1298497054 # v0.6.2
         with:
-          advanced-security: "false"
-          annotations: "true"
-          online-audits: "false"
+          advanced-security: 'false'
+          annotations: 'true'
+          online-audits: 'false'
           persona: regular
-          version: "1.29.0"
+          version: '1.29.0'
 
   repository:
     name: Repository contracts
@@ -71,23 +71,6 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-
-      - name: Report formatter output
-        run: |
-          pnpm exec oxfmt --write .
-          files=(
-            ".github/workflows/verify.yml"
-            "apps/web/src/app/(app)/app/repositories/[repositoryId]/@activity/page.tsx"
-            "apps/web/src/app/(app)/app/repositories/[repositoryId]/@context/page.tsx"
-            "apps/web/src/app/(app)/app/repositories/[repositoryId]/layout.tsx"
-            "apps/web/src/app/(app)/app/repositories/[repositoryId]/not-found.tsx"
-            "apps/web/src/app/(app)/app/repositories/[repositoryId]/page.tsx"
-          )
-          for file in "${files[@]}"; do
-            echo "===== ${file} ====="
-            cat "${file}"
-          done
-          git checkout -- .
 
       - name: Verify repository
         run: pnpm verify:full

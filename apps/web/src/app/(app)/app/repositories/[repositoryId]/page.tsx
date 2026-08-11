@@ -25,7 +25,10 @@ export default async function RepositoryPage({ params }: RepositoryPageProps) {
 
   return (
     <div className='space-y-3'>
-      <nav aria-label='Breadcrumb' className='flex items-center gap-2 text-sm text-muted-foreground'>
+      <nav
+        aria-label='Breadcrumb'
+        className='flex items-center gap-2 text-sm text-muted-foreground'
+      >
         <Link className='hover:text-foreground' href='/app'>
           Repositories
         </Link>

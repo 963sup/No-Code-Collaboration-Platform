@@ -9,8 +9,8 @@ export default function RepositoryNotFound() {
         This collaboration container is not accessible.
       </h1>
       <p className='text-sm text-muted-foreground'>
-        It may not exist, or the current actor may not have a Repository view capability. These cases
-        intentionally share one response so the UI does not disclose hidden resources.
+        It may not exist, or the current actor may not have a Repository view capability. These
+        cases intentionally share one response so the UI does not disclose hidden resources.
       </p>
       <Link className={buttonVariants()} href='/app'>
         Return to repositories

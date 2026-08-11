@@ -1,9 +1,4 @@
-import {
-  Card,
-  CardDescription,
-  CardHeader,
-  CardTitle
-} from '@no-code-collaboration-platform/ui';
+import { Card, CardDescription, CardHeader, CardTitle } from '@no-code-collaboration-platform/ui';
 
 import { requireAccessibleRepository } from '../_queries/get-accessible-repository';
 

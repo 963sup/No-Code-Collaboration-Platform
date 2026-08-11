@@ -20,7 +20,9 @@ export default async function RepositoryContext({ params }: RepositoryContextPro
     <Card>
       <CardHeader>
         <CardTitle className='text-base'>Repository context</CardTitle>
-        <CardDescription>Presentation context explains scope; it never changes authorization.</CardDescription>
+        <CardDescription>
+          Presentation context explains scope; it never changes authorization.
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <dl className='space-y-4 text-sm'>
