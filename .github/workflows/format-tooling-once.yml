@@ -1,0 +1,49 @@
+name: Format tooling once
+
+on:
+  push:
+    branches:
+      - feat/first-principles-application-baseline
+
+permissions:
+  contents: write
+
+concurrency:
+  group: format-tooling-once
+  cancel-in-progress: true
+
+jobs:
+  format:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout feature branch
+        uses: actions/checkout@v6
+        with:
+          ref: feat/first-principles-application-baseline
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .node-version
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Apply repository formatter
+        run: pnpm exec oxfmt --write tooling/check-architecture.mjs tooling/database-types.mjs
+
+      - name: Commit exact formatter output
+        run: |
+          git add -- tooling/check-architecture.mjs tooling/database-types.mjs
+          if git diff --cached --quiet; then
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "style: format application tooling"
+          git push origin HEAD:feat/first-principles-application-baseline
