@@ -25,7 +25,16 @@ function createIdentityProvider(actorId: string | null): IdentityProvider {
     async getCurrentIdentity() {
       return actorId === null ? null : { email: 'actor@example.com', id: actorId };
     },
-    async signOut() {}
+    async registerWithPassword() {
+      return { ok: false, reason: 'registration-disabled' };
+    },
+    async resendEmailVerification() {
+      return { ok: false, reason: 'provider-unavailable' };
+    },
+    async signOut() {},
+    async verifyEmail() {
+      return { ok: false, reason: 'invalid-code' };
+    }
   };
 }
 

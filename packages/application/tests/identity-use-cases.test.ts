@@ -2,18 +2,30 @@ import { describe, expect, it } from 'vitest';
 
 import {
   GetCurrentIdentity,
+  RegisterWithPassword,
+  ResendEmailVerification,
   SignInWithPassword,
   SignOut,
+  VerifyEmail,
   type ActorIdentity,
   type AuthenticationResult,
+  type EmailVerificationProof,
+  type EmailVerificationResult,
   type IdentityProvider,
-  type PasswordCredentials
+  type PasswordCredentials,
+  type RegistrationCredentials,
+  type RegistrationResult,
+  type SignOutScope,
+  type VerificationDeliveryResult
 } from '../src/index';
 
 class FakeIdentityProvider implements IdentityProvider {
   public currentIdentity: ActorIdentity | null = null;
   public credentials: PasswordCredentials | null = null;
-  public signOutCalls = 0;
+  public registrationCredentials: RegistrationCredentials | null = null;
+  public resendEmail: string | null = null;
+  public signOutScope: SignOutScope | null = null;
+  public verificationProof: EmailVerificationProof | null = null;
 
   public async authenticateWithPassword(
     credentials: PasswordCredentials
@@ -32,8 +44,34 @@ class FakeIdentityProvider implements IdentityProvider {
     return this.currentIdentity;
   }
 
-  public async signOut(): Promise<void> {
-    this.signOutCalls += 1;
+  public async registerWithPassword(
+    credentials: RegistrationCredentials
+  ): Promise<RegistrationResult> {
+    this.registrationCredentials = credentials;
+    return {
+      ok: true,
+      status: 'email-verification-required'
+    };
+  }
+
+  public async resendEmailVerification(email: string): Promise<VerificationDeliveryResult> {
+    this.resendEmail = email;
+    return { ok: true };
+  }
+
+  public async signOut(scope: SignOutScope): Promise<void> {
+    this.signOutScope = scope;
+  }
+
+  public async verifyEmail(proof: EmailVerificationProof): Promise<EmailVerificationResult> {
+    this.verificationProof = proof;
+    return {
+      identity: {
+        email: proof.kind === 'code' ? proof.email : 'actor@example.com',
+        id: 'actor-1'
+      },
+      ok: true
+    };
   }
 }
 
@@ -57,7 +95,49 @@ describe('identity use cases', () => {
     expect(identityProvider.credentials).toEqual(credentials);
   });
 
-  it('reads and clears the current identity through the same port', async () => {
+  it('keeps registration separate from authenticated product access', async () => {
+    const identityProvider = new FakeIdentityProvider();
+    const credentials = {
+      email: 'new-actor@example.com',
+      password: 'correct-horse-battery-staple'
+    };
+
+    await expect(new RegisterWithPassword(identityProvider).execute(credentials)).resolves.toEqual({
+      ok: true,
+      status: 'email-verification-required'
+    });
+    expect(identityProvider.registrationCredentials).toEqual(credentials);
+  });
+
+  it('delegates both code and token-hash email proofs without exposing a provider API', async () => {
+    const identityProvider = new FakeIdentityProvider();
+    const codeProof = {
+      code: '123456',
+      email: 'actor@example.com',
+      kind: 'code'
+    } as const;
+    const tokenHashProof = {
+      kind: 'token-hash',
+      tokenHash: 'opaque-token-hash'
+    } as const;
+
+    await new VerifyEmail(identityProvider).execute(codeProof);
+    expect(identityProvider.verificationProof).toEqual(codeProof);
+
+    await new VerifyEmail(identityProvider).execute(tokenHashProof);
+    expect(identityProvider.verificationProof).toEqual(tokenHashProof);
+  });
+
+  it('resends verification through the same provider-neutral boundary', async () => {
+    const identityProvider = new FakeIdentityProvider();
+
+    await expect(
+      new ResendEmailVerification(identityProvider).execute('actor@example.com')
+    ).resolves.toEqual({ ok: true });
+    expect(identityProvider.resendEmail).toBe('actor@example.com');
+  });
+
+  it('reads and clears the current identity through the same port with explicit session scope', async () => {
     const identityProvider = new FakeIdentityProvider();
     identityProvider.currentIdentity = {
       email: 'actor@example.com',
@@ -68,7 +148,7 @@ describe('identity use cases', () => {
       identityProvider.currentIdentity
     );
 
-    await new SignOut(identityProvider).execute();
-    expect(identityProvider.signOutCalls).toBe(1);
+    await new SignOut(identityProvider).execute('current-session');
+    expect(identityProvider.signOutScope).toBe('current-session');
   });
 });

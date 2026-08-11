@@ -24,7 +24,16 @@ function identityProvider(): IdentityProvider {
     async getCurrentIdentity() {
       return { email: 'actor@example.com', id: 'user-1' };
     },
-    async signOut() {}
+    async registerWithPassword() {
+      return { ok: false, reason: 'registration-disabled' };
+    },
+    async resendEmailVerification() {
+      return { ok: false, reason: 'provider-unavailable' };
+    },
+    async signOut() {},
+    async verifyEmail() {
+      return { ok: false, reason: 'invalid-code' };
+    }
   };
 }
 

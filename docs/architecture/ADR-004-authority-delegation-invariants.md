@@ -34,7 +34,7 @@ The accepted delegation scopes are:
 
 Organization owner is a protected governance role. An Organization that still exists must retain at least one owner. Repository grant attribution must identify the authenticated actor.
 
-ADR-005 removes Organization and Repository hard deletion from end-user authority until a separate lifecycle contract is accepted. The parent-cascade case retained by this ADR is only a privileged database-mechanics test proving that the owner-continuity trigger does not falsely block deletion of a parent row that no longer exists. It is not a product authorization path.
+ADR-006 removes Organization and Repository hard deletion from end-user authority until a separate lifecycle contract is accepted. The parent-cascade case retained by this ADR is only a privileged database-mechanics test proving that the owner-continuity trigger does not falsely block deletion of a parent row that no longer exists. It is not a product authorization path.
 
 ## Problem and success condition
 
@@ -133,7 +133,7 @@ WITH CHECK
 
 For INSERT, `WITH CHECK` validates the proposed role and authenticated actor attribution. For DELETE, `USING` validates the existing membership or grant role when that relationship deletion is an accepted operation.
 
-Owner continuity is cross-row and concurrency sensitive. A trigger locks the owning Organization row before removing or demoting an owner, then verifies that another owner remains. Cascading membership deletion caused by a privileged database deletion of the Organization is allowed at the database mechanism boundary because the governed Organization no longer exists. That mechanism test prevents a false-positive continuity failure; ADR-005 independently denies Organization and Repository hard deletion to end-user roles.
+Owner continuity is cross-row and concurrency sensitive. A trigger locks the owning Organization row before removing or demoting an owner, then verifies that another owner remains. Cascading membership deletion caused by a privileged database deletion of the Organization is allowed at the database mechanism boundary because the governed Organization no longer exists. That mechanism test prevents a false-positive continuity failure; ADR-006 independently denies Organization and Repository hard deletion to end-user roles.
 
 ## Alternatives rejected
 
@@ -181,7 +181,7 @@ The model is accepted only if all of the following hold through the appropriate 
 - Removing or demoting the last owner is denied.
 - Removing an owner when another owner remains is allowed.
 - A privileged parent cascade is not falsely blocked by the continuity trigger.
-- Organization and Repository hard deletion remain denied to end-user roles under ADR-005.
+- Organization and Repository hard deletion remain denied to end-user roles under ADR-006.
 - forged `granted_by` attribution is denied.
 
 Any mismatch between Domain tests and pgTAP enforcement tests reopens the earliest inconsistent boundary.

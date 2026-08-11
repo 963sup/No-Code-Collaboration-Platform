@@ -7,6 +7,6 @@ import { createRequestServices } from '@/composition/create-request-services';
 
 export async function signOut() {
   const { identityProvider } = await createRequestServices();
-  await new SignOut(identityProvider).execute();
+  await new SignOut(identityProvider).execute('current-session');
   redirect('/');
 }

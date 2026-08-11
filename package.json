@@ -23,6 +23,7 @@
     "browser:install:ci": "playwright install --with-deps chromium",
     "supabase:start": "supabase start",
     "supabase:start:ci": "supabase start -x realtime,storage-api,imgproxy,mailpit,postgres-meta,studio,edge-runtime,logflare,vector,supavisor",
+    "supabase:start:browser": "supabase start -x realtime,storage-api,imgproxy,postgres-meta,studio,edge-runtime,logflare,vector,supavisor",
     "supabase:stop": "supabase stop",
     "supabase:status": "supabase status",
     "supabase:reset": "supabase db reset --local",

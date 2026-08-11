@@ -17,7 +17,8 @@ This directory owns current PostgreSQL schema truth and the database enforcement
 - Schema and migration files are local database contracts. Their presence MUST NOT be used as evidence that a Supabase Cloud project exists or that a remote deployment occurred.
 - Organization and Repository hard deletion MUST remain unavailable to end-user roles until an accepted lifecycle contract defines retention, restore, redaction, containment fate, historical continuity, and recovery behavior.
 - A missing lifecycle MUST fail closed through both table privileges and RLS policy absence; owner or administrator authority alone cannot make an undefined destructive transition valid.
-- `GAP-LIFECYCLE-001` remains the authoritative evidence record and may be closed only after exact-head verification proves this fail-closed boundary.
+- `GAP-LIFECYCLE-001` remains the authoritative evidence record for Organization and Repository deletion and may be closed only after exact-head verification proves this fail-closed boundary.
+- `GAP-LIFECYCLE-002` remains Open; `resource.delete` MUST NOT be treated as evidence that Page archive, restore, retention, purge, redaction, or historical guarantees are accepted.
 - The accepted Page content projection MUST remain exactly one JSON object containing one string field named `body`; additional keys or non-string bodies are invalid.
 - A meaningful Page create or update and its required immutable fact MUST commit in one PostgreSQL transaction. Fact failure MUST abort the Resource transition.
 - `resource.updated` facts MUST attribute the current authenticated actor, MUST NOT duplicate Page body content, and MUST NOT be emitted for no-op updates.

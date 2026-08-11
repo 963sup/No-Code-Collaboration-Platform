@@ -33,62 +33,113 @@ The register answers:
 
 ## Open gaps
 
-No open authorization or data-integrity gaps are currently registered. This does not imply production validation: no Supabase Cloud project is provisioned, and persistent-environment, release, recovery, and operational evidence remain governed by [`operations/RUNBOOK.md`](./operations/RUNBOOK.md).
+### GAP-LIFECYCLE-001 — Destructive Organization and Repository lifecycle is not accepted
 
-## Closed gaps
-
-### GAP-LIFECYCLE-001 — Destructive Organization and Repository lifecycle was not accepted
-
-- Status: Closed
+- Status: Open
 - Affected contracts: [`PRODUCT.md`](./PRODUCT.md) and [`domains/repository-collaboration.md`](./domains/repository-collaboration.md)
 - Affected invariants: Product Activity Event durability and Repository containment/history invariants
 - Risk class: Data integrity, audit continuity, and recovery
-- Closed by: Pull request [#16](https://github.com/963sup/No-Code-Collaboration-Platform/pull/16)
 
 #### Direct evidence
 
-At detection time:
-
-- `supabase/schemas/99_rls.sql` granted Organization and Repository DELETE operations to authenticated actors who satisfied owner or Repository-admin authority policies.
-- Repository, Resource, grant, membership, and Activity Event foreign keys used cascading deletion across the containment graph.
-- No accepted lifecycle contract defined tombstones, retention, redaction, restore behavior, event continuity, user-visible consequences, or recovery objectives for destructive deletion.
-- ADR-004 narrowed Organization DELETE authority as least-privilege containment but explicitly did not accept destructive deletion as a product lifecycle.
+- At the current `main` baseline, `supabase/schemas/99_rls.sql` exposes Organization and Repository DELETE operations to authenticated actors who satisfy the narrowed owner or Repository-admin authority policies.
+- Repository, Resource, grant, membership, and Activity Event foreign keys use cascading deletion across the containment graph.
+- No accepted lifecycle contract defines tombstones, retention, redaction, restore behavior, event continuity, user-visible consequences, or recovery objectives for destructive deletion.
+- ADR-004 separates destructive lifecycle acceptance from delegation authority.
 
 #### Predicted failure
 
-A permitted hard delete could erase contained Resources, grants, and Activity Events even though the target product model treats Activity Events as historical facts and requires destructive transitions to preserve accepted audit and recovery guarantees.
+A permitted hard delete can erase contained Resources, grants, and Activity Events even though the target product model treats Activity Events as historical facts and requires destructive transitions to preserve accepted audit and recovery guarantees.
 
 #### Temporary containment
 
-Before closure:
-
-- Organization and Repository hard deletion were not production-validated capabilities.
-- No UI, API, runbook, or operator procedure could describe destructive deletion as supported merely because a database policy permitted it.
-- Production readiness remained blocked until the delete path was removed or an explicit lifecycle was accepted and verified.
-
-#### Resolution
-
-The capability-removal alternative was selected rather than inventing an incomplete soft-delete lifecycle:
-
-- [`architecture/ADR-006-defer-destructive-container-deletion.md`](./architecture/ADR-006-defer-destructive-container-deletion.md) defines Organization and Repository hard deletion as unaccepted transitions.
-- `supabase/schemas/99_rls.sql` no longer grants `DELETE` on `public.organizations` or `public.repositories` to `authenticated` and no longer defines DELETE policies for those boundaries.
-- `supabase/migrations/20260812000000_disable_destructive_container_deletion.sql` revokes the existing privileges and drops the existing policies as an append-only accepted replayable transition.
-- `supabase/tests/destructive-lifecycle.test.sql` proves Organization and Repository non-destructive administration remains available while authenticated hard deletion fails with SQLSTATE `42501` and preserves the Repository, contained Page Resource, Activity Events, and Organization.
-- `supabase/tests/role-delegation.test.sql` now separates authenticated lifecycle authorization from privileged parent-cascade mechanics, preserving the owner-continuity trigger contract without reintroducing an end-user DELETE path.
-- `supabase/schemas/AGENTS.md` and the architecture catalog make the fail-closed lifecycle boundary durable.
+- Organization and Repository hard deletion are not production-validated capabilities while this gap is open.
+- No UI, API, runbook, or operator procedure may describe destructive deletion as supported merely because a database policy currently permits it.
+- Pull request [#16](https://github.com/963sup/No-Code-Collaboration-Platform/pull/16) is the candidate fail-closed repair: it removes the authenticated DELETE grants and matching DELETE policies without inventing an archive or soft-delete lifecycle.
+- The gap remains Open until the rebased exact PR head passes all required verification gates.
 
 #### Closure evidence
 
-- Closing executable head: [`d6c6f36477d0082e10f116069dfb5b2a33d13179`](https://github.com/963sup/No-Code-Collaboration-Platform/commit/d6c6f36477d0082e10f116069dfb5b2a33d13179)
-- Migration: `supabase/migrations/20260812000000_disable_destructive_container_deletion.sql`
-- Lifecycle regression suite: `supabase/tests/destructive-lifecycle.test.sql`, including 8 negative and legitimate positive-control assertions
-- Delegation compatibility suite: `supabase/tests/role-delegation.test.sql`, including 19 authority, continuity, attribution, and privileged cascade-mechanics assertions
-- Exact-head verification: [GitHub Actions Verify #56](https://github.com/963sup/No-Code-Collaboration-Platform/actions/runs/31514573942)
-- Passed gates: Workflow guardrails, Repository contracts, Supabase contracts, and Browser contracts
-- Database evidence: accepted migrations replayed from an empty disposable local database; database lint, all pgTAP suites, and generated database type consistency passed
-- Remote boundary: no linked or remote Supabase project was accessed, provisioned, or mutated; the migration is Accepted replayable history, not evidence of an Applied remote deployment
+Close this gap only when the capability-removal alternative is proven on the exact candidate head:
 
-Closing this executable gap removes an unsafe product capability; it does not accept archive, restore, purge, redaction, legal hold, or destructive lifecycle semantics. A future lifecycle requirement must reopen the model through a new evidence-backed decision and complete transition, retention, recovery, and user-communication contracts.
+1. `authenticated` has no DELETE privilege on `public.organizations` or `public.repositories`;
+2. no Organization or Repository DELETE RLS policy remains;
+3. an append-only accepted migration reproduces the change from the current baseline;
+4. pgTAP proves authenticated deletion fails while non-destructive administration and contained state remain intact; and
+5. Repository, Supabase, Browser, and Workflow verification gates pass on the exact head.
+
+The resulting evidence is local/CI enforcement evidence only; it is not proof of remote application.
+
+### GAP-LIFECYCLE-002 — Resource destructive lifecycle is not accepted
+
+- Status: Open
+- Affected contract: [`domains/repository-collaboration.md`](./domains/repository-collaboration.md)
+- Affected invariants: Resource lifecycle, historical evidence, retention, and recovery
+- Risk class: Data integrity, audit continuity, and recovery
+
+#### Direct evidence
+
+- `supabase/schemas/99_rls.sql` still grants `DELETE` on `public.resources` to `authenticated` and defines `resources_delete_manager` through the `resource.delete` capability.
+- The Repository Collaboration contract lists `resource.deleted` only as a candidate event and requires deletion to have explicit idempotency, failure, and audit behavior before acceptance.
+- Repository search finds no executable `resource.deleted` fact or event implementation outside the candidate contract.
+- No accepted Resource lifecycle defines archive, restore, retention, lawful redaction, purge, confirmation, or user-visible consequences.
+
+#### Predicted failure
+
+An authenticated actor with `resource.delete` can hard-delete a Resource even though the product cannot explain whether the action means archive, deletion, purge, or redaction, and no required historical fact or recovery contract proves what must survive.
+
+#### Temporary containment
+
+- Resource hard deletion must not be described or exposed as a production-validated user journey while this gap remains Open.
+- PR #16 deliberately does not broaden scope to Resource deletion; it removes only the higher-order Organization and Repository container cascade risk.
+- The next Resource lifecycle decision must either fail closed by removing the capability or accept a concrete lifecycle with evidence. Do not introduce a generic soft-delete engine merely to close the gap.
+
+#### Closure evidence
+
+Choose and verify one coherent Resource model:
+
+1. **Remove the capability**: revoke authenticated Resource DELETE and remove its DELETE policy until a real Resource lifecycle is required; or
+2. **Accept the lifecycle**: define the Resource transition, authority, confirmation, idempotency, retained history, restore or purge behavior, subtype implications, recovery, and user communication.
+
+In either model, Domain/Application semantics, declarative schema, migration history, pgTAP, browser behavior, and required Activity evidence must agree.
+
+### GAP-IDENTITY-001 — Identity lifecycle stops after verified Session establishment
+
+- Status: Open
+- Affected contract: [`domains/identity-lifecycle.md`](./domains/identity-lifecycle.md)
+- Affected invariants: recoverability, Product Actor readiness, invitation continuity, and production provider evidence
+- Risk class: Identity availability, incomplete product entry, and operational readiness
+
+#### Direct evidence
+
+- The executable slice implements password registration, email verification, Session establishment, current-Session sign-out, and Profile creation through the existing `auth.users` trigger.
+- No Application use case or human-facing route currently implements password recovery, password reset, Product Actor readiness, onboarding, Organization invitation acceptance, email change, MFA, Session listing, or selective revocation UI.
+- The repository contains local Auth configuration and a Mailpit browser contract, but the connected Supabase tool reports no hosted project. Production Auth provider settings, redirect allowlists, SMTP, CAPTCHA, notification templates, and Session policies therefore have no direct environment evidence.
+- Open registration intentionally creates no Organization membership or Repository Grant.
+
+#### Predicted failure
+
+A User who loses a credential, requires onboarding, or arrives through an Organization invitation cannot complete that lifecycle through the current product. A local passing flow could also be incorrectly described as production-ready even when hosted Auth delivery and redirect behavior differ.
+
+#### Temporary containment
+
+- The product exposes only the implemented registration, verification, sign-in, and current-Session sign-out paths.
+- Unsupported recovery, onboarding, invitation, MFA, OAuth, SSO, and account-security behavior is not linked or described as available.
+- Registration does not create collaboration authority; authenticated Users without persisted Memberships or Grants remain unauthorized by RLS.
+- Production identity readiness remains blocked until hosted configuration and delivery are directly verified.
+
+#### Closure evidence
+
+Close this gap only after:
+
+1. password recovery and reset are implemented and verified without account enumeration;
+2. Product Actor readiness and onboarding have one authoritative state model;
+3. Organization invitations survive sign-in, registration, and verification without implicitly granting invalid Memberships;
+4. credential and Session security operations have explicit scope and reauthentication rules;
+5. hosted Supabase redirect, SMTP, abuse-protection, template, notification, and Session settings are verified against the intended production project; and
+6. Application, adapter, browser, provider, and operational tests produce consistent evidence.
+
+## Closed gaps
 
 ### GAP-AUTH-001 — Authority mutation conflated operation capability and delegation authority
 
@@ -119,7 +170,7 @@ At detection time:
 - Repository Managers may manage only Viewer and Contributor grants; Organization Admins may manage only Member and Admin relationships.
 - `supabase/schemas/90_private_functions.sql` projects the same role ceilings through private, caller-aware helper functions.
 - `supabase/schemas/99_rls.sql` uses `USING` for the existing target Role and `WITH CHECK` for the proposed Role, and binds Repository grant attribution to the authenticated actor.
-- A serialized owner-continuity trigger protects the last Organization owner while allowing valid owner transfer and privileged database cascade mechanics.
+- A serialized owner-continuity trigger protects the last Organization owner while allowing valid owner transfer and database cascade mechanics.
 - Scoped `AGENTS.md` contracts and machine checks make the authority, RLS, test, and migration invariants durable.
 
 #### Closure evidence

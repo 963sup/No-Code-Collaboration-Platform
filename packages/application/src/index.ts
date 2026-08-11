@@ -4,6 +4,8 @@ export type {
   CreatePageInput,
   CreatePageResult
 } from './commands/create-page';
+export { RegisterWithPassword } from './commands/register-with-password';
+export { ResendEmailVerification } from './commands/resend-email-verification';
 export { SignInWithPassword } from './commands/sign-in-with-password';
 export { SignOut } from './commands/sign-out';
 export { UpdatePage } from './commands/update-page';
@@ -12,13 +14,23 @@ export type {
   UpdatePageInput,
   UpdatePageResult
 } from './commands/update-page';
+export { VerifyEmail } from './commands/verify-email';
 export type { ActivityEventReader } from './ports/activity-event-reader';
 export type {
   ActorIdentity,
   AuthenticationFailureReason,
   AuthenticationResult,
+  EmailVerificationFailureReason,
+  EmailVerificationProof,
+  EmailVerificationResult,
   IdentityProvider,
-  PasswordCredentials
+  PasswordCredentials,
+  RegistrationCredentials,
+  RegistrationFailureReason,
+  RegistrationResult,
+  SignOutScope,
+  VerificationDeliveryFailureReason,
+  VerificationDeliveryResult
 } from './ports/identity-provider';
 export type { AccessiblePageQuery, PageReader, PageWriter } from './ports/page-repository';
 export type {

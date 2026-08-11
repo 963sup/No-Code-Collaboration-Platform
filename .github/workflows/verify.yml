@@ -128,8 +128,8 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Start minimal local Supabase stack
-        run: pnpm supabase:start:ci
+      - name: Start browser Supabase stack with Mailpit
+        run: pnpm supabase:start:browser
 
       - name: Export local Supabase environment
         run: pnpm supabase:env:github
