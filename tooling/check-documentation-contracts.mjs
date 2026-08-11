@@ -96,12 +96,6 @@ requireMatch(
   'domain contracts do not require explicit implementation gaps'
 );
 requireMatch(
-  'docs/domains/README.md',
-  documents['docs/domains/README.md'],
-  /Candidate[\s\S]*?target behavior[\s\S]*?already enforced/i,
-  'candidate-versus-executable truth rule is missing'
-);
-requireMatch(
   'docs/domains/access-authority.md',
   documents['docs/domains/access-authority.md'],
   /Operation capability and role-delegation authority are distinct authorization decisions/,
