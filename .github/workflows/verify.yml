@@ -72,6 +72,23 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Report formatter output
+        run: |
+          pnpm exec oxfmt --write .
+          files=(
+            ".github/workflows/verify.yml"
+            "apps/web/src/app/(app)/app/repositories/[repositoryId]/@activity/page.tsx"
+            "apps/web/src/app/(app)/app/repositories/[repositoryId]/@context/page.tsx"
+            "apps/web/src/app/(app)/app/repositories/[repositoryId]/layout.tsx"
+            "apps/web/src/app/(app)/app/repositories/[repositoryId]/not-found.tsx"
+            "apps/web/src/app/(app)/app/repositories/[repositoryId]/page.tsx"
+          )
+          for file in "${files[@]}"; do
+            echo "===== ${file} ====="
+            cat "${file}"
+          done
+          git checkout -- .
+
       - name: Verify repository
         run: pnpm verify:full
 
