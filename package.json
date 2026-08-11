@@ -12,7 +12,7 @@
     "format": "oxfmt --write .",
     "format:staged": "oxfmt --write --no-error-on-unmatched-pattern",
     "format:check": "oxfmt --check .",
-    "lint": "turbo run lint && oxlint tooling playwright.config.ts",
+    "lint": "turbo run lint && oxlint tooling .codex/hooks playwright.config.ts",
     "typecheck": "turbo run typecheck && tsc --noEmit -p tsconfig.json",
     "test": "turbo run test",
     "knip": "knip --cache --treat-config-hints-as-errors",
