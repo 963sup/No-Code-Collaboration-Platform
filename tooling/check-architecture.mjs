@@ -4,6 +4,8 @@ import { extname, resolve } from 'node:path';
 const root = process.cwd();
 const failures = [];
 const packagePrefix = '@no-code-collaboration-platform/';
+const supabasePackage = `${packagePrefix}supabase`;
+const supabaseScope = 'packages/infrastructure/supabase';
 
 const packageRules = {
   'packages/domain': {
@@ -13,15 +15,15 @@ const packageRules = {
       'react',
       '@supabase/',
       `${packagePrefix}application`,
-      `${packagePrefix}supabase`,
+      supabasePackage,
       `${packagePrefix}ui`
     ]
   },
   'packages/application': {
     internal: new Set([`${packagePrefix}domain`]),
-    forbidden: ['next', 'react', '@supabase/', `${packagePrefix}supabase`, `${packagePrefix}ui`]
+    forbidden: ['next', 'react', '@supabase/', supabasePackage, `${packagePrefix}ui`]
   },
-  'packages/supabase': {
+  [supabaseScope]: {
     internal: new Set([`${packagePrefix}application`, `${packagePrefix}domain`]),
     forbidden: ['next', 'react', `${packagePrefix}ui`]
   },
@@ -32,17 +34,12 @@ const packageRules = {
       '@supabase/',
       `${packagePrefix}application`,
       `${packagePrefix}domain`,
-      `${packagePrefix}supabase`
+      supabasePackage
     ]
   },
   'apps/web': {
-    internal: new Set([
-      `${packagePrefix}application`,
-      `${packagePrefix}domain`,
-      `${packagePrefix}supabase`,
-      `${packagePrefix}ui`
-    ]),
-    forbidden: []
+    internal: new Set([`${packagePrefix}application`, supabasePackage, `${packagePrefix}ui`]),
+    forbidden: ['@supabase/', `${packagePrefix}domain`]
   }
 };
 
@@ -94,12 +91,17 @@ for (const [scope, rules] of Object.entries(packageRules)) {
         failures.push(`${path}: forbidden import ${specifier}`);
       }
       if (
-        scope !== 'packages/supabase' &&
+        scope !== supabaseScope &&
         (specifier.includes('database-types') || specifier.includes('generated/database.types'))
       ) {
-        failures.push(
-          `${path}: generated database types may only be imported by packages/supabase`
-        );
+        failures.push(`${path}: generated database types may only be imported by ${supabaseScope}`);
+      }
+      if (
+        scope === 'apps/web' &&
+        specifier === supabasePackage &&
+        !path.startsWith('apps/web/src/composition/')
+      ) {
+        failures.push(`${path}: Supabase adapters may only be wired in apps/web/src/composition`);
       }
     }
   }

@@ -1,6 +1,7 @@
 packages:
   - 'apps/*'
   - 'packages/*'
+  - 'packages/infrastructure/*'
 
 disallowWorkspaceCycles: true
 failIfNoMatch: true

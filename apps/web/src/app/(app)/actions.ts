@@ -1,11 +1,12 @@
 'use server';
 
+import { SignOut } from '@no-code-collaboration-platform/application';
 import { redirect } from 'next/navigation';
 
-import { createWebServerClient } from '@/lib/supabase/server';
+import { createRequestServices } from '@/composition/create-request-services';
 
 export async function signOut() {
-  const supabase = await createWebServerClient();
-  await supabase.auth.signOut();
+  const { identityProvider } = await createRequestServices();
+  await new SignOut(identityProvider).execute();
   redirect('/');
 }

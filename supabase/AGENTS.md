@@ -1,6 +1,6 @@
-# Supabase scope
+# Supabase database scope
 
-This subtree owns database truth and enforcement, not business truth. `packages/domain` remains authoritative for business concepts and invariants.
+This subtree owns declarative PostgreSQL schema truth and database enforcement. It is not the Supabase SDK adapter package and does not own business truth. `packages/domain` remains authoritative for business concepts and invariants; `packages/infrastructure/supabase` owns provider-specific TypeScript adapters.
 
 ## Declarative schema workflow
 
@@ -9,7 +9,7 @@ This subtree owns database truth and enforcement, not business truth. `packages/
 - `seed.sql` contains deterministic local/test data only. Never copy production data or secrets into it.
 - Generate migrations with `supabase db diff -f <descriptive-name>`, then review the SQL before applying it.
 - Prove reproducibility with `pnpm supabase:reset`, then run `pnpm supabase:lint`.
-- Regenerate `packages/supabase/src/generated/database.types.ts` from the applied local database after accepted schema changes. Generated types are a projection, not an authoring surface.
+- Regenerate `packages/infrastructure/supabase/src/generated/database.types.ts` from the applied local database after accepted schema changes. Generated types are an Infrastructure projection, not an authoring surface.
 - Treat schema diff output as a draft. DML, some grants, policy alterations, view properties, publications, comments, and other PostgreSQL details may require explicit reviewed migration SQL.
 
 ## Security invariants

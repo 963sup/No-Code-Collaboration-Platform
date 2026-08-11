@@ -9,21 +9,22 @@ GitHub is a semantic benchmark, not an implementation template. `Repository` is 
 ```text
 apps/web
 ├── packages/application
-├── packages/supabase
-├── packages/ui
-└── packages/domain
+├── packages/infrastructure/supabase
+└── packages/ui
 
-packages/supabase ── implements ──> packages/application ports
-packages/application ─────────────> packages/domain
-supabase/schemas ─────────────────> PostgreSQL / RLS
+packages/infrastructure/supabase ── implements ──> packages/application ports
+packages/application ────────────────────────────> packages/domain
+supabase/schemas ────────────────────────────────> PostgreSQL / RLS
 ```
 
 - `packages/domain` owns business truth.
-- `packages/application` owns commands, queries, and use-case ports.
-- `packages/supabase` maps generated database projections to application/domain contracts.
+- `packages/application` owns commands, queries, and provider-neutral use-case ports.
+- `packages/infrastructure/supabase` is the current infrastructure adapter. It maps Supabase DTOs and generated database projections to application/domain contracts without exposing Supabase clients or database types.
 - `packages/ui` owns source-controlled shadcn/ui primitives and design tokens.
-- `apps/web` is the Next.js composition root and delivery boundary.
+- `apps/web` is the Next.js delivery boundary and composition root.
 - `supabase/schemas` owns current database truth; migrations are reviewed deployment history.
+
+The dependency path is `Next.js Entry → Application → Port ← Supabase Adapter`. Supabase is the current infrastructure provider, not the system architecture.
 
 ## Next.js route groups
 

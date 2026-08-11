@@ -1,4 +1,4 @@
-export interface SupabasePublicConfig {
+interface SupabasePublicConfig {
   readonly publishableKey: string;
   readonly url: string;
 }
@@ -13,5 +13,5 @@ export function getSupabasePublicConfig(): SupabasePublicConfig {
     );
   }
 
-  return { url, publishableKey };
+  return { publishableKey, url };
 }

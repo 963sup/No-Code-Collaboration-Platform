@@ -3,7 +3,10 @@ import { resolve } from 'node:path';
 import { spawnSync } from 'node:child_process';
 
 const mode = process.argv[2];
-const outputPath = resolve(process.cwd(), 'packages/supabase/src/generated/database.types.ts');
+const outputPath = resolve(
+  process.cwd(),
+  'packages/infrastructure/supabase/src/generated/database.types.ts'
+);
 
 if (!['check', 'write'].includes(mode)) {
   throw new Error('Usage: node tooling/database-types.mjs <check|write>');

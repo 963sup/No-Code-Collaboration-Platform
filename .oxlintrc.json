@@ -14,7 +14,7 @@
     "playwright-report/**",
     "test-results/**",
     "supabase/.temp/**",
-    "packages/supabase/src/generated/**"
+    "packages/infrastructure/supabase/src/generated/**"
   ],
   "categories": {
     "correctness": "error",
