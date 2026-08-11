@@ -2,7 +2,6 @@ export const DEFAULT_AUTHENTICATED_PATH = '/app';
 
 const INTERNAL_ORIGIN = 'https://auth-navigation.invalid';
 const MAX_INTERNAL_PATH_LENGTH = 2048;
-const CONTROL_CHARACTERS = /[\u0000-\u001F\u007F]/u;
 
 export type RouteAccess =
   | 'anonymous-only'
@@ -10,6 +9,15 @@ export type RouteAccess =
   | 'auth-protocol'
   | 'identity-proof'
   | 'public';
+
+function containsControlCharacter(value: string) {
+  for (let index = 0; index < value.length; index += 1) {
+    const characterCode = value.charCodeAt(index);
+    if (characterCode <= 0x1f || characterCode === 0x7f) return true;
+  }
+
+  return false;
+}
 
 export function classifyRouteAccess(pathname: string): RouteAccess {
   if (pathname === '/sign-in' || pathname === '/sign-up') return 'anonymous-only';
@@ -43,7 +51,7 @@ export function resolveSafeNextPath(value: string | null | undefined) {
     !candidate.startsWith('/') ||
     candidate.startsWith('//') ||
     candidate.includes('\\') ||
-    CONTROL_CHARACTERS.test(candidate)
+    containsControlCharacter(candidate)
   ) {
     return DEFAULT_AUTHENTICATED_PATH;
   }
