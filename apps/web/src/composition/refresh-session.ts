@@ -5,10 +5,7 @@ import { type NextRequest, NextResponse } from 'next/server';
 import { getSupabasePublicConfig } from './supabase-config';
 
 function applyCacheHeaders(response: NextResponse) {
-  response.headers.set(
-    'Cache-Control',
-    'private, no-cache, no-store, must-revalidate, max-age=0'
-  );
+  response.headers.set('Cache-Control', 'private, no-cache, no-store, must-revalidate, max-age=0');
   response.headers.set('Expires', '0');
   response.headers.set('Pragma', 'no-cache');
   return response;
