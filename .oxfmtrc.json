@@ -17,6 +17,7 @@
     "playwright-report/**",
     "test-results/**",
     "supabase/.temp/**",
+    "packages/supabase/src/generated/**",
     "pnpm-lock.yaml",
     "**/*.md"
   ]

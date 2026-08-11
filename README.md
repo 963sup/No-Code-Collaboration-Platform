@@ -2,43 +2,54 @@
 
 > 逆向 GitHub 產品語意，從第一性原理重建以 Repository 為無代碼協作容器的企業協作平台。
 
-GitHub is a semantic benchmark, not an implementation template. In this platform, a `Repository` is a no-code collaboration container and the collaboration boundary for data, pages, workflows, documents, tasks, settings, members, permissions, and activity history—not a Git code store.
+GitHub is a semantic benchmark, not an implementation template. `Repository` is the collaboration boundary for data, pages, workflows, documents, tasks, settings, members, permissions, and activity history—not a Git code store.
 
-## Truth boundaries
+## Executable architecture
 
-- `packages/domain` owns business truth: canonical concepts, invariants, state transitions, and domain decisions.
-- `supabase/schemas` owns current database truth; `supabase/migrations` records reviewed deployment history.
-- `turbo.json` and workspace package manifests express the executable application architecture graph.
-- `types/database.types.ts` is generated from the applied database schema and is never edited as domain or schema truth.
-- `AGENTS.md` and scoped instruction files own durable repository operating constraints.
+```text
+apps/web
+├── packages/application
+├── packages/supabase
+├── packages/ui
+└── packages/domain
 
-## Development baseline
+packages/supabase ── implements ──> packages/application ports
+packages/application ─────────────> packages/domain
+supabase/schemas ─────────────────> PostgreSQL / RLS
+```
 
-The repository uses Node.js 24, pnpm, Turborepo, strict TypeScript, Supabase CLI/PostgreSQL, oxfmt, oxlint, Knip, Lefthook, and Playwright. Codex Desktop is configured through the trusted project layer under `.codex/`, with bounded session context and read-only documentation sources for OpenAI, version-sensitive dependencies, and Supabase.
+- `packages/domain` owns business truth.
+- `packages/application` owns commands, queries, and use-case ports.
+- `packages/supabase` maps generated database projections to application/domain contracts.
+- `packages/ui` owns source-controlled shadcn/ui primitives and design tokens.
+- `apps/web` is the Next.js composition root and delivery boundary.
+- `supabase/schemas` owns current database truth; migrations are reviewed deployment history.
+
+## Next.js route groups
+
+The web app uses one root layout and three route groups:
+
+- `(public)` — public product surfaces, including `/`.
+- `(auth)` — identity flows, including `/sign-in`.
+- `(app)` — authenticated collaboration surfaces under the real `/app` URL segment.
+
+Route groups clarify layout and access context but do not become URL segments or domain boundaries.
+
+## Technology baseline
+
+Node.js 24, pnpm, Turborepo, strict TypeScript, Next.js App Router, React, Tailwind CSS, source-owned shadcn/ui, Supabase Auth/PostgreSQL/RLS, Vitest, pgTAP, Playwright, oxfmt, oxlint, Knip, Lefthook, GitHub Actions, Vercel, and Supabase Cloud.
 
 ```sh
 corepack enable
 pnpm install --frozen-lockfile
 pnpm hooks:install
 pnpm env:check
-pnpm codex:check
 pnpm verify:full
-```
 
-Database work additionally requires a running Docker-compatible container runtime:
-
-```sh
 pnpm supabase:start
 pnpm supabase:verify
+pnpm test:e2e
 pnpm supabase:stop
 ```
 
-## Documentation
-
-- [`docs/README.md`](./docs/README.md) — documentation map and authority order
-- [`docs/CODEX_DESKTOP.md`](./docs/CODEX_DESKTOP.md) — Codex Desktop, MCP context routing, and trust boundaries
-- [`docs/DEVELOPMENT_ENVIRONMENT.md`](./docs/DEVELOPMENT_ENVIRONMENT.md) — workstation bootstrap and verification contract
-- [`docs/architecture/`](./docs/architecture/README.md) — target architecture and ADRs
-- [`docs/domains/`](./docs/domains/README.md) — justified bounded-context vocabulary and ownership
-
-Product concepts are added only after a real problem, owner, lifecycle, relationship model, invariant, and falsification condition justify them.
+Documentation starts at [`docs/README.md`](./docs/README.md). Codex Desktop configuration is documented in [`docs/CODEX_DESKTOP.md`](./docs/CODEX_DESKTOP.md).
