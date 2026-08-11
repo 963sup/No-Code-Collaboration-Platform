@@ -2,13 +2,17 @@
 
 This subtree owns declarative PostgreSQL schema truth and database enforcement. It is not the Supabase SDK adapter package and does not own business truth. `packages/domain` remains authoritative for business concepts and invariants; `packages/infrastructure/supabase` owns provider-specific TypeScript adapters.
 
+The selected Supabase adapter and the provisioned database environment are separate facts. The current environment is the disposable local Supabase CLI stack; no Supabase Cloud project is provisioned.
+
 ## Declarative schema workflow
 
 - `schemas/` is the current desired database state. Make canonical schema changes there first.
-- `migrations/` is append-only deployment history generated from reviewed declarative changes. Do not edit an already-deployed migration to change current truth.
+- `migrations/` is append-only accepted replayable transition history generated from reviewed declarative changes.
+- A migration file may be Draft or Accepted. It becomes Applied only for an identified environment whose migration ledger and provider evidence record it.
+- File presence, local reset, or CI success MUST NOT be described as proof of remote deployment.
 - `seed.sql` contains deterministic local/test data only. Never copy production data or secrets into it.
 - Generate migrations with `supabase db diff -f <descriptive-name>`, then review the SQL before applying it.
-- Prove reproducibility with `pnpm supabase:reset`, then run `pnpm supabase:lint`.
+- Prove reproducibility with `pnpm supabase:reset`, which explicitly targets the local database, then run `pnpm supabase:lint`.
 - Regenerate `packages/infrastructure/supabase/src/generated/database.types.ts` from the applied local database after accepted schema changes. Generated types are an Infrastructure projection, not an authoring surface.
 - Treat schema diff output as a draft. DML, some grants, policy alterations, view properties, publications, comments, and other PostgreSQL details may require explicit reviewed migration SQL.
 
@@ -24,4 +28,8 @@ This subtree owns declarative PostgreSQL schema truth and database enforcement. 
 
 ## External boundaries
 
-Local `start`, `status`, `reset`, linting, type generation, and declarative diffing are development operations. Linked or remote operations (`db push`, `db pull`, `db reset --linked`, remote SQL, production mutations) require explicit user intent because they cross the repository boundary.
+Local `start`, `status`, `reset --local`, linting, type generation, testing, and declarative diffing are development operations.
+
+Default package scripts and ordinary CI MUST NOT contain remote project credentials or invoke `supabase link`, `supabase db push`, `supabase db pull`, `supabase db reset --linked`, remote SQL, or equivalent persistent-environment mutation.
+
+Creating, linking, or mutating a Supabase Cloud project requires explicit user intent plus the provisioning and initial-baseline gates in the Operations Runbook and ADR-005.
