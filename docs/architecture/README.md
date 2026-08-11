@@ -26,6 +26,7 @@ This directory holds the target architecture for a platform that reverse-enginee
 18. A migration artifact proves a reviewed transition exists; only an environment-specific migration ledger and provider evidence prove that it was applied there.
 19. Local and CI database verification prove reproducibility and enforcement against disposable infrastructure, not preview or production validation.
 20. Default package scripts and verification workflows remain local-only until a separately accepted deployment boundary defines environment ownership, credentials, recovery, and evidence.
+21. Organization and Repository hard deletion are unavailable to end-user roles until an accepted lifecycle defines containment fate, historical continuity, retention, restore, redaction, and recovery behavior.
 
 ## Decision process
 
@@ -40,5 +41,6 @@ An accepted ADR must state the decision, evidence, constraints, assumptions, alt
 - [`ADR-003-repository-workspace-parallel-composition.md`](./ADR-003-repository-workspace-parallel-composition.md) defines the first Repository Parallel Route workspace, meaningful hard-navigation recovery, and its authorization-aware read boundary.
 - [`ADR-004-authority-delegation-invariants.md`](./ADR-004-authority-delegation-invariants.md) separates operation capability from role delegation and defines ownership continuity.
 - [`ADR-005-local-first-supabase-lifecycle.md`](./ADR-005-local-first-supabase-lifecycle.md) separates database contracts, replayable migrations, provisioned environments, and applied deployment evidence.
+- [`ADR-006-defer-destructive-container-deletion.md`](./ADR-006-defer-destructive-container-deletion.md) removes end-user Organization and Repository hard deletion until explicit lifecycle semantics are accepted.
 
 No final bounded-context map is declared yet. Domain modules must continue to be justified by coherent business problems rather than symmetry.
