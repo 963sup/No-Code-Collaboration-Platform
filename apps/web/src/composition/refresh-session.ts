@@ -4,22 +4,22 @@ import { type NextRequest, NextResponse } from 'next/server';
 
 import { getSupabasePublicConfig } from './supabase-config';
 
+function applyCacheHeaders(response: NextResponse) {
+  response.headers.set(
+    'Cache-Control',
+    'private, no-cache, no-store, must-revalidate, max-age=0'
+  );
+  response.headers.set('Expires', '0');
+  response.headers.set('Pragma', 'no-cache');
+  return response;
+}
+
 function isAppRoute(pathname: string) {
   return pathname === '/app' || pathname.startsWith('/app/');
 }
 
 export async function refreshSession(request: NextRequest) {
   const responseMutators: Array<(response: NextResponse) => void> = [];
-
-  function applyCacheHeaders(response: NextResponse) {
-    response.headers.set(
-      'Cache-Control',
-      'private, no-cache, no-store, must-revalidate, max-age=0'
-    );
-    response.headers.set('Expires', '0');
-    response.headers.set('Pragma', 'no-cache');
-    return response;
-  }
 
   function createResponse() {
     const response = NextResponse.next({ request });
