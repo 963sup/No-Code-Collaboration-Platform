@@ -42,10 +42,10 @@ The register answers:
 
 #### Direct evidence
 
-- `supabase/schemas/99_rls.sql` still exposes Organization and Repository DELETE operations to authenticated actors who satisfy the narrowed owner or Repository-admin authority policies.
+- At the current `main` baseline, `supabase/schemas/99_rls.sql` exposes Organization and Repository DELETE operations to authenticated actors who satisfy the narrowed owner or Repository-admin authority policies.
 - Repository, Resource, grant, membership, and Activity Event foreign keys use cascading deletion across the containment graph.
-- No accepted lifecycle contract currently defines tombstones, retention, redaction, restore behavior, event continuity, user-visible consequences, or recovery objectives for destructive deletion.
-- ADR-004 narrows Organization DELETE authority to owner-only as least-privilege containment; it explicitly does not accept destructive deletion as a product lifecycle.
+- No accepted lifecycle contract defines tombstones, retention, redaction, restore behavior, event continuity, user-visible consequences, or recovery objectives for destructive deletion.
+- ADR-004 separates destructive lifecycle acceptance from delegation authority.
 
 #### Predicted failure
 
@@ -55,16 +55,53 @@ A permitted hard delete can erase contained Resources, grants, and Activity Even
 
 - Organization and Repository hard deletion are not production-validated capabilities while this gap is open.
 - No UI, API, runbook, or operator procedure may describe destructive deletion as supported merely because a database policy currently permits it.
-- Production readiness remains blocked until the delete path is removed or an explicit lifecycle contract is accepted and verified.
+- Pull request [#16](https://github.com/963sup/No-Code-Collaboration-Platform/pull/16) is the candidate fail-closed repair: it removes the authenticated DELETE grants and matching DELETE policies without inventing an archive or soft-delete lifecycle.
+- The gap remains Open until the rebased exact PR head passes all required verification gates.
 
 #### Closure evidence
 
-Choose and verify one coherent model:
+Close this gap only when the capability-removal alternative is proven on the exact candidate head:
 
-1. **Remove the capability**: revoke or deny destructive deletion until a demonstrated lifecycle requires it; or
-2. **Accept the lifecycle**: define authority, confirmation, idempotency, containment fate, historical retention or lawful redaction, tombstones, restore behavior, backup expectations, concurrency, user communication, and audit evidence.
+1. `authenticated` has no DELETE privilege on `public.organizations` or `public.repositories`;
+2. no Organization or Repository DELETE RLS policy remains;
+3. an append-only accepted migration reproduces the change from the current baseline;
+4. pgTAP proves authenticated deletion fails while non-destructive administration and contained state remain intact; and
+5. Repository, Supabase, Browser, and Workflow verification gates pass on the exact head.
 
-In either model, schema constraints, RLS, Domain/Application behavior, pgTAP tests, recovery tests, and production gates must agree.
+The resulting evidence is local/CI enforcement evidence only; it is not proof of remote application.
+
+### GAP-LIFECYCLE-002 — Resource destructive lifecycle is not accepted
+
+- Status: Open
+- Affected contract: [`domains/repository-collaboration.md`](./domains/repository-collaboration.md)
+- Affected invariants: Resource lifecycle, historical evidence, retention, and recovery
+- Risk class: Data integrity, audit continuity, and recovery
+
+#### Direct evidence
+
+- `supabase/schemas/99_rls.sql` still grants `DELETE` on `public.resources` to `authenticated` and defines `resources_delete_manager` through the `resource.delete` capability.
+- The Repository Collaboration contract lists `resource.deleted` only as a candidate event and requires deletion to have explicit idempotency, failure, and audit behavior before acceptance.
+- Repository search finds no executable `resource.deleted` fact or event implementation outside the candidate contract.
+- No accepted Resource lifecycle defines archive, restore, retention, lawful redaction, purge, confirmation, or user-visible consequences.
+
+#### Predicted failure
+
+An authenticated actor with `resource.delete` can hard-delete a Resource even though the product cannot explain whether the action means archive, deletion, purge, or redaction, and no required historical fact or recovery contract proves what must survive.
+
+#### Temporary containment
+
+- Resource hard deletion must not be described or exposed as a production-validated user journey while this gap remains Open.
+- PR #16 deliberately does not broaden scope to Resource deletion; it removes only the higher-order Organization and Repository container cascade risk.
+- The next Resource lifecycle decision must either fail closed by removing the capability or accept a concrete lifecycle with evidence. Do not introduce a generic soft-delete engine merely to close the gap.
+
+#### Closure evidence
+
+Choose and verify one coherent Resource model:
+
+1. **Remove the capability**: revoke authenticated Resource DELETE and remove its DELETE policy until a real Resource lifecycle is required; or
+2. **Accept the lifecycle**: define the Resource transition, authority, confirmation, idempotency, retained history, restore or purge behavior, subtype implications, recovery, and user communication.
+
+In either model, Domain/Application semantics, declarative schema, migration history, pgTAP, browser behavior, and required Activity evidence must agree.
 
 ### GAP-IDENTITY-001 — Identity lifecycle stops after verified Session establishment
 
