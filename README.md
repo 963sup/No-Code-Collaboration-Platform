@@ -19,12 +19,33 @@ supabase/schemas ─────────────────────
 
 - `packages/domain` owns business truth.
 - `packages/application` owns commands, queries, and provider-neutral use-case ports.
-- `packages/infrastructure/supabase` is the current infrastructure adapter. It maps Supabase DTOs and generated database projections to application/domain contracts without exposing Supabase clients or database types.
+- `packages/infrastructure/supabase` is the selected infrastructure adapter. It maps Supabase DTOs and generated database projections to application/domain contracts without exposing Supabase clients or database types.
 - `packages/ui` owns source-controlled shadcn/ui primitives and design tokens.
 - `apps/web` is the Next.js delivery boundary and composition root.
-- `supabase/schemas` owns current database truth; migrations are reviewed deployment history.
+- `supabase/schemas` owns current database truth.
+- `supabase/migrations` contains reviewed, replayable database transitions. An environment's migration ledger—not the presence of a file—proves that a transition was applied there.
 
-The dependency path is `Next.js Entry → Application → Port ← Supabase Adapter`. Supabase is the current infrastructure provider, not the system architecture.
+The dependency path is `Next.js Entry → Application → Port ← Supabase Adapter`. Supabase is an infrastructure choice, not the system architecture.
+
+## Database lifecycle
+
+The only provisioned database runtime is the disposable Supabase CLI local stack used by developer workstations and GitHub Actions. No Supabase Cloud project is provisioned.
+
+```text
+supabase/schemas
+= current desired database state
+
+supabase/migrations
+= accepted replayable transition history
+
+local db reset + tests
+= reproducibility and enforcement evidence
+
+remote migration ledger + provider evidence
+= proof that a migration was applied to that environment
+```
+
+A migration file may exist before any hosted database exists. Local or CI success does not imply preview or production deployment. Supabase Cloud remains a deferred durable-hosting candidate until a real persistent-environment requirement and the operational gates in the runbook justify provisioning it.
 
 ## Next.js route groups
 
@@ -38,7 +59,7 @@ Route groups clarify layout and access context but do not become URL segments or
 
 ## Technology baseline
 
-Node.js 24, pnpm, Turborepo, strict TypeScript, Next.js App Router, React, Tailwind CSS, source-owned shadcn/ui, Supabase Auth/PostgreSQL/RLS, Vitest, pgTAP, Playwright, oxfmt, oxlint, Knip, Lefthook, GitHub Actions, Vercel, and Supabase Cloud.
+Node.js 24, pnpm, Turborepo, strict TypeScript, Next.js App Router, React, Tailwind CSS, source-owned shadcn/ui, Supabase CLI local Auth/PostgreSQL/RLS, Vitest, pgTAP, Playwright, oxfmt, oxlint, Knip, Lefthook, GitHub Actions, and Vercel.
 
 ```sh
 corepack enable

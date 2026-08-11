@@ -25,7 +25,7 @@
     "supabase:start:ci": "supabase start -x realtime,storage-api,imgproxy,mailpit,postgres-meta,studio,edge-runtime,logflare,vector,supavisor",
     "supabase:stop": "supabase stop",
     "supabase:status": "supabase status",
-    "supabase:reset": "supabase db reset",
+    "supabase:reset": "supabase db reset --local",
     "supabase:lint": "supabase db lint --local --level error",
     "supabase:test": "supabase test db",
     "supabase:types:local": "node tooling/database-types.mjs write",

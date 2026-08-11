@@ -1,4 +1,4 @@
-# ADR-005: Defer destructive container deletion until lifecycle semantics are accepted
+# ADR-006: Defer destructive container deletion until lifecycle semantics are accepted
 
 - Status: Accepted
 - Date: 2026-08-12
@@ -13,7 +13,7 @@ This decision does not add soft deletion, archive state, tombstones, or restore 
 
 ## Problem and success condition
 
-The current schema permits authenticated Organization owners and Repository administrators to hard-delete their collaboration boundaries. Foreign-key cascades then erase memberships, grants, Resources, and Activity Events even though the Product Contract treats Activity Events as durable historical facts and the Repository contract requires deletion semantics to be accepted before they become a public capability.
+Before this decision, the schema permitted authenticated Organization owners and Repository administrators to hard-delete their collaboration boundaries. Foreign-key cascades then erased memberships, grants, Resources, and Activity Events even though the Product Contract treats Activity Events as durable historical facts and the Repository contract requires deletion semantics to be accepted before they become a public capability.
 
 The decision succeeds when:
 
@@ -21,15 +21,15 @@ The decision succeeds when:
 - legitimate non-destructive administration remains available;
 - a denied Repository deletion preserves the Repository, contained Resources, and historical facts;
 - a denied Organization deletion preserves the Organization ownership boundary;
-- declarative schema, append-only migration, pgTAP behavior, and documentation agree; and
+- declarative schema, accepted migration, pgTAP behavior, and documentation agree; and
 - no UI or Application delete use case is required to enforce the boundary.
 
 ## Evidence ledger
 
 ### Observations
 
-- `organizations` and `repositories` currently grant `DELETE` to `authenticated`.
-- `organizations_delete_owner` and `repositories_delete_manager` project destructive authority through RLS.
+- `organizations` and `repositories` granted `DELETE` to `authenticated`.
+- `organizations_delete_owner` and `repositories_delete_manager` projected destructive authority through RLS.
 - Repository, Resource, grant, membership, and Activity Event relationships use cascading deletion.
 - No Domain or Application command defines Organization or Repository deletion.
 - No accepted contract defines archive, restore, retention, redaction, tombstones, recovery, or user communication for destructive container lifecycle.
@@ -39,10 +39,10 @@ The decision succeeds when:
 
 - Product behavior must fail closed when lifecycle semantics are unknown.
 - Database grants and RLS are independent enforcement layers.
-- `supabase/schemas` owns current database truth; migrations remain append-only deployment history.
+- `supabase/schemas` owns current database truth; `supabase/migrations` is append-only accepted replayable transition history, not proof of remote application.
 - Activity and audit history cannot be described as durable while an ordinary product command can erase it transitively.
 - Domain semantics remain provider-neutral.
-- Remote Supabase projects are outside this change; verification uses local or CI database stacks.
+- No Supabase Cloud project is provisioned; verification uses disposable local or CI database stacks and cannot be presented as production validation.
 
 ### Assumptions
 
@@ -149,7 +149,7 @@ Prediction: current valuable create/read/update collaboration continues, destruc
 
 ### Migration implications
 
-The migration revokes `DELETE` from `authenticated` and drops the two existing DELETE policies. No table shape or generated TypeScript type changes.
+The accepted migration revokes `DELETE` from `authenticated` and drops the two existing DELETE policies. No table shape or generated TypeScript type changes. The migration is locally replayable evidence; it is not remotely Applied until an identified environment migration ledger and provider observation prove application.
 
 ## Falsification conditions
 
@@ -179,7 +179,7 @@ Any successful authenticated DELETE, missing positive control, or loss of contai
 ## Follow-up contract changes
 
 - Remove authenticated Organization and Repository DELETE grants and policies from `supabase/schemas/99_rls.sql`.
-- Add an append-only migration revoking privileges and dropping policies.
+- Add an append-only accepted migration revoking privileges and dropping policies.
 - Add pgTAP regression coverage through the authenticated database role.
 - Record the decision in the architecture catalog.
 - Update `GAP-LIFECYCLE-001` only after exact-head verification proves the control.

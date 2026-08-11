@@ -13,10 +13,11 @@ This directory owns current PostgreSQL schema truth and the database enforcement
 - Actor attribution fields such as `granted_by` MUST be derived from or equal the authenticated actor and may not be client-forged.
 - Authorization helper functions belong in a non-exposed schema. `SECURITY DEFINER` is permitted only for an explicit RLS boundary, with `search_path = ''`, fully qualified relations, caller-aware logic, and least-privilege `EXECUTE` grants.
 - End-user authorization MUST never depend on service-role bypass, user-editable metadata, presentation context, or hidden UI controls.
+- Declarative schema changes MUST be accompanied by an append-only accepted migration and attack-path regression tests before merge.
+- Schema and migration files are local database contracts. Their presence MUST NOT be used as evidence that a Supabase Cloud project exists or that a remote deployment occurred.
 - Organization and Repository hard deletion MUST remain unavailable to end-user roles until an accepted lifecycle contract defines retention, restore, redaction, containment fate, historical continuity, and recovery behavior.
 - A missing lifecycle MUST fail closed through both table privileges and RLS policy absence; owner or administrator authority alone cannot make an undefined destructive transition valid.
 - `GAP-LIFECYCLE-001` remains the authoritative evidence record and may be closed only after exact-head verification proves this fail-closed boundary.
-- Declarative schema changes MUST be accompanied by an append-only migration and attack-path regression tests before merge.
 
 ## Projection rule
 

@@ -34,6 +34,15 @@ Repomix is intentionally on-demand only. It is useful for architecture snapshots
 
 Network access remains disabled inside the default Codex workspace sandbox. Dependency installation, browser installation, remote GitHub access, linked Supabase operations, and mutable infrastructure operations are explicit operations rather than silent side effects. Codex web search uses indexed mode for current external evidence without enabling shell networking.
 
+## Current database environment
+
+The only provisioned database runtime is the disposable Supabase CLI local stack used by developer workstations and GitHub Actions.
+
+- No Supabase Cloud project is provisioned.
+- `supabase/config.toml` configures local services; its `project_id` distinguishes local containers and is not a Cloud project reference.
+- The checked-in migration files are Accepted replayable transitions, not evidence of a remote deployment.
+- A future persistent environment requires the provisioning gate in [`operations/RUNBOOK.md`](./operations/RUNBOOK.md) and the decision in [`architecture/ADR-005-local-first-supabase-lifecycle.md`](./architecture/ADR-005-local-first-supabase-lifecycle.md).
+
 ## Codex project boundaries
 
 - `project_root_markers` anchors Codex at the directory containing `pnpm-workspace.yaml`, `turbo.json`, and `.git`, including when a session starts inside a workspace package.
@@ -55,7 +64,7 @@ Use these default gates:
 - `pnpm codex:check` — repository-owned Codex and workspace configuration contract.
 - `pnpm verify:fast` — Codex contract, formatting, linting, and strict TypeScript checks.
 - `pnpm verify:full` — fast verification plus dead-code and dependency analysis with Knip.
-- `pnpm supabase:verify` — rebuild the local database from migrations, then run database linting. Requires the local Supabase stack prerequisites.
+- `pnpm supabase:verify` — explicitly rebuild the local database from accepted migrations, then run database linting, pgTAP, and generated-type consistency checks. Requires the local Supabase stack prerequisites.
 - `pnpm supabase:types:local` — regenerate the TypeScript projection from the applied local schema after accepted schema changes.
 - `pnpm test:e2e` — Playwright behavioral verification when E2E tests exist.
 - `pnpm turbo:graph` — bounded workspace package discovery before cross-package changes.
@@ -75,23 +84,41 @@ A package receives a Turbo task only when its `package.json` exposes a real exec
 3. identify direct dependencies and dependents;
 4. run the narrowest package tasks that can falsify the change.
 
-`packages/domain` is the business-truth boundary. `packages/application` orchestrates use cases and defines provider-neutral ports. `packages/infrastructure/supabase` implements those ports for the current provider. `apps/web` delivers use cases and wires adapters only in its composition boundary. Add a package or dependency edge only when a real responsibility and executable contract justify it.
+`packages/domain` is the business-truth boundary. `packages/application` orchestrates use cases and defines provider-neutral ports. `packages/infrastructure/supabase` implements those ports for the selected adapter. `apps/web` delivers use cases and wires adapters only in its composition boundary. Add a package or dependency edge only when a real responsibility and executable contract justify it.
 
 ## Database contract
 
-Supabase CLI is the database lifecycle tool. `supabase/schemas` is current database truth, while `supabase/migrations` records append-only deployment history. Do not alternate between declarative and imperative schema authoring on a per-change basis.
+Supabase CLI is the local database lifecycle tool.
+
+```text
+supabase/schemas
+= current desired database state
+
+supabase/migrations
+= append-only accepted replayable transition history
+
+local migration ledger
+= transitions applied to the current disposable local database
+
+remote migration ledger
+= future environment-specific applied-state evidence
+```
+
+Do not alternate between declarative and imperative schema authoring on a per-change basis.
 
 For a normal schema change:
 
 1. Read `supabase/AGENTS.md` and edit the appropriate file under `supabase/schemas/`.
 2. Generate the migration from the declared state with `supabase db diff -f <descriptive-name>`.
-3. Review the generated SQL as a draft. Schema diffing does not reliably capture every PostgreSQL object or DML change.
-4. Run `pnpm supabase:reset` to prove migrations recreate the database from scratch.
+3. Review the generated SQL as a Draft. Schema diffing does not reliably capture every PostgreSQL object or DML change.
+4. Run `pnpm supabase:reset` to prove accepted migrations recreate the local database from scratch.
 5. Run `pnpm supabase:lint`.
-6. Regenerate `packages/infrastructure/supabase/src/generated/database.types.ts` with `pnpm supabase:types:local` when the applied schema affects generated types.
-7. Commit the declarative schema and reviewed migration together.
+6. Regenerate `packages/infrastructure/supabase/src/generated/database.types.ts` with `pnpm supabase:types:local` when the applied local schema affects generated types.
+7. Commit the declarative schema and reviewed migration together; the merged file is Accepted, not remotely Applied.
 
-Do not make canonical schema changes through Studio, the SQL editor, or ad hoc local SQL and then expect declarative diffing to recover them. Linked `db push`, `db pull`, `db reset --linked`, remote SQL, and production changes cross an external trust boundary and require explicit user intent.
+Do not make canonical schema changes through Studio, the SQL editor, or ad hoc local SQL and then expect declarative diffing to recover them.
+
+Default package scripts and ordinary CI are local-only. They must not include remote project credentials or invoke `supabase link`, `supabase db push`, `supabase db pull`, `supabase db reset --linked`, remote SQL, or equivalent persistent-environment mutation. Adding a remote path requires a separately accepted deployment workflow, explicit user intent, and the runbook provisioning gate.
 
 Tables exposed through the Data API require deliberate grants and RLS. Authentication is not authorization: `TO authenticated` must still be paired with predicates that enforce resource ownership or capabilities. Never use user-editable metadata as an authorization source, never expose service-role credentials to public clients, and treat `SECURITY DEFINER` as a privileged exception rather than a permission workaround.
 
