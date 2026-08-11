@@ -9,7 +9,7 @@ create table public.resources (
   created_by uuid not null references auth.users (id),
   created_at timestamptz not null default timezone('utc', now()),
   updated_at timestamptz not null default timezone('utc', now()),
-  constraint resources_title_length check (char_length(title) between 1 and 240),
+  constraint resources_title_length check (char_length(btrim(title)) between 1 and 240),
   constraint resources_page_content_shape check (
     kind <> 'page'
     or (

@@ -1,9 +1,59 @@
+create or replace function private.touch_updated_at()
+returns trigger
+language plpgsql
+security invoker
+set search_path = ''
+as $$
+begin
+  new.updated_at := timezone('utc', statement_timestamp());
+  return new;
+end;
+$$;
+
+do $$
+begin
+  if exists (
+    select 1
+    from public.resources
+    where kind = 'page'
+      and not (
+        content = '{}'::jsonb
+        or (
+          jsonb_typeof(content) = 'object'
+          and jsonb_typeof(content -> 'body') = 'string'
+          and content = jsonb_build_object('body', content ->> 'body')
+        )
+      )
+  ) then
+    raise exception 'existing Page content does not satisfy the accepted migration inputs'
+      using errcode = '23514';
+  end if;
+
+  if exists (
+    select 1
+    from public.resources
+    where kind = 'page'
+      and char_length(btrim(title)) = 0
+  ) then
+    raise exception 'existing Page title is empty after trimming'
+      using errcode = '23514';
+  end if;
+end;
+$$;
+
 update public.resources
-set content = jsonb_build_object('body', coalesce(content ->> 'body', ''))
-where kind = 'page';
+set content = '{"body": ""}'::jsonb
+where kind = 'page'
+  and content = '{}'::jsonb;
 
 alter table public.resources
   alter column content set default '{"body": ""}'::jsonb;
+
+alter table public.resources
+  drop constraint resources_title_length;
+
+alter table public.resources
+  add constraint resources_title_length check (char_length(btrim(title)) between 1 and 240);
 
 alter table public.resources
   add constraint resources_page_content_shape check (
@@ -14,6 +64,16 @@ alter table public.resources
       and content = jsonb_build_object('body', content ->> 'body')
     )
   );
+
+revoke update (updated_at) on public.resources from authenticated;
+
+drop trigger resources_touch_updated_at on public.resources;
+
+create trigger resources_touch_updated_at
+before update of title, content on public.resources
+for each row
+when (old.title is distinct from new.title or old.content is distinct from new.content)
+execute function private.touch_updated_at();
 
 create function private.record_resource_updated()
 returns trigger

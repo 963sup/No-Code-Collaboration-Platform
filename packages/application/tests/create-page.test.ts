@@ -90,6 +90,35 @@ describe('CreatePage', () => {
     expect(createPage).not.toHaveBeenCalled();
   });
 
+  it('accepts Organization admin governance authority without a fabricated direct grant', async () => {
+    const page = {
+      content: { body: '' },
+      createdAt: '2026-08-12T00:00:00.000Z',
+      createdBy: 'user-1',
+      id: 'page-governance',
+      kind: 'page' as const,
+      repositoryId: repository.id,
+      title: 'Governed Page',
+      updatedAt: '2026-08-12T00:00:00.000Z'
+    };
+    const createPage = vi.fn().mockResolvedValue(page);
+    const useCase = new CreatePage(
+      createIdentityProvider('user-1'),
+      createRepositoryReader(),
+      {
+        async readRepositoryAuthoritySources() {
+          return { directRole: null, organizationRole: 'admin' };
+        }
+      },
+      { createPage, updatePage: vi.fn() }
+    );
+
+    await expect(
+      useCase.execute({ repositoryId: repository.id, title: 'Governed Page' })
+    ).resolves.toEqual({ ok: true, page });
+    expect(createPage).toHaveBeenCalledTimes(1);
+  });
+
   it('creates a normalized blank Page for a Contributor', async () => {
     const page = {
       content: { body: '' },

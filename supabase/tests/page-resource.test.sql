@@ -3,14 +3,16 @@ begin;
 create extension if not exists pgtap with schema extensions;
 set local search_path = extensions, public, pg_catalog;
 
-select plan(16);
+select plan(22);
 
 insert into auth.users (id, email, raw_user_meta_data)
 values
   ('00000000-0000-0000-0000-000000000301', 'page-owner@example.com', '{}'::jsonb),
   ('00000000-0000-0000-0000-000000000302', 'page-contributor@example.com', '{}'::jsonb),
   ('00000000-0000-0000-0000-000000000303', 'page-viewer@example.com', '{}'::jsonb),
-  ('00000000-0000-0000-0000-000000000304', 'page-outsider@example.com', '{}'::jsonb);
+  ('00000000-0000-0000-0000-000000000304', 'page-outsider@example.com', '{}'::jsonb),
+  ('00000000-0000-0000-0000-000000000305', 'page-admin@example.com', '{}'::jsonb),
+  ('00000000-0000-0000-0000-000000000306', 'page-member@example.com', '{}'::jsonb);
 
 insert into public.organizations (id, slug, name, created_by)
 values (
@@ -19,6 +21,19 @@ values (
   'Page Organization',
   '00000000-0000-0000-0000-000000000301'
 );
+
+insert into public.organization_memberships (organization_id, user_id, role)
+values
+  (
+    '10000000-0000-0000-0000-000000000301',
+    '00000000-0000-0000-0000-000000000305',
+    'admin'
+  ),
+  (
+    '10000000-0000-0000-0000-000000000301',
+    '00000000-0000-0000-0000-000000000306',
+    'member'
+  );
 
 insert into public.repositories (id, organization_id, slug, name, created_by)
 values (
@@ -44,7 +59,37 @@ values
     '00000000-0000-0000-0000-000000000301'
   );
 
+select is(
+  has_column_privilege('authenticated', 'public.resources', 'updated_at', 'UPDATE'),
+  false,
+  'authenticated clients cannot assign Page concurrency evidence directly'
+);
+
 set local role authenticated;
+select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-000000000305', true);
+
+select is(
+  (select private.current_repository_role('20000000-0000-0000-0000-000000000301')),
+  'admin'::public.repository_role,
+  'Organization admin derives Repository admin authority without a direct grant'
+);
+
+select is(
+  (select private.has_repository_capability(
+    '20000000-0000-0000-0000-000000000301',
+    'resource.create'
+  )),
+  true,
+  'Organization admin governance authority expands to Repository capabilities'
+);
+
+select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-000000000306', true);
+
+select ok(
+  (select private.current_repository_role('20000000-0000-0000-0000-000000000301')) is null,
+  'ordinary Organization membership does not create Repository authority'
+);
+
 select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-000000000302', true);
 
 select lives_ok(
@@ -107,9 +152,22 @@ select is(
   'Page update fact explains which state dimensions changed'
 );
 
+select set_config(
+  'test.page_updated_at',
+  (select updated_at::text from public.resources where id = '30000000-0000-0000-0000-000000000301'),
+  true
+);
+select pg_sleep(0.02);
+
 update public.resources
 set title = title
 where id = '30000000-0000-0000-0000-000000000301';
+
+select is(
+  (select updated_at::text from public.resources where id = '30000000-0000-0000-0000-000000000301'),
+  current_setting('test.page_updated_at'),
+  'a no-op Page update preserves concurrency evidence'
+);
 
 select is(
   (select count(*)::integer from public.activity_events where event_type = 'resource.updated' and subject_id = '30000000-0000-0000-0000-000000000301'),
@@ -131,6 +189,21 @@ select throws_ok(
   '23514',
   'new row for relation "resources" violates check constraint "resources_page_content_shape"',
   'database shape enforcement rejects malformed Page content'
+);
+
+select throws_ok(
+  $$
+    insert into public.resources (repository_id, kind, title, created_by)
+    values (
+      '20000000-0000-0000-0000-000000000301',
+      'page',
+      '   ',
+      '00000000-0000-0000-0000-000000000302'
+    )
+  $$,
+  '23514',
+  'new row for relation "resources" violates check constraint "resources_title_length"',
+  'database title enforcement rejects a whitespace-only Page title'
 );
 
 select throws_ok(
