@@ -17,6 +17,9 @@ const repositories = [
 describe('ListAccessibleRepositories', () => {
   it('returns only what the authorization-aware reader exposes', async () => {
     const reader: RepositoryReader = {
+      async findAccessibleRepositoryById() {
+        return null;
+      },
       async listAccessibleRepositories() {
         return repositories;
       }

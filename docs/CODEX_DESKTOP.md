@@ -1,10 +1,10 @@
 # Codex Desktop Baseline
 
-This repository uses Codex Desktop as an execution environment, not as a source of product or architecture truth. The trusted project layer makes repository instructions, context sources, command boundaries, workspace topology, and verification entry points explicit and machine-checkable.
+This repository uses Codex Desktop as an execution environment, not as a source of product or architecture truth. The trusted project layer makes repository instructions, context sources, command boundaries, workspace topology, worktree setup, review criteria, and verification entry points explicit and machine-checkable.
 
 ## Trust and ownership
 
-Codex loads `.codex/config.toml`, project agents, rules, and hooks only after the repository is trusted. Repository configuration contains shared, non-secret defaults. Authentication, personal profiles, notifications, provider routing, API keys, project references, and production credentials remain machine-local.
+Codex loads `.codex/config.toml`, project agents, rules, hooks, environments, and skills only after the repository is trusted. Repository configuration contains shared, non-secret defaults. Authentication, personal profiles, notifications, provider routing, API keys, project references, and production credentials remain machine-local.
 
 Authority remains:
 
@@ -75,6 +75,40 @@ The single `SessionStart` hook emits bounded observations:
 
 The hook does not inspect secrets, call remote services, infer architecture, or mutate repository state.
 
+## Local worktree environment
+
+Codex Desktop can create isolated Git worktrees for parallel tasks. The committed `.codex/environments/environment.toml` provides the minimum deterministic setup:
+
+```sh
+corepack enable
+pnpm install --frozen-lockfile
+pnpm codex:check
+```
+
+It also exposes three bounded actions:
+
+- `Run web` starts the Next.js development server;
+- `Verify worktree` runs `pnpm verify:fast`;
+- `Verify full` runs the merge-level `pnpm verify:full` gate.
+
+Setup deliberately does not start Supabase, install browser binaries, copy `.env` files, authenticate external services, or mutate infrastructure. Those operations remain explicit and task-scoped.
+
+## Code review
+
+Use a read-only Codex review before proposing consequential changes. The root `AGENTS.md` defines three project-specific checks that mechanical tools cannot prove:
+
+1. product semantic drift away from Repository as a no-code collaboration boundary;
+2. Architecture truth-boundary violations between Domain, Application, Infrastructure, and Delivery;
+3. authorization or external-trust-boundary bypasses.
+
+A clean model review is evidence, not authority. TypeScript, Oxc, Vitest, Supabase tests, Playwright, actionlint, zizmor, and GitHub Actions remain the deterministic gates.
+
+## CI guardrails
+
+The workflow guardrail job runs in parallel with Repository and Supabase verification so security analysis does not delay other feedback. It validates GitHub Actions syntax with actionlint and analyzes workflow security with zizmor. Every reusable Action is pinned to an immutable commit SHA, checkout credentials are not persisted, and workflow permissions remain read-only by default.
+
+Secret scanning is not duplicated in this workflow. Repository-level GitHub secret scanning and push protection should remain the primary controls; add a separate scanner only when a concrete custom-pattern or local-parity requirement exists.
+
 ## Command boundary
 
 Project rules allow routine bounded inspection and local verification. They prompt before destructive filesystem operations and remote Supabase mutations. Resetting a linked Supabase database remains forbidden. When rules overlap, the most restrictive matching rule is expected to win.
@@ -96,8 +130,9 @@ For database changes:
 pnpm supabase:start
 pnpm supabase:reset
 pnpm supabase:lint
+pnpm supabase:test
 pnpm supabase:types:local
 pnpm supabase:stop
 ```
 
-The development baseline is complete only when a clean install is deterministic, the Codex contract passes, the workspace graph is explicit, local Supabase can rebuild from repository state, and CI runs repository plus database contracts without hidden machine state.
+The development baseline is complete only when a clean install is deterministic, the Codex and operational contracts pass, the workspace graph is explicit, local Supabase can rebuild from repository state, and CI runs guardrail, repository, database, and browser contracts without hidden machine state.
