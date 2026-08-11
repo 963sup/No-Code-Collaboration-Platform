@@ -12,6 +12,8 @@ Use [`DOMAIN_TEMPLATE.md`](./DOMAIN_TEMPLATE.md) when evidence supports a candid
 
 A package, schema file, route, or UI section does not prove a bounded context. Conversely, one accepted domain may span several implementation boundaries.
 
+A Candidate contract may intentionally lead the executable baseline, but every observed mismatch must be recorded in [`../IMPLEMENTATION_GAPS.md`](../IMPLEMENTATION_GAPS.md). Candidate status is not permission to describe target behavior as already enforced.
+
 ## Catalog
 
 ### Candidate contracts
@@ -31,8 +33,9 @@ Promote a candidate only when:
 2. canonical vocabulary removes rather than adds ambiguity;
 3. entities, relationships, states, invariants, and failure behavior are explicit;
 4. dependencies have one-way ownership and translation boundaries;
-5. at least one authorization-sensitive vertical slice proves the contract;
-6. a second real use case can reuse the boundary without duplicated decisions or circular dependencies; and
-7. an accepted ADR records any resulting major architecture boundary.
+5. known implementation gaps are registered, contained, and have explicit closure evidence;
+6. at least one authorization-sensitive vertical slice proves the contract;
+7. a second real use case can reuse the boundary without duplicated decisions or circular dependencies; and
+8. an accepted ADR records any resulting major architecture boundary.
 
 Domain acceptance does not require a microservice, independent datastore, or separate deployment.

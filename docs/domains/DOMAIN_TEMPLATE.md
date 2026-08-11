@@ -62,6 +62,12 @@ List meaningful domain events, triggers, consumers, feedback loops, delays, and 
 
 For every dependency, state direction, contract, trust boundary, timeout or unavailability behavior, and the owner of translation.
 
+## Known implementation gaps
+
+List every observed difference between this target contract and current code, schema, policies, tests, or production behavior. Use stable identifiers from [`../IMPLEMENTATION_GAPS.md`](../IMPLEMENTATION_GAPS.md).
+
+For each gap, state the direct evidence, risk, temporary containment, accountable owner, and closure evidence. If no gap is known, state which executable and runtime evidence was checked. An undocumented mismatch is a contract failure.
+
 ## Alternatives and removal test
 
 Include the do-nothing model and simpler alternatives. State what breaks if this domain contract is removed.
