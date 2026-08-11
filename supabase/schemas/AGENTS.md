@@ -15,6 +15,7 @@ This directory owns current PostgreSQL schema truth and the database enforcement
 - End-user authorization MUST never depend on service-role bypass, user-editable metadata, presentation context, or hidden UI controls.
 - Organization and Repository hard deletion MUST remain unavailable to end-user roles until an accepted lifecycle contract defines retention, restore, redaction, containment fate, historical continuity, and recovery behavior.
 - A missing lifecycle MUST fail closed through both table privileges and RLS policy absence; owner or administrator authority alone cannot make an undefined destructive transition valid.
+- `GAP-LIFECYCLE-001` remains the authoritative evidence record and may be closed only after exact-head verification proves this fail-closed boundary.
 - Declarative schema changes MUST be accompanied by an append-only migration and attack-path regression tests before merge.
 
 ## Projection rule
