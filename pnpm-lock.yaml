@@ -49,7 +49,7 @@ importers:
         version: link:../../packages/application
       '@no-code-collaboration-platform/supabase':
         specifier: workspace:*
-        version: link:../../packages/supabase
+        version: link:../../packages/infrastructure/supabase
       '@no-code-collaboration-platform/ui':
         specifier: workspace:*
         version: link:../../packages/ui
@@ -90,14 +90,14 @@ importers:
 
   packages/domain: {}
 
-  packages/supabase:
+  packages/infrastructure/supabase:
     dependencies:
       '@no-code-collaboration-platform/application':
         specifier: workspace:*
-        version: link:../application
+        version: link:../../application
       '@no-code-collaboration-platform/domain':
         specifier: workspace:*
-        version: link:../domain
+        version: link:../../domain
       '@supabase/ssr':
         specifier: 0.12.4
         version: 0.12.4(@supabase/supabase-js@2.112.2)
