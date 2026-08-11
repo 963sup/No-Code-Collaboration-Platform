@@ -7,6 +7,7 @@ import {
   CardTitle
 } from '@no-code-collaboration-platform/ui';
 import type { Metadata } from 'next';
+import Link from 'next/link';
 
 import { createRequestServices } from '@/composition/create-request-services';
 
@@ -43,15 +44,21 @@ export default async function AppHomePage() {
       ) : (
         <div className='grid gap-4 md:grid-cols-2 xl:grid-cols-3'>
           {repositories.map((repository) => (
-            <Card key={repository.id}>
-              <CardHeader>
-                <CardTitle>{repository.name}</CardTitle>
-                <CardDescription>{repository.description ?? repository.slug}</CardDescription>
-              </CardHeader>
-              <CardContent className='text-sm text-muted-foreground'>
-                Visibility: {repository.visibility}
-              </CardContent>
-            </Card>
+            <Link
+              className='block rounded-xl outline-none ring-offset-background transition-transform hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2'
+              href={`/app/repositories/${repository.id}`}
+              key={repository.id}
+            >
+              <Card className='h-full transition-colors hover:bg-accent/30'>
+                <CardHeader>
+                  <CardTitle>{repository.name}</CardTitle>
+                  <CardDescription>{repository.description ?? repository.slug}</CardDescription>
+                </CardHeader>
+                <CardContent className='text-sm text-muted-foreground'>
+                  Visibility: {repository.visibility}
+                </CardContent>
+              </Card>
+            </Link>
           ))}
         </div>
       )}

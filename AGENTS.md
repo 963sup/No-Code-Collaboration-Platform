@@ -66,13 +66,21 @@ For architecture, product, data-model, permission, navigation, or interaction wo
 - Do not commit secrets, tokens, `.env` files, credentials, project references, or private production data.
 - Treat external systems and mutable infrastructure as separate trust boundaries. Reads may be automatic only when explicitly configured; destructive or mutating actions require user intent.
 
+## Code Review Rules
+
+Apply these rules when Codex or a read-only reviewer inspects a diff. Report only consequential violations and state the safe alternative.
+
+- **Product semantic drift:** Flag changes that treat `Repository` as a Git/code container or copy a GitHub concept without proving the collaboration problem, scope, relationships, invariants, and minimum sufficient model. The safe alternative preserves Repository as the no-code collaboration boundary.
+- **Architecture truth-boundary violations:** Flag Domain or Application imports of Next.js, React runtime, Supabase SDKs, clients, DTOs, Rows, or generated database types; provider queries in routes, layouts, actions, handlers, or components; Supabase-specific implementation outside `packages/infrastructure/supabase` and `apps/web/src/composition`; generated-type leakage; or business decisions inside delivery, mapper, or repository adapters. Move the decision to its owning boundary and keep provider wiring explicit.
+- **Authorization enforcement bypass:** Flag session existence treated as resource authorization, UI visibility as the only enforcement, service or secret credentials reaching browser code, weakened RLS without an equivalent invariant, user-editable metadata used as authority, or external mutations without explicit intent. Use Domain capability semantics, Application decisions, least-privilege RLS, and explicit approval at trust boundaries.
+
 ## Toolchain contract
 
 - `pnpm` is the only JavaScript package manager for this repository.
 - TypeScript strict mode is the default type contract. Do not weaken strictness to make a change pass.
 - `oxfmt` is the only formatter and `oxlint` is the only general JavaScript/TypeScript linter. Do not add overlapping formatter/linter stacks.
-- Run `pnpm codex:check` when Codex configuration, agents, skills, hooks, or scoped instructions change.
-- Run `pnpm verify:fast` after normal code changes. Run `pnpm verify:full` before proposing a merge when dependencies or exports may have changed.
+- Run `pnpm codex:check` when Codex configuration, agents, skills, environments, hooks, rules, or scoped instructions change.
+- Run `pnpm verify:fast` after normal code changes. Run `pnpm verify:full` before proposing a merge when dependencies, exports, entry points, builds, or dead-code reachability may have changed.
 - Playwright is the behavioral test boundary for user-visible browser flows. Start with Chromium; add browsers only for a demonstrated compatibility requirement.
 - Supabase schema is the source of truth for database structure. Once a schema exists, regenerate TypeScript database types instead of hand-authoring substitutes.
 - `ast-grep` rules must encode proven architecture invariants. Do not create structural rules merely because the tool is installed.

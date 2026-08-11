@@ -8,5 +8,6 @@ export type {
   PasswordCredentials
 } from './ports/identity-provider';
 export type { RepositoryReader } from './ports/repository-reader';
+export { GetAccessibleRepository } from './queries/get-accessible-repository';
 export { GetCurrentIdentity } from './queries/get-current-identity';
 export { ListAccessibleRepositories } from './queries/list-accessible-repositories';

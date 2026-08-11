@@ -24,3 +24,15 @@ test('protected app route redirects an unauthenticated actor', async ({ page }) 
 
   await expect(page).toHaveURL(/\/sign-in\?next=%2Fapp$/u);
 });
+
+test('nested Repository workspace preserves the requested URL through authentication', async ({
+  page
+}) => {
+  const repositoryPath = '/app/repositories/00000000-0000-4000-8000-000000000001';
+
+  await page.goto(repositoryPath);
+
+  await expect(page).toHaveURL(
+    new RegExp(`/sign-in\\?next=${encodeURIComponent(repositoryPath)}$`, 'u')
+  );
+});

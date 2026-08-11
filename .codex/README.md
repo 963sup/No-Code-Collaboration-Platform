@@ -7,6 +7,7 @@ This directory contains the shared repository-scoped Codex configuration. Codex 
 - `config.toml` owns non-secret project defaults, sandboxing, approvals, bounded web search, agent concurrency, environment inheritance, and repository MCP servers.
 - `agents/` owns narrow read-only specialists. The primary thread retains decision, edit, and verification responsibility.
 - `hooks.json` and `hooks/` own bounded lifecycle observations. Hook output is never product or architecture truth.
+- `environments/environment.toml` owns deterministic worktree setup and a minimal set of shared terminal actions.
 - `rules/` owns command approval boundaries. Routine local inspection may be automatic; destructive or external mutation remains prompt-gated or forbidden.
 
 ## Context routing
@@ -17,6 +18,26 @@ This directory contains the shared repository-scoped Codex configuration. Codex 
 - Local semantic code navigation: optional Serena.
 
 The committed Supabase MCP endpoint is documentation-only. Project references, OAuth/PAT credentials, database tools, and production access remain machine-local. See [`docs/CODEX_DESKTOP.md`](../docs/CODEX_DESKTOP.md).
+
+## Execution loop
+
+The shared loop is intentionally small:
+
+```text
+new worktree
+    ↓
+deterministic setup
+    ↓
+Codex change
+    ↓
+pnpm verify:fast
+    ↓
+/read-only review against project invariants
+    ↓
+pnpm verify:full before merge
+```
+
+Verification remains explicit. The repository does not install an automatic Stop hook because every turn should not pay the cost of a full worktree gate, and a model continuation is not a deterministic merge boundary.
 
 ## Model strategy
 
@@ -34,6 +55,8 @@ Do not add a custom agent when a deterministic check or an existing specialist a
 
 Do not commit authentication, provider routing, project references, profiles, notifications, telemetry destinations, personal editor preferences, API keys, or database credentials. Keep those in the user's Codex configuration or an approved workstation authentication boundary.
 
+Auto-review, approval routing, and notifications remain user or enterprise policy rather than committed project defaults.
+
 ## Verification
 
-Run `pnpm codex:check` after changing Codex configuration, agents, skills, hooks, rules, or scoped instructions. Run `pnpm verify:full` before merging a baseline or dependency change.
+Run `pnpm codex:check` after changing Codex configuration, agents, skills, environments, hooks, rules, or scoped instructions. Use `pnpm verify:fast` for normal worktree evidence and `pnpm verify:full` before merging a baseline, dependency, export, or build-boundary change.
