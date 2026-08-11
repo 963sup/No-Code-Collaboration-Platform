@@ -30,9 +30,7 @@ const requiredDocuments = [
   'docs/operations/RUNBOOK.md'
 ];
 
-const documents = Object.fromEntries(
-  requiredDocuments.map((path) => [path, read(path)])
-);
+const documents = Object.fromEntries(requiredDocuments.map((path) => [path, read(path)]));
 
 requireMatch(
   'docs/PRODUCT.md',
