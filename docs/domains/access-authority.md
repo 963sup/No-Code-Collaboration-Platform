@@ -2,7 +2,7 @@
 
 - Status: Candidate
 - Contract owner: Product and Domain
-- Last reviewed: 2026-08-11
+- Last reviewed: 2026-08-12
 
 ## Problem owned and success condition
 
@@ -18,6 +18,8 @@ This contract succeeds when Domain decisions, Application use cases, database en
 
 - The current Domain defines Repository Roles and explicit Repository Capabilities.
 - The current database stores direct User-to-Repository grants.
+- Organization `owner` and `admin` relationships already authorize Repository creation/administration at the Organization ownership boundary; Repository creation would be incoherent if the same accepted governance relationship immediately lost authority over the created Repository.
+- The database has historically projected Organization owner/admin governance authority to Repository admin; the Page slice makes that rule provider-neutral Domain truth instead of leaving SQL as its accidental owner.
 - `Collaborator` is already modeled as a relationship-derived classification rather than a User subtype.
 - Repository reads pass through authorization-sensitive Application and database boundaries.
 - RLS and helper functions enforce row access independently of UI visibility.
@@ -31,18 +33,19 @@ This contract succeeds when Domain decisions, Application use cases, database en
 - Database enforcement must fail closed.
 - An actor cannot grant authority beyond the accepted delegation rules.
 - Provider service credentials must never become browser authority.
+- Organization governance authority must not be represented as a fabricated direct Repository Grant.
 
 ### Assumptions
 
 - The first model can use additive capability sources without explicit deny precedence.
-- Direct User grants are sufficient for the current implemented slice.
+- Direct User grants plus Organization owner/admin governance authority are sufficient for the current implemented slice.
 - Roles remain a small fixed set while Capabilities are the decision primitive.
 - Repository is the primary grant scope.
 - Database RLS can project the same accepted semantics without becoming the Domain owner.
 
 ### Unknowns
 
-- When Organization membership should contribute a baseline grant.
+- Whether ordinary Organization membership should contribute a Repository base permission.
 - Whether Team or another Organization-scoped group principal is required.
 - Whether Enterprise or Organization policies must cap granted Capabilities.
 - Whether custom roles are needed.
@@ -51,6 +54,7 @@ This contract succeeds when Domain decisions, Application use cases, database en
 
 ### Value choices
 
+- Organization owner/admin is accepted as governance-derived Repository admin authority because those roles administer the Organization-owned Repository lifecycle; ordinary membership remains non-authoritative.
 - Prefer explicit Capabilities over scattered role-name conditionals.
 - Prefer explainable additive authority before adding deny precedence.
 - Prefer least privilege and fail-closed behavior over convenience.
@@ -62,6 +66,7 @@ This contract succeeds when Domain decisions, Application use cases, database en
 This contract owns:
 
 - Principal-to-Repository Grant semantics;
+- accepted governance-derived Repository authority sources;
 - Repository Role definitions as Capability bundles;
 - effective Capability calculation;
 - delegation rules for creating, changing, and revoking grants;
@@ -85,6 +90,7 @@ This contract does not own:
 | Actor | Authenticated User attempting an action |
 | Principal | Subject eligible to receive authority; currently a User |
 | Grant | Relationship assigning one Role to one Principal for one Repository |
+| Governance authority source | Accepted ownership/administration relationship that derives Repository authority without creating a Grant |
 | Role | Named Capability bundle |
 | Capability | Specific allowed action on a defined target |
 | Effective Capabilities | Capabilities produced by accepted authority sources after accepted constraints |
@@ -106,6 +112,22 @@ Actor     ── exercises ──────────> Effective Capabilitie
 ```
 
 The current minimum implementation allows one direct User grant per Repository.
+
+### Organization governance authority
+
+Organization ownership/administration contributes one separate authority source:
+
+```text
+Organization owner/admin relationship
+↓
+Repository owned by that Organization
+↓
+Repository admin authority
+```
+
+This is not a direct Grant row and is not an Organization-wide base permission for ordinary members. A `member` relationship alone contributes no Repository Role.
+
+The rule is accepted because owner/admin actors already administer Repository creation and Organization-owned Repository settings. Requiring a fabricated direct Grant for each governed Repository would duplicate the ownership relationship and could leave an administrator able to create a Repository but unable to administer the object it just created.
 
 ### Role and Capability
 
@@ -161,13 +183,15 @@ Every transition evaluates:
 3. UI visibility and selected context are never the only enforcement.
 4. Capability is the authorization decision primitive; Role is a bundle and explanation.
 5. A Grant connects one Principal, one Repository, and one Role.
-6. The actor cannot assign, change, or revoke authority beyond accepted delegation rules.
-7. Grant attribution must identify the authenticated actor responsible for the change.
-8. A lower-authority manager cannot create, alter, or remove higher-authority grants merely because the manager has `member.manage`.
-9. Domain/Application semantics and database enforcement must agree; either layer being more permissive is a security defect.
-10. Authorization fails closed when identity, authority sources, constraints, or target identity cannot be established.
-11. Service-role or secret credentials never reach browser code and never substitute for an end-user authorization decision.
-12. `Collaborator`, `Outside collaborator`, and `Highest role` remain derived from relationships.
+6. Organization owner/admin governance authority derives Repository admin only for Repositories owned by that Organization; ordinary Organization membership derives no Repository Role.
+7. Governance-derived authority and direct Grants remain distinct evidence even when both contribute to the same effective Role.
+8. The actor cannot assign, change, or revoke authority beyond accepted delegation rules.
+9. Grant attribution must identify the authenticated actor responsible for the change.
+10. A lower-authority manager cannot create, alter, or remove higher-authority grants merely because the manager has `member.manage`.
+11. Domain/Application semantics and database enforcement must agree; either layer being more permissive is a security defect.
+12. Authorization fails closed when identity, authority sources, constraints, or target identity cannot be established.
+13. Service-role or secret credentials never reach browser code and never substitute for an end-user authorization decision.
+14. `Collaborator`, `Outside collaborator`, and `Highest role` remain derived from relationships.
 
 ## Actors, principals, contexts, and permissions
 
@@ -176,7 +200,7 @@ Every transition evaluates:
 - **Context** answers “which view or scope is selected?”
 - **Repository/Resource** answers “what is the target?”
 - **Capability** answers “which action is being decided?”
-- **Grant and policy evidence** answers “why is it allowed or denied?”
+- **Grant, governance source, and policy evidence** answers “why is it allowed or denied?”
 
 A User may eventually act through several effective Principals, such as direct User authority and an accepted group principal. Adding a Principal type requires its own lifecycle, membership, trust, and revocation model.
 
@@ -198,7 +222,7 @@ Authorization-denied events require sampling and privacy rules before broad use;
 
 - **Identity provider**: if the authenticated actor cannot be established, fail closed.
 - **Repository Collaboration**: if the Repository or target Resource cannot be resolved, fail without revealing inaccessible existence.
-- **Organization membership**: when used as an authority source or derived classification, stale or unavailable membership data must not silently increase access.
+- **Organization membership**: owner/admin may contribute the accepted governance authority source; ordinary membership does not. Stale or unavailable membership data must not silently increase access.
 - **Database enforcement**: RLS and grants project least-privilege row access; provider policy syntax does not own Role or Capability meaning.
 - **Application layer**: coordinates authorization-sensitive use cases and maps denied decisions to safe delivery responses.
 - **Delivery layer**: may hide or explain actions for usability but cannot authorize them.
@@ -212,6 +236,10 @@ This is simple but predicts direct requests, stale clients, and alternate delive
 ### Scattered Role checks
 
 Checking `role === 'admin'` or `role !== 'viewer'` throughout routes, SQL, and components duplicates meaning and makes delegation rules inconsistent.
+
+### Fabricate direct grants for Organization governors
+
+Creating one direct Repository Grant for every Organization owner/admin duplicates the Organization governance relationship, complicates revocation, and can make the same authority look like two unrelated facts.
 
 ### Database as the only Domain model
 
@@ -229,6 +257,7 @@ Reopen the model when:
 
 - real decisions require resource-level grants as the common case;
 - additive Capability sources cannot express required restrictions without explicit deny;
+- Organization admin proves too broad as a governance-derived Repository authority source;
 - fixed Role bundles cause pervasive exceptions;
 - group principals require delegation or revocation behavior incompatible with direct User grants;
 - policy caps cannot be separated from grants; or
@@ -238,9 +267,10 @@ Reopen the model when:
 
 1. A User with no accepted authority source cannot read a private Repository.
 2. Viewer, Contributor, Manager, and Admin receive exactly their defined Capabilities.
-3. A Manager can manage permitted lower Roles but cannot create, alter, or remove Manager/Admin authority unless an accepted delegation rule allows it.
-4. Changing only UI context cannot change access for the same actor and Repository.
-5. A direct request to a hidden UI action is denied server-side.
-6. Grant attribution differing from the authenticated actor is rejected.
-7. Domain tests and database tests produce the same decision matrix for representative actors, Roles, and targets.
-8. Introducing a second authority source must not require Role-name conditionals outside the owning contract.
+3. Organization owner/admin receives Repository admin for a Repository owned by that Organization without a fabricated direct Grant; ordinary member does not.
+4. A Manager can manage permitted lower Roles but cannot create, alter, or remove Manager/Admin authority unless an accepted delegation rule allows it.
+5. Changing only UI context cannot change access for the same actor and Repository.
+6. A direct request to a hidden UI action is denied server-side.
+7. Grant attribution differing from the authenticated actor is rejected.
+8. Domain tests and database tests produce the same decision matrix for representative actors, Roles, authority sources, and targets.
+9. Introducing a second Principal type or an ordinary-member base permission must not require Role-name conditionals outside the owning contract.

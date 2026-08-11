@@ -8,7 +8,7 @@
 
 A Repository must contain a real collaborative work unit rather than remain only a navigation and authorization shell.
 
-This contract owns the first Page Resource behavior. It succeeds when an authenticated actor with the required Repository Capability can create, read, and update a Page through provider-neutral Application use cases; PostgreSQL independently enforces the same Repository boundary; stale updates fail closed; and every meaningful transition produces immutable historical evidence in the same transaction.
+This contract owns the first Page Resource behavior. It succeeds when an authenticated actor with the required Repository Capability can create, read, and update a Page through provider-neutral Application use cases; PostgreSQL independently enforces the same Repository boundary; stale updates fail closed; no-op updates preserve concurrency evidence; and every meaningful transition produces immutable historical evidence in the same transaction.
 
 ## Evidence ledger
 
@@ -17,8 +17,8 @@ This contract owns the first Page Resource behavior. It succeeds when an authent
 - Repository Collaboration defines Resource containment and stable Repository identity.
 - Access Authority defines `resource.create`, `resource.view`, and `resource.update` Capabilities.
 - PostgreSQL already stores one `page` Resource kind and records `resource.created`.
-- The current Resources workspace advertises speculative Resource kinds without a real read or command model.
-- Organization owner/admin authority and direct Repository grants are combined in SQL, but that effective-role rule was not executable Domain truth.
+- The prior Resources workspace advertised speculative Resource kinds without a real read or command model.
+- Organization owner/admin authority and direct Repository grants were combined in SQL; ADR-007 makes that effective-role rule explicit Product and Domain truth.
 
 ### Constraints
 
@@ -27,13 +27,14 @@ This contract owns the first Page Resource behavior. It succeeds when an authent
 - Application commands make explicit Domain authorization decisions; RLS remains an independent enforcement boundary.
 - Page state and required Activity Event evidence commit atomically.
 - Domain and Application remain independent of Supabase Rows, clients, generated types, and Postgres syntax.
+- Page optimistic-concurrency evidence is server-managed and cannot be assigned directly by authenticated clients.
 - Page deletion, archive, restore, move, copy, sharing, comments, realtime editing, and rich blocks are not accepted by this slice.
 
 ### Assumptions
 
 - A title and plain-text body are sufficient to discriminate the first useful Page lifecycle.
 - One exact Page content shape in the existing Resource row is sufficient while Page is the only accepted Resource kind.
-- The prior `updated_at` value is sufficient optimistic concurrency evidence for the current single-row transition.
+- The prior `updated_at` value is sufficient optimistic concurrency evidence for the current single-row transition when only meaningful state changes advance it.
 - Additive direct User authority plus Organization owner/admin governance authority is sufficient for this slice.
 
 ### Unknowns
@@ -50,6 +51,7 @@ This contract owns the first Page Resource behavior. It succeeds when an authent
 - Prefer an exact content shape over an opaque generic JSON bucket.
 - Prefer explicit Capability checks over Role-name checks in Application code.
 - Prefer actor-attributed immutable facts over inferring history from current state.
+- Prefer no-op semantic stability: no state change means no version change and no historical fact.
 - Prefer reversible persistence until a second subtype supplies comparative evidence.
 
 ## Boundary and owner
@@ -81,6 +83,7 @@ This contract does not own:
 | Page content | Exact object containing one string field named `body` |
 | Page draft | Validated state required to create a blank Page |
 | Page update | Validated title/body transition plus expected prior update timestamp |
+| Concurrency evidence | Server-managed `updated_at` value identifying the most recently accepted meaningful Page state |
 | Changed state | Update rejected because Page state or effective authority no longer matches the command evidence |
 | Page fact | Immutable `resource.created` or `resource.updated` Activity Event caused by an accepted transition |
 
@@ -111,7 +114,8 @@ Absent
   └── CreatePage ──> Active blank Page
 
 Active Page
-  └── UpdatePage ──> Active updated Page
+  ├── UpdatePage (meaningful change) ──> Active updated Page + new concurrency evidence
+  └── UpdatePage (no-op) ──────────────> same Active Page + same concurrency evidence
 ```
 
 Create requires an authenticated actor, accessible Repository, effective Role containing `resource.create`, valid title, and creator attribution equal to the actor.
@@ -124,17 +128,18 @@ No delete, archive, restore, move, copy, publish, sharing, or merge transition i
 
 1. Every Page belongs to exactly one Repository.
 2. Page ID and Repository ID, not route labels or selected context, determine the authorization target.
-3. Page title contains 1 to 240 characters after trimming.
+3. Page title contains 1 to 240 non-whitespace characters after trimming; a whitespace-only title is invalid.
 4. Page content is exactly one object with one string field named `body`.
 5. Create and update require their explicit Repository Capabilities.
-6. Organization owner/admin authority and direct Repository grants combine through Domain policy before capability evaluation.
+6. Organization owner/admin authority and direct Repository grants combine through the accepted Access Authority policy before capability evaluation; ordinary Organization membership contributes no Repository Role.
 7. Application authorization and RLS agree; either being more permissive is a defect.
 8. Creator attribution equals the authenticated actor.
-9. Stale optimistic concurrency evidence cannot overwrite newer state.
-10. A meaningful create or update and its required fact commit atomically.
-11. A no-op update does not fabricate `resource.updated`.
-12. Activity facts do not copy Page body content.
-13. Page deletion is not exposed merely because a generic Resource delete Capability exists.
+9. `updated_at` is server-managed concurrency evidence and cannot be directly assigned by an authenticated client.
+10. Stale optimistic concurrency evidence cannot overwrite newer state.
+11. A meaningful title/content change advances `updated_at` and its required fact atomically.
+12. A no-op update advances neither `updated_at` nor `resource.updated`.
+13. Activity facts do not copy Page body content.
+14. Page deletion is not exposed merely because a generic Resource delete Capability exists.
 
 ## Events and workflows
 
@@ -152,9 +157,9 @@ The Activity surface is a projection of facts. It does not own Page state or aut
 - **Identity Provider**: missing actor fails closed.
 - **Repository Collaboration**: inaccessible Repository creates or changes nothing.
 - **Access Authority**: unresolved or insufficient authority fails before persistence; a concurrent revocation is still rejected by RLS.
-- **Page persistence**: malformed content is rejected by a database constraint even if another adapter bypasses Application validation.
+- **Page persistence**: malformed content and whitespace-only titles are rejected by database constraints even if another adapter bypasses Application validation.
 - **Activity recording**: required fact failure aborts the Page transition.
-- **Concurrency**: stale timestamp returns changed state rather than silently overwriting content.
+- **Concurrency**: stale timestamp returns changed state rather than silently overwriting content; direct client timestamp mutation is denied; no-op saves keep the prior evidence.
 - **Delivery**: validates transport input, invokes Application, revalidates projections, and exposes stable errors without direct database access.
 
 ## Alternatives and removal test
@@ -175,6 +180,10 @@ This is initially flexible but creates an unbounded schema before user-defined c
 
 This may later be correct, but one single-row subtype does not yet prove an independent storage lifecycle.
 
+### Advance `updated_at` for every SQL UPDATE
+
+This makes a transport-level no-op look like a new domain version, creating false concurrency conflicts without a matching historical fact.
+
 Removing this contract leaves Repository with navigation and authorization but no accepted collaborative work unit.
 
 ## Falsification conditions
@@ -191,12 +200,12 @@ Reopen when:
 ## Minimum discriminating tests
 
 1. Contributor creates a typed Page; Viewer and outsider cannot.
-2. Organization owner/admin resolves to Repository admin without a fabricated direct grant.
+2. Organization owner/admin resolves to Repository admin without a fabricated direct grant; ordinary Organization member does not.
 3. Contributor updates title/body with matching concurrency evidence.
-4. Stale update changes nothing.
-5. Database rejects malformed content and forged creator attribution.
-6. Create and meaningful update each emit exactly one actor-attributed fact.
-7. No-op update emits no fact.
-8. Resources and Activity surfaces render real projections.
+4. A no-op save preserves the same `updated_at` and emits no update fact.
+5. Stale update changes nothing.
+6. Database rejects malformed content, whitespace-only titles, forged creator attribution, and authenticated mutation of `updated_at`.
+7. Create and meaningful update each emit exactly one actor-attributed fact.
+8. Resources and Activity surfaces render real projections through an authenticated browser flow.
 9. Hard navigation to one Page preserves full Repository workspace and authentication destination.
 10. Domain, Application, pgTAP, build, and browser checks pass on the exact head.
