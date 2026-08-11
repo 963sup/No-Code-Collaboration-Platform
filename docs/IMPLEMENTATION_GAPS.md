@@ -33,38 +33,6 @@ The register answers:
 
 ## Open gaps
 
-### GAP-AUTH-001 — Repository grant mutation conflates operation and delegation authority
-
-- Status: Open
-- Affected contract: [`domains/access-authority.md`](./domains/access-authority.md)
-- Affected invariants: Access Authority invariants 6, 8, 9, and 10
-- Risk class: P0 authorization / privilege escalation
-
-#### Direct evidence
-
-- `packages/domain/src/access/capability.ts` defines Role-to-Capability bundles but the current baseline has no provider-neutral grant-transition policy that evaluates the target's current Role and proposed Role.
-- `supabase/schemas/99_rls.sql` authorizes Repository grant INSERT, UPDATE, and DELETE through `member.manage` alone.
-- The current RLS projection does not constrain which existing Role may be managed or which proposed Role may be assigned.
-
-#### Predicted failure
-
-A Repository Manager can use `member.manage` to create or change a direct grant to `admin`, then obtain `repository.manage`. The operation capability therefore becomes an unintended authority-minting capability.
-
-#### Temporary containment
-
-- Repository grant mutation is not production-validated while this gap is open.
-- UI hiding is not containment and must not be represented as enforcement.
-- A production gate must remain closed unless a verified server-side control blocks the attack path.
-
-#### Closure evidence
-
-1. A provider-neutral Domain delegation matrix evaluates actor Role, current target Role, and proposed Role.
-2. Repository Manager may manage only the explicitly accepted lower Roles.
-3. RLS uses existing-row checks for the current Role and new-row checks for the proposed Role.
-4. Grant attribution is bound to the authenticated actor.
-5. Domain tests and pgTAP tests reproduce the original escalation paths and legitimate positive controls.
-6. Repository, database, and browser verification pass for the exact closing commit.
-
 ### GAP-LIFECYCLE-001 — Destructive Organization and Repository lifecycle is not accepted
 
 - Status: Open
@@ -74,9 +42,10 @@ A Repository Manager can use `member.manage` to create or change a direct grant 
 
 #### Direct evidence
 
-- `supabase/schemas/99_rls.sql` exposes DELETE operations for Organizations and Repositories to authenticated actors who satisfy the current policies.
+- `supabase/schemas/99_rls.sql` still exposes Organization and Repository DELETE operations to authenticated actors who satisfy the narrowed owner or Repository-admin authority policies.
 - Repository, Resource, grant, membership, and Activity Event foreign keys use cascading deletion across the containment graph.
 - No accepted lifecycle contract currently defines tombstones, retention, redaction, restore behavior, event continuity, user-visible consequences, or recovery objectives for destructive deletion.
+- ADR-004 narrows Organization DELETE authority to owner-only as least-privilege containment; it explicitly does not accept destructive deletion as a product lifecycle.
 
 #### Predicted failure
 
@@ -96,6 +65,52 @@ Choose and verify one coherent model:
 2. **Accept the lifecycle**: define authority, confirmation, idempotency, containment fate, historical retention or lawful redaction, tombstones, restore behavior, backup expectations, concurrency, user communication, and audit evidence.
 
 In either model, schema constraints, RLS, Domain/Application behavior, pgTAP tests, recovery tests, and production gates must agree.
+
+## Closed gaps
+
+### GAP-AUTH-001 — Authority mutation conflated operation capability and delegation authority
+
+- Status: Closed
+- Affected contract: [`domains/access-authority.md`](./domains/access-authority.md)
+- Affected invariants: Access Authority invariants 6, 7, 8, 9, and 10
+- Risk class: P0 authorization / privilege escalation
+- Closed by: Pull request [#13](https://github.com/963sup/No-Code-Collaboration-Platform/pull/13)
+
+#### Direct evidence
+
+At detection time:
+
+- `packages/domain/src/access/capability.ts` defined Role-to-Capability bundles but no provider-neutral role-transition policy evaluated the target's current Role and proposed Role.
+- `supabase/schemas/99_rls.sql` authorized Repository grant INSERT, UPDATE, and DELETE through `member.manage` alone.
+- Organization membership policies treated `admin` and `owner` as one management class.
+- Repository grant attribution could be supplied by the client without requiring `granted_by = auth.uid()`.
+
+#### Predicted failure
+
+- A Repository Manager could use `member.manage` to create or change a direct grant to `admin`, then obtain `repository.manage`.
+- An Organization Admin could create owner authority, promote itself to owner, or alter an existing owner relationship.
+- A grant mutation could falsely attribute the action to another User.
+
+#### Resolution
+
+- `packages/domain/src/access/delegation.ts` now owns explicit Organization and Repository delegation matrices over actor Role, current target Role, and proposed target Role.
+- Repository Managers may manage only Viewer and Contributor grants; Organization Admins may manage only Member and Admin relationships.
+- `supabase/schemas/90_private_functions.sql` projects the same role ceilings through private, caller-aware helper functions.
+- `supabase/schemas/99_rls.sql` uses `USING` for the existing target Role and `WITH CHECK` for the proposed Role, and binds Repository grant attribution to the authenticated actor.
+- A serialized owner-continuity trigger protects the last Organization owner while allowing valid owner transfer and database cascade mechanics.
+- Scoped `AGENTS.md` contracts and machine checks make the authority, RLS, test, and migration invariants durable.
+
+#### Closure evidence
+
+- Closing implementation head: [`02f33f4ba75cc250378a6fba38f4b926eb62c355`](https://github.com/963sup/No-Code-Collaboration-Platform/commit/02f33f4ba75cc250378a6fba38f4b926eb62c355)
+- Migration: `supabase/migrations/20260811123000_prevent_role_escalation.sql`
+- Domain regression matrix: `packages/domain/tests/delegation.test.ts`
+- Database attack-path suite: `supabase/tests/role-delegation.test.sql`, including 19 negative and legitimate positive-control assertions
+- Exact-head verification: [GitHub Actions Verify #44](https://github.com/963sup/No-Code-Collaboration-Platform/actions/runs/31505215295)
+- Passed gates: Workflow guardrails, Repository contracts, Supabase contracts, and Browser contracts
+- Remote boundary: no linked or remote Supabase project was accessed or mutated; database verification used the disposable local CI stack
+
+Closing this executable gap does not assert that a production deployment has occurred. Production validation remains governed by [`operations/RUNBOOK.md`](./operations/RUNBOOK.md) and its unresolved environment gates.
 
 ## Closure protocol
 
