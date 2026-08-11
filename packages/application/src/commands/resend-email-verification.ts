@@ -1,7 +1,4 @@
-import type {
-  IdentityProvider,
-  VerificationDeliveryResult
-} from '../ports/identity-provider';
+import type { IdentityProvider, VerificationDeliveryResult } from '../ports/identity-provider';
 
 export class ResendEmailVerification {
   public constructor(private readonly identityProvider: IdentityProvider) {}

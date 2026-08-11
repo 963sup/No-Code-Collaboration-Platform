@@ -12,10 +12,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { z } from 'zod';
 
-import {
-  buildPath,
-  resolvePostAuthDestination
-} from '@/auth/auth-navigation';
+import { buildPath, resolvePostAuthDestination } from '@/auth/auth-navigation';
 
 import { resendVerificationEmail, verifyEmail } from './actions';
 

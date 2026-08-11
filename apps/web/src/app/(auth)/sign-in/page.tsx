@@ -11,10 +11,7 @@ import {
 import type { Metadata } from 'next';
 import Link from 'next/link';
 
-import {
-  buildPath,
-  resolvePostAuthDestination
-} from '@/auth/auth-navigation';
+import { buildPath, resolvePostAuthDestination } from '@/auth/auth-navigation';
 
 import { signIn } from './actions';
 
@@ -43,9 +40,7 @@ export default async function SignInPage({ searchParams }: { searchParams: SignI
     <Card>
       <CardHeader>
         <CardTitle>Sign in</CardTitle>
-        <CardDescription>
-          Sign in to access your organizations and repositories.
-        </CardDescription>
+        <CardDescription>Sign in to access your organizations and repositories.</CardDescription>
       </CardHeader>
       <CardContent className='space-y-6'>
         <form action={signIn} className='space-y-5'>

@@ -1,10 +1,7 @@
 import { VerifyEmail } from '@no-code-collaboration-platform/application';
 import { type NextRequest, NextResponse } from 'next/server';
 
-import {
-  buildPath,
-  resolvePostAuthDestination
-} from '@/auth/auth-navigation';
+import { buildPath, resolvePostAuthDestination } from '@/auth/auth-navigation';
 import { createRequestServices } from '@/composition/create-request-services';
 
 export async function GET(request: NextRequest) {
