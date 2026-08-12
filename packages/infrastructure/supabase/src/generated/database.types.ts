@@ -278,10 +278,7 @@ export type Database = {
     }
     Functions: {
       create_page: {
-        Args: {
-          target_repository_id: string
-          page_title: string
-        }
+        Args: { page_title: string; target_repository_id: string }
         Returns: {
           content: Json
           created_at: string
@@ -334,11 +331,11 @@ export type Database = {
       }
       update_page: {
         Args: {
-          target_repository_id: string
+          expected_updated_at: string
+          page_body: string
           page_id: string
           page_title: string
-          page_body: string
-          expected_updated_at: string
+          target_repository_id: string
         }
         Returns: {
           content: Json
@@ -494,3 +491,4 @@ export const Constants = {
     },
   },
 } as const
+
