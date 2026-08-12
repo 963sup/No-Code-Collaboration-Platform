@@ -70,7 +70,7 @@ async function readRecoveryTokenHash(request: APIRequestContext, email: string) 
 
     for (const message of messages) {
       const content = `${message.Text ?? ''} ${message.HTML ?? ''}`;
-      if (!content.includes('type=recovery')) continue;
+      if (!content.includes('/auth/recovery?token_hash=')) continue;
 
       const tokenHash = content.match(/token_hash=([^&"'\s<]+)/u)?.[1];
       if (tokenHash) return tokenHash;
@@ -138,7 +138,7 @@ test('password recovery does not enumerate an unknown account', async ({ page })
   ).toBeVisible();
 });
 
-test('password recovery uses a recovery-only session before accepting a new password', async ({
+test('password recovery survives scanner GETs and creates only a recovery session after user action', async ({
   page,
   request
 }) => {
@@ -160,7 +160,19 @@ test('password recovery uses a recovery-only session before accepting a new pass
   ).toBeVisible();
 
   const tokenHash = await readRecoveryTokenHash(request, email);
-  await page.goto(`/auth/confirm?token_hash=${encodeURIComponent(tokenHash)}&type=recovery`);
+  const recoveryBootstrapPath = `/auth/recovery?token_hash=${encodeURIComponent(tokenHash)}`;
+
+  const scannerResponse = await request.get(recoveryBootstrapPath);
+  expect(scannerResponse.ok()).toBe(true);
+
+  await page.goto(recoveryBootstrapPath);
+  await expect(page).toHaveURL(/\/recover-password$/u);
+
+  await page.goto('/app');
+  await expect(page).toHaveURL(/\/sign-in\?next=%2Fapp$/u);
+
+  await page.goto('/recover-password');
+  await page.getByRole('button', { name: 'Continue password reset' }).click();
   await expect(page).toHaveURL(/\/reset-password$/u);
 
   await page.goto('/app');
@@ -211,6 +223,12 @@ test('external, protocol, and recovery destinations are replaced with the authen
   await expect(page.getByRole('link', { name: 'Sign in' })).toHaveAttribute(
     'href',
     '/sign-in?next=%2Fapp'
+  );
+
+  await page.goto('/sign-in?next=%2Frecover-password');
+  await expect(page.getByRole('link', { name: 'Create an account' })).toHaveAttribute(
+    'href',
+    '/sign-up?next=%2Fapp'
   );
 
   await page.goto('/sign-in?next=%2Freset-password');
