@@ -1,10 +1,21 @@
-export interface RepositoryRouteAddress {
-  readonly organizationSlug: string;
-  readonly repositorySlug: string;
+export type RepositoryRouteAddress =
+  | {
+      readonly organizationSlug: string;
+      readonly repositorySlug: string;
+    }
+  | {
+      readonly organizationSlug: string;
+      readonly repository: {
+        readonly slug: string;
+      };
+    };
+
+function repositorySlug(route: RepositoryRouteAddress) {
+  return 'repositorySlug' in route ? route.repositorySlug : route.repository.slug;
 }
 
 export function repositoryPath(route: RepositoryRouteAddress) {
-  return `/app/${encodeURIComponent(route.organizationSlug)}/${encodeURIComponent(route.repositorySlug)}`;
+  return `/app/${encodeURIComponent(route.organizationSlug)}/${encodeURIComponent(repositorySlug(route))}`;
 }
 
 export function repositoryPagesPath(route: RepositoryRouteAddress) {
