@@ -3,7 +3,7 @@ begin;
 create extension if not exists pgtap with schema extensions;
 set local search_path = extensions, public, pg_catalog;
 
-select plan(12);
+select plan(13);
 
 insert into auth.users (id, email, raw_user_meta_data)
 values (
@@ -42,6 +42,18 @@ select is(
   has_table_privilege('authenticated', 'public.resources', 'DELETE'),
   false,
   'authenticated actors cannot reach Resource hard deletion through table privileges'
+);
+
+select is(
+  (
+    select count(*)::integer
+    from pg_catalog.pg_policies
+    where schemaname = 'public'
+      and tablename = 'resources'
+      and cmd = 'DELETE'
+  ),
+  0,
+  'Resource hard deletion has no authenticated RLS policy to reactivate later'
 );
 
 set local role authenticated;
