@@ -60,6 +60,58 @@ if (mode === 'write') {
 
 const current = readFileSync(outputPath, 'utf8').replaceAll('\r\n', '\n');
 if (current !== generated) {
+  const currentLines = current.split('\n');
+  const generatedLines = generated.split('\n');
+  const sharedLength = Math.min(currentLines.length, generatedLines.length);
+  let prefix = 0;
+  while (prefix < sharedLength && currentLines[prefix] === generatedLines[prefix]) prefix += 1;
+
+  let suffix = 0;
+  while (
+    suffix < currentLines.length - prefix &&
+    suffix < generatedLines.length - prefix &&
+    currentLines[currentLines.length - 1 - suffix] ===
+      generatedLines[generatedLines.length - 1 - suffix]
+  ) {
+    suffix += 1;
+  }
+
+  const context = 3;
+  const maxChangedLines = 120;
+  const currentChangedEnd = currentLines.length - suffix;
+  const generatedChangedEnd = generatedLines.length - suffix;
+  const currentStart = Math.max(0, prefix - context);
+  const generatedStart = Math.max(0, prefix - context);
+  const currentEnd = Math.min(currentLines.length, currentChangedEnd + context);
+  const generatedEnd = Math.min(generatedLines.length, generatedChangedEnd + context);
+
+  function boundedSlice(lines, start, end) {
+    const slice = lines.slice(start, end);
+    if (slice.length <= maxChangedLines) return slice;
+    return [
+      ...slice.slice(0, Math.floor(maxChangedLines / 2)),
+      `... ${slice.length - maxChangedLines} lines omitted ...`,
+      ...slice.slice(-Math.ceil(maxChangedLines / 2))
+    ];
+  }
+
+  process.stderr.write(
+    `${JSON.stringify(
+      {
+        current: {
+          firstLine: currentStart + 1,
+          lines: boundedSlice(currentLines, currentStart, currentEnd)
+        },
+        firstDifferingLine: prefix + 1,
+        generated: {
+          firstLine: generatedStart + 1,
+          lines: boundedSlice(generatedLines, generatedStart, generatedEnd)
+        }
+      },
+      null,
+      2
+    )}\n`
+  );
   process.stderr.write(
     'Generated database types are stale. Run `pnpm supabase:types:local` and commit the result.\n'
   );
