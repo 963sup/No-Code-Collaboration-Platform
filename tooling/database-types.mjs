@@ -37,6 +37,9 @@ if (current !== generated) {
   process.stderr.write(
     'Generated database types are stale. Run `pnpm supabase:types:local` and commit the result.\n'
   );
+  process.stderr.write('--- BEGIN GENERATED DATABASE TYPES ---\n');
+  process.stderr.write(generated);
+  process.stderr.write('--- END GENERATED DATABASE TYPES ---\n');
   process.exit(1);
 }
 
