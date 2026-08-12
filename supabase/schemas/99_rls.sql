@@ -38,6 +38,9 @@ grant select on table public.activity_events to authenticated;
 
 -- Organization, Repository, and Resource hard deletion deliberately have no end-user DELETE grant
 -- or RLS policy until an accepted lifecycle defines retention, restore, and historical continuity.
+-- Resource INSERT/UPDATE table privileges support SECURITY INVOKER Page command RPCs. Raw Data API
+-- mutations fail closed because the policies below require transaction-local command context set by
+-- those RPCs in addition to the ordinary actor and Capability checks.
 
 create policy profiles_select_self
 on public.profiles
@@ -171,7 +174,8 @@ on public.resources
 for insert
 to authenticated
 with check (
-  (select auth.uid()) = created_by
+  (select pg_catalog.current_setting('app.page_command', true)) = 'create'
+  and (select auth.uid()) = created_by
   and (select private.has_repository_capability(repository_id, 'resource.create'))
 );
 
@@ -179,8 +183,14 @@ create policy resources_update_contributor
 on public.resources
 for update
 to authenticated
-using ((select private.has_repository_capability(repository_id, 'resource.update')))
-with check ((select private.has_repository_capability(repository_id, 'resource.update')));
+using (
+  (select pg_catalog.current_setting('app.page_command', true)) = 'update'
+  and (select private.has_repository_capability(repository_id, 'resource.update'))
+)
+with check (
+  (select pg_catalog.current_setting('app.page_command', true)) = 'update'
+  and (select private.has_repository_capability(repository_id, 'resource.update'))
+);
 
 create policy activity_events_select_viewer
 on public.activity_events

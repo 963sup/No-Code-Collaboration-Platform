@@ -33,6 +33,7 @@ This directory holds the target architecture for a platform that reverse-enginee
 25. Human-facing Repository routes use the Organization/Repository slug namespace; route resolution produces the stable Repository UUID used by Application authorization and RLS.
 26. `Resource` is a Domain abstraction, not a required user-facing URL segment. Accepted concrete Resource kinds own their product navigation surface.
 27. Legacy UUID Repository URLs may redirect only after access-aware resolution; inaccessible private Repository names must not be disclosed through redirects.
+28. Accepted Page create/update transitions enter PostgreSQL through command-specific `SECURITY INVOKER` RPCs; raw authenticated Resource INSERT/UPDATE is not an alternate Page command API, and RLS requires both short-lived command provenance and ordinary Actor/Capability authorization.
 
 ## Decision process
 
@@ -50,5 +51,6 @@ An accepted ADR must state the decision, evidence, constraints, assumptions, alt
 - [`ADR-006-defer-destructive-container-deletion.md`](./ADR-006-defer-destructive-container-deletion.md) removes end-user Organization and Repository hard deletion until explicit lifecycle semantics are accepted.
 - [`ADR-007-first-page-resource-vertical-slice.md`](./ADR-007-first-page-resource-vertical-slice.md) defines the first executable Page collaboration loop, explicit authority decision, typed persistence, optimistic concurrency, and immutable fact projection.
 - [`ADR-008-repository-semantic-routing.md`](./ADR-008-repository-semantic-routing.md) separates human-readable Repository navigation from stable authorization identity and makes Page the first concrete child route surface.
+- [`ADR-009-controlled-page-command-mutation-boundary.md`](./ADR-009-controlled-page-command-mutation-boundary.md) closes generic Data API mutation bypasses by routing accepted Page writes through command-specific invoker RPCs while preserving independent RLS authorization.
 
 No final bounded-context map is declared yet. Domain modules must continue to be justified by coherent business problems rather than symmetry.

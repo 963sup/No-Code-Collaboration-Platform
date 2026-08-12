@@ -47,43 +47,36 @@ export class SupabasePageRepository implements PageReader, PageWriter {
   }
 
   public async createPage(page: PageDraft): Promise<PageDetail | null> {
-    const { data, error } = await this.client
-      .from('resources')
-      .insert({
-        content: { body: page.content.body },
-        created_by: page.createdBy,
-        kind: page.kind,
-        repository_id: page.repositoryId,
-        title: page.title
-      })
-      .select(pageProjection)
-      .single();
+    const { data, error } = await this.client.rpc('create_page', {
+      page_title: page.title,
+      target_repository_id: page.repositoryId
+    });
 
     if (error) {
       if (accessDeniedCodes.has(error.code)) return null;
       throw new Error('Unable to create the Page.', { cause: error });
     }
-    return mapSupabasePageRow(data);
+
+    const row = data[0];
+    if (!row) throw new Error('The Page command did not return the created Page.');
+    return mapSupabasePageRow(row);
   }
 
   public async updatePage(page: PageUpdate): Promise<PageDetail | null> {
-    const { data, error } = await this.client
-      .from('resources')
-      .update({
-        content: { body: page.content.body },
-        title: page.title
-      })
-      .eq('id', page.id)
-      .eq('repository_id', page.repositoryId)
-      .eq('kind', 'page')
-      .eq('updated_at', page.expectedUpdatedAt)
-      .select(pageProjection)
-      .maybeSingle();
+    const { data, error } = await this.client.rpc('update_page', {
+      expected_updated_at: page.expectedUpdatedAt,
+      page_body: page.content.body,
+      page_id: page.id,
+      page_title: page.title,
+      target_repository_id: page.repositoryId
+    });
 
     if (error) {
       if (accessDeniedCodes.has(error.code)) return null;
       throw new Error('Unable to update the Page.', { cause: error });
     }
-    return data ? mapSupabasePageRow(data) : null;
+
+    const row = data[0];
+    return row ? mapSupabasePageRow(row) : null;
   }
 }

@@ -22,6 +22,8 @@ This directory owns current PostgreSQL schema truth and the database enforcement
 - The accepted Page content projection MUST remain exactly one JSON object containing one string field named `body`; additional keys or non-string bodies are invalid.
 - Page title enforcement MUST reject a title whose trimmed content is empty.
 - `resources.updated_at` is server-managed Page concurrency evidence for accepted update paths; authenticated clients MUST NOT directly assign it.
+- Accepted Page INSERT/UPDATE transitions MUST enter through command-specific `SECURITY INVOKER` RPCs. Raw authenticated Resource DML MUST fail RLS unless the statement carries the short-lived command context established by those RPCs.
+- Page command context is execution provenance only: it MUST be restored before a successful RPC return and MUST NOT replace `auth.uid()`, Repository identity, or Capability checks.
 - A no-op Page update MUST NOT advance `updated_at` or fabricate `resource.updated`.
 - A meaningful Page create or update and its required immutable fact MUST commit in one PostgreSQL transaction. Fact failure MUST abort the Resource transition.
 - `resource.updated` facts MUST attribute the current authenticated actor, MUST NOT duplicate Page body content, and MUST NOT be emitted for no-op updates.

@@ -33,6 +33,45 @@ The register answers:
 
 ## Open gaps
 
+### GAP-PAGE-001 — Generic Data API mutation bypasses accepted Page commands
+
+- Status: Open
+- Affected contracts: [`domains/page-resource.md`](./domains/page-resource.md), [`architecture/ADR-007-first-page-resource-vertical-slice.md`](./architecture/ADR-007-first-page-resource-vertical-slice.md), and [`architecture/ADR-009-controlled-page-command-mutation-boundary.md`](./architecture/ADR-009-controlled-page-command-mutation-boundary.md)
+- Affected invariants: blank Page creation, optimistic concurrency, accepted transition provenance, and historical fact integrity
+- Risk class: Data integrity / collaboration concurrency / historical evidence
+
+#### Direct evidence
+
+At detection time on `main` commit `96eb996accc03409d0535a45c5ce15058305926b`:
+
+- The Page contract requires `CreatePage` to create the accepted blank Page state and `UpdatePage` to supply matching server-managed `updated_at` concurrency evidence.
+- `packages/infrastructure/supabase/src/resources/supabase-page-repository.ts` implements those rules when the application uses its Page ports.
+- `supabase/schemas/99_rls.sql` nevertheless grants authenticated Resource INSERT and title/content UPDATE and authorizes those statements through Capability-only RLS policies.
+- `supabase/tests/page-resource.test.sql` directly demonstrates that a Contributor can INSERT a Page with non-blank body content and directly UPDATE Page title/body without supplying the prior `updated_at` value.
+- `resource_created_activity` and `resource_updated_activity` triggers record historical facts for those direct mutations, so the resulting Activity Event does not prove the transition passed through the accepted Page command semantics.
+
+#### Predicted failure
+
+A legitimate Contributor can bypass the Application Page command boundary through the Supabase Data API. The actor cannot cross Repository authority, but can create or overwrite Page state using a transition that violates the accepted Page lifecycle and optimistic-concurrency contract while still producing apparently valid historical evidence.
+
+#### Temporary containment
+
+- Production validation for Page mutation remains blocked while this data-integrity gap is Open.
+- The proposed branch projection routes Page writes through command-specific `SECURITY INVOKER` RPCs and makes raw Resource INSERT/UPDATE fail RLS unless the same transaction carries the command context established by those functions.
+- The command marker is execution provenance only and must be restored before the RPC returns; `auth.uid()`, Repository identity, and Capability checks remain independently required.
+- The proposed branch is not closure evidence until migration replay, pgTAP, generated-type consistency, repository checks, build, and browser contracts pass on the exact implementation head.
+
+#### Closure evidence
+
+Close this gap only after all of the following are recorded for the exact implementation head:
+
+1. declarative schema and append-only migration expose only `create_page` / `update_page` as accepted Page write commands while raw Data API Resource INSERT/UPDATE fails closed;
+2. the command functions remain `SECURITY INVOKER`, restore command context before successful return, and preserve ordinary RLS Capability decisions;
+3. the Supabase Page adapter uses the command RPCs instead of generic Resource INSERT/UPDATE;
+4. pgTAP reproduces the original raw-DML attack path as denied and proves positive Contributor, stale evidence, Viewer, outsider, no-op, and Activity Event behavior;
+5. generated database types match a reset local database; and
+6. the exact-head GitHub Actions Workflow guardrails, Repository contracts, Supabase contracts, and Browser contracts all pass, with the closing commit, pull request, and run recorded here.
+
 ### GAP-IDENTITY-001 — Identity lifecycle stops after verified Session establishment
 
 - Status: Open
@@ -194,7 +233,7 @@ At detection time:
 
 #### Resolution
 
-- `packages/domain/src/access/delegation.ts` now owns explicit Organization and Repository delegation matrices over actor Role, current target Role, and proposed target Role.
+- `packages/domain/src/access/delegation.ts` now owns explicit Organization and Repository delegation matrices over actor Role, current target Role, and proposed Role.
 - Repository Managers may manage only Viewer and Contributor grants; Organization Admins may manage only Member and Admin relationships.
 - `supabase/schemas/90_private_functions.sql` projects the same role ceilings through private, caller-aware helper functions.
 - `supabase/schemas/99_rls.sql` uses `USING` for the existing target Role and `WITH CHECK` for the proposed Role, and binds Repository grant attribution to the authenticated actor.
