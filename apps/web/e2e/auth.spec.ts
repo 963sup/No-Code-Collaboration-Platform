@@ -123,6 +123,21 @@ test('registration proves email ownership before creating an authenticated sessi
   await expect(page).toHaveURL(/\/sign-in\?next=%2Fapp$/u);
 });
 
+test('password recovery does not enumerate an unknown account', async ({ page }) => {
+  const email = `unknown-${randomUUID()}@example.com`;
+
+  await page.goto('/forgot-password');
+  await page.getByLabel('Email').fill(email);
+  await page.getByRole('button', { name: 'Send reset instructions' }).click();
+
+  await expect(page).toHaveURL(/\/forgot-password\?notice=sent$/u);
+  await expect(
+    page.getByText(
+      "If an account can be recovered with that email, we've sent password reset instructions."
+    )
+  ).toBeVisible();
+});
+
 test('password recovery uses a recovery-only session before accepting a new password', async ({
   page,
   request
