@@ -33,8 +33,8 @@ Credential recovery is a separate branch:
 ```text
 Anonymous Human
 → Recovery requested
-→ Recovery proof staged
-→ Human confirms proof exchange
+→ Recovery proof delivered to the Human
+→ Human explicitly submits the proof
 → Recovery Session
 → Password reset
 → Ordinary sign-in
@@ -88,9 +88,9 @@ A time-bounded proof that a provider identity has authenticated. Session lifecyc
 
 A provider-verified, single-purpose credential-recovery state. It authorizes only the accepted recovery operation. It does not establish ordinary Product Actor readiness, cannot enter `/app`, and creates no Membership, Grant, Capability, or collaboration authority.
 
-### Recovery proof bootstrap
+### Recovery proof handoff
 
-A short-lived staging state for the provider recovery token hash before the Human explicitly exchanges it for a Recovery Session. A bootstrap GET must not consume the single-use proof because enterprise email security scanners can prefetch links.
+The short-lived browser-local handoff between the recovery email and explicit provider proof exchange. The provider token hash is carried in the URL fragment, which is not transmitted in the HTTP GET request. The browser immediately removes the fragment from the visible URL and keeps the proof only in memory until the Human explicitly submits it.
 
 ### Email verification
 
@@ -138,7 +138,7 @@ Anonymous
    └── Request password recovery
              │
              ▼
-      Recovery proof staged
+      Recovery proof delivered
              │
       explicit Human POST
              │
@@ -194,14 +194,13 @@ Human-facing routes and protocol endpoints have different responsibilities.
 | `/sign-up` | Anonymous only | Enroll an email/password identity |
 | `/verify-email` | Pending proof | Enter or resend the email verification code |
 | `/forgot-password` | Anonymous only | Request a recovery proof without enumerating account existence |
-| `/auth/recovery` | Protocol bootstrap | Stage an opaque recovery token hash without consuming it, then redirect to a clean Human route |
-| `/recover-password` | Identity proof | Require an explicit Human POST before exchanging the staged proof for a Recovery Session |
+| `/recover-password` | Identity proof | Receive the browser-only recovery fragment and require explicit Human submission before provider verification |
 | `/reset-password` | Recovery Session only | Establish a new password after recovery proof |
 | `/auth/confirm` | Protocol endpoint | Exchange an email-verification token hash |
 | `/auth/error` | Public | Present a stable, non-provider-specific failure |
 | `/app/**` | Ordinary authenticated Session | Enter the authenticated product surface |
 
-A protocol GET must not silently perform a destructive or single-use identity transition when link prefetch is a realistic environment behavior. Recovery therefore stages the opaque token hash in a short-lived HttpOnly cookie and consumes it only from the explicit confirmation Server Action.
+A GET must not silently perform a single-use recovery transition when link prefetch is a realistic environment behavior. The recovery email therefore places the opaque token hash in the URL fragment. Fragments are not part of the HTTP request; the Human browser removes the fragment from the visible URL before the explicit confirmation Server Action exchanges the proof.
 
 ## Invariants
 
@@ -220,30 +219,37 @@ A protocol GET must not silently perform a destructive or single-use identity tr
 13. A Recovery Session is not accepted as `GetCurrentIdentity` and cannot enter `/app`.
 14. An ordinary authenticated Session is not accepted as recovery authority and cannot call the recovery-specific password reset operation.
 15. Recovery proof, password material, and recovery token hashes never become Membership, Grant, Capability, Activity Event, or application persistence facts.
-16. Merely GETting a recovery email link does not consume the provider proof or create a Recovery Session.
-17. The staged token hash is short-lived, HttpOnly, deleted before proof exchange completes, and never appears in the final Human-facing reset URL.
+16. Merely GETting a recovery email link does not transmit the token hash to the server, consume the provider proof, or create a Recovery Session.
+17. The browser removes the recovery fragment from the visible URL before proof exchange and holds the proof only in memory until the explicit Human POST.
+18. Password-recovery request outcomes, including account-specific delivery throttling, do not reveal whether the email belongs to an account.
 
 ## Password and email proof policy
 
 P0 password creation requires at least eight characters and leaves character-class policy to the configured identity provider. The UI may explain the accepted minimum but must not pretend to know provider checks that are not configured or directly observed.
 
-P0 email proof uses a six-digit one-time code. A token-hash endpoint remains available for controlled email-template protocol flows. Codes and token hashes are never logged or persisted in application tables.
+P0 email proof uses a six-digit one-time code. A token-hash endpoint remains available for controlled email-verification protocol flows. Codes and token hashes are never logged or persisted in application tables.
 
-Password recovery uses a provider-issued opaque token hash delivered by the recovery template. The email link reaches `/auth/recovery`, which stores the proof only in a short-lived HttpOnly bootstrap cookie and redirects to `/recover-password`. Only an explicit Server Action from that Human-facing page calls `VerifyPasswordRecovery`; success establishes the Recovery Session and redirects to clean `/reset-password`.
+Password recovery uses a provider-issued opaque token hash delivered by the recovery template as:
 
-This extra confirmation boundary exists because enterprise email security systems may prefetch links. A GET-only scanner must not consume a single-use recovery proof before the intended Human acts.
+```text
+/recover-password#token_hash=<opaque proof>
+```
 
-Rate limiting belongs to the provider boundary and is translated into the stable `rate-limited` product reason.
+The fragment is browser-local and is omitted from the HTTP GET request. Client code reads the fragment once, removes it with `history.replaceState`, and holds the proof in memory until the Human submits the recovery confirmation form. Only that explicit Server Action calls `VerifyPasswordRecovery`; success establishes the Recovery Session and redirects to clean `/reset-password`.
+
+This confirmation boundary exists because enterprise email security systems may prefetch links. A GET-only scanner must not consume a single-use recovery proof before the intended Human acts.
+
+Recovery-request delivery throttling and unknown-account behavior both map to the same accepted product response. A provider-wide outage remains explicit because the service cannot accept the operation at all. Proof-verification throttling may be shown after the Human is already participating in the proof flow.
 
 ## Failure behavior
 
 - Invalid credentials return a generic failure.
 - An existing but unverified identity is routed to the email proof flow without granting an ordinary Session.
 - Duplicate registration behavior does not enumerate account existence.
-- Password recovery requests return the same accepted product outcome for registered and unregistered syntactically valid emails unless a provider-wide rate limit or outage prevents the request.
-- A link-prefetch GET may stage a proof in that client's isolated cookie state but cannot consume the provider proof.
-- Expired and invalid proofs remain distinct product reasons only after the User is already participating in the proof flow.
-- Missing, expired, or invalid staged proof fails closed before Recovery Session establishment.
+- Password recovery requests return the same accepted product outcome for registered, unregistered, and delivery-throttled syntactically valid emails. Provider-wide outages remain explicit.
+- A GET-only link-prefetch scanner receives `/recover-password` without the fragment and cannot consume the provider proof.
+- A missing or malformed browser fragment leaves the Human on the recovery page without a usable submission and offers a new recovery request.
+- Expired and invalid proofs remain distinct product reasons only after the Human explicitly submits the proof.
 - Missing or invalid Recovery Session evidence fails closed before password mutation.
 - A recovery-authenticated request that targets `/app` is treated as lacking ordinary Product Actor identity.
 - Provider failures fail closed and do not create a local Actor or collaboration authority.
@@ -272,9 +278,10 @@ ResendEmailVerification
 
 RequestPasswordRecovery
 → auth.resetPasswordForEmail
+→ account state and delivery throttling collapse to accepted product outcome
 
 Recovery email GET
-→ stage token hash only
+→ HTTP request contains no token hash because the proof is in the URL fragment
 → no provider verification
 
 Explicit recovery confirmation POST
@@ -299,8 +306,8 @@ This mapping is Infrastructure truth. It may change without changing the product
 
 ## Security and privacy constraints
 
-- Passwords, OTPs, token hashes, access tokens, refresh tokens, and provider secrets must not enter logs, final product URLs, analytics, Activity Events, or GitHub artifacts.
-- A recovery token hash may exist transiently only in the incoming email-link URL and the short-lived HttpOnly bootstrap cookie before explicit exchange.
+- Passwords, OTPs, token hashes, access tokens, refresh tokens, and provider secrets must not enter server GET URLs, logs, analytics, Activity Events, or application persistence.
+- A recovery token hash may exist transiently in the email URL fragment, browser memory, and the explicit recovery POST body before provider verification. It must be removed from the visible URL before submission.
 - The browser receives only the Supabase publishable key. Secret or service-role keys remain outside browser code.
 - Server Actions and Route Handlers validate their own inputs and do not rely on page rendering as an authorization boundary.
 - Password reset re-verifies signed provider recovery evidence at the mutation boundary; a rendered reset page is not sufficient authority.
@@ -316,8 +323,8 @@ This mapping is Infrastructure truth. It may change without changing the product
 5. Selecting an external, protocol, identity-proof, or recovery-only `next` value cannot redirect the User outside the application or into an Auth loop.
 6. Header `Sign out` removes the current browser Session without requesting global revocation.
 7. Domain/Application tests can execute all current identity use cases without importing Supabase.
-8. Recovery for an unknown email does not expose account existence through the product response.
-9. A GET-only email scanner cannot consume the recovery token or create a Recovery Session.
+8. Recovery for an unknown or delivery-throttled email does not expose account existence through the product response.
+9. A GET-only email scanner cannot observe the recovery token in the HTTP request, consume it, or create a Recovery Session.
 10. A signed Recovery Session can reach `/reset-password` but cannot enter `/app`.
 11. An ordinary password Session cannot reset a credential through the recovery-specific operation.
 12. After a successful recovery reset and ordinary sign-in, the new password establishes a normal Product Actor Session.
@@ -346,10 +353,11 @@ Create and verify a disposable identity
 → sign out ordinary Session
 → request password recovery
 → observe recovery message in Mailpit
-→ simulate an independent scanner GET of the email link
+→ simulate an independent scanner GET of the email link without the fragment reaching HTTP
 → prove the provider token remains usable
-→ open the same link in the Human browser
-→ arrive at clean /recover-password without a Recovery Session
+→ open the same email link in the Human browser
+→ remove the fragment from the visible URL before proof exchange
+→ prove /app remains inaccessible before explicit Human confirmation
 → explicitly confirm password recovery by POST
 → arrive at clean /reset-password with Recovery Session
 → prove Recovery Session cannot enter /app
@@ -362,10 +370,10 @@ Create and verify a disposable identity
 Required evidence:
 
 - Application unit tests for registration, verification proofs, recovery, resend, and explicit sign-out scope;
-- Supabase adapter tests for OTP/token-hash translation, recovery `amr` separation, mutation denial from ordinary Sessions, and Session scope;
+- Supabase adapter tests for non-enumerating recovery request outcomes, OTP/token-hash translation, recovery `amr` separation, mutation denial from ordinary Sessions, and Session scope;
 - local Auth configuration with email confirmation and scanner-safe recovery template enabled;
-- browser tests using the local Supabase and Mailpit stack, including unknown-account and scanner-prefetch attack paths;
-- no raw provider error, password, OTP, or token in user-visible final URLs or application persistence;
+- browser tests using the local Supabase and Mailpit stack, including unknown-account, delivery-throttle, and scanner-prefetch attack paths;
+- no raw provider error, password, OTP, or token in server GET URLs or application persistence;
 - hosted provider evidence remains a separate gate and is not implied by local success.
 
 ## Known implementation gaps
