@@ -24,7 +24,7 @@ export function classifyRouteAccess(pathname: string): RouteAccess {
   if (pathname === '/sign-in' || pathname === '/sign-up' || pathname === '/forgot-password') {
     return 'anonymous-only';
   }
-  if (pathname === '/verify-email') return 'identity-proof';
+  if (pathname === '/verify-email' || pathname === '/recover-password') return 'identity-proof';
   if (pathname === '/reset-password') return 'password-recovery';
   if (pathname === '/auth/error') return 'public';
   if (pathname.startsWith('/auth/')) return 'auth-protocol';
