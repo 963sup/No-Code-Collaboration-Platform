@@ -277,7 +277,45 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_accessible_repository_route_by_id: {
+        Args: { target_repository_id: string }
+        Returns: {
+          description: string
+          id: string
+          name: string
+          organization_id: string
+          organization_slug: string
+          slug: string
+          visibility: Database["public"]["Enums"]["repository_visibility"]
+        }[]
+      }
+      get_accessible_repository_route_by_key: {
+        Args: {
+          target_organization_slug: string
+          target_repository_slug: string
+        }
+        Returns: {
+          description: string
+          id: string
+          name: string
+          organization_id: string
+          organization_slug: string
+          slug: string
+          visibility: Database["public"]["Enums"]["repository_visibility"]
+        }[]
+      }
+      list_accessible_repository_routes: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          description: string
+          id: string
+          name: string
+          organization_id: string
+          organization_slug: string
+          slug: string
+          visibility: Database["public"]["Enums"]["repository_visibility"]
+        }[]
+      }
     }
     Enums: {
       organization_role: "member" | "admin" | "owner"
@@ -398,7 +436,7 @@ export type CompositeTypes<
   CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
-    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["CompositeTypes"]
     : never = never,
 > = PublicCompositeTypeNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
@@ -421,4 +459,3 @@ export const Constants = {
     },
   },
 } as const
-
