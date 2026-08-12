@@ -15,10 +15,10 @@ This directory owns current PostgreSQL schema truth and the database enforcement
 - End-user authorization MUST never depend on service-role bypass, user-editable metadata, presentation context, or hidden UI controls.
 - Declarative schema changes MUST be accompanied by an append-only accepted migration and attack-path regression tests before merge.
 - Schema and migration files are local database contracts. Their presence MUST NOT be used as evidence that a Supabase Cloud project exists or that a remote deployment occurred.
-- Organization and Repository hard deletion MUST remain unavailable to end-user roles until an accepted lifecycle contract defines retention, restore, redaction, containment fate, historical continuity, and recovery behavior.
+- Organization, Repository, and Resource hard deletion MUST remain unavailable to end-user roles until accepted lifecycle contracts define retention, restore, redaction, containment or subtype fate, historical continuity, and recovery behavior.
 - A missing lifecycle MUST fail closed through both table privileges and RLS policy absence; owner or administrator authority alone cannot make an undefined destructive transition valid.
-- `GAP-LIFECYCLE-001` remains the authoritative evidence record for Organization and Repository deletion and may be closed only after exact-head verification proves this fail-closed boundary.
-- `GAP-LIFECYCLE-002` remains Open; `resource.delete` MUST NOT be treated as evidence that Page archive, restore, retention, purge, redaction, or historical guarantees are accepted.
+- `GAP-LIFECYCLE-001` records the verified fail-closed boundary for Organization and Repository hard deletion.
+- `GAP-LIFECYCLE-002` records the verified fail-closed boundary for Resource hard deletion; `resource.delete` remains authority vocabulary only and MUST NOT be treated as evidence that Page archive, restore, retention, purge, redaction, or historical guarantees are accepted.
 - The accepted Page content projection MUST remain exactly one JSON object containing one string field named `body`; additional keys or non-string bodies are invalid.
 - Page title enforcement MUST reject a title whose trimmed content is empty.
 - `resources.updated_at` is server-managed Page concurrency evidence for accepted update paths; authenticated clients MUST NOT directly assign it.

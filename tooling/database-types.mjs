@@ -12,12 +12,38 @@ if (!['check', 'write'].includes(mode)) {
   throw new Error('Usage: node tooling/database-types.mjs <check|write>');
 }
 
-const result = spawnSync('pnpm', ['exec', 'supabase', 'gen', 'types', 'typescript', '--local'], {
+const status = spawnSync('pnpm', ['exec', 'supabase', 'status', '-o', 'env'], {
   cwd: process.cwd(),
   encoding: 'utf8',
-  timeout: 120_000,
+  timeout: 30_000,
   windowsHide: true
 });
+
+if (status.status !== 0) {
+  process.stderr.write(status.stderr || status.stdout);
+  process.exit(status.status ?? 1);
+}
+
+const dbUrlLine = status.stdout
+  .split(/\r?\n/u)
+  .map((line) => line.trim())
+  .find((line) => line.startsWith('DB_URL='));
+
+if (!dbUrlLine) {
+  throw new Error('Supabase status did not expose DB_URL for the running local database.');
+}
+
+const dbUrl = dbUrlLine.slice('DB_URL='.length).replace(/^"|"$/gu, '');
+const result = spawnSync(
+  'pnpm',
+  ['exec', 'supabase', 'gen', 'types', 'typescript', '--db-url', dbUrl],
+  {
+    cwd: process.cwd(),
+    encoding: 'utf8',
+    timeout: 120_000,
+    windowsHide: true
+  }
+);
 
 if (result.status !== 0) {
   process.stderr.write(result.stderr || result.stdout);

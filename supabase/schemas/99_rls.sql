@@ -31,13 +31,13 @@ grant select, insert, delete on table public.repository_user_grants to authentic
 grant update (role) on table public.repository_user_grants to authenticated;
 
 grant select on table public.resources to anon, authenticated;
-grant insert, delete on table public.resources to authenticated;
+grant insert on table public.resources to authenticated;
 grant update (title, content) on table public.resources to authenticated;
 
 grant select on table public.activity_events to authenticated;
 
--- Organization and Repository hard deletion deliberately have no end-user DELETE grant or
--- RLS policy until an accepted lifecycle defines retention, restore, and historical continuity.
+-- Organization, Repository, and Resource hard deletion deliberately have no end-user DELETE grant
+-- or RLS policy until an accepted lifecycle defines retention, restore, and historical continuity.
 
 create policy profiles_select_self
 on public.profiles
@@ -181,12 +181,6 @@ for update
 to authenticated
 using ((select private.has_repository_capability(repository_id, 'resource.update')))
 with check ((select private.has_repository_capability(repository_id, 'resource.update')));
-
-create policy resources_delete_manager
-on public.resources
-for delete
-to authenticated
-using ((select private.has_repository_capability(repository_id, 'resource.delete')));
 
 create policy activity_events_select_viewer
 on public.activity_events

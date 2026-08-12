@@ -3,7 +3,7 @@ begin;
 create extension if not exists pgtap with schema extensions;
 set local search_path = extensions, public, pg_catalog;
 
-select plan(8);
+select plan(13);
 
 insert into auth.users (id, email, raw_user_meta_data)
 values (
@@ -38,8 +38,35 @@ values (
   '00000000-0000-0000-0000-000000000201'
 );
 
+select is(
+  has_table_privilege('authenticated', 'public.resources', 'DELETE'),
+  false,
+  'authenticated actors cannot reach Resource hard deletion through table privileges'
+);
+
+select is(
+  (
+    select count(*)::integer
+    from pg_catalog.pg_policies
+    where schemaname = 'public'
+      and tablename = 'resources'
+      and cmd = 'DELETE'
+  ),
+  0,
+  'Resource hard deletion has no authenticated RLS policy to reactivate later'
+);
+
 set local role authenticated;
 select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-000000000201', true);
+
+select is(
+  (select private.has_repository_capability(
+    '20000000-0000-0000-0000-000000000201',
+    'resource.delete'
+  )),
+  true,
+  'Repository admin authority remains distinct from lifecycle acceptance'
+);
 
 with changed as (
   update public.organizations
@@ -63,6 +90,26 @@ select is(
   (select count(*)::integer from changed),
   1,
   'repository administrator retains non-destructive administration'
+);
+
+select throws_ok(
+  $$
+    delete from public.resources
+    where id = '30000000-0000-0000-0000-000000000201'
+  $$,
+  '42501',
+  'permission denied for table resources',
+  'Resource hard deletion is unavailable even to Repository admin authority'
+);
+
+select is(
+  (
+    select count(*)::integer
+    from public.resources
+    where id = '30000000-0000-0000-0000-000000000201'
+  ),
+  1,
+  'denied Resource deletion preserves the collaborative work unit'
 );
 
 select throws_ok(
@@ -102,7 +149,7 @@ select is(
     where repository_id = '20000000-0000-0000-0000-000000000201'
   ),
   2,
-  'denied repository deletion preserves historical facts'
+  'denied destructive transitions preserve historical facts'
 );
 
 select throws_ok(
