@@ -189,13 +189,6 @@ export class SupabaseIdentityProvider implements IdentityProvider {
 
     if (!error) return { ok: true };
 
-    if (RATE_LIMIT_CODES.has(error.code ?? '')) {
-      return {
-        ok: false,
-        reason: 'rate-limited'
-      };
-    }
-
     if (isProviderUnavailable(error)) {
       return {
         ok: false,
@@ -203,7 +196,7 @@ export class SupabaseIdentityProvider implements IdentityProvider {
       };
     }
 
-    // Account-state errors deliberately remain indistinguishable from accepted recovery requests.
+    // Account state, delivery throttling, and request throttling must not reveal account existence.
     return { ok: true };
   }
 
