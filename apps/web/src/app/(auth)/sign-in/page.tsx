@@ -25,16 +25,23 @@ const errorMessages = {
   'provider-unavailable': 'The identity service is temporarily unavailable. Try again.'
 } as const;
 
+const noticeMessages = {
+  'password-reset': 'Your password was updated. Sign in with your new password.'
+} as const;
+
 type SignInSearchParams = Promise<{
   error?: string;
   next?: string;
+  notice?: string;
 }>;
 
 export default async function SignInPage({ searchParams }: { searchParams: SignInSearchParams }) {
   const parameters = await searchParams;
   const next = resolvePostAuthDestination(parameters.next);
   const error = parameters.error as keyof typeof errorMessages | undefined;
+  const notice = parameters.notice as keyof typeof noticeMessages | undefined;
   const message = error ? errorMessages[error] : undefined;
+  const noticeMessage = notice ? noticeMessages[notice] : undefined;
 
   return (
     <Card>
@@ -57,7 +64,15 @@ export default async function SignInPage({ searchParams }: { searchParams: SignI
             />
           </div>
           <div className='space-y-2'>
-            <Label htmlFor='password'>Password</Label>
+            <div className='flex items-center justify-between gap-4'>
+              <Label htmlFor='password'>Password</Label>
+              <Link
+                className='text-sm font-medium text-foreground underline-offset-4 hover:underline'
+                href='/forgot-password'
+              >
+                Forgot password?
+              </Link>
+            </div>
             <Input
               autoComplete='current-password'
               id='password'
@@ -70,6 +85,11 @@ export default async function SignInPage({ searchParams }: { searchParams: SignI
           {message ? (
             <p aria-live='polite' className='text-sm text-destructive' role='alert'>
               {message}
+            </p>
+          ) : null}
+          {noticeMessage ? (
+            <p aria-live='polite' className='text-sm text-muted-foreground' role='status'>
+              {noticeMessage}
             </p>
           ) : null}
           <Button className='w-full' type='submit'>
