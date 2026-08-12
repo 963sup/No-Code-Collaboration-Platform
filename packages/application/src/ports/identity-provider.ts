@@ -84,7 +84,7 @@ export type VerificationDeliveryResult =
       readonly reason: VerificationDeliveryFailureReason;
     };
 
-export type PasswordRecoveryRequestFailureReason = 'provider-unavailable' | 'rate-limited';
+export type PasswordRecoveryRequestFailureReason = 'provider-unavailable';
 
 export type PasswordRecoveryRequestResult =
   | {
