@@ -54,7 +54,7 @@ test('hard navigation preserves a concrete Page collection route through authent
 
 test('Page workspace identity survives authentication redirect', async ({ page }) => {
   const pagePath =
-    '/app/example-organization/example-repository/pages/' + '00000000-0000-4000-8000-000000000002';
+    '/app/example-organization/example-repository/pages/00000000-0000-4000-8000-000000000002';
 
   await page.goto(pagePath);
 
