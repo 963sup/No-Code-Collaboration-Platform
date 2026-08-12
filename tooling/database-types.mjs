@@ -34,15 +34,9 @@ if (mode === 'write') {
 
 const current = readFileSync(outputPath, 'utf8').replaceAll('\r\n', '\n');
 if (current !== generated) {
-  let index = 0;
-  while (index < current.length && index < generated.length && current[index] === generated[index]) {
-    index += 1;
-  }
   process.stderr.write(
-    `Generated database types are stale: current=${current.length}, generated=${generated.length}, firstDifference=${index}.\n`
+    'Generated database types are stale. Run `pnpm supabase:types:local` and commit the result.\n'
   );
-  process.stderr.write(`currentContext=${JSON.stringify(current.slice(Math.max(0, index - 80), index + 120))}\n`);
-  process.stderr.write(`generatedContext=${JSON.stringify(generated.slice(Math.max(0, index - 80), index + 120))}\n`);
   process.exit(1);
 }
 
