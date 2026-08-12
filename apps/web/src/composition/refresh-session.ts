@@ -5,7 +5,7 @@ import {
 import { createSupabaseServerAdapters } from '@no-code-collaboration-platform/supabase';
 import { type NextRequest, NextResponse } from 'next/server';
 
-import { buildPath, classifyRouteAccess, resolvePostAuthDestination } from '@/auth/auth-navigation';
+import { classifyRouteAccess, resolvePostAuthDestination } from '@/auth/auth-navigation';
 
 import { getSupabasePublicConfig } from './supabase-config';
 
