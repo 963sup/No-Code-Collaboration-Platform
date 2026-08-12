@@ -32,29 +32,29 @@ test('protected app route redirects an unauthenticated actor', async ({ page }) 
   await expectSignInRedirect(page, '/app');
 });
 
-test('nested Repository workspace preserves the requested URL through authentication', async ({
+test('semantic Repository namespace preserves the requested URL through authentication', async ({
   page
 }) => {
-  const repositoryPath = '/app/repositories/00000000-0000-4000-8000-000000000001';
+  const repositoryPath = '/app/example-organization/example-repository';
 
   await page.goto(repositoryPath);
 
   await expectSignInRedirect(page, repositoryPath);
 });
 
-test('hard navigation preserves a nested Parallel Route destination through authentication', async ({
+test('hard navigation preserves a concrete Page collection route through authentication', async ({
   page
 }) => {
-  const resourcesPath = '/app/repositories/00000000-0000-4000-8000-000000000001/resources';
+  const pagesPath = '/app/example-organization/example-repository/pages';
 
-  await page.goto(resourcesPath);
+  await page.goto(pagesPath);
 
-  await expectSignInRedirect(page, resourcesPath);
+  await expectSignInRedirect(page, pagesPath);
 });
 
 test('Page workspace identity survives authentication redirect', async ({ page }) => {
   const pagePath =
-    '/app/repositories/00000000-0000-4000-8000-000000000001/resources/' +
+    '/app/example-organization/example-repository/pages/' +
     '00000000-0000-4000-8000-000000000002';
 
   await page.goto(pagePath);

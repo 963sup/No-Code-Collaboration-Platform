@@ -107,8 +107,9 @@ for (const [scope, rules] of Object.entries(packageRules)) {
   }
 }
 
-const repositoryWorkspaceRoute = 'apps/web/src/app/(app)/app/repositories/[repositoryId]';
-const repositoryResourcesRoute = `${repositoryWorkspaceRoute}/@workspace/resources`;
+const repositoryWorkspaceRoute =
+  'apps/web/src/app/(app)/app/[organizationSlug]/[repositorySlug]';
+const repositoryPagesRoute = `${repositoryWorkspaceRoute}/@workspace/pages`;
 const persistentParallelRouteDefaults = [
   `${repositoryWorkspaceRoute}/default.tsx`,
   `${repositoryWorkspaceRoute}/@navigation/default.tsx`,
@@ -118,9 +119,10 @@ const persistentParallelRouteDefaults = [
 ];
 const requiredParallelRouteFiles = [
   `${repositoryWorkspaceRoute}/layout.tsx`,
-  `${repositoryResourcesRoute}/page.tsx`,
-  `${repositoryResourcesRoute}/[pageId]/page.tsx`,
-  `${repositoryResourcesRoute}/actions.ts`,
+  `${repositoryPagesRoute}/page.tsx`,
+  `${repositoryPagesRoute}/[pageId]/page.tsx`,
+  `${repositoryPagesRoute}/actions.ts`,
+  `${repositoryWorkspaceRoute}/@workspace/activity/page.tsx`,
   ...persistentParallelRouteDefaults
 ];
 
@@ -152,38 +154,37 @@ for (const path of persistentParallelRouteDefaults) {
 const repositoryNavigationPath = `${repositoryWorkspaceRoute}/@navigation/page.tsx`;
 if (existsSync(resolve(root, repositoryNavigationPath))) {
   const content = readFileSync(resolve(root, repositoryNavigationPath), 'utf8');
-  if (content.includes('#resources')) {
-    failures.push(
-      `${repositoryNavigationPath}: independently addressable resources must use a route segment`
-    );
+  for (const symbol of ['repositoryPagesPath', 'repositoryActivityPath']) {
+    if (!content.includes(symbol)) {
+      failures.push(`${repositoryNavigationPath}: ${symbol} semantic route link is missing`);
+    }
   }
-  if (!content.includes('href={`${repositoryPath}/resources`}')) {
-    failures.push(`${repositoryNavigationPath}: resources route link is missing`);
+  if (content.includes('/resources')) {
+    failures.push(`${repositoryNavigationPath}: Resource abstraction must not leak into navigation URLs`);
   }
 }
 
-const repositoryResourcesPath = `${repositoryResourcesRoute}/page.tsx`;
-if (existsSync(resolve(root, repositoryResourcesPath))) {
-  const content = readFileSync(resolve(root, repositoryResourcesPath), 'utf8');
-  if (!content.includes('requireAccessibleRepository')) {
+const repositoryPagesPath = `${repositoryPagesRoute}/page.tsx`;
+if (existsSync(resolve(root, repositoryPagesPath))) {
+  const content = readFileSync(resolve(root, repositoryPagesPath), 'utf8');
+  if (!content.includes('requireAccessibleRepositoryRoute')) {
     failures.push(
-      `${repositoryResourcesPath}: nested workspace route must use the ` +
-        'authorization-aware Repository read path'
+      `${repositoryPagesPath}: nested workspace route must use the access-aware Repository route projection`
     );
   }
   if (!content.includes('ListAccessiblePages')) {
-    failures.push(`${repositoryResourcesPath}: Page Resource read model is missing`);
+    failures.push(`${repositoryPagesPath}: Page Resource read model is missing`);
   }
-  if (content.includes('RepositoryResourceKindGrid')) {
-    failures.push(`${repositoryResourcesPath}: speculative Resource kind grid must not remain`);
+  if (content.includes('/resources')) {
+    failures.push(`${repositoryPagesPath}: concrete Page surface must not emit Resource URLs`);
   }
 }
 
-const pageDetailPath = `${repositoryResourcesRoute}/[pageId]/page.tsx`;
+const pageDetailPath = `${repositoryPagesRoute}/[pageId]/page.tsx`;
 if (existsSync(resolve(root, pageDetailPath))) {
   const content = readFileSync(resolve(root, pageDetailPath), 'utf8');
-  if (!content.includes('requireAccessibleRepository')) {
-    failures.push(`${pageDetailPath}: Page route must resolve its Repository boundary`);
+  if (!content.includes('requireAccessibleRepositoryRoute')) {
+    failures.push(`${pageDetailPath}: Page route must resolve its Repository namespace`);
   }
   if (!content.includes('GetAccessiblePage')) {
     failures.push(`${pageDetailPath}: Page route must use the authorization-aware Page query`);
@@ -193,7 +194,7 @@ if (existsSync(resolve(root, pageDetailPath))) {
   }
 }
 
-const pageActionsPath = `${repositoryResourcesRoute}/actions.ts`;
+const pageActionsPath = `${repositoryPagesRoute}/actions.ts`;
 if (existsSync(resolve(root, pageActionsPath))) {
   const content = readFileSync(resolve(root, pageActionsPath), 'utf8');
   for (const symbol of ['CreatePage', 'UpdatePage', 'revalidatePath']) {
@@ -203,11 +204,41 @@ if (existsSync(resolve(root, pageActionsPath))) {
   }
 }
 
-const activityPath = `${repositoryWorkspaceRoute}/@activity/page.tsx`;
-if (existsSync(resolve(root, activityPath))) {
+for (const activityPath of [
+  `${repositoryWorkspaceRoute}/@activity/page.tsx`,
+  `${repositoryWorkspaceRoute}/@workspace/activity/page.tsx`
+]) {
+  if (!existsSync(resolve(root, activityPath))) continue;
   const content = readFileSync(resolve(root, activityPath), 'utf8');
   if (!content.includes('ListRepositoryActivity')) {
     failures.push(`${activityPath}: Activity must project immutable Repository facts`);
+  }
+}
+
+const appHomePath = 'apps/web/src/app/(app)/app/page.tsx';
+if (existsSync(resolve(root, appHomePath))) {
+  const content = readFileSync(resolve(root, appHomePath), 'utf8');
+  if (!content.includes('ListAccessibleRepositoryRoutes')) {
+    failures.push(`${appHomePath}: Repository list must project canonical semantic routes`);
+  }
+  if (content.includes('/app/repositories/${repository.id}')) {
+    failures.push(`${appHomePath}: Repository UUID must not remain the primary navigation URL`);
+  }
+}
+
+const legacyRepositoryRoute = 'apps/web/src/app/(app)/app/repositories/[repositoryId]';
+for (const path of [
+  `${legacyRepositoryRoute}/page.tsx`,
+  `${legacyRepositoryRoute}/@workspace/resources/page.tsx`,
+  `${legacyRepositoryRoute}/@workspace/resources/[pageId]/page.tsx`
+]) {
+  if (!existsSync(resolve(root, path))) {
+    failures.push(`${path}: legacy Repository URL must remain an access-aware redirect alias`);
+    continue;
+  }
+  const content = readFileSync(resolve(root, path), 'utf8');
+  if (!content.includes('GetAccessibleRepositoryRouteById') || !content.includes('redirect')) {
+    failures.push(`${path}: legacy Repository alias must authorize before canonical redirect`);
   }
 }
 

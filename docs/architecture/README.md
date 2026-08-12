@@ -30,6 +30,9 @@ This directory holds the target architecture for a platform that reverse-enginee
 22. Page is the first accepted Resource implementation; its create/update commands require explicit Domain Capability decisions, independent RLS enforcement, exact content shape, optimistic concurrency evidence, and same-transaction immutable facts.
 23. A Resource subtype may use shared persistence only while its invariants remain explicit and no second subtype proves an independent storage lifecycle.
 24. Resource hard deletion remains unaccepted while `GAP-LIFECYCLE-002` is open; the presence of `resource.delete` cannot make an undefined Page lifecycle valid.
+25. Human-facing Repository routes use the Organization/Repository slug namespace; route resolution produces the stable Repository UUID used by Application authorization and RLS.
+26. `Resource` is a Domain abstraction, not a required user-facing URL segment. Accepted concrete Resource kinds own their product navigation surface.
+27. Legacy UUID Repository URLs may redirect only after access-aware resolution; inaccessible private Repository names must not be disclosed through redirects.
 
 ## Decision process
 
@@ -46,5 +49,6 @@ An accepted ADR must state the decision, evidence, constraints, assumptions, alt
 - [`ADR-005-local-first-supabase-lifecycle.md`](./ADR-005-local-first-supabase-lifecycle.md) separates database contracts, replayable migrations, provisioned environments, and applied deployment evidence.
 - [`ADR-006-defer-destructive-container-deletion.md`](./ADR-006-defer-destructive-container-deletion.md) removes end-user Organization and Repository hard deletion until explicit lifecycle semantics are accepted.
 - [`ADR-007-first-page-resource-vertical-slice.md`](./ADR-007-first-page-resource-vertical-slice.md) defines the first executable Page collaboration loop, explicit authority decision, typed persistence, optimistic concurrency, and immutable fact projection.
+- [`ADR-008-repository-semantic-routing.md`](./ADR-008-repository-semantic-routing.md) separates human-readable Repository navigation from stable authorization identity and makes Page the first concrete child route surface.
 
 No final bounded-context map is declared yet. Domain modules must continue to be justified by coherent business problems rather than symmetry.
