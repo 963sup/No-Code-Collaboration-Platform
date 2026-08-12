@@ -217,4 +217,133 @@ describe('SupabaseIdentityProvider', () => {
       type: 'email'
     });
   });
+
+  it('does not expose whether a password recovery email exists', async () => {
+    const resetPasswordForEmail = vi.fn(async () => ({
+      data: {},
+      error: {
+        code: 'user_not_found',
+        status: 400
+      }
+    }));
+    const client = {
+      auth: {
+        resetPasswordForEmail
+      }
+    } as unknown as SupabaseClient<Database>;
+
+    await expect(
+      new SupabaseIdentityProvider(client).requestPasswordRecovery('unknown@example.com')
+    ).resolves.toEqual({ ok: true });
+  });
+
+  it('maps a recovery token hash to the provider recovery proof', async () => {
+    const verifyOtp = vi.fn(async () => ({
+      data: {
+        user: {
+          email: 'actor@example.com',
+          id: 'actor-1'
+        }
+      },
+      error: null
+    }));
+    const client = {
+      auth: {
+        verifyOtp
+      }
+    } as unknown as SupabaseClient<Database>;
+
+    await expect(
+      new SupabaseIdentityProvider(client).verifyPasswordRecovery('opaque-recovery-token-hash')
+    ).resolves.toEqual({
+      identity: {
+        email: 'actor@example.com',
+        id: 'actor-1'
+      },
+      ok: true
+    });
+
+    expect(verifyOtp).toHaveBeenCalledWith({
+      token_hash: 'opaque-recovery-token-hash',
+      type: 'recovery'
+    });
+  });
+
+  it('keeps recovery sessions out of the ordinary product identity boundary', async () => {
+    const getClaims = vi.fn(async () => ({
+      data: {
+        claims: {
+          amr: [{ method: 'recovery', timestamp: 1 }],
+          email: 'actor@example.com',
+          sub: 'actor-1'
+        }
+      },
+      error: null
+    }));
+    const client = {
+      auth: {
+        getClaims
+      }
+    } as unknown as SupabaseClient<Database>;
+    const provider = new SupabaseIdentityProvider(client);
+
+    await expect(provider.getCurrentIdentity()).resolves.toBeNull();
+    await expect(provider.getPasswordRecoveryIdentity()).resolves.toEqual({
+      email: 'actor@example.com',
+      id: 'actor-1'
+    });
+  });
+
+  it('rejects password reset from an ordinary authenticated session', async () => {
+    const getClaims = vi.fn(async () => ({
+      data: {
+        claims: {
+          amr: [{ method: 'password', timestamp: 1 }],
+          email: 'actor@example.com',
+          sub: 'actor-1'
+        }
+      },
+      error: null
+    }));
+    const updateUser = vi.fn(async () => ({ data: { user: null }, error: null }));
+    const client = {
+      auth: {
+        getClaims,
+        updateUser
+      }
+    } as unknown as SupabaseClient<Database>;
+
+    await expect(
+      new SupabaseIdentityProvider(client).resetPassword('new-secure-password')
+    ).resolves.toEqual({
+      ok: false,
+      reason: 'invalid-recovery-session'
+    });
+    expect(updateUser).not.toHaveBeenCalled();
+  });
+
+  it('updates the password only after a signed recovery authentication method is present', async () => {
+    const getClaims = vi.fn(async () => ({
+      data: {
+        claims: {
+          amr: [{ method: 'recovery', timestamp: 1 }],
+          email: 'actor@example.com',
+          sub: 'actor-1'
+        }
+      },
+      error: null
+    }));
+    const updateUser = vi.fn(async () => ({ data: { user: {} }, error: null }));
+    const client = {
+      auth: {
+        getClaims,
+        updateUser
+      }
+    } as unknown as SupabaseClient<Database>;
+
+    await expect(
+      new SupabaseIdentityProvider(client).resetPassword('new-secure-password')
+    ).resolves.toEqual({ ok: true });
+    expect(updateUser).toHaveBeenCalledWith({ password: 'new-secure-password' });
+  });
 });

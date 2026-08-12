@@ -4,6 +4,9 @@ import type {
   EmailVerificationResult,
   IdentityProvider,
   PasswordCredentials,
+  PasswordRecoveryRequestResult,
+  PasswordRecoveryVerificationResult,
+  PasswordResetResult,
   RegistrationCredentials,
   RegistrationResult,
   SignOutScope,
@@ -18,6 +21,12 @@ const RATE_LIMIT_CODES = new Set(['over_email_send_rate_limit', 'over_request_ra
 
 const PROVIDER_UNAVAILABLE_CODES = new Set(['request_timeout', 'unexpected_failure']);
 
+const INVALID_RECOVERY_SESSION_CODES = new Set([
+  'reauthentication_needed',
+  'session_expired',
+  'session_not_found'
+]);
+
 const SIGN_OUT_SCOPE = {
   'all-sessions': 'global',
   'current-session': 'local',
@@ -28,8 +37,49 @@ function isProviderUnavailable(error: { readonly code?: string; readonly status?
   return (error.status ?? 0) >= 500 || PROVIDER_UNAVAILABLE_CODES.has(error.code ?? '');
 }
 
+function hasAuthenticationMethod(claims: unknown, method: string) {
+  if (!claims || typeof claims !== 'object') return false;
+
+  const amr = (claims as { readonly amr?: unknown }).amr;
+  if (!Array.isArray(amr)) return false;
+
+  return amr.some(
+    (entry) =>
+      Boolean(entry) &&
+      typeof entry === 'object' &&
+      (entry as { readonly method?: unknown }).method === method
+  );
+}
+
+function mapClaimsIdentity(claims: unknown) {
+  if (!claims || typeof claims !== 'object') return null;
+
+  const { email, sub } = claims as {
+    readonly email?: unknown;
+    readonly sub?: unknown;
+  };
+
+  if (typeof sub !== 'string') return null;
+
+  return mapSupabaseIdentity({
+    email: typeof email === 'string' ? email : null,
+    id: sub
+  });
+}
+
 export class SupabaseIdentityProvider implements IdentityProvider {
   public constructor(private readonly client: SupabaseClient<Database>) {}
+
+  private async getClaimsIdentity(purpose: 'ordinary' | 'password-recovery') {
+    const { data, error } = await this.client.auth.getClaims();
+
+    if (error || !data?.claims) return null;
+
+    const isRecovery = hasAuthenticationMethod(data.claims, 'recovery');
+    if ((purpose === 'password-recovery') !== isRecovery) return null;
+
+    return mapClaimsIdentity(data.claims);
+  }
 
   public async authenticateWithPassword(
     credentials: PasswordCredentials
@@ -69,15 +119,12 @@ export class SupabaseIdentityProvider implements IdentityProvider {
     };
   }
 
-  public async getCurrentIdentity() {
-    const { data, error } = await this.client.auth.getClaims();
+  public getCurrentIdentity() {
+    return this.getClaimsIdentity('ordinary');
+  }
 
-    if (error || !data?.claims || typeof data.claims.sub !== 'string') return null;
-
-    return mapSupabaseIdentity({
-      email: typeof data.claims.email === 'string' ? data.claims.email : null,
-      id: data.claims.sub
-    });
+  public getPasswordRecoveryIdentity() {
+    return this.getClaimsIdentity('password-recovery');
   }
 
   public async registerWithPassword(
@@ -137,6 +184,29 @@ export class SupabaseIdentityProvider implements IdentityProvider {
     };
   }
 
+  public async requestPasswordRecovery(email: string): Promise<PasswordRecoveryRequestResult> {
+    const { error } = await this.client.auth.resetPasswordForEmail(email);
+
+    if (!error) return { ok: true };
+
+    if (RATE_LIMIT_CODES.has(error.code ?? '')) {
+      return {
+        ok: false,
+        reason: 'rate-limited'
+      };
+    }
+
+    if (isProviderUnavailable(error)) {
+      return {
+        ok: false,
+        reason: 'provider-unavailable'
+      };
+    }
+
+    // Account-state errors deliberately remain indistinguishable from accepted recovery requests.
+    return { ok: true };
+  }
+
   public async resendEmailVerification(email: string): Promise<VerificationDeliveryResult> {
     const { error } = await this.client.auth.resend({
       email,
@@ -163,6 +233,47 @@ export class SupabaseIdentityProvider implements IdentityProvider {
     return { ok: true };
   }
 
+  public async resetPassword(password: string): Promise<PasswordResetResult> {
+    const recoveryIdentity = await this.getPasswordRecoveryIdentity();
+
+    if (!recoveryIdentity) {
+      return {
+        ok: false,
+        reason: 'invalid-recovery-session'
+      };
+    }
+
+    const { error } = await this.client.auth.updateUser({ password });
+
+    if (!error) return { ok: true };
+
+    if (error.code === 'weak_password') {
+      return {
+        ok: false,
+        reason: 'weak-password'
+      };
+    }
+
+    if (error.code === 'same_password') {
+      return {
+        ok: false,
+        reason: 'same-password'
+      };
+    }
+
+    if (INVALID_RECOVERY_SESSION_CODES.has(error.code ?? '')) {
+      return {
+        ok: false,
+        reason: 'invalid-recovery-session'
+      };
+    }
+
+    return {
+      ok: false,
+      reason: 'provider-unavailable'
+    };
+  }
+
   public async signOut(scope: SignOutScope): Promise<void> {
     const { error } = await this.client.auth.signOut({
       scope: SIGN_OUT_SCOPE[scope]
@@ -183,6 +294,51 @@ export class SupabaseIdentityProvider implements IdentityProvider {
             token_hash: proof.tokenHash,
             type: 'email'
           });
+
+    if (error) {
+      if (RATE_LIMIT_CODES.has(error.code ?? '')) {
+        return {
+          ok: false,
+          reason: 'rate-limited'
+        };
+      }
+
+      if (error.code === 'otp_expired') {
+        return {
+          ok: false,
+          reason: 'expired-code'
+        };
+      }
+
+      return {
+        ok: false,
+        reason: isProviderUnavailable(error) ? 'provider-unavailable' : 'invalid-code'
+      };
+    }
+
+    if (!data.user) {
+      return {
+        ok: false,
+        reason: 'provider-unavailable'
+      };
+    }
+
+    return {
+      identity: mapSupabaseIdentity({
+        email: data.user.email,
+        id: data.user.id
+      }),
+      ok: true
+    };
+  }
+
+  public async verifyPasswordRecovery(
+    tokenHash: string
+  ): Promise<PasswordRecoveryVerificationResult> {
+    const { data, error } = await this.client.auth.verifyOtp({
+      token_hash: tokenHash,
+      type: 'recovery'
+    });
 
     if (error) {
       if (RATE_LIMIT_CODES.has(error.code ?? '')) {

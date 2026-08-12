@@ -2,17 +2,24 @@ import { describe, expect, it } from 'vitest';
 
 import {
   GetCurrentIdentity,
+  GetPasswordRecoveryIdentity,
   RegisterWithPassword,
+  RequestPasswordRecovery,
   ResendEmailVerification,
+  ResetPassword,
   SignInWithPassword,
   SignOut,
   VerifyEmail,
+  VerifyPasswordRecovery,
   type ActorIdentity,
   type AuthenticationResult,
   type EmailVerificationProof,
   type EmailVerificationResult,
   type IdentityProvider,
   type PasswordCredentials,
+  type PasswordRecoveryRequestResult,
+  type PasswordRecoveryVerificationResult,
+  type PasswordResetResult,
   type RegistrationCredentials,
   type RegistrationResult,
   type SignOutScope,
@@ -22,8 +29,12 @@ import {
 class FakeIdentityProvider implements IdentityProvider {
   public currentIdentity: ActorIdentity | null = null;
   public credentials: PasswordCredentials | null = null;
+  public passwordRecoveryEmail: string | null = null;
+  public passwordRecoveryIdentity: ActorIdentity | null = null;
+  public passwordRecoveryTokenHash: string | null = null;
   public registrationCredentials: RegistrationCredentials | null = null;
   public resendEmail: string | null = null;
+  public resetPasswordValue: string | null = null;
   public signOutScope: SignOutScope | null = null;
   public verificationProof: EmailVerificationProof | null = null;
 
@@ -44,6 +55,10 @@ class FakeIdentityProvider implements IdentityProvider {
     return this.currentIdentity;
   }
 
+  public async getPasswordRecoveryIdentity(): Promise<ActorIdentity | null> {
+    return this.passwordRecoveryIdentity;
+  }
+
   public async registerWithPassword(
     credentials: RegistrationCredentials
   ): Promise<RegistrationResult> {
@@ -54,8 +69,18 @@ class FakeIdentityProvider implements IdentityProvider {
     };
   }
 
+  public async requestPasswordRecovery(email: string): Promise<PasswordRecoveryRequestResult> {
+    this.passwordRecoveryEmail = email;
+    return { ok: true };
+  }
+
   public async resendEmailVerification(email: string): Promise<VerificationDeliveryResult> {
     this.resendEmail = email;
+    return { ok: true };
+  }
+
+  public async resetPassword(password: string): Promise<PasswordResetResult> {
+    this.resetPasswordValue = password;
     return { ok: true };
   }
 
@@ -68,6 +93,19 @@ class FakeIdentityProvider implements IdentityProvider {
     return {
       identity: {
         email: proof.kind === 'code' ? proof.email : 'actor@example.com',
+        id: 'actor-1'
+      },
+      ok: true
+    };
+  }
+
+  public async verifyPasswordRecovery(
+    tokenHash: string
+  ): Promise<PasswordRecoveryVerificationResult> {
+    this.passwordRecoveryTokenHash = tokenHash;
+    return {
+      identity: {
+        email: 'actor@example.com',
         id: 'actor-1'
       },
       ok: true
@@ -135,6 +173,43 @@ describe('identity use cases', () => {
       new ResendEmailVerification(identityProvider).execute('actor@example.com')
     ).resolves.toEqual({ ok: true });
     expect(identityProvider.resendEmail).toBe('actor@example.com');
+  });
+
+  it('keeps password recovery proof distinct from an ordinary product identity', async () => {
+    const identityProvider = new FakeIdentityProvider();
+    identityProvider.passwordRecoveryIdentity = {
+      email: 'actor@example.com',
+      id: 'actor-1'
+    };
+
+    await expect(
+      new RequestPasswordRecovery(identityProvider).execute('actor@example.com')
+    ).resolves.toEqual({ ok: true });
+    expect(identityProvider.passwordRecoveryEmail).toBe('actor@example.com');
+
+    await expect(
+      new VerifyPasswordRecovery(identityProvider).execute('opaque-recovery-token-hash')
+    ).resolves.toEqual({
+      identity: {
+        email: 'actor@example.com',
+        id: 'actor-1'
+      },
+      ok: true
+    });
+    expect(identityProvider.passwordRecoveryTokenHash).toBe('opaque-recovery-token-hash');
+
+    await expect(new GetPasswordRecoveryIdentity(identityProvider).execute()).resolves.toEqual(
+      identityProvider.passwordRecoveryIdentity
+    );
+  });
+
+  it('resets the credential through the recovery-specific provider boundary', async () => {
+    const identityProvider = new FakeIdentityProvider();
+
+    await expect(new ResetPassword(identityProvider).execute('new-secure-password')).resolves.toEqual({
+      ok: true
+    });
+    expect(identityProvider.resetPasswordValue).toBe('new-secure-password');
   });
 
   it('reads and clears the current identity through the same port with explicit session scope', async () => {

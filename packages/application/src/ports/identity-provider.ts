@@ -84,13 +84,55 @@ export type VerificationDeliveryResult =
       readonly reason: VerificationDeliveryFailureReason;
     };
 
+export type PasswordRecoveryRequestFailureReason = 'provider-unavailable' | 'rate-limited';
+
+export type PasswordRecoveryRequestResult =
+  | {
+      readonly ok: true;
+    }
+  | {
+      readonly ok: false;
+      readonly reason: PasswordRecoveryRequestFailureReason;
+    };
+
+export type PasswordRecoveryVerificationFailureReason = EmailVerificationFailureReason;
+
+export type PasswordRecoveryVerificationResult =
+  | {
+      readonly identity: ActorIdentity;
+      readonly ok: true;
+    }
+  | {
+      readonly ok: false;
+      readonly reason: PasswordRecoveryVerificationFailureReason;
+    };
+
+export type PasswordResetFailureReason =
+  | 'invalid-recovery-session'
+  | 'provider-unavailable'
+  | 'same-password'
+  | 'weak-password';
+
+export type PasswordResetResult =
+  | {
+      readonly ok: true;
+    }
+  | {
+      readonly ok: false;
+      readonly reason: PasswordResetFailureReason;
+    };
+
 export type SignOutScope = 'all-sessions' | 'current-session' | 'other-sessions';
 
 export interface IdentityProvider {
   authenticateWithPassword(credentials: PasswordCredentials): Promise<AuthenticationResult>;
   getCurrentIdentity(): Promise<ActorIdentity | null>;
+  getPasswordRecoveryIdentity(): Promise<ActorIdentity | null>;
   registerWithPassword(credentials: RegistrationCredentials): Promise<RegistrationResult>;
+  requestPasswordRecovery(email: string): Promise<PasswordRecoveryRequestResult>;
   resendEmailVerification(email: string): Promise<VerificationDeliveryResult>;
+  resetPassword(password: string): Promise<PasswordResetResult>;
   signOut(scope: SignOutScope): Promise<void>;
   verifyEmail(proof: EmailVerificationProof): Promise<EmailVerificationResult>;
+  verifyPasswordRecovery(tokenHash: string): Promise<PasswordRecoveryVerificationResult>;
 }
