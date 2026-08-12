@@ -37,11 +37,19 @@ export type {
   RepositoryAuthoritySourceQuery,
   RepositoryAuthoritySourceReader
 } from './ports/repository-authority-source-reader';
+export type {
+  RepositoryRouteKey,
+  RepositoryRouteReader,
+  RepositoryRouteSummary
+} from './ports/repository-route-reader';
 export type { RepositoryReader } from './ports/repository-reader';
 export { GetAccessiblePage } from './queries/get-accessible-page';
 export { GetAccessibleRepository } from './queries/get-accessible-repository';
+export { GetAccessibleRepositoryRoute } from './queries/get-accessible-repository-route';
+export { GetAccessibleRepositoryRouteById } from './queries/get-accessible-repository-route-by-id';
 export { GetCurrentIdentity } from './queries/get-current-identity';
 export { ListAccessiblePages } from './queries/list-accessible-pages';
 export { ListAccessibleRepositories } from './queries/list-accessible-repositories';
+export { ListAccessibleRepositoryRoutes } from './queries/list-accessible-repository-routes';
 export { ListRepositoryActivity } from './queries/list-repository-activity';
 export type { ListRepositoryActivityInput } from './queries/list-repository-activity';

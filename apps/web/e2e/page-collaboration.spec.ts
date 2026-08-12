@@ -123,6 +123,8 @@ async function createRepositoryFixture(
   const organizationId = randomUUID();
   const repositoryId = randomUUID();
   const suffix = randomUUID().slice(0, 8);
+  const organizationSlug = `e2e-org-${suffix}`;
+  const repositorySlug = `e2e-repo-${suffix}`;
   const headers = {
     apikey: publishableKey,
     authorization: `Bearer ${identity.access_token}`,
@@ -135,7 +137,7 @@ async function createRepositoryFixture(
       created_by: identity.user.id,
       id: organizationId,
       name: 'E2E Organization',
-      slug: `e2e-org-${suffix}`
+      slug: organizationSlug
     },
     headers
   });
@@ -147,16 +149,16 @@ async function createRepositoryFixture(
       id: repositoryId,
       name: 'E2E Repository',
       organization_id: organizationId,
-      slug: `e2e-repo-${suffix}`
+      slug: repositorySlug
     },
     headers
   });
   expect(repositoryResponse.status()).toBe(201);
 
-  return { repositoryId };
+  return { organizationSlug, repositoryId, repositorySlug };
 }
 
-test('Page create, update, stale-write rejection, no-op stability, and Activity form one browser loop', async ({
+test('Page collaboration uses semantic Repository routes while stable IDs remain authorization targets', async ({
   page,
   request
 }) => {
@@ -165,19 +167,33 @@ test('Page create, update, stale-write rejection, no-op stability, and Activity 
 
   await registerAndVerifyActor(page, request, email, password);
   const identity = await establishApiIdentity(request, email, password);
-  const { repositoryId } = await createRepositoryFixture(request, identity);
+  const { organizationSlug, repositoryId, repositorySlug } = await createRepositoryFixture(
+    request,
+    identity
+  );
+  const repositoryPath = `/app/${organizationSlug}/${repositorySlug}`;
+  const pagesPath = `${repositoryPath}/pages`;
+
+  await page.goto(`/app/repositories/${repositoryId}`);
+  await expect(page).toHaveURL(repositoryPath);
 
   await page.goto(`/app/repositories/${repositoryId}/resources`);
+  await expect(page).toHaveURL(pagesPath);
   await expect(page.getByRole('heading', { name: 'Pages', exact: true })).toBeVisible();
 
   await page.getByLabel('Page title').fill('Product brief');
   await page.getByRole('button', { name: 'Create Page' }).click();
 
-  await expect(page).toHaveURL(
-    new RegExp(`/app/repositories/${repositoryId}/resources/[0-9a-f-]+$`, 'u')
-  );
+  await expect(page).toHaveURL(new RegExp(`${pagesPath}/[0-9a-f-]+$`, 'u'));
   await expect(page.getByRole('heading', { name: 'Edit Page' })).toBeVisible();
   await expect(page.getByText('Page “Product brief” created', { exact: true })).toBeVisible();
+
+  const canonicalPagePath = new URL(page.url()).pathname;
+  const pageId = canonicalPagePath.split('/').at(-1);
+  expect(pageId).toBeTruthy();
+
+  await page.goto(`/app/repositories/${repositoryId}/resources/${pageId}`);
+  await expect(page).toHaveURL(canonicalPagePath);
 
   const initialVersion = await page.locator('input[name="expectedUpdatedAt"]').inputValue();
   const stalePage = await page.context().newPage();

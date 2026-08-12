@@ -7,7 +7,7 @@ import { createRequestServices } from '@/composition/create-request-services';
 
 const repositoryIdSchema = z.uuid();
 
-export const getAccessibleRepository = cache(async (repositoryId: string) => {
+const getAccessibleRepository = cache(async (repositoryId: string) => {
   const parsedRepositoryId = repositoryIdSchema.safeParse(repositoryId);
   if (!parsedRepositoryId.success) return null;
 

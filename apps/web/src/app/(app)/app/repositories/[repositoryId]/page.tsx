@@ -1,52 +1,24 @@
-import type { Metadata } from 'next';
-import Link from 'next/link';
+import { GetAccessibleRepositoryRouteById } from '@no-code-collaboration-platform/application';
+import { notFound, redirect } from 'next/navigation';
+import { z } from 'zod';
 
-import {
-  getAccessibleRepository,
-  requireAccessibleRepository
-} from './_queries/get-accessible-repository';
+import { createRequestServices } from '@/composition/create-request-services';
+import { repositoryPath } from '@/routing/repository-routes';
 
-interface RepositoryPageProps {
+interface LegacyRepositoryPageProps {
   readonly params: Promise<{ repositoryId: string }>;
 }
 
-export async function generateMetadata({ params }: RepositoryPageProps): Promise<Metadata> {
+export default async function LegacyRepositoryPage({ params }: LegacyRepositoryPageProps) {
   const { repositoryId } = await params;
-  const repository = await getAccessibleRepository(repositoryId);
+  const parsedRepositoryId = z.uuid().safeParse(repositoryId);
+  if (!parsedRepositoryId.success) notFound();
 
-  return {
-    title: repository ? repository.name : 'Repository unavailable'
-  };
-}
-
-export default async function RepositoryPage({ params }: RepositoryPageProps) {
-  const { repositoryId } = await params;
-  const repository = await requireAccessibleRepository(repositoryId);
-
-  return (
-    <div className='space-y-3'>
-      <nav
-        aria-label='Breadcrumb'
-        className='flex items-center gap-2 text-sm text-muted-foreground'
-      >
-        <Link className='hover:text-foreground' href='/app'>
-          Repositories
-        </Link>
-        <span aria-hidden='true'>/</span>
-        <span className='text-foreground'>{repository.name}</span>
-      </nav>
-      <div className='flex flex-wrap items-start justify-between gap-4'>
-        <div className='space-y-1'>
-          <h1 className='text-2xl font-semibold tracking-tight'>{repository.name}</h1>
-          <p className='max-w-3xl text-sm text-muted-foreground'>
-            {repository.description ??
-              'A no-code collaboration container for resources, permissions, workflows, and activity.'}
-          </p>
-        </div>
-        <span className='rounded-full border bg-muted px-3 py-1 text-xs font-medium capitalize'>
-          {repository.visibility}
-        </span>
-      </div>
-    </div>
+  const { repositoryRouteReader } = await createRequestServices();
+  const route = await new GetAccessibleRepositoryRouteById(repositoryRouteReader).execute(
+    parsedRepositoryId.data
   );
+  if (!route) notFound();
+
+  redirect(repositoryPath(route));
 }
