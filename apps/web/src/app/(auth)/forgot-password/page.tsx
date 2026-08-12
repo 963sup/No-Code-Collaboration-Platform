@@ -20,8 +20,7 @@ export const metadata: Metadata = {
 const errorMessages = {
   'invalid-input': 'Enter a valid email address.',
   'invalid-recovery-session': 'Request a new password reset link to continue.',
-  'provider-unavailable': 'The identity service is temporarily unavailable. Try again.',
-  'rate-limited': 'Too many recovery attempts were made. Try again later.'
+  'provider-unavailable': 'The identity service is temporarily unavailable. Try again.'
 } as const;
 
 const noticeMessages = {
