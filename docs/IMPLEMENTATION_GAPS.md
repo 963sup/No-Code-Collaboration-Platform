@@ -249,7 +249,7 @@ At detection time:
 
 #### Resolution
 
-- `packages/domain/src/access/delegation.ts` now owns explicit Organization and Repository delegation matrices over actor Role, current target Role, and proposed Role.
+- `packages/domain/src/access/delegation.ts` now owns explicit Organization and Repository delegation matrices over actor Role, current target Role, and proposed target Role.
 - Repository Managers may manage only Viewer and Contributor grants; Organization Admins may manage only Member and Admin relationships.
 - `supabase/schemas/90_private_functions.sql` projects the same role ceilings through private, caller-aware helper functions.
 - `supabase/schemas/99_rls.sql` uses `USING` for the existing target Role and `WITH CHECK` for the proposed Role, and binds Repository grant attribution to the authenticated actor.
