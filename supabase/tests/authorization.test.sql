@@ -244,13 +244,24 @@ select is(
 
 select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-000000000001', true);
 
-with changed as (
-  update public.resources
-  set title = 'Owner mutation'
-  where id = '30000000-0000-0000-0000-000000000001'
-  returning 1
-)
-select is((select count(*)::integer from changed), 1, 'organization owner receives repository admin capability');
+select is(
+  (
+    select count(*)::integer
+    from public.update_page(
+      '20000000-0000-0000-0000-000000000001',
+      '30000000-0000-0000-0000-000000000001',
+      'Owner mutation',
+      '',
+      (
+        select updated_at
+        from public.resources
+        where id = '30000000-0000-0000-0000-000000000001'
+      )
+    )
+  ),
+  1,
+  'organization owner receives repository admin capability through the accepted Page command'
+);
 
 update public.repositories
 set visibility = 'public'
