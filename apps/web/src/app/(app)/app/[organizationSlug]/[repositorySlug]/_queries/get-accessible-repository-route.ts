@@ -5,7 +5,11 @@ import { z } from 'zod';
 
 import { createRequestServices } from '@/composition/create-request-services';
 
-const routeSlugSchema = z.string().min(2).max(64).regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/u);
+const routeSlugSchema = z
+  .string()
+  .min(2)
+  .max(64)
+  .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/u);
 
 export const getAccessibleRepositoryRoute = cache(
   async (organizationSlug: string, repositorySlug: string) => {

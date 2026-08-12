@@ -29,7 +29,10 @@ const errorMessages = {
 } as const;
 
 export default async function RepositoryPages({ params, searchParams }: RepositoryPagesProps) {
-  const [{ organizationSlug, repositorySlug }, parameters] = await Promise.all([params, searchParams]);
+  const [{ organizationSlug, repositorySlug }, parameters] = await Promise.all([
+    params,
+    searchParams
+  ]);
   const route = await requireAccessibleRepositoryRoute(organizationSlug, repositorySlug);
   const { pageReader } = await createRequestServices();
   const pages = await new ListAccessiblePages(pageReader).execute(route.repository.id);
@@ -42,8 +45,8 @@ export default async function RepositoryPages({ params, searchParams }: Reposito
         <CardHeader>
           <CardTitle>Pages</CardTitle>
           <CardDescription>
-            Page is the first accepted collaborative surface inside this Repository. Resource remains
-            the shared Domain abstraction; the URL names the concrete thing people use.
+            Page is the first accepted collaborative surface inside this Repository. Resource
+            remains the shared Domain abstraction; the URL names the concrete thing people use.
           </CardDescription>
         </CardHeader>
         <CardContent>

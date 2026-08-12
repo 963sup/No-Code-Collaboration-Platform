@@ -1,7 +1,4 @@
-import type {
-  RepositoryRouteKey,
-  RepositoryRouteReader
-} from '../ports/repository-route-reader';
+import type { RepositoryRouteKey, RepositoryRouteReader } from '../ports/repository-route-reader';
 
 export class GetAccessibleRepositoryRoute {
   public constructor(private readonly repositoryRouteReader: RepositoryRouteReader) {}

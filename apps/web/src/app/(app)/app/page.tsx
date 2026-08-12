@@ -36,8 +36,8 @@ export default async function AppHomePage() {
           <CardHeader>
             <CardTitle>No accessible repositories</CardTitle>
             <CardDescription>
-              Authentication alone creates no collaboration authority. A Repository appears here only
-              after an accepted authority source makes it accessible.
+              Authentication alone creates no collaboration authority. A Repository appears here
+              only after an accepted authority source makes it accessible.
             </CardDescription>
           </CardHeader>
         </Card>

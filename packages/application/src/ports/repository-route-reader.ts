@@ -11,9 +11,7 @@ export interface RepositoryRouteSummary {
 }
 
 export interface RepositoryRouteReader {
-  findAccessibleRepositoryRouteById(
-    repositoryId: string
-  ): Promise<RepositoryRouteSummary | null>;
+  findAccessibleRepositoryRouteById(repositoryId: string): Promise<RepositoryRouteSummary | null>;
   findAccessibleRepositoryRouteByKey(
     key: RepositoryRouteKey
   ): Promise<RepositoryRouteSummary | null>;

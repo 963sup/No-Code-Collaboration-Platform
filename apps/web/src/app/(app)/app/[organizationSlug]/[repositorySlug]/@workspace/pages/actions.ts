@@ -12,7 +12,11 @@ import {
   repositoryPath
 } from '@/routing/repository-routes';
 
-const routeSlugSchema = z.string().min(2).max(64).regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/u);
+const routeSlugSchema = z
+  .string()
+  .min(2)
+  .max(64)
+  .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/u);
 
 const createPageSchema = z.object({
   organizationSlug: routeSlugSchema,

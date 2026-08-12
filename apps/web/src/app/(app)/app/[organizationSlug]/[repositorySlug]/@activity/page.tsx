@@ -35,7 +35,10 @@ export default async function RepositoryActivity({ params }: RepositoryActivityP
       </CardHeader>
       <CardContent className='space-y-4'>
         <RepositoryActivityList emptyMessage='No activity facts are visible yet.' events={events} />
-        <Link className='text-sm font-medium underline-offset-4 hover:underline' href={repositoryActivityPath(route)}>
+        <Link
+          className='text-sm font-medium underline-offset-4 hover:underline'
+          href={repositoryActivityPath(route)}
+        >
           View all activity
         </Link>
       </CardContent>

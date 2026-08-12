@@ -1,7 +1,10 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 
-import { getAccessibleRepositoryRoute, requireAccessibleRepositoryRoute } from './_queries/get-accessible-repository-route';
+import {
+  getAccessibleRepositoryRoute,
+  requireAccessibleRepositoryRoute
+} from './_queries/get-accessible-repository-route';
 
 interface RepositoryPageProps {
   readonly params: Promise<{ organizationSlug: string; repositorySlug: string }>;
@@ -23,7 +26,10 @@ export default async function RepositoryPage({ params }: RepositoryPageProps) {
 
   return (
     <div className='space-y-3'>
-      <nav aria-label='Breadcrumb' className='flex items-center gap-2 text-sm text-muted-foreground'>
+      <nav
+        aria-label='Breadcrumb'
+        className='flex items-center gap-2 text-sm text-muted-foreground'
+      >
         <Link className='hover:text-foreground' href='/app'>
           Repositories
         </Link>

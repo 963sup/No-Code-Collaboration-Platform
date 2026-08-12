@@ -107,8 +107,7 @@ for (const [scope, rules] of Object.entries(packageRules)) {
   }
 }
 
-const repositoryWorkspaceRoute =
-  'apps/web/src/app/(app)/app/[organizationSlug]/[repositorySlug]';
+const repositoryWorkspaceRoute = 'apps/web/src/app/(app)/app/[organizationSlug]/[repositorySlug]';
 const repositoryPagesRoute = `${repositoryWorkspaceRoute}/@workspace/pages`;
 const persistentParallelRouteDefaults = [
   `${repositoryWorkspaceRoute}/default.tsx`,
@@ -160,7 +159,9 @@ if (existsSync(resolve(root, repositoryNavigationPath))) {
     }
   }
   if (content.includes('/resources')) {
-    failures.push(`${repositoryNavigationPath}: Resource abstraction must not leak into navigation URLs`);
+    failures.push(
+      `${repositoryNavigationPath}: Resource abstraction must not leak into navigation URLs`
+    );
   }
 }
 

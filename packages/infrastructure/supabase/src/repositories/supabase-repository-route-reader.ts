@@ -34,7 +34,8 @@ export class SupabaseRepositoryRouteReader implements RepositoryRouteReader {
       target_repository_id: repositoryId
     });
 
-    if (error) throw new Error('Unable to resolve the accessible Repository route.', { cause: error });
+    if (error)
+      throw new Error('Unable to resolve the accessible Repository route.', { cause: error });
 
     const row = data[0];
     return row ? mapRepositoryRoute(row) : null;
@@ -48,7 +49,8 @@ export class SupabaseRepositoryRouteReader implements RepositoryRouteReader {
       target_repository_slug: key.repositorySlug
     });
 
-    if (error) throw new Error('Unable to resolve the accessible Repository route.', { cause: error });
+    if (error)
+      throw new Error('Unable to resolve the accessible Repository route.', { cause: error });
 
     const row = data[0];
     return row ? mapRepositoryRoute(row) : null;
