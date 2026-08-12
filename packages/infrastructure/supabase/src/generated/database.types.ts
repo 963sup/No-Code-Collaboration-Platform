@@ -305,7 +305,7 @@ export type Database = {
         }[]
       }
       list_accessible_repository_routes: {
-        Args: Record<PropertyKey, never>
+        Args: never
         Returns: {
           description: string
           id: string
