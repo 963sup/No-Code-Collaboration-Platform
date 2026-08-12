@@ -3,7 +3,7 @@ begin;
 create extension if not exists pgtap with schema extensions;
 set local search_path = extensions, public, pg_catalog;
 
-select plan(12);
+select plan(17);
 
 insert into auth.users (id, email, raw_user_meta_data)
 values
@@ -72,6 +72,41 @@ select is(
   'viewer can read resources in the granted repository'
 );
 
+select is(
+  (select count(*)::integer from public.organizations),
+  0,
+  'outside collaborator does not gain broad Organization row visibility'
+);
+
+select is(
+  (
+    select id
+    from public.get_accessible_repository_route_by_key(
+      'example-organization',
+      'example-repository'
+    )
+  ),
+  '20000000-0000-0000-0000-000000000001'::uuid,
+  'outside collaborator resolves the Repository namespace through access-aware route projection'
+);
+
+select is(
+  (
+    select organization_slug
+    from public.get_accessible_repository_route_by_id(
+      '20000000-0000-0000-0000-000000000001'
+    )
+  ),
+  'example-organization',
+  'stable Repository identity resolves to its canonical Organization namespace'
+);
+
+select is(
+  (select count(*)::integer from public.list_accessible_repository_routes()),
+  1,
+  'route listing exposes only Repository namespaces visible to the current actor'
+);
+
 with changed as (
   update public.resources
   set title = 'Viewer mutation'
@@ -101,6 +136,18 @@ select is(
   (select count(*)::integer from public.resources),
   0,
   'unrelated authenticated actor cannot read private resources'
+);
+
+select is(
+  (
+    select count(*)::integer
+    from public.get_accessible_repository_route_by_key(
+      'example-organization',
+      'example-repository'
+    )
+  ),
+  0,
+  'semantic route resolver does not reveal a private Repository to an unrelated actor'
 );
 
 select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-000000000001', true);
