@@ -1,6 +1,6 @@
 # ADR-009: Controlled Page command mutation boundary
 
-- Status: Accepted target decision; implementation evidence pending exact-head verification
+- Status: Accepted
 - Date: 2026-08-12
 - Decision owner: Repository owner
 - Affected scopes: Page Application port projection, Supabase Data API mutation surface, RLS, migration history, pgTAP security regression, generated database types
@@ -203,6 +203,18 @@ Reopen this decision if:
 9. Viewer create/update commands fail closed; outsider reads remain denied.
 10. schema replay, lint, pgTAP, generated-type consistency, Application/Domain tests, build, and browser contracts pass on the exact implementation head.
 
+## Verification evidence
+
+- Verified implementation head: [`a6bba75bb08cd0c6742ad6932e103698a9ab0bf2`](https://github.com/963sup/No-Code-Collaboration-Platform/commit/a6bba75bb08cd0c6742ad6932e103698a9ab0bf2)
+- Pull request: [#23](https://github.com/963sup/No-Code-Collaboration-Platform/pull/23)
+- Migration: `supabase/migrations/20260812073000_enforce_page_command_boundary.sql`
+- Database regression: all four pgTAP suites passed with 85 total assertions; `page-resource.test.sql` contains 28 Page command and attack-path assertions.
+- Exact implementation-head verification: [GitHub Actions Verify #118](https://github.com/963sup/No-Code-Collaboration-Platform/actions/runs/31577420974)
+- Passed gates: Workflow guardrails, Repository contracts, Supabase contracts, and Browser contracts.
+- Database evidence: migration replay from an empty disposable local database, database lint, pgTAP, and generated-type consistency passed on the same implementation head.
+- Browser evidence: production build plus local Auth/Repository/Page collaboration behavior passed on the same implementation head.
+- Vercel status for the implementation head succeeded independently.
+
 ## Evidence boundary
 
-Until the exact branch head passes GitHub Actions, this ADR records the accepted target decision and proposed executable projection, not verified closure. Even after CI succeeds, it proves disposable local/CI enforcement only; it does not prove a Supabase Cloud migration was Applied.
+The evidence above proves the accepted Page command boundary against disposable local/CI infrastructure on the exact implementation head. No hosted Supabase project was accessed or mutated, so this ADR does not assert that the migration is Applied to preview, staging, or production.
