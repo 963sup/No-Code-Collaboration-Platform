@@ -62,15 +62,19 @@ async function readVerificationCode(request: APIRequestContext, email: string) {
   throw new Error(`Verification email for ${email} was not observed in Mailpit.`);
 }
 
-async function readRecoveryTokenHash(request: APIRequestContext, email: string) {
-  const deadline = Date.now() + 20_000;
+async function readRecoveryTokenHash(
+  request: APIRequestContext,
+  email: string,
+  timeoutMilliseconds = 20_000
+) {
+  const deadline = Date.now() + timeoutMilliseconds;
 
   while (Date.now() < deadline) {
     const messages = await readMailpitMessages(request, email);
 
     for (const message of messages) {
       const content = `${message.Text ?? ''} ${message.HTML ?? ''}`;
-      if (!content.includes('/auth/recovery?token_hash=')) continue;
+      if (!content.includes('/recover-password#token_hash=')) continue;
 
       const tokenHash = content.match(/token_hash=([^&"'\s<]+)/u)?.[1];
       if (tokenHash) return tokenHash;
@@ -82,6 +86,36 @@ async function readRecoveryTokenHash(request: APIRequestContext, email: string) 
   }
 
   throw new Error(`Password recovery email for ${email} was not observed in Mailpit.`);
+}
+
+async function requestRecovery(page: Page, email: string) {
+  await page.goto('/forgot-password');
+  await page.getByLabel('Email').fill(email);
+  await page.getByRole('button', { name: 'Send reset instructions' }).click();
+  await expect(page).toHaveURL(/\/forgot-password\?notice=sent$/u);
+  await expect(
+    page.getByText(
+      "If an account can be recovered with that email, we've sent password reset instructions."
+    )
+  ).toBeVisible();
+}
+
+async function requestRecoveryAndReadTokenHash(
+  page: Page,
+  request: APIRequestContext,
+  email: string
+) {
+  await requestRecovery(page, email);
+
+  try {
+    return await readRecoveryTokenHash(request, email, 5_000);
+  } catch {
+    // Local Supabase can throttle a recovery email shortly after a registration email.
+    // The product response stays enumeration-safe, so wait for the provider frequency window and retry.
+    await page.waitForTimeout(61_000);
+    await requestRecovery(page, email);
+    return readRecoveryTokenHash(request, email);
+  }
 }
 
 async function registerAndVerify(
@@ -126,16 +160,7 @@ test('registration proves email ownership before creating an authenticated sessi
 test('password recovery does not enumerate an unknown account', async ({ page }) => {
   const email = `unknown-${randomUUID()}@example.com`;
 
-  await page.goto('/forgot-password');
-  await page.getByLabel('Email').fill(email);
-  await page.getByRole('button', { name: 'Send reset instructions' }).click();
-
-  await expect(page).toHaveURL(/\/forgot-password\?notice=sent$/u);
-  await expect(
-    page.getByText(
-      "If an account can be recovered with that email, we've sent password reset instructions."
-    )
-  ).toBeVisible();
+  await requestRecovery(page, email);
 });
 
 test('password recovery survives scanner GETs and creates only a recovery session after user action', async ({
@@ -149,30 +174,22 @@ test('password recovery survives scanner GETs and creates only a recovery sessio
   await registerAndVerify(page, request, email, password);
   await page.getByRole('button', { name: 'Sign out' }).click();
   await expect(page).toHaveURL(/\/$/u);
-  await page.goto('/sign-in');
 
-  await page.getByRole('link', { name: 'Forgot password?' }).click();
-  await page.getByLabel('Email').fill(email);
-  await page.getByRole('button', { name: 'Send reset instructions' }).click();
-  await expect(
-    page.getByText(
-      "If an account can be recovered with that email, we've sent password reset instructions."
-    )
-  ).toBeVisible();
+  const tokenHash = await requestRecoveryAndReadTokenHash(page, request, email);
+  const recoveryLink = `/recover-password#token_hash=${encodeURIComponent(tokenHash)}`;
 
-  const tokenHash = await readRecoveryTokenHash(request, email);
-  const recoveryBootstrapPath = `/auth/recovery?token_hash=${encodeURIComponent(tokenHash)}`;
-
-  const scannerResponse = await request.get(recoveryBootstrapPath);
+  const scannerResponse = await request.get(recoveryLink);
   expect(scannerResponse.ok()).toBe(true);
 
-  await page.goto(recoveryBootstrapPath);
+  await page.goto(recoveryLink);
   await expect(page).toHaveURL(/\/recover-password$/u);
+  await expect(page.getByRole('button', { name: 'Continue password reset' })).toBeEnabled();
 
-  await page.goto('/app');
-  await expect(page).toHaveURL(/\/sign-in\?next=%2Fapp$/u);
+  const preProofProductResponse = await page.context().request.get('/app', { maxRedirects: 0 });
+  expect(preProofProductResponse.status()).toBeGreaterThanOrEqual(300);
+  expect(preProofProductResponse.status()).toBeLessThan(400);
+  expect(preProofProductResponse.headers().location).toContain('/sign-in?next=%2Fapp');
 
-  await page.goto('/recover-password');
   await page.getByRole('button', { name: 'Continue password reset' }).click();
   await expect(page).toHaveURL(/\/reset-password$/u);
 
