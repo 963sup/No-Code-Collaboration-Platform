@@ -147,8 +147,14 @@ requireMatch(
 requireMatch(
   'docs/IMPLEMENTATION_GAPS.md',
   gapRegister,
-  /### GAP-LIFECYCLE-002[\s\S]*?- Status: Open/i,
-  'GAP-LIFECYCLE-002 must remain open until Resource lifecycle evidence exists'
+  /### GAP-LIFECYCLE-002[\s\S]*?- Status: Closed/i,
+  'GAP-LIFECYCLE-002 must retain its verified fail-closed status'
+);
+requireMatch(
+  'docs/IMPLEMENTATION_GAPS.md',
+  gapRegister,
+  /### GAP-LIFECYCLE-002[\s\S]*?c5ab97474e8c3f538fd5966a70d40450048a1952[\s\S]*?31567572157/i,
+  'GAP-LIFECYCLE-002 exact implementation head and CI closure evidence is missing'
 );
 
 const lifecycleAdrPath = 'docs/architecture/ADR-005-local-first-supabase-lifecycle.md';
@@ -235,8 +241,8 @@ const result = {
   ok: failures.length === 0,
   requiredDocuments: requiredDocuments.length,
   registeredGaps: 4,
-  openGaps: 2,
-  closedGaps: 2,
+  openGaps: 1,
+  closedGaps: 3,
   failures
 };
 
