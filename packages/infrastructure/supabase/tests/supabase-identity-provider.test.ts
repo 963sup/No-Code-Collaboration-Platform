@@ -237,6 +237,50 @@ describe('SupabaseIdentityProvider', () => {
     ).resolves.toEqual({ ok: true });
   });
 
+  it.each(['over_email_send_rate_limit', 'over_request_rate_limit'] as const)(
+    'does not expose recovery delivery throttling through %s',
+    async (code) => {
+      const resetPasswordForEmail = vi.fn(async () => ({
+        data: {},
+        error: {
+          code,
+          status: 429
+        }
+      }));
+      const client = {
+        auth: {
+          resetPasswordForEmail
+        }
+      } as unknown as SupabaseClient<Database>;
+
+      await expect(
+        new SupabaseIdentityProvider(client).requestPasswordRecovery('actor@example.com')
+      ).resolves.toEqual({ ok: true });
+    }
+  );
+
+  it('keeps recovery provider outages explicit without revealing account state', async () => {
+    const resetPasswordForEmail = vi.fn(async () => ({
+      data: {},
+      error: {
+        code: 'unexpected_failure',
+        status: 503
+      }
+    }));
+    const client = {
+      auth: {
+        resetPasswordForEmail
+      }
+    } as unknown as SupabaseClient<Database>;
+
+    await expect(
+      new SupabaseIdentityProvider(client).requestPasswordRecovery('actor@example.com')
+    ).resolves.toEqual({
+      ok: false,
+      reason: 'provider-unavailable'
+    });
+  });
+
   it('maps a recovery token hash to the provider recovery proof', async () => {
     const verifyOtp = vi.fn(async () => ({
       data: {
