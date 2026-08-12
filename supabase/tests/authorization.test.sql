@@ -3,7 +3,7 @@ begin;
 create extension if not exists pgtap with schema extensions;
 set local search_path = extensions, public, pg_catalog;
 
-select plan(17);
+select plan(25);
 
 insert into auth.users (id, email, raw_user_meta_data)
 values
@@ -55,6 +55,98 @@ select is(
   (select count(*)::integer from public.activity_events),
   2,
   'repository and resource creation emit historical facts'
+);
+
+select is(
+  (
+    select procedure.prosecdef
+    from pg_catalog.pg_proc as procedure
+    join pg_catalog.pg_namespace as namespace on namespace.oid = procedure.pronamespace
+    where namespace.nspname = 'public'
+      and procedure.proname = 'get_accessible_repository_route_by_id'
+  ),
+  false,
+  'public route-by-id RPC is an invoker facade, not an exposed privilege boundary'
+);
+
+select is(
+  (
+    select procedure.prosecdef
+    from pg_catalog.pg_proc as procedure
+    join pg_catalog.pg_namespace as namespace on namespace.oid = procedure.pronamespace
+    where namespace.nspname = 'public'
+      and procedure.proname = 'get_accessible_repository_route_by_key'
+  ),
+  false,
+  'public route-by-key RPC is an invoker facade, not an exposed privilege boundary'
+);
+
+select is(
+  (
+    select procedure.prosecdef
+    from pg_catalog.pg_proc as procedure
+    join pg_catalog.pg_namespace as namespace on namespace.oid = procedure.pronamespace
+    where namespace.nspname = 'public'
+      and procedure.proname = 'list_accessible_repository_routes'
+  ),
+  false,
+  'public route-list RPC is an invoker facade, not an exposed privilege boundary'
+);
+
+select is(
+  (
+    select procedure.prosecdef
+    from pg_catalog.pg_proc as procedure
+    join pg_catalog.pg_namespace as namespace on namespace.oid = procedure.pronamespace
+    where namespace.nspname = 'private'
+      and procedure.proname = 'get_accessible_repository_route_by_id'
+  ),
+  true,
+  'route-by-id privilege implementation is isolated in the private schema'
+);
+
+select is(
+  (
+    select procedure.prosecdef
+    from pg_catalog.pg_proc as procedure
+    join pg_catalog.pg_namespace as namespace on namespace.oid = procedure.pronamespace
+    where namespace.nspname = 'private'
+      and procedure.proname = 'get_accessible_repository_route_by_key'
+  ),
+  true,
+  'route-by-key privilege implementation is isolated in the private schema'
+);
+
+select is(
+  (
+    select procedure.prosecdef
+    from pg_catalog.pg_proc as procedure
+    join pg_catalog.pg_namespace as namespace on namespace.oid = procedure.pronamespace
+    where namespace.nspname = 'private'
+      and procedure.proname = 'list_accessible_repository_routes'
+  ),
+  true,
+  'route-list privilege implementation is isolated in the private schema'
+);
+
+select is(
+  has_function_privilege(
+    'anon',
+    'private.get_accessible_repository_route_by_id(uuid)',
+    'EXECUTE'
+  ),
+  false,
+  'anonymous actors cannot execute the private route privilege implementation'
+);
+
+select is(
+  has_function_privilege(
+    'authenticated',
+    'private.get_accessible_repository_route_by_id(uuid)',
+    'EXECUTE'
+  ),
+  true,
+  'authenticated invoker facade can delegate to the constrained private implementation'
 );
 
 set local role authenticated;
