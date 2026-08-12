@@ -1,7 +1,4 @@
-import {
-  VerifyEmail,
-  VerifyPasswordRecovery
-} from '@no-code-collaboration-platform/application';
+import { VerifyEmail, VerifyPasswordRecovery } from '@no-code-collaboration-platform/application';
 import { type NextRequest, NextResponse } from 'next/server';
 
 import { buildPath, resolvePostAuthDestination } from '@/auth/auth-navigation';

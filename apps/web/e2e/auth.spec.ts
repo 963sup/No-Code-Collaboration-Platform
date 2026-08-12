@@ -1,6 +1,11 @@
 import { randomUUID } from 'node:crypto';
 
-import { expect, test, type APIRequestContext, type Page } from '@playwright/test';
+import {
+  expect,
+  test,
+  type APIRequestContext,
+  type Page
+} from '@playwright/test';
 
 const MAILPIT_URL = 'http://127.0.0.1:54324';
 
@@ -139,7 +144,9 @@ test('password recovery uses a recovery-only session before accepting a new pass
   await page.getByLabel('Email').fill(email);
   await page.getByRole('button', { name: 'Send reset instructions' }).click();
   await expect(
-    page.getByText("If an account can be recovered with that email, we've sent password reset instructions.")
+    page.getByText(
+      "If an account can be recovered with that email, we've sent password reset instructions."
+    )
   ).toBeVisible();
 
   const tokenHash = await readRecoveryTokenHash(request, email);
@@ -155,7 +162,9 @@ test('password recovery uses a recovery-only session before accepting a new pass
   await page.getByRole('button', { name: 'Update password' }).click();
 
   await expect(page).toHaveURL(/\/sign-in\?notice=password-reset$/u);
-  await expect(page.getByText('Your password was updated. Sign in with your new password.')).toBeVisible();
+  await expect(
+    page.getByText('Your password was updated. Sign in with your new password.')
+  ).toBeVisible();
 
   await page.getByLabel('Email').fill(email);
   await page.getByLabel('Password').fill(newPassword);

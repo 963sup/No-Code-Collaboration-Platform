@@ -206,7 +206,9 @@ describe('identity use cases', () => {
   it('resets the credential through the recovery-specific provider boundary', async () => {
     const identityProvider = new FakeIdentityProvider();
 
-    await expect(new ResetPassword(identityProvider).execute('new-secure-password')).resolves.toEqual({
+    await expect(
+      new ResetPassword(identityProvider).execute('new-secure-password')
+    ).resolves.toEqual({
       ok: true
     });
     expect(identityProvider.resetPasswordValue).toBe('new-secure-password');
