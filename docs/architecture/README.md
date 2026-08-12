@@ -29,7 +29,7 @@ This directory holds the target architecture for a platform that reverse-enginee
 21. Organization and Repository hard deletion are unavailable to end-user roles until an accepted lifecycle defines containment fate, historical continuity, retention, restore, redaction, and recovery behavior.
 22. Page is the first accepted Resource implementation; its create/update commands require explicit Domain Capability decisions, independent RLS enforcement, exact content shape, optimistic concurrency evidence, and same-transaction immutable facts.
 23. A Resource subtype may use shared persistence only while its invariants remain explicit and no second subtype proves an independent storage lifecycle.
-24. Resource hard deletion remains unaccepted while `GAP-LIFECYCLE-002` is open; the presence of `resource.delete` cannot make an undefined Page lifecycle valid.
+24. Resource hard deletion is unavailable to end-user roles until an accepted Resource lifecycle defines archive/delete meaning, retention, restore, redaction, historical continuity, subtype consequences, and recovery; the presence of `resource.delete` in authority vocabulary does not create an executable destructive transition.
 25. Human-facing Repository routes use the Organization/Repository slug namespace; route resolution produces the stable Repository UUID used by Application authorization and RLS.
 26. `Resource` is a Domain abstraction, not a required user-facing URL segment. Accepted concrete Resource kinds own their product navigation surface.
 27. Legacy UUID Repository URLs may redirect only after access-aware resolution; inaccessible private Repository names must not be disclosed through redirects.
