@@ -1,11 +1,6 @@
 import { randomUUID } from 'node:crypto';
 
-import {
-  expect,
-  test,
-  type APIRequestContext,
-  type Page
-} from '@playwright/test';
+import { expect, test, type APIRequestContext, type Page } from '@playwright/test';
 
 const MAILPIT_URL = 'http://127.0.0.1:54324';
 
