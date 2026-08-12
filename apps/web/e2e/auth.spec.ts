@@ -148,6 +148,7 @@ test('password recovery survives scanner GETs and creates only a recovery sessio
 
   await registerAndVerify(page, request, email, password);
   await page.getByRole('button', { name: 'Sign out' }).click();
+  await expect(page).toHaveURL(/\/$/u);
   await page.goto('/sign-in');
 
   await page.getByRole('link', { name: 'Forgot password?' }).click();
