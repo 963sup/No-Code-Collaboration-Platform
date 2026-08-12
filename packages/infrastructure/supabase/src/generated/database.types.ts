@@ -277,6 +277,19 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      create_page: {
+        Args: { page_title: string; target_repository_id: string }
+        Returns: {
+          content: Json
+          created_at: string
+          created_by: string
+          id: string
+          kind: Database["public"]["Enums"]["resource_kind"]
+          repository_id: string
+          title: string
+          updated_at: string
+        }[]
+      }
       get_accessible_repository_route_by_id: {
         Args: { target_repository_id: string }
         Returns: {
@@ -314,6 +327,25 @@ export type Database = {
           organization_slug: string
           slug: string
           visibility: Database["public"]["Enums"]["repository_visibility"]
+        }[]
+      }
+      update_page: {
+        Args: {
+          expected_updated_at: string
+          page_body: string
+          page_id: string
+          page_title: string
+          target_repository_id: string
+        }
+        Returns: {
+          content: Json
+          created_at: string
+          created_by: string
+          id: string
+          kind: Database["public"]["Enums"]["resource_kind"]
+          repository_id: string
+          title: string
+          updated_at: string
         }[]
       }
     }

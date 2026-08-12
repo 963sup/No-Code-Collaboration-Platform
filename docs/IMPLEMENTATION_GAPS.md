@@ -71,6 +71,61 @@ Close this gap only after:
 
 ## Closed gaps
 
+### GAP-PAGE-001 — Generic Data API mutation bypassed accepted Page commands
+
+- Status: Closed
+- Affected contracts: [`domains/page-resource.md`](./domains/page-resource.md), [`architecture/ADR-007-first-page-resource-vertical-slice.md`](./architecture/ADR-007-first-page-resource-vertical-slice.md), and [`architecture/ADR-009-controlled-page-command-mutation-boundary.md`](./architecture/ADR-009-controlled-page-command-mutation-boundary.md)
+- Affected invariants: blank Page creation, optimistic concurrency, accepted transition provenance, and historical fact integrity
+- Risk class: Data integrity / collaboration concurrency / historical evidence
+- Closed by: Pull request [#23](https://github.com/963sup/No-Code-Collaboration-Platform/pull/23)
+
+#### Direct evidence
+
+At detection time on `main` commit `96eb996accc03409d0535a45c5ce15058305926b`:
+
+- The Page contract required `CreatePage` to create the accepted blank Page state and `UpdatePage` to supply matching server-managed `updated_at` concurrency evidence.
+- `packages/infrastructure/supabase/src/resources/supabase-page-repository.ts` implemented those rules when the application used its Page ports.
+- `supabase/schemas/99_rls.sql` nevertheless granted authenticated Resource INSERT and title/content UPDATE and authorized those statements through Capability-only RLS policies.
+- `supabase/tests/page-resource.test.sql` directly demonstrated that a Contributor could INSERT a Page with non-blank body content and directly UPDATE Page state without supplying the prior `updated_at` value.
+- `resource_created_activity` and `resource_updated_activity` triggers recorded historical facts for those direct mutations, so an Activity Event did not prove that the transition passed through accepted Page command semantics.
+
+#### Predicted failure
+
+A legitimate Contributor could bypass the Application Page command boundary through the Supabase Data API. The actor could not cross Repository authority, but could create or overwrite Page state using a transition that violated the accepted Page lifecycle and optimistic-concurrency contract while still producing apparently valid historical evidence.
+
+#### Resolution
+
+ADR-009 establishes one controlled Page command mutation boundary without weakening RLS:
+
+- `supabase/schemas/92_page_commands.sql` exposes only the concrete `create_page` and `update_page` Page write commands as authenticated RPCs.
+- Both functions are `SECURITY INVOKER`, use `search_path = ''`, derive Actor identity from `auth.uid()`, and never introduce a service-role or privileged write bypass.
+- The functions establish a short-lived transaction-local `app.page_command` marker around Resource DML and restore the prior value before successful return.
+- `supabase/schemas/99_rls.sql` retains the table privileges required by caller-privileged RPC execution but requires command provenance **and** the existing Actor/Repository Capability checks; raw authenticated Resource INSERT/UPDATE therefore fails closed.
+- `create_page` normalizes the title and creates the accepted blank body state; `update_page` requires matching server-managed `updated_at` evidence and scopes the update to the stable Page and Repository identities.
+- `packages/infrastructure/supabase/src/resources/supabase-page-repository.ts` now projects Page writes through those RPCs instead of generic Resource INSERT/UPDATE.
+- Existing Resource triggers continue to make accepted Page state transitions and required Activity facts atomic in the same PostgreSQL transaction.
+- `tooling/database-types.mjs` now reports bounded generated-type drift rather than an unbounded generated projection, and the committed Supabase function types match the reset schema.
+
+#### Temporary containment
+
+The former temporary containment is now the executable command boundary itself: a valid `resource.create` or `resource.update` Capability permits the accepted Page use case, not arbitrary SQL mutation of the Resource row. Raw Page INSERT/UPDATE lacks accepted command provenance and fails RLS. This closure does not grant new Repository authority or accept any Page delete/archive/restore transition.
+
+#### Closure evidence
+
+- Verified implementation head: [`a6bba75bb08cd0c6742ad6932e103698a9ab0bf2`](https://github.com/963sup/No-Code-Collaboration-Platform/commit/a6bba75bb08cd0c6742ad6932e103698a9ab0bf2)
+- Pull request: [#23](https://github.com/963sup/No-Code-Collaboration-Platform/pull/23)
+- Migration: `supabase/migrations/20260812073000_enforce_page_command_boundary.sql`
+- Page attack-path regression: `supabase/tests/page-resource.test.sql`, 28 assertions covering raw Contributor INSERT/UPDATE denial, command-context restoration, valid create/update, stale evidence, no-op stability, Viewer denial, outsider isolation, and Activity facts
+- Full database regression: all four pgTAP suites passed with 85 total assertions
+- Exact implementation-head verification: [GitHub Actions Verify #118](https://github.com/963sup/No-Code-Collaboration-Platform/actions/runs/31577420974)
+- Passed gates: Workflow guardrails, Repository contracts, Supabase contracts, and Browser contracts
+- Database evidence: migration replay from an empty disposable local database, database lint, all pgTAP suites, and generated-type consistency passed on the same implementation head
+- Browser evidence: production build and local Auth/Repository/Page collaboration behavior passed on the same implementation head
+- Vercel status for the implementation head succeeded independently
+- Remote boundary: no hosted Supabase database was accessed or mutated; this proves local/CI command enforcement, not an Applied preview, staging, or production migration
+
+Closing this executable gap does **not** claim that every future Resource mutation should use the same marker or that Page archive/delete/restore/idempotency semantics are accepted. A later command model must be justified by its own evidence and cannot silently restore generic Resource mutation reachability.
+
 ### GAP-LIFECYCLE-002 — Resource destructive lifecycle was not accepted
 
 - Status: Closed

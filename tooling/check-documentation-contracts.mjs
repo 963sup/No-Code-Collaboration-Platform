@@ -97,7 +97,8 @@ for (const gapId of [
   'GAP-AUTH-001',
   'GAP-IDENTITY-001',
   'GAP-LIFECYCLE-001',
-  'GAP-LIFECYCLE-002'
+  'GAP-LIFECYCLE-002',
+  'GAP-PAGE-001'
 ]) {
   requireMatch(
     'docs/IMPLEMENTATION_GAPS.md',
@@ -155,6 +156,18 @@ requireMatch(
   gapRegister,
   /### GAP-LIFECYCLE-002[\s\S]*?c5ab97474e8c3f538fd5966a70d40450048a1952[\s\S]*?31567572157/i,
   'GAP-LIFECYCLE-002 exact implementation head and CI closure evidence is missing'
+);
+requireMatch(
+  'docs/IMPLEMENTATION_GAPS.md',
+  gapRegister,
+  /### GAP-PAGE-001[\s\S]*?- Status: Closed/i,
+  'GAP-PAGE-001 must retain its verified closed status'
+);
+requireMatch(
+  'docs/IMPLEMENTATION_GAPS.md',
+  gapRegister,
+  /### GAP-PAGE-001[\s\S]*?a6bba75bb08cd0c6742ad6932e103698a9ab0bf2[\s\S]*?31577420974/i,
+  'GAP-PAGE-001 exact implementation head and CI closure evidence is missing'
 );
 
 const lifecycleAdrPath = 'docs/architecture/ADR-005-local-first-supabase-lifecycle.md';
@@ -240,9 +253,9 @@ requireMatch(
 const result = {
   ok: failures.length === 0,
   requiredDocuments: requiredDocuments.length,
-  registeredGaps: 4,
+  registeredGaps: 5,
   openGaps: 1,
-  closedGaps: 3,
+  closedGaps: 4,
   failures
 };
 
