@@ -2,7 +2,23 @@
 
 ## Status
 
-Accepted
+Accepted for Repository Parallel Route composition.
+
+The route identity and user-facing child-route vocabulary in this ADR are **partially superseded by [ADR-008](./ADR-008-repository-semantic-routing.md)**. The current canonical namespace is `/app/{organizationSlug}/{repositorySlug}`, and the first concrete child surface is `/pages`. Historical `/app/repositories/[repositoryId]` and `/resources` examples below remain decision evidence, not current route truth.
+
+## Current interpretation
+
+The decision that remains current is the composition mechanism:
+
+```text
+Repository semantic URL identity
+        ↓
+shared Next.js layout
+        ↓
+children + @navigation + @workspace + @context + @activity
+```
+
+Parallel Route slots remain presentation responsibilities. ADR-008 changes how the Repository is addressed and how the Page surface is named; it does not flatten or replace this Parallel Route architecture.
 
 ## Decision
 

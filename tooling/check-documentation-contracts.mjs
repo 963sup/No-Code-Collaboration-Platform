@@ -29,6 +29,9 @@ const requiredDocuments = [
   'docs/IMPLEMENTATION_GAPS.md',
   'docs/history/CLOSED_GAPS.md',
   'docs/README.md',
+  'docs/architecture/README.md',
+  'docs/architecture/ADR_INDEX.md',
+  'docs/architecture/ADR-003-repository-workspace-parallel-composition.md',
   'docs/architecture/ADR-005-local-first-supabase-lifecycle.md',
   'docs/domains/DOMAIN_TEMPLATE.md',
   'docs/domains/access-authority.md',
@@ -41,6 +44,10 @@ const requiredDocuments = [
 const documents = Object.fromEntries(requiredDocuments.map((path) => [path, read(path)]));
 const gapRegister = documents['docs/IMPLEMENTATION_GAPS.md'];
 const closedGapArchive = documents['docs/history/CLOSED_GAPS.md'];
+const architectureReadme = documents['docs/architecture/README.md'];
+const architectureDecisionIndex = documents['docs/architecture/ADR_INDEX.md'];
+const parallelRouteAdr =
+  documents['docs/architecture/ADR-003-repository-workspace-parallel-composition.md'];
 
 requireMatch(
   'README.md',
@@ -95,6 +102,12 @@ requireMatch(
 requireMatch(
   'docs/README.md',
   documents['docs/README.md'],
+  /architecture\/ADR_INDEX\.md/,
+  'architecture decision-history router is not part of the documentation map'
+);
+requireMatch(
+  'docs/README.md',
+  documents['docs/README.md'],
   /open authorization or data-integrity gap/is,
   'production-blocking gap rule is missing'
 );
@@ -103,6 +116,69 @@ requireMatch(
   documents['docs/README.md'],
   /selected provider is not proof of a provisioned environment/i,
   'provider/provisioning truth boundary is missing'
+);
+
+requireMatch(
+  'docs/architecture/README.md',
+  architectureReadme,
+  /\/app\/\[organizationSlug\]\/\[repositorySlug\]/,
+  'canonical semantic Repository route is missing'
+);
+requireMatch(
+  'docs/architecture/README.md',
+  architectureReadme,
+  /children.*@navigation.*@workspace.*@context.*@activity/is,
+  'canonical Repository Parallel Route composition is incomplete'
+);
+requireMatch(
+  'docs/architecture/README.md',
+  architectureReadme,
+  /Soft navigation[\s\S]*Hard navigation \/ refresh/i,
+  'Parallel Route navigation-mode contract is missing'
+);
+requireMatch(
+  'docs/architecture/README.md',
+  architectureReadme,
+  /legacy `\/app\/repositories\/\[repositoryId\]\/\*\*` namespace is compatibility-only/i,
+  'legacy UUID namespace boundary is missing'
+);
+
+requireMatch(
+  'docs/architecture/ADR_INDEX.md',
+  architectureDecisionIndex,
+  /ADR-003[\s\S]*partially superseded by ADR-008/i,
+  'ADR-003 partial-supersession status is missing'
+);
+requireMatch(
+  'docs/architecture/ADR_INDEX.md',
+  architectureDecisionIndex,
+  /children.*@navigation.*@workspace.*@context.*@activity/is,
+  'ADR index does not preserve the Parallel Route composition effect'
+);
+requireMatch(
+  'docs/architecture/ADR_INDEX.md',
+  architectureDecisionIndex,
+  /ADR-008[\s\S]*Accepted current route identity/i,
+  'ADR-008 current route-identity status is missing'
+);
+
+requireMatch(
+  'docs/architecture/ADR-003-repository-workspace-parallel-composition.md',
+  parallelRouteAdr,
+  /partially superseded by \[ADR-008\]/i,
+  'ADR-003 does not identify its route-identity supersession'
+);
+requireMatch(
+  'docs/architecture/ADR-003-repository-workspace-parallel-composition.md',
+  parallelRouteAdr,
+  /current canonical namespace is `\/app\/\{organizationSlug\}\/\{repositorySlug\}`/i,
+  'ADR-003 current semantic namespace annotation is missing'
+);
+requireMatch(
+  'docs/architecture/ADR-003-repository-workspace-parallel-composition.md',
+  parallelRouteAdr,
+  /does not flatten or replace this Parallel Route architecture/i,
+  'ADR-003 does not preserve the current Parallel Route decision'
 );
 
 requireMatch(

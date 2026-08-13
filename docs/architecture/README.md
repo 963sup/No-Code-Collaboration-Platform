@@ -35,22 +35,63 @@ This directory holds the target architecture for a platform that reverse-enginee
 27. Legacy UUID Repository URLs may redirect only after access-aware resolution; inaccessible private Repository names must not be disclosed through redirects.
 28. Accepted Page create/update transitions enter PostgreSQL through command-specific `SECURITY INVOKER` RPCs; raw authenticated Resource INSERT/UPDATE is not an alternate Page command API, and RLS requires both short-lived command provenance and ordinary Actor/Capability authorization.
 
+## Canonical Repository Web composition
+
+The current Repository workspace is a Next.js App Router **Parallel Route** composition. The semantic URL identifies one Repository collaboration context; the named slots render simultaneous presentation responsibilities inside that context.
+
+```text
+/app/[organizationSlug]/[repositorySlug]/
+├── page.tsx                 # implicit children: Repository header
+├── default.tsx              # children hard-navigation recovery
+├── layout.tsx               # renders all persistent slots
+├── @navigation/
+│   └── default.tsx
+├── @workspace/
+│   ├── default.tsx
+│   ├── pages/
+│   │   ├── page.tsx
+│   │   └── [pageId]/page.tsx
+│   └── activity/page.tsx
+├── @context/
+│   └── default.tsx
+└── @activity/
+    └── default.tsx
+```
+
+The layout contract is:
+
+```text
+children + @navigation + @workspace + @context + @activity
+```
+
+`@slot` names are not URL segments. Concrete child URLs such as `/pages`, `/pages/{pageId}`, and `/activity` select a product surface while the shared Repository layout continues to compose the persistent sibling surfaces.
+
+Next.js navigation behavior is part of the delivery contract:
+
+```text
+Soft navigation
+→ update the selected route surface while preserving active sibling slot state
+
+Hard navigation / refresh
+→ reconstruct every unmatched persistent slot through meaningful default.tsx recovery
+```
+
+The repository intentionally uses a stricter rule than a generic nullable Parallel Route fallback: persistent Repository surfaces must recover a meaningful base surface or explicit failure state rather than silently disappear.
+
+The legacy `/app/repositories/[repositoryId]/**` namespace is compatibility-only. It resolves access first and redirects into the semantic namespace; it must never own another Parallel Route workspace.
+
 ## Decision process
 
 Use [`ADR_TEMPLATE.md`](./ADR_TEMPLATE.md) for decisions that change system boundaries, ownership, authorization, persistence, public contracts, or irreversible technology choices.
 
 An accepted ADR must state the decision, evidence, constraints, assumptions, alternatives, consequences, falsification conditions, and validation plan. An ADR records why the model changed; it does not replace the canonical target contract that the decision updates.
 
-## Accepted decisions
+## Decision history
 
-- [`ADR-001-architecture-truth-boundaries.md`](./ADR-001-architecture-truth-boundaries.md) defines the architecture graph and source-of-truth boundaries.
-- [`ADR-002-executable-application-baseline.md`](./ADR-002-executable-application-baseline.md) defines the initial apps/packages graph, Next.js route groups, shadcn/ui role, and verification chain.
-- [`ADR-003-repository-workspace-parallel-composition.md`](./ADR-003-repository-workspace-parallel-composition.md) defines the first Repository Parallel Route workspace, meaningful hard-navigation recovery, and its authorization-aware read boundary.
-- [`ADR-004-authority-delegation-invariants.md`](./ADR-004-authority-delegation-invariants.md) separates operation capability from role delegation and defines ownership continuity.
-- [`ADR-005-local-first-supabase-lifecycle.md`](./ADR-005-local-first-supabase-lifecycle.md) separates database contracts, replayable migrations, provisioned environments, and applied deployment evidence.
-- [`ADR-006-defer-destructive-container-deletion.md`](./ADR-006-defer-destructive-container-deletion.md) removes end-user Organization and Repository hard deletion until explicit lifecycle semantics are accepted.
-- [`ADR-007-first-page-resource-vertical-slice.md`](./ADR-007-first-page-resource-vertical-slice.md) defines the first executable Page collaboration loop, explicit authority decision, typed persistence, optimistic concurrency, and immutable fact projection.
-- [`ADR-008-repository-semantic-routing.md`](./ADR-008-repository-semantic-routing.md) separates human-readable Repository navigation from stable authorization identity and makes Page the first concrete child route surface.
-- [`ADR-009-controlled-page-command-mutation-boundary.md`](./ADR-009-controlled-page-command-mutation-boundary.md) closes generic Data API mutation bypasses by routing accepted Page writes through command-specific invoker RPCs while preserving independent RLS authorization.
+Use [`ADR_INDEX.md`](./ADR_INDEX.md) before opening individual ADRs. It identifies which decision effects remain current and which historical details were superseded by later decisions.
+
+Current architecture truth is this README plus executable contracts. ADR bodies are decision history and may intentionally retain the route names, implementation vocabulary, or constraints that existed when the decision was made. When a historical ADR example conflicts with a later accepted decision or this current architecture contract, the later/current contract wins.
+
+In particular, [ADR-003](./ADR-003-repository-workspace-parallel-composition.md) remains accepted for Parallel Route composition, while [ADR-008](./ADR-008-repository-semantic-routing.md) supersedes its original UUID route identity and `/resources` vocabulary with the semantic slug namespace and `/pages` surface.
 
 No final bounded-context map is declared yet. Domain modules must continue to be justified by coherent business problems rather than symmetry.

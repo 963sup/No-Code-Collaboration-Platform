@@ -39,8 +39,15 @@ const invariantContracts = {
     [/Authentication is not Authorization/i, 'authentication/authorization separation is missing']
   ],
   'apps/web/src/app/AGENTS.md': [
+    [
+      /\/app\/\[organizationSlug\]\/\[repositorySlug\]/,
+      'canonical Repository App Router path is missing'
+    ],
+    [/@navigation.*@workspace.*@context.*@activity/is, 'Repository Parallel Route slots are missing'],
     [/implicit `children` slot/i, 'implicit children slot invariant is missing'],
     [/persistent named slot/i, 'persistent named-slot invariant is missing'],
+    [/Soft navigation.*persistent sibling slots/is, 'soft-navigation slot invariant is missing'],
+    [/Hard navigation.*meaningful defaults/is, 'hard-navigation recovery invariant is missing'],
     [/MUST NOT silently return `null`/i, 'non-null fallback invariant is missing']
   ],
   'docs/operations/AGENTS.md': [
