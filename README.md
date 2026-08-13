@@ -2,7 +2,21 @@
 
 > 逆向 GitHub 產品語意，從第一性原理重建以 Repository 為無代碼協作容器的企業協作平台。
 
-GitHub is a semantic benchmark, not an implementation template. `Repository` is the collaboration boundary for data, pages, workflows, documents, tasks, settings, members, permissions, and activity history—not a Git code store.
+GitHub is a semantic benchmark, not an implementation template. `Repository` is the primary no-code collaboration container—not a Git code store. GitHub concepts are adapted by their underlying relationship structure rather than copied by feature name.
+
+The product uses seven core collaboration semantic roles as a reasoning lens, not as an entity/package/table taxonomy:
+
+```text
+Actor        = who acts
+Scope        = which ownership or governance boundary applies
+Principal    = who may receive authority
+Container    = where collaboration has one stable boundary
+Relationship = how actors, principals, scopes, and containers are connected
+Artifact     = what collaborative work exists inside a container
+Process      = how artifacts or relationships validly change
+```
+
+Authorization (`Role`, `Capability`, `Policy`), presentation (`Context`, `Projection`), and evidence (`Activity Event`) remain cross-cutting semantics. One product concept may play more than one semantic role in different causal positions.
 
 ## Executable architecture
 
