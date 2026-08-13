@@ -2,7 +2,7 @@
 
 - Status: Candidate
 - Contract owner: Product and Domain
-- Last reviewed: 2026-08-11
+- Last reviewed: 2026-08-14
 
 ## Problem owned and success condition
 
@@ -26,6 +26,7 @@ This contract succeeds when a Repository can contain multiple Resource kinds whi
 - Organization ownership, Repository identity, Resource containment, and access grants remain distinct.
 - Domain semantics cannot depend on Next.js routes, Supabase DTOs, generated database types, or a specific UI composition.
 - Cross-Repository behavior cannot bypass authorization or historical evidence.
+- No adapted GitHub feature may become a second primary collaboration container without independent evidence that the Repository boundary fails.
 
 ### Assumptions
 
@@ -70,6 +71,24 @@ This contract does not own:
 - Next.js route composition; or
 - PostgreSQL persistence mechanics.
 
+## Semantic role mapping
+
+This contract applies the Product semantic-role lens without creating generic abstractions for the roles themselves:
+
+```text
+Actor        = authenticated User performing a Repository-scoped action
+Scope        = owning Organization for ownership/administration; Repository for collaboration/authorization target scope
+Principal    = authority-receiving subject resolved by Access Authority
+Container    = Repository
+Relationship = Organization ownership, Resource containment, Repository Grant relationships
+Artifact     = Resource and accepted Repository-scoped work subtypes
+Process      = Repository/Resource commands and state transitions
+```
+
+`Activity Event` remains historical evidence rather than an Artifact. `Context` remains a presentation concern. `Role`, `Capability`, and governance Policy remain authorization semantics.
+
+The same product concept can occupy different roles in different causal positions, but this does not create polymorphic tables or a generic `Container`/`Artifact` hierarchy. `Repository` remains the primary collaboration Container unless a falsification condition proves otherwise.
+
 ## Vocabulary
 
 | Term | Meaning |
@@ -102,7 +121,16 @@ Repository   1 ── scopes ── * Activity Event
 Repository   1 ── receives ── * Access Grant
 ```
 
-`Workspace`, `repository collaborator`, and navigation sections are derived views. They do not gain independent lifecycle ownership through presentation alone.
+`Workspace`, `repository collaborator`, Project-style views, and navigation sections are derived views. They do not gain independent lifecycle ownership through presentation alone.
+
+Candidate GitHub-inspired collaboration surfaces remain classified, not accepted:
+
+- Issue → candidate actionable Artifact.
+- Discussion → candidate conversation/shared-understanding Artifact.
+- Pull Request → candidate proposed-change Artifact plus review/decision Process; Git/branch/merge semantics are not inherited.
+- Workflow definition → candidate Artifact describing a Process; Workflow run → Process execution.
+- Project → planning Projection, not Container.
+- App → candidate machine Actor/Principal; Installation → Relationship.
 
 ## States and transitions
 
@@ -141,6 +169,7 @@ The minimum model has persistent Resources with an explicit kind. Resource-speci
 8. Resource subtype content cannot redefine Repository ownership or authority.
 9. Repository-scoped Activity Events reference the same stable Repository identity.
 10. Provider-specific IDs or routes cannot become the canonical Repository model.
+11. Semantic-role classification cannot by itself create a new Container, Artifact hierarchy, Domain, table, or package.
 
 ## Actors, principals, contexts, and permissions
 
@@ -188,6 +217,10 @@ This removes Repository but predicts that unrelated work, permissions, settings,
 
 Separate page spaces, workflow spaces, task spaces, and data spaces reduce shared modeling initially but duplicate ownership, permissions, navigation, activity, and lifecycle rules.
 
+### Generic semantic-role entities
+
+Creating generic `actors`, `scopes`, `containers`, `artifacts`, or `processes` simply because the semantic lens uses those words predicts weaker type integrity and abstraction without lifecycle evidence. The lens classifies meaning; concrete models own actual identity and invariants.
+
 ### Generic `type + json` bucket
 
 A single opaque resource table maximizes short-term flexibility but predicts weak invariants, provider-shaped Domain logic, difficult migrations, and subtype behavior hidden in application conditionals.
@@ -201,7 +234,8 @@ Reopen the boundary when:
 - normal work requires Resources to have independent multi-Repository ownership;
 - Repository visibility cannot be separated from authority without pervasive exceptions;
 - multiple Repository types require contradictory identity or lifecycle invariants;
-- Organization ownership cannot support demonstrated transfer or governance needs; or
+- Organization ownership cannot support demonstrated transfer or governance needs;
+- an adapted collaboration feature genuinely requires an independent Container whose removal cost cannot be expressed as a Repository Artifact/Process/Projection; or
 - two real Resource vertical slices cannot share the envelope without leaking subtype rules into Repository behavior.
 
 ## Minimum discriminating tests
@@ -212,4 +246,5 @@ Reopen the boundary when:
 4. Attempt to access a Resource through a different Repository ID; authorization should fail.
 5. Change UI context while holding actor and Repository constant; effective access must remain unchanged.
 6. Add a second real Resource kind; Repository behavior should remain stable while subtype rules remain isolated.
-7. Delete or transfer in a controlled test only after the required containment, history, and recovery behavior is explicitly defined.
+7. Introduce a GitHub-inspired candidate surface only after classifying its semantic roles; it must not create a competing Container without a falsifying use case.
+8. Delete or transfer in a controlled test only after the required containment, history, and recovery behavior is explicitly defined.
