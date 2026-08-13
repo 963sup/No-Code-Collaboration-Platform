@@ -9,14 +9,17 @@ Codex loads `.codex/config.toml`, project agents, rules, hooks, environments, an
 Authority remains:
 
 1. the current task and applicable `AGENTS.md` chain;
-2. accepted target contracts and ADRs;
-3. executable code, schema, migrations, and tests;
-4. external documentation as evidence about external behavior;
-5. generated or session context as non-authoritative projections.
+2. `docs/PRODUCT.md`, accepted Domain contracts, and `docs/architecture/README.md` for current target truth;
+3. `docs/IMPLEMENTATION_GAPS.md` for current Open or Contained target-to-executable differences;
+4. executable code, schema, policies, migrations, and tests for current behavior;
+5. direct provider observations and current official external documentation;
+6. generated or session context as non-authoritative projections.
+
+Historical evidence is opt-in. For why, regression analysis, or provenance, route through `docs/architecture/ADR_INDEX.md` before the relevant ADR, Closed-gap archive, pull request, commit, CI evidence, or migration history. Do not reconstruct current project state from historical evidence during normal task execution.
 
 ## Context router
 
-Use the narrowest authoritative source that answers the question.
+Use the narrowest authoritative source that answers the question. Do not recursively load documentation directories or broad Git history to create context.
 
 | Question | Primary context | Project agent |
 | --- | --- | --- |
@@ -26,6 +29,7 @@ Use the narrowest authoritative source that answers the question.
 | Current Supabase CLI, PostgreSQL, Auth, RLS, or MCP behavior | Supabase Docs MCP; Context7 only as a second source view | `supabase_docs_researcher` |
 | Local symbol navigation and bounded refactoring | Serena | Primary thread |
 | Actual change correctness and affected contracts | Repository diff and deterministic checks | `change_reviewer` |
+| Why a decision changed, regression archaeology, or provenance | `docs/architecture/ADR_INDEX.md`, then only the relevant historical evidence | Primary thread; focused reviewer only when useful |
 
 External documentation may explain a benchmark or dependency, but it must not silently redefine the platform model.
 
@@ -63,8 +67,10 @@ The primary thread owns edits, decisions, and verification claims. Agents reduce
 
 ## Session context
 
-The single `SessionStart` hook emits bounded observations:
+The single `SessionStart` hook emits bounded observations and routing instructions:
 
+- zero-context cold-start order through the current task, applicable `AGENTS.md` chain, and `docs/README.md`;
+- explicit historical-evidence opt-in for why, regression analysis, or provenance;
 - project root and applicable instruction reminder;
 - workspace packages;
 - Turbo presence;
@@ -73,7 +79,7 @@ The single `SessionStart` hook emits bounded observations:
 - documentation-context routing;
 - verification entry points.
 
-The hook does not inspect secrets, call remote services, infer architecture, or mutate repository state.
+The hook does not inspect secrets, call remote services, recursively load documentation, infer architecture from history, or mutate repository state. When current authorities disagree, the agent must resolve the nearest current contract against executable evidence rather than inventing architecture; a real mismatch belongs in the current gap register.
 
 ## Local worktree environment
 
@@ -95,11 +101,7 @@ Setup deliberately does not start Supabase, install browser binaries, copy `.env
 
 ## Code review
 
-Use a read-only Codex review before proposing consequential changes. The root `AGENTS.md` defines three project-specific checks that mechanical tools cannot prove:
-
-1. product semantic drift away from Repository as a no-code collaboration boundary;
-2. Architecture truth-boundary violations between Domain, Application, Infrastructure, and Delivery;
-3. authorization or external-trust-boundary bypasses.
+Use a read-only Codex review before proposing consequential changes. The root `AGENTS.md` defines project-specific checks that mechanical tools cannot prove, including product semantic drift, architecture truth-boundary violations, authorization or external-trust-boundary bypasses, and task-scoped attempts to redesign architecture without explicit scope.
 
 A clean model review is evidence, not authority. TypeScript, Oxc, Vitest, Supabase tests, Playwright, actionlint, zizmor, and GitHub Actions remain the deterministic gates.
 
@@ -112,6 +114,8 @@ Secret scanning is not duplicated in this workflow. Repository-level GitHub secr
 ## Command boundary
 
 Project rules allow routine bounded inspection and local verification. They prompt before destructive filesystem operations and remote Supabase mutations. Resetting a linked Supabase database remains forbidden. When rules overlap, the most restrictive matching rule is expected to win.
+
+Git history remains available for explicit why, regression, security investigation, or provenance tasks. It is not forbidden and does not require a blanket history gate; semantic routing keeps it out of normal cold-start context.
 
 ## Verification
 
