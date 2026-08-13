@@ -135,8 +135,15 @@ as $$
   from (
     select 'admin'::public.repository_role as role
     from public.repositories as repository
+    where repository.id = target_repository_id
+      and repository.owner_user_id = (select auth.uid())
+
+    union all
+
+    select 'admin'::public.repository_role as role
+    from public.repositories as repository
     join public.organization_memberships as membership
-      on membership.organization_id = repository.organization_id
+      on membership.organization_id = repository.owner_organization_id
     where repository.id = target_repository_id
       and membership.user_id = (select auth.uid())
       and membership.role in ('admin', 'owner')
@@ -256,10 +263,47 @@ language plpgsql
 security definer
 set search_path = ''
 as $$
+declare
+  candidate_username text;
 begin
-  insert into public.profiles (id, display_name)
-  values (new.id, nullif(new.raw_user_meta_data ->> 'name', ''))
-  on conflict (id) do nothing;
+  candidate_username := lower(trim(coalesce(new.raw_user_meta_data ->> 'username', '')));
+
+  if candidate_username !~ '^[a-z0-9]+(-[a-z0-9]+)*$'
+    or char_length(candidate_username) < 2
+    or char_length(candidate_username) > 64 then
+    candidate_username := 'user-' || replace(new.id::text, '-', '');
+  end if;
+
+  insert into public.profiles (id, username, display_name)
+  values (
+    new.id,
+    candidate_username,
+    nullif(new.raw_user_meta_data ->> 'name', '')
+  )
+  on conflict (id) do update
+    set username = excluded.username;
+
+  insert into private.repository_owner_namespaces (slug, user_id)
+  values (candidate_username, new.id)
+  on conflict (user_id) do update
+    set slug = excluded.slug;
+
+  return new;
+end;
+$$;
+
+create function private.sync_user_owner_namespace()
+returns trigger
+language plpgsql
+security definer
+set search_path = ''
+as $$
+begin
+  if new.username is distinct from old.username then
+    update private.repository_owner_namespaces
+    set slug = new.username
+    where user_id = new.id;
+  end if;
   return new;
 end;
 $$;
@@ -271,9 +315,28 @@ security definer
 set search_path = ''
 as $$
 begin
+  insert into private.repository_owner_namespaces (slug, organization_id)
+  values (new.slug, new.id);
+
   insert into public.organization_memberships (organization_id, user_id, role)
   values (new.id, new.created_by, 'owner')
   on conflict (organization_id, user_id) do update set role = 'owner';
+  return new;
+end;
+$$;
+
+create function private.sync_organization_owner_namespace()
+returns trigger
+language plpgsql
+security definer
+set search_path = ''
+as $$
+begin
+  if new.slug is distinct from old.slug then
+    update private.repository_owner_namespaces
+    set slug = new.slug
+    where organization_id = new.id;
+  end if;
   return new;
 end;
 $$;
@@ -384,9 +447,17 @@ create trigger auth_user_created_profile
 after insert on auth.users
 for each row execute function private.create_profile_for_auth_user();
 
+create trigger profile_username_owner_namespace
+before update of username on public.profiles
+for each row execute function private.sync_user_owner_namespace();
+
 create trigger organization_created_owner
 after insert on public.organizations
 for each row execute function private.add_organization_owner();
+
+create trigger organization_owner_namespace_update
+before update of slug on public.organizations
+for each row execute function private.sync_organization_owner_namespace();
 
 create trigger organization_owner_continuity_update
 before update of role on public.organization_memberships
