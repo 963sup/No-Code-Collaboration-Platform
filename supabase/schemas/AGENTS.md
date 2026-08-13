@@ -31,3 +31,19 @@ This directory owns current PostgreSQL schema truth and the database enforcement
 ## Projection rule
 
 If Domain policy and SQL enforcement disagree, the change is incomplete. Correct the earliest invalid model; do not weaken either side to make a test pass.
+
+## Local-only environment rule
+
+When provider discovery returns `projects: []`, continue authoring and verifying these schemas against local/shadow databases. Do not create, link, pull from, or mutate a remote project to obtain schema truth. Provider absence changes environment state, not Domain ownership or database invariants.
+
+## Modern declarative authoring
+
+- Files run in `config.toml` `schema_paths` order. Keep dependencies visible: types/tables before foreign keys and policies, private helpers before consumers, grants/RLS after objects exist.
+- Own application schemas only. Supabase-managed `auth`, `storage`, and extension internals are provider contracts, not declarative authoring surfaces unless an explicit customization decision says otherwise.
+- Fully qualify relations inside privileged functions, use `search_path = ''`, revoke default access before selective grants, and keep privileged helpers out of exposed schemas.
+- Declare the complete final grant set. RLS cannot protect `TRUNCATE`, `TRIGGER`, `REFERENCES`, or maintenance privileges, and grants alone cannot authorize rows.
+- Prefer constraints and transactionally enforced invariants over UI checks. Prefer `SECURITY INVOKER`; justify each `SECURITY DEFINER` boundary with caller-aware logic and executable attack-path tests.
+- Treat `db diff` as a compiler draft. Review unsupported DML, policy alterations, grants, view properties, publications, comments, extension behavior, and destructive normalization.
+- A schema change is complete only with a reviewed append-only migration, narrow pgTAP proof, empty-database replay, lint, generated-type consistency, and no substantive drift back to these files.
+
+`seed.sql` is not schema truth. Demo identities and rows must never influence policies, defaults, constraints, migrations, or pgTAP expectations.
