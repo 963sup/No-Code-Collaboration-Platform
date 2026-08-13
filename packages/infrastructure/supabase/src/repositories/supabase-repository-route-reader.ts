@@ -44,8 +44,11 @@ export class SupabaseRepositoryRouteReader implements RepositoryRouteReader {
   public async findAccessibleRepositoryRouteByKey(
     key: RepositoryRouteKey
   ): Promise<RepositoryRouteSummary | null> {
+    const ownerSlug = key.ownerSlug ?? key.organizationSlug;
+    if (!ownerSlug) return null;
+
     const { data, error } = await this.client.rpc('get_accessible_repository_route_by_key', {
-      target_organization_slug: key.organizationSlug,
+      target_organization_slug: ownerSlug,
       target_repository_slug: key.repositorySlug
     });
 
