@@ -29,7 +29,6 @@ export async function createRequestServices() {
 
   return {
     ...adapters,
-    repositoryAccessReader:
-      adapters.repositoryAuthoritySourceReader as RepositoryAccessReader
+    repositoryAccessReader: adapters.repositoryAuthoritySourceReader as RepositoryAccessReader
   };
 }
