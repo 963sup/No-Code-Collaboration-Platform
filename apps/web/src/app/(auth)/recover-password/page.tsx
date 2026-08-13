@@ -1,4 +1,10 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@no-code-collaboration-platform/ui';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle
+} from '@no-code-collaboration-platform/ui';
 import type { Metadata } from 'next';
 
 import { RecoveryConfirmationForm } from './recovery-confirmation-form';
