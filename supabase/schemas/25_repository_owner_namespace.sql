@@ -1,3 +1,5 @@
+create schema if not exists private;
+
 create table private.repository_owner_namespaces (
   slug text primary key,
   user_id uuid unique references auth.users (id) on delete cascade,
