@@ -17,10 +17,10 @@ export const metadata: Metadata = {
 };
 
 const errorMessages = {
-  'expired-code': 'The verification link has expired.',
-  'invalid-code': 'The verification link could not be verified.',
+  'expired-code': 'The authentication link has expired.',
+  'invalid-code': 'The authentication link could not be verified.',
   'provider-unavailable': 'The identity service is temporarily unavailable.',
-  'rate-limited': 'Too many verification attempts were made.'
+  'rate-limited': 'Too many authentication attempts were made.'
 } as const;
 
 const fallbackMessage = 'The authentication request could not be completed.';

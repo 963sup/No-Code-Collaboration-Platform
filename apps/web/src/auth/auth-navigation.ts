@@ -8,6 +8,7 @@ export type RouteAccess =
   | 'authenticated'
   | 'auth-protocol'
   | 'identity-proof'
+  | 'password-recovery'
   | 'public';
 
 function containsControlCharacter(value: string) {
@@ -20,8 +21,11 @@ function containsControlCharacter(value: string) {
 }
 
 export function classifyRouteAccess(pathname: string): RouteAccess {
-  if (pathname === '/sign-in' || pathname === '/sign-up') return 'anonymous-only';
-  if (pathname === '/verify-email') return 'identity-proof';
+  if (pathname === '/sign-in' || pathname === '/sign-up' || pathname === '/forgot-password') {
+    return 'anonymous-only';
+  }
+  if (pathname === '/verify-email' || pathname === '/recover-password') return 'identity-proof';
+  if (pathname === '/reset-password') return 'password-recovery';
   if (pathname === '/auth/error') return 'public';
   if (pathname.startsWith('/auth/')) return 'auth-protocol';
   if (pathname === '/app' || pathname.startsWith('/app/')) return 'authenticated';
@@ -70,7 +74,10 @@ export function resolvePostAuthDestination(value: string | null | undefined) {
   const pathname = new URL(destination, INTERNAL_ORIGIN).pathname;
   const access = classifyRouteAccess(pathname);
 
-  return access === 'anonymous-only' || access === 'auth-protocol' || access === 'identity-proof'
+  return access === 'anonymous-only' ||
+    access === 'auth-protocol' ||
+    access === 'identity-proof' ||
+    access === 'password-recovery'
     ? DEFAULT_AUTHENTICATED_PATH
     : destination;
 }

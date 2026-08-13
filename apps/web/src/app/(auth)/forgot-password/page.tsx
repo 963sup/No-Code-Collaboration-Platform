@@ -11,33 +11,33 @@ import {
 import type { Metadata } from 'next';
 import Link from 'next/link';
 
-import { buildPath, resolvePostAuthDestination } from '@/auth/auth-navigation';
-
-import { signIn } from './actions';
+import { requestPasswordRecovery } from './actions';
 
 export const metadata: Metadata = {
-  title: 'Sign in'
+  title: 'Reset password'
 };
 
 const errorMessages = {
-  'invalid-input': 'Enter a valid email address and password.',
-  'invalid-credentials': 'The email or password could not be verified.',
+  'invalid-input': 'Enter a valid email address.',
+  'invalid-recovery-session': 'Request a new password reset link to continue.',
   'provider-unavailable': 'The identity service is temporarily unavailable. Try again.'
 } as const;
 
 const noticeMessages = {
-  'password-reset': 'Your password was updated. Sign in with your new password.'
+  sent: "If an account can be recovered with that email, we've sent password reset instructions."
 } as const;
 
-type SignInSearchParams = Promise<{
+type ForgotPasswordSearchParams = Promise<{
   error?: string;
-  next?: string;
   notice?: string;
 }>;
 
-export default async function SignInPage({ searchParams }: { searchParams: SignInSearchParams }) {
+export default async function ForgotPasswordPage({
+  searchParams
+}: {
+  searchParams: ForgotPasswordSearchParams;
+}) {
   const parameters = await searchParams;
-  const next = resolvePostAuthDestination(parameters.next);
   const error = parameters.error as keyof typeof errorMessages | undefined;
   const notice = parameters.notice as keyof typeof noticeMessages | undefined;
   const message = error ? errorMessages[error] : undefined;
@@ -46,12 +46,13 @@ export default async function SignInPage({ searchParams }: { searchParams: SignI
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Sign in</CardTitle>
-        <CardDescription>Sign in to access your organizations and repositories.</CardDescription>
+        <CardTitle>Reset your password</CardTitle>
+        <CardDescription>
+          Enter your email address. Recovery requests do not reveal whether an account exists.
+        </CardDescription>
       </CardHeader>
       <CardContent className='space-y-6'>
-        <form action={signIn} className='space-y-5'>
-          <input name='next' type='hidden' value={next} />
+        <form action={requestPasswordRecovery} className='space-y-5'>
           <div className='space-y-2'>
             <Label htmlFor='email'>Email</Label>
             <Input
@@ -61,25 +62,6 @@ export default async function SignInPage({ searchParams }: { searchParams: SignI
               name='email'
               required
               type='email'
-            />
-          </div>
-          <div className='space-y-2'>
-            <div className='flex items-center justify-between gap-4'>
-              <Label htmlFor='password'>Password</Label>
-              <Link
-                className='text-sm font-medium text-foreground underline-offset-4 hover:underline'
-                href='/forgot-password'
-              >
-                Forgot password?
-              </Link>
-            </div>
-            <Input
-              autoComplete='current-password'
-              id='password'
-              maxLength={1024}
-              name='password'
-              required
-              type='password'
             />
           </div>
           {message ? (
@@ -93,16 +75,15 @@ export default async function SignInPage({ searchParams }: { searchParams: SignI
             </p>
           ) : null}
           <Button className='w-full' type='submit'>
-            Sign in
+            Send reset instructions
           </Button>
         </form>
         <p className='text-center text-sm text-muted-foreground'>
-          New to the platform?{' '}
           <Link
             className='font-medium text-foreground underline-offset-4 hover:underline'
-            href={buildPath('/sign-up', { next })}
+            href='/sign-in'
           >
-            Create an account
+            Return to sign in
           </Link>
         </p>
       </CardContent>

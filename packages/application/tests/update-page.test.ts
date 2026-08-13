@@ -24,14 +24,26 @@ function identityProvider(): IdentityProvider {
     async getCurrentIdentity() {
       return { email: 'actor@example.com', id: 'user-1' };
     },
+    async getPasswordRecoveryIdentity() {
+      return null;
+    },
     async registerWithPassword() {
       return { ok: false, reason: 'registration-disabled' };
+    },
+    async requestPasswordRecovery() {
+      return { ok: false, reason: 'provider-unavailable' };
     },
     async resendEmailVerification() {
       return { ok: false, reason: 'provider-unavailable' };
     },
+    async resetPassword() {
+      return { ok: false, reason: 'invalid-recovery-session' };
+    },
     async signOut() {},
     async verifyEmail() {
+      return { ok: false, reason: 'invalid-code' };
+    },
+    async verifyPasswordRecovery() {
       return { ok: false, reason: 'invalid-code' };
     }
   };

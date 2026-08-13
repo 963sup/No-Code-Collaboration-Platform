@@ -5,7 +5,9 @@ export type {
   CreatePageResult
 } from './commands/create-page';
 export { RegisterWithPassword } from './commands/register-with-password';
+export { RequestPasswordRecovery } from './commands/request-password-recovery';
 export { ResendEmailVerification } from './commands/resend-email-verification';
+export { ResetPassword } from './commands/reset-password';
 export { SignInWithPassword } from './commands/sign-in-with-password';
 export { SignOut } from './commands/sign-out';
 export { UpdatePage } from './commands/update-page';
@@ -15,6 +17,7 @@ export type {
   UpdatePageResult
 } from './commands/update-page';
 export { VerifyEmail } from './commands/verify-email';
+export { VerifyPasswordRecovery } from './commands/verify-password-recovery';
 export type { ActivityEventReader } from './ports/activity-event-reader';
 export type {
   ActorIdentity,
@@ -25,6 +28,12 @@ export type {
   EmailVerificationResult,
   IdentityProvider,
   PasswordCredentials,
+  PasswordRecoveryRequestFailureReason,
+  PasswordRecoveryRequestResult,
+  PasswordRecoveryVerificationFailureReason,
+  PasswordRecoveryVerificationResult,
+  PasswordResetFailureReason,
+  PasswordResetResult,
   RegistrationCredentials,
   RegistrationFailureReason,
   RegistrationResult,
@@ -48,6 +57,7 @@ export { GetAccessibleRepository } from './queries/get-accessible-repository';
 export { GetAccessibleRepositoryRoute } from './queries/get-accessible-repository-route';
 export { GetAccessibleRepositoryRouteById } from './queries/get-accessible-repository-route-by-id';
 export { GetCurrentIdentity } from './queries/get-current-identity';
+export { GetPasswordRecoveryIdentity } from './queries/get-password-recovery-identity';
 export { ListAccessiblePages } from './queries/list-accessible-pages';
 export { ListAccessibleRepositories } from './queries/list-accessible-repositories';
 export { ListAccessibleRepositoryRoutes } from './queries/list-accessible-repository-routes';

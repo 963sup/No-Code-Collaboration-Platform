@@ -1,4 +1,7 @@
-import { GetCurrentIdentity } from '@no-code-collaboration-platform/application';
+import {
+  GetCurrentIdentity,
+  GetPasswordRecoveryIdentity
+} from '@no-code-collaboration-platform/application';
 import { createSupabaseServerAdapters } from '@no-code-collaboration-platform/supabase';
 import { type NextRequest, NextResponse } from 'next/server';
 
@@ -52,8 +55,23 @@ export async function refreshSession(request: NextRequest) {
     url
   });
 
-  const identity = await new GetCurrentIdentity(identityProvider).execute();
   const routeAccess = classifyRouteAccess(request.nextUrl.pathname);
+
+  if (routeAccess === 'password-recovery') {
+    const recoveryIdentity = await new GetPasswordRecoveryIdentity(identityProvider).execute();
+
+    if (recoveryIdentity) return response;
+
+    const ordinaryIdentity = await new GetCurrentIdentity(identityProvider).execute();
+    const redirectUrl = request.nextUrl.clone();
+    redirectUrl.pathname = ordinaryIdentity ? '/app' : '/forgot-password';
+    redirectUrl.search = ordinaryIdentity
+      ? ''
+      : `?${new URLSearchParams({ error: 'invalid-recovery-session' }).toString()}`;
+    return createRedirectResponse(redirectUrl);
+  }
+
+  const identity = await new GetCurrentIdentity(identityProvider).execute();
 
   if (!identity && routeAccess === 'authenticated') {
     const signInUrl = request.nextUrl.clone();

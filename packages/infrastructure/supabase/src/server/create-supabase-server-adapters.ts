@@ -43,7 +43,11 @@ export function createSupabaseServerAdapters(
 
   return {
     activityEventReader: new SupabaseActivityEventReader(client),
-    identityProvider: new SupabaseIdentityProvider(client),
+    identityProvider: new SupabaseIdentityProvider(client, {
+      fetch: globalThis.fetch,
+      projectUrl: options.url,
+      publishableKey: options.publishableKey
+    }),
     pageReader: pageRepository,
     pageWriter: pageRepository,
     repositoryAuthoritySourceReader: new SupabaseRepositoryAuthoritySourceReader(client),

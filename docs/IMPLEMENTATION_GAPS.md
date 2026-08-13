@@ -2,7 +2,7 @@
 
 - Status: Active evidence register
 - Register owner: Project maintainer until an explicit governance owner is assigned
-- Last reviewed: 2026-08-12
+- Last reviewed: 2026-08-13
 
 ## Purpose
 
@@ -33,38 +33,40 @@ The register answers:
 
 ## Open gaps
 
-### GAP-IDENTITY-001 — Identity lifecycle stops after verified Session establishment
+### GAP-IDENTITY-001 — Identity lifecycle remains incomplete after verified Session and recovery establishment
 
 - Status: Open
 - Affected contract: [`domains/identity-lifecycle.md`](./domains/identity-lifecycle.md)
-- Affected invariants: recoverability, Product Actor readiness, invitation continuity, and production provider evidence
-- Risk class: Identity availability, incomplete product entry, and operational readiness
+- Affected invariants: Product Actor readiness, invitation continuity, credential/session security, and production provider evidence
+- Risk class: Incomplete product entry, identity governance, and operational readiness
 
 #### Direct evidence
 
-- The executable slice implements password registration, email verification, Session establishment, current-Session sign-out, and Profile creation through the existing `auth.users` trigger.
-- No Application use case or human-facing route currently implements password recovery, password reset, Product Actor readiness, onboarding, Organization invitation acceptance, email change, MFA, Session listing, or selective revocation UI.
-- The repository contains local Auth configuration and a Mailpit browser contract, but the connected Supabase tool reports no hosted project. Production Auth provider settings, redirect allowlists, SMTP, CAPTCHA, notification templates, and Session policies therefore have no direct environment evidence.
+- The executable slice implements password registration, email verification, ordinary Session establishment, current-Session sign-out, Profile creation through the existing `auth.users` trigger, password-recovery request, provider recovery proof, Recovery Session discrimination, and password reset.
+- Recovery is intentionally single-purpose: `GetCurrentIdentity` excludes signed Sessions whose `amr` contains `recovery`; `/reset-password` requires recovery evidence; an ordinary password Session cannot use the recovery reset operation; and recovery does not create Membership, Grant, Capability, or Activity facts.
+- `apps/web/e2e/auth.spec.ts` carries a local Mailpit discriminating path from registration and verification through recovery proof, recovery-only routing, password reset, fresh ordinary sign-in, and rejection of ordinary Sessions from the recovery page.
+- No Application use case or human-facing route currently implements Product Actor readiness, onboarding, Organization invitation acceptance, email change, MFA, Session listing, selective revocation UI, or enterprise identity policy.
+- The repository contains local Auth configuration, confirmation and recovery templates, and Mailpit browser contracts, but the connected Supabase tool reports no hosted project. Production Auth provider settings, redirect allowlists, SMTP, CAPTCHA, notification templates, and Session policies therefore have no direct environment evidence.
 - Open registration intentionally creates no Organization membership or Repository Grant.
 
 #### Predicted failure
 
-A User who loses a credential, requires onboarding, or arrives through an Organization invitation cannot complete that lifecycle through the current product. A local passing flow could also be incorrectly described as production-ready even when hosted Auth delivery and redirect behavior differ.
+A User can establish and recover the current local email/password credential flow, but cannot complete Product Actor onboarding, accept an Organization invitation, or manage stronger account-security lifecycle operations through the product. A local passing flow could also be incorrectly described as production-ready even when hosted Auth delivery, abuse protection, redirect behavior, or Session policy differs.
 
 #### Temporary containment
 
-- The product exposes only the implemented registration, verification, sign-in, and current-Session sign-out paths.
-- Unsupported recovery, onboarding, invitation, MFA, OAuth, SSO, and account-security behavior is not linked or described as available.
-- Registration does not create collaboration authority; authenticated Users without persisted Memberships or Grants remain unauthorized by RLS.
+- Recovery is exposed only through the accepted single-purpose Recovery Session path; a recovery-authenticated request is not accepted as ordinary `/app` identity.
+- Unsupported onboarding, invitation, MFA, OAuth, SSO, Session-management, and broader account-security behavior is not described as available.
+- Registration and recovery do not create collaboration authority; authenticated Users without persisted Memberships or Grants remain unauthorized by RLS.
 - Production identity readiness remains blocked until hosted configuration and delivery are directly verified.
 
 #### Closure evidence
 
 Close this gap only after:
 
-1. password recovery and reset are implemented and verified without account enumeration;
+1. password recovery and reset are exact-head verified without account enumeration, ordinary-Session reset bypass, or Recovery-Session product access;
 2. Product Actor readiness and onboarding have one authoritative state model;
-3. Organization invitations survive sign-in, registration, and verification without implicitly granting invalid Memberships;
+3. Organization invitations survive sign-in, registration, verification, and recovery without implicitly granting invalid Memberships;
 4. credential and Session security operations have explicit scope and reauthentication rules;
 5. hosted Supabase redirect, SMTP, abuse-protection, template, notification, and Session settings are verified against the intended production project; and
 6. Application, adapter, browser, provider, and operational tests produce consistent evidence.
@@ -249,7 +251,7 @@ At detection time:
 
 #### Resolution
 
-- `packages/domain/src/access/delegation.ts` now owns explicit Organization and Repository delegation matrices over actor Role, current target Role, and proposed target Role.
+- `packages/domain/src/access/delegation.ts` now owns explicit Organization and Repository delegation matrices over actor Role, current target Role, and proposed Role.
 - Repository Managers may manage only Viewer and Contributor grants; Organization Admins may manage only Member and Admin relationships.
 - `supabase/schemas/90_private_functions.sql` projects the same role ceilings through private, caller-aware helper functions.
 - `supabase/schemas/99_rls.sql` uses `USING` for the existing target Role and `WITH CHECK` for the proposed Role, and binds Repository grant attribution to the authenticated actor.
