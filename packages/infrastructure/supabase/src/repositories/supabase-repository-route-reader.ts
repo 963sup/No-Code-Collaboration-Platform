@@ -19,7 +19,7 @@ function mapRepositoryRoute(row: RepositoryRouteRow): RepositoryRouteSummary {
       name: row.name,
       organizationId: row.organization_id,
       slug: row.slug,
-      visibility: row.visibility
+      visibility: row.visibility === 'organization' ? 'private' : row.visibility
     }
   };
 }
