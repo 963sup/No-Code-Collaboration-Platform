@@ -250,10 +250,7 @@ if (!existsSync(resolve(root, legacyCompatibilityPath))) {
 }
 
 const legacySourceFiles = collectSourceFiles(legacyRepositoryRoute);
-if (
-  legacySourceFiles.length !== 1 ||
-  legacySourceFiles[0] !== legacyCompatibilityPath
-) {
+if (legacySourceFiles.length !== 1 || legacySourceFiles[0] !== legacyCompatibilityPath) {
   failures.push(
     `${legacyRepositoryRoute}: legacy Repository namespace must contain only the compatibility route`
   );
