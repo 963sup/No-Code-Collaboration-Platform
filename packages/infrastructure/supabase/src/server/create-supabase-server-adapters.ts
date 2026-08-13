@@ -13,8 +13,8 @@ import { SupabaseRepositoryAuthoritySourceReader } from '../access/supabase-repo
 import { SupabaseActivityEventReader } from '../activity/supabase-activity-event-reader';
 import type { Database } from '../generated/database.types';
 import { SupabaseIdentityProvider } from '../identity/supabase-identity-provider';
+import { SupabaseOwnerRepositoryRouteReader } from '../repositories/supabase-owner-repository-route-reader';
 import { SupabaseRepositoryReader } from '../repositories/supabase-repository-reader';
-import { SupabaseRepositoryRouteReader } from '../repositories/supabase-repository-route-reader';
 import { SupabasePageRepository } from '../resources/supabase-page-repository';
 
 export interface SupabaseServerAdapterOptions {
@@ -52,6 +52,6 @@ export function createSupabaseServerAdapters(
     pageWriter: pageRepository,
     repositoryAuthoritySourceReader: new SupabaseRepositoryAuthoritySourceReader(client),
     repositoryReader: new SupabaseRepositoryReader(client),
-    repositoryRouteReader: new SupabaseRepositoryRouteReader(client)
+    repositoryRouteReader: new SupabaseOwnerRepositoryRouteReader(client)
   };
 }
