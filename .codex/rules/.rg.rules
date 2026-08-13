@@ -1,0 +1,8 @@
+# Ripgrep is read-only repository discovery.
+
+prefix_rule(
+    pattern = [["rg", "rg.exe"]],
+    decision = "allow",
+    justification = "Ripgrep performs read-only repository search",
+    match = ["rg Repository", "rg.exe --files"],
+)

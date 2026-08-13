@@ -1,0 +1,72 @@
+#:schema https://developers.openai.com/codex/config-schema.json
+
+approval_policy = "on-request"
+approvals_reviewer = "user"
+sandbox_mode = "workspace-write"
+allow_login_shell = false
+tool_output_token_limit = 8000
+project_doc_max_bytes = 65536
+project_root_markers = ["pnpm-workspace.yaml", "turbo.json", ".git"]
+web_search = "indexed"
+
+[memories]
+generate_memories = false
+use_memories = false
+disable_on_external_context = true
+
+[features]
+hooks = true
+multi_agent = true
+skill_mcp_dependency_install = false
+
+[agents]
+enabled = true
+max_concurrent_threads_per_session = 4
+default_subagent_reasoning_effort = "medium"
+interrupt_message = true
+
+[shell_environment_policy]
+inherit = "core"
+ignore_default_excludes = false
+
+[sandbox_workspace_write]
+network_access = false
+
+# Authoritative OpenAI and Codex documentation. No repository secret is required.
+[mcp_servers.openaiDeveloperDocs]
+url = "https://developers.openai.com/mcp"
+enabled = true
+required = false
+startup_timeout_sec = 10
+tool_timeout_sec = 60
+default_tools_approval_mode = "auto"
+
+# Version-sensitive third-party documentation. Keep API keys in machine-local config.
+[mcp_servers.context7]
+url = "https://mcp.context7.com/mcp"
+enabled = true
+required = false
+startup_timeout_sec = 15
+tool_timeout_sec = 60
+default_tools_approval_mode = "auto"
+enabled_tools = ["resolve-library-id", "query-docs"]
+
+# Documentation-only Supabase context. Project refs, PATs, and database tools stay machine-local.
+[mcp_servers.supabaseDocs]
+url = "https://mcp.supabase.com/mcp?read_only=true&features=docs"
+enabled = true
+required = false
+startup_timeout_sec = 15
+tool_timeout_sec = 60
+default_tools_approval_mode = "auto"
+enabled_tools = ["search_docs"]
+
+# Local semantic code navigation. Write-capable tools remain approval-gated.
+[mcp_servers.serena]
+enabled = true
+required = false
+startup_timeout_sec = 30
+tool_timeout_sec = 60
+default_tools_approval_mode = "writes"
+command = "serena"
+args = ["start-mcp-server", "--project-from-cwd", "--context=codex"]

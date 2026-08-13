@@ -1,0 +1,7 @@
+# Destructive filesystem operations require an explicit user decision.
+
+prefix_rule(
+    pattern = [["rm", "rmdir", "del", "erase", "Remove-Item"]],
+    decision = "prompt",
+    justification = "Deletion may be legitimate during development, but Codex must expose the target and obtain approval before changing user or repository state",
+)

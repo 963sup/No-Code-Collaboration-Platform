@@ -1,0 +1,30 @@
+{
+  "name": "@no-code-collaboration-platform/web",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "oxlint src e2e next.config.ts postcss.config.mjs",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "ui:add": "shadcn add"
+  },
+  "dependencies": {
+    "@no-code-collaboration-platform/application": "workspace:*",
+    "@no-code-collaboration-platform/supabase": "workspace:*",
+    "@no-code-collaboration-platform/ui": "workspace:*",
+    "lucide-react": "1.31.0",
+    "next": "16.3.0",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "zod": "4.4.3"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "4.3.3",
+    "@types/react": "19.2.18",
+    "@types/react-dom": "19.2.4",
+    "shadcn": "4.16.2"
+  }
+}

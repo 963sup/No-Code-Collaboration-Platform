@@ -1,0 +1,9 @@
+# Generated context output
+repomix-output.*
+
+# Dependency resolution noise
+pnpm-lock.yaml
+
+# Workstation-local agent and IDE state
+.serena/**
+.idea/**

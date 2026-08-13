@@ -1,0 +1,44 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["typescript", "unicorn", "oxc", "import"],
+  "env": {
+    "browser": true,
+    "es6": true,
+    "node": true
+  },
+  "ignorePatterns": [
+    ".agents/**",
+    ".codex/**",
+    ".serena/**",
+    "node_modules/**",
+    "playwright-report/**",
+    "test-results/**",
+    "supabase/.temp/**",
+    "packages/infrastructure/supabase/src/generated/**"
+  ],
+  "categories": {
+    "correctness": "error",
+    "suspicious": "error"
+  },
+  "rules": {
+    "no-console": "error",
+    "no-unused-vars": ["error", { "argsIgnorePattern": "^_", "varsIgnorePattern": "^_" }],
+    "no-unused-expressions": "error",
+    "@typescript-eslint/no-explicit-any": "error",
+    "no-var": "error"
+  },
+  "overrides": [
+    {
+      "files": ["tooling/**/*.mjs"],
+      "rules": {
+        "no-console": "off"
+      }
+    },
+    {
+      "files": ["apps/web/src/app/layout.tsx"],
+      "rules": {
+        "import/no-unassigned-import": "off"
+      }
+    }
+  ]
+}

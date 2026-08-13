@@ -1,0 +1,8 @@
+# jq is read-only structured-output reduction when input is read-only.
+
+prefix_rule(
+    pattern = [["jq", "jq.exe"]],
+    decision = "allow",
+    justification = "jq reduces JSON output before it enters Codex context",
+    match = ["jq . package.json", "jq.exe -r .name package.json"],
+)

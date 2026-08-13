@@ -1,0 +1,50 @@
+# Routine local Supabase lifecycle and verification are allowed. Remote or destructive operations stay gated.
+
+prefix_rule(
+    pattern = ["supabase", ["--version", "status", "start", "stop"]],
+    decision = "allow",
+    justification = "Version, status, and local container lifecycle operations are bounded workstation actions",
+    match = ["supabase --version", "supabase status", "supabase start", "supabase stop"],
+)
+
+prefix_rule(
+    pattern = ["supabase", "db", "lint"],
+    decision = "allow",
+    justification = "Database linting is read-only local verification",
+    match = ["supabase db lint --local --level error"],
+)
+
+prefix_rule(
+    pattern = ["supabase", "db", "reset"],
+    decision = "allow",
+    justification = "Local reset proves that committed migration history recreates the development database",
+    match = ["supabase db reset"],
+)
+
+prefix_rule(
+    pattern = ["supabase", "gen", "types", "typescript", "--local"],
+    decision = "allow",
+    justification = "Local type generation produces a derived projection of the applied schema",
+    match = ["supabase gen types typescript --local"],
+)
+
+prefix_rule(
+    pattern = ["supabase", "db", "push"],
+    decision = "prompt",
+    justification = "Pushing migrations mutates a linked remote database",
+    match = ["supabase db push", "supabase db push --linked"],
+)
+
+prefix_rule(
+    pattern = ["supabase", "db", "pull"],
+    decision = "prompt",
+    justification = "Pulling from a linked database changes repository migration state and crosses an external boundary",
+    match = ["supabase db pull", "supabase db pull --linked"],
+)
+
+prefix_rule(
+    pattern = ["supabase", "db", "reset", "--linked"],
+    decision = "forbidden",
+    justification = "Do not destroy and rebuild a linked remote database from Codex; use local `supabase db reset` for reproducibility checks",
+    match = ["supabase db reset --linked"],
+)

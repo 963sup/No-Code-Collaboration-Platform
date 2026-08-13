@@ -1,0 +1,21 @@
+{
+  "name": "@no-code-collaboration-platform/supabase",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "lint": "oxlint src tests",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test": "vitest run --root ."
+  },
+  "dependencies": {
+    "@no-code-collaboration-platform/application": "workspace:*",
+    "@no-code-collaboration-platform/domain": "workspace:*",
+    "@supabase/ssr": "0.12.4",
+    "@supabase/supabase-js": "2.112.2"
+  }
+}
