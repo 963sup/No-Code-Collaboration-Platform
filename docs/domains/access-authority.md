@@ -2,7 +2,7 @@
 
 - Status: Candidate
 - Contract owner: Product and Domain
-- Last reviewed: 2026-08-12
+- Last reviewed: 2026-08-14
 
 ## Problem owned and success condition
 
@@ -34,6 +34,7 @@ This contract succeeds when Domain decisions, Application use cases, database en
 - An actor cannot grant authority beyond the accepted delegation rules.
 - Provider service credentials must never become browser authority.
 - Organization governance authority must not be represented as a fabricated direct Repository Grant.
+- Semantic-role classification cannot replace explicit authority facts or decision semantics.
 
 ### Assumptions
 
@@ -82,6 +83,30 @@ This contract does not own:
 - provider session transport;
 - PostgreSQL policy syntax; or
 - audit-feed presentation.
+
+## Semantic role mapping
+
+The Product semantic-role lens maps into authorization as follows:
+
+```text
+Actor        = authenticated User attempting the action
+Scope        = Organization ownership/governance scope plus Repository authorization target scope
+Principal    = subject that may receive Repository authority; currently User
+Container    = Repository, the primary collaboration/authorization boundary
+Relationship = Membership, ownership/governance relationship, direct Grant; future Team Membership/Grant or App Installation
+Artifact     = Repository-contained target such as Resource; authorization does not create a second Artifact model
+Process      = authorization-sensitive command/transition, including Grant mutation and future delegation workflows
+```
+
+Cross-cutting authorization semantics remain first-class:
+
+- `Role` = assignment/explanation bundle.
+- `Capability` = decision primitive.
+- `Policy`/constraint = restriction on otherwise candidate authority; it must not silently fabricate access.
+- `Context` = presentation state only.
+- `Activity Event` = historical evidence when an accepted mutation requires a fact.
+
+The semantic roles are not persistence supertypes. A User can be both request Actor and direct-grant Principal without merging Actor and Principal. A future App may be a machine Actor and/or Principal; a Team, if accepted, is an Organization-scoped Principal, not a Context or Container.
 
 ## Vocabulary
 
@@ -192,13 +217,15 @@ Every transition evaluates:
 12. Authorization fails closed when identity, authority sources, constraints, or target identity cannot be established.
 13. Service-role or secret credentials never reach browser code and never substitute for an end-user authorization decision.
 14. `Collaborator`, `Outside collaborator`, and `Highest role` remain derived from relationships.
+15. Actor/Scope/Principal/Container/Relationship/Artifact/Process classification never grants authority by itself.
 
 ## Actors, principals, contexts, and permissions
 
 - **Actor** answers “who is making this request?”
 - **Principal** answers “which subject received authority?”
-- **Context** answers “which view or scope is selected?”
-- **Repository/Resource** answers “what is the target?”
+- **Scope** answers “which ownership/governance boundary constrains the decision?”
+- **Repository/Resource** answers “what Container/Artifact target is being acted upon?”
+- **Context** answers “which view or presentation scope is selected?”
 - **Capability** answers “which action is being decided?”
 - **Grant, governance source, and policy evidence** answers “why is it allowed or denied?”
 
@@ -237,6 +264,10 @@ This is simple but predicts direct requests, stale clients, and alternate delive
 
 Checking `role === 'admin'` or `role !== 'viewer'` throughout routes, SQL, and components duplicates meaning and makes delegation rules inconsistent.
 
+### Generic Principal or Relationship persistence too early
+
+Turning semantic roles into a generic `principals(type,id)` or `relationships(type,source,target)` persistence model before multiple concrete lifecycles exist weakens FK integrity and hides scope-specific invariants. Domain vocabulary may abstract; persistence remains typed until evidence justifies a supertype.
+
 ### Fabricate direct grants for Organization governors
 
 Creating one direct Repository Grant for every Organization owner/admin duplicates the Organization governance relationship, complicates revocation, and can make the same authority look like two unrelated facts.
@@ -274,3 +305,4 @@ Reopen the model when:
 7. Grant attribution differing from the authenticated actor is rejected.
 8. Domain tests and database tests produce the same decision matrix for representative actors, Roles, authority sources, and targets.
 9. Introducing a second Principal type or an ordinary-member base permission must not require Role-name conditionals outside the owning contract.
+10. Classifying a candidate as Team/App/Enterprise-related must not create authority until accepted relationships and constraints exist.
