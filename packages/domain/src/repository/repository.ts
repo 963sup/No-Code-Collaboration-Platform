@@ -1,4 +1,4 @@
-export const repositoryVisibilities = ['private', 'organization', 'public'] as const;
+export const repositoryVisibilities = ['private', 'public'] as const;
 
 export type RepositoryVisibility = (typeof repositoryVisibilities)[number];
 
