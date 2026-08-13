@@ -34,7 +34,7 @@ values (
   '',
   '',
   '{"provider": "email", "providers": ["email"]}'::jsonb,
-  '{"name": "Sup Demo"}'::jsonb,
+  '{"name": "Sup Demo", "username": "sup-demo"}'::jsonb,
   timezone('utc', now()),
   timezone('utc', now())
 );
@@ -77,6 +77,7 @@ values (
 
 insert into public.repositories (
   id,
+  owner_organization_id,
   organization_id,
   slug,
   name,
@@ -86,6 +87,7 @@ insert into public.repositories (
 )
 values (
   '20000000-0000-0000-0000-00000000d001',
+  '10000000-0000-0000-0000-00000000d001',
   '10000000-0000-0000-0000-00000000d001',
   'demo-repository',
   'Demo Repository',
