@@ -4,6 +4,7 @@ create table public.repositories (
   id uuid primary key default gen_random_uuid(),
   owner_user_id uuid references auth.users (id) on delete restrict,
   owner_organization_id uuid references public.organizations (id) on delete restrict,
+  organization_id uuid references public.organizations (id) on delete restrict,
   slug text not null,
   name text not null,
   description text,
@@ -14,6 +15,9 @@ create table public.repositories (
   constraint repositories_exactly_one_owner check (
     (owner_user_id is not null and owner_organization_id is null)
     or (owner_user_id is null and owner_organization_id is not null)
+  ),
+  constraint repositories_legacy_organization_projection check (
+    organization_id is not distinct from owner_organization_id
   ),
   constraint repositories_slug_format check (
     char_length(slug) between 2 and 64
@@ -40,3 +44,6 @@ create index repositories_owner_organization_id_idx
 
 comment on table public.repositories is
   'No-code collaboration containers and the primary Resource/authorization/history boundary; each Repository is owned by exactly one User or Organization.';
+
+comment on column public.repositories.organization_id is
+  'Deprecated compatibility projection constrained to equal owner_organization_id; NULL for User-owned Repositories and never the canonical ownership source.';
