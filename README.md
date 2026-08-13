@@ -18,6 +18,8 @@ Process      = how artifacts or relationships validly change
 
 Authorization (`Role`, `Capability`, `Policy`), presentation (`Context`, `Projection`), and evidence (`Activity Event`) remain cross-cutting semantics. One product concept may play more than one semantic role in different causal positions.
 
+The root Product Contract is [`docs/PRODUCT.md`](./docs/PRODUCT.md). The complete GitHub-to-target 1–22 ontology, derivations, non-confusion boundaries, and admission rules are in [`docs/ONTOLOGY.md`](./docs/ONTOLOGY.md).
+
 ## Executable architecture
 
 ```text
@@ -88,4 +90,4 @@ pnpm test:e2e
 pnpm supabase:stop
 ```
 
-Product meaning is defined in [`docs/PRODUCT.md`](./docs/PRODUCT.md). Documentation starts at [`docs/README.md`](./docs/README.md), production operations at [`docs/operations/RUNBOOK.md`](./docs/operations/RUNBOOK.md), and Codex Desktop configuration at [`docs/CODEX_DESKTOP.md`](./docs/CODEX_DESKTOP.md).
+Documentation starts at [`docs/README.md`](./docs/README.md), production operations at [`docs/operations/RUNBOOK.md`](./docs/operations/RUNBOOK.md), and Codex Desktop configuration at [`docs/CODEX_DESKTOP.md`](./docs/CODEX_DESKTOP.md).
