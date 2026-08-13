@@ -26,6 +26,7 @@ const requiredDocuments = [
   'README.md',
   'docs/AGENTS.md',
   'docs/PRODUCT.md',
+  'docs/ONTOLOGY.md',
   'docs/IMPLEMENTATION_GAPS.md',
   'docs/history/CLOSED_GAPS.md',
   'docs/README.md',
@@ -33,6 +34,7 @@ const requiredDocuments = [
   'docs/architecture/ADR_INDEX.md',
   'docs/architecture/ADR-003-repository-workspace-parallel-composition.md',
   'docs/architecture/ADR-005-local-first-supabase-lifecycle.md',
+  'docs/architecture/ADR-010-repository-owner-namespace.md',
   'docs/domains/DOMAIN_TEMPLATE.md',
   'docs/domains/access-authority.md',
   'docs/domains/identity-lifecycle.md',
@@ -77,6 +79,18 @@ requireMatch(
 requireMatch(
   'docs/PRODUCT.md',
   documents['docs/PRODUCT.md'],
+  /Repository Owner[\s\S]*User[\s\S]*Organization/i,
+  'User-or-Organization Repository ownership truth is missing'
+);
+requireMatch(
+  'docs/PRODUCT.md',
+  documents['docs/PRODUCT.md'],
+  /\/\{ownerSlug\}\/\{repositorySlug\}/,
+  'canonical Owner/Repository URL is missing'
+);
+requireMatch(
+  'docs/PRODUCT.md',
+  documents['docs/PRODUCT.md'],
   /^## Falsification conditions$/m,
   'falsification conditions are missing'
 );
@@ -85,6 +99,19 @@ requireMatch(
   documents['docs/PRODUCT.md'],
   /^## Contract update protocol$/m,
   'contract update protocol is missing'
+);
+
+requireMatch(
+  'docs/ONTOLOGY.md',
+  documents['docs/ONTOLOGY.md'],
+  /Repository Owner[\s\S]*exactly one User OR one Organization/i,
+  'ontology does not define the corrected Repository owner relationship'
+);
+requireMatch(
+  'docs/ONTOLOGY.md',
+  documents['docs/ONTOLOGY.md'],
+  /Prefer GitHub-style owner\/repository URL/i,
+  'ontology does not preserve the URL/IA benchmark rule'
 );
 
 requireMatch(
@@ -121,8 +148,8 @@ requireMatch(
 requireMatch(
   'docs/architecture/README.md',
   architectureReadme,
-  /\/app\/\[organizationSlug\]\/\[repositorySlug\]/,
-  'canonical semantic Repository route is missing'
+  /\/\[ownerSlug\]\/\[repositorySlug\]/,
+  'canonical Owner/Repository semantic route is missing'
 );
 requireMatch(
   'docs/architecture/README.md',
@@ -146,8 +173,8 @@ requireMatch(
 requireMatch(
   'docs/architecture/ADR_INDEX.md',
   architectureDecisionIndex,
-  /ADR-003[\s\S]*partially superseded by ADR-008/i,
-  'ADR-003 partial-supersession status is missing'
+  /ADR-003[\s\S]*superseded by ADR-010/i,
+  'ADR-003 route supersession by ADR-010 is missing'
 );
 requireMatch(
   'docs/architecture/ADR_INDEX.md',
@@ -158,41 +185,49 @@ requireMatch(
 requireMatch(
   'docs/architecture/ADR_INDEX.md',
   architectureDecisionIndex,
-  /ADR-008[\s\S]*Accepted current route identity/i,
-  'ADR-008 current route-identity status is missing'
+  /ADR-008[\s\S]*Historical[\s\S]*superseded by ADR-010/i,
+  'ADR-008 historical/superseded route status is missing'
+);
+requireMatch(
+  'docs/architecture/ADR_INDEX.md',
+  architectureDecisionIndex,
+  /ADR-010[\s\S]*Accepted current ownership\/routing identity/i,
+  'ADR-010 current ownership/routing status is missing'
 );
 
 requireMatch(
   'docs/architecture/ADR-003-repository-workspace-parallel-composition.md',
   parallelRouteAdr,
-  /partially superseded by \[ADR-008\]/i,
-  'ADR-003 does not identify its route-identity supersession'
+  /superseded by \[ADR-010\]/i,
+  'ADR-003 does not identify ADR-010 route-identity supersession'
 );
 requireMatch(
   'docs/architecture/ADR-003-repository-workspace-parallel-composition.md',
   parallelRouteAdr,
-  /current canonical namespace is `\/app\/\{organizationSlug\}\/\{repositorySlug\}`/i,
-  'ADR-003 current semantic namespace annotation is missing'
+  /current canonical namespace is `\/\{ownerSlug\}\/\{repositorySlug\}`/i,
+  'ADR-003 current Owner/Repository namespace annotation is missing'
 );
 requireMatch(
   'docs/architecture/ADR-003-repository-workspace-parallel-composition.md',
   parallelRouteAdr,
   /does not flatten or replace this Parallel Route architecture/i,
-  'ADR-003 does not preserve the current Parallel Route decision'
+  'ADR-003 does not preserve the Parallel Route decision'
 );
 
-requireMatch(
-  'docs/IMPLEMENTATION_GAPS.md',
-  gapRegister,
-  /^### GAP-IDENTITY-001\b/m,
-  'GAP-IDENTITY-001 is missing'
-);
-requireMatch(
-  'docs/IMPLEMENTATION_GAPS.md',
-  gapRegister,
-  /### GAP-IDENTITY-001[\s\S]*?- Status: Open/i,
-  'GAP-IDENTITY-001 must remain open until the full identity lifecycle is verified'
-);
+for (const openGapId of ['GAP-OWNERSHIP-001', 'GAP-IDENTITY-001']) {
+  requireMatch(
+    'docs/IMPLEMENTATION_GAPS.md',
+    gapRegister,
+    new RegExp(`^### ${openGapId}\\b`, 'm'),
+    `${openGapId} is missing`
+  );
+  requireMatch(
+    'docs/IMPLEMENTATION_GAPS.md',
+    gapRegister,
+    new RegExp(`### ${openGapId}[\\s\\S]*?- Status: Open`, 'i'),
+    `${openGapId} must remain open until its closure evidence is complete`
+  );
+}
 for (const section of ['Direct evidence', 'Temporary containment', 'Closure evidence']) {
   requireMatch(
     'docs/IMPLEMENTATION_GAPS.md',
@@ -285,7 +320,7 @@ requireMatch(
 requireMatch(
   'docs/domains/access-authority.md',
   documents['docs/domains/access-authority.md'],
-  /Operation capability and role-delegation authority are distinct authorization decisions/,
+  /Operation capability[\s\S]*delegation authority[\s\S]*distinct/i,
   'delegation authority distinction is missing'
 );
 requireMatch(
@@ -303,7 +338,7 @@ requireMatch(
 requireMatch(
   'docs/domains/repository-collaboration.md',
   documents['docs/domains/repository-collaboration.md'],
-  /Deleting a Repository must define the fate of contained Resources, grants, and events/,
+  /Repository deletion remains unavailable[\s\S]*Resources[\s\S]*Grants[\s\S]*history[\s\S]*recovery/i,
   'destructive Repository lifecycle rule is missing'
 );
 
@@ -341,7 +376,7 @@ requireMatch(
 const result = {
   ok: failures.length === 0,
   requiredDocuments: requiredDocuments.length,
-  currentGaps: 1,
+  currentGaps: 2,
   archivedClosedGaps: 4,
   failures
 };
