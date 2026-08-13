@@ -43,7 +43,10 @@ const invariantContracts = {
       /\/app\/\[organizationSlug\]\/\[repositorySlug\]/,
       'canonical Repository App Router path is missing'
     ],
-    [/@navigation.*@workspace.*@context.*@activity/is, 'Repository Parallel Route slots are missing'],
+    [
+      /@navigation.*@workspace.*@context.*@activity/is,
+      'Repository Parallel Route slots are missing'
+    ],
     [/implicit `children` slot/i, 'implicit children slot invariant is missing'],
     [/persistent named slot/i, 'persistent named-slot invariant is missing'],
     [/Soft navigation.*persistent sibling slots/is, 'soft-navigation slot invariant is missing'],
