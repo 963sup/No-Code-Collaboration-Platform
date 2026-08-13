@@ -12,6 +12,10 @@ const repository = {
   description: null,
   id: 'repository-1',
   name: 'Platform',
+  owner: {
+    kind: 'organization' as const,
+    organizationId: 'organization-1'
+  },
   organizationId: 'organization-1',
   slug: 'platform',
   visibility: 'private' as const
@@ -68,7 +72,7 @@ describe('CreatePage', () => {
     const useCase = new CreatePage(
       createIdentityProvider(null),
       createRepositoryReader(),
-      { readRepositoryAuthoritySources },
+      { readRepositoryAuthoritySources } as unknown as ConstructorParameters<typeof CreatePage>[2],
       { createPage, updatePage: vi.fn() }
     );
 
@@ -91,7 +95,7 @@ describe('CreatePage', () => {
     const useCase = new CreatePage(
       createIdentityProvider('user-1'),
       createRepositoryReader(),
-      authoritySourceReader,
+      authoritySourceReader as unknown as ConstructorParameters<typeof CreatePage>[2],
       pageWriter
     );
 
@@ -118,8 +122,8 @@ describe('CreatePage', () => {
       createIdentityProvider('user-1'),
       createRepositoryReader(),
       {
-        async readRepositoryAuthoritySources() {
-          return { directRole: null, organizationRole: 'admin' };
+        async readRepositoryAccess() {
+          return { directRole: null, governanceRole: 'admin' };
         }
       },
       { createPage, updatePage: vi.fn() }
@@ -147,8 +151,8 @@ describe('CreatePage', () => {
       createIdentityProvider('user-1'),
       createRepositoryReader(),
       {
-        async readRepositoryAuthoritySources() {
-          return { directRole: 'contributor', organizationRole: null };
+        async readRepositoryAccess() {
+          return { directRole: 'contributor', governanceRole: null };
         }
       },
       { createPage, updatePage: vi.fn() }
@@ -171,8 +175,8 @@ describe('CreatePage', () => {
       createIdentityProvider('user-1'),
       createRepositoryReader(),
       {
-        async readRepositoryAuthoritySources() {
-          return { directRole: 'contributor', organizationRole: null };
+        async readRepositoryAccess() {
+          return { directRole: 'contributor', governanceRole: null };
         }
       },
       { createPage: vi.fn().mockResolvedValue(null), updatePage: vi.fn() }
@@ -190,8 +194,8 @@ describe('CreatePage', () => {
       createIdentityProvider('user-1'),
       createRepositoryReader(),
       {
-        async readRepositoryAuthoritySources() {
-          return { directRole: 'contributor', organizationRole: null };
+        async readRepositoryAccess() {
+          return { directRole: 'contributor', governanceRole: null };
         }
       },
       { createPage, updatePage: vi.fn() }
