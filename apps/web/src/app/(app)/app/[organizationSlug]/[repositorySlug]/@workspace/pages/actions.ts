@@ -50,7 +50,7 @@ export async function createPage(formData: FormData) {
   const result = await new CreatePage(
     services.identityProvider,
     services.repositoryReader,
-    services.repositoryAuthoritySourceReader,
+    services.repositoryAccessReader,
     services.pageWriter
   )
     .execute(parsed.data)
@@ -88,7 +88,7 @@ export async function updatePage(formData: FormData) {
   const result = await new UpdatePage(
     services.identityProvider,
     services.repositoryReader,
-    services.repositoryAuthoritySourceReader,
+    services.repositoryAccessReader,
     services.pageWriter
   )
     .execute(parsed.data)
