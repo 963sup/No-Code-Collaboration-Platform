@@ -3,7 +3,7 @@ begin;
 create extension if not exists pgtap with schema extensions;
 set local search_path = extensions, public, pg_catalog;
 
-select plan(25);
+select plan(26);
 
 insert into auth.users (id, email, raw_user_meta_data)
 values
@@ -46,13 +46,22 @@ values (
 );
 
 select is(
-  (select count(*)::integer from public.organization_memberships where role = 'owner'),
+  (
+    select count(*)::integer
+    from public.organization_memberships
+    where organization_id = '10000000-0000-0000-0000-000000000001'
+      and role = 'owner'
+  ),
   1,
   'organization creation establishes exactly one owner relationship'
 );
 
 select is(
-  (select count(*)::integer from public.activity_events),
+  (
+    select count(*)::integer
+    from public.activity_events
+    where repository_id = '20000000-0000-0000-0000-000000000001'
+  ),
   2,
   'repository and resource creation emit historical facts'
 );
@@ -147,6 +156,26 @@ select is(
   ),
   true,
   'authenticated invoker facade can delegate to the constrained private implementation'
+);
+
+select is_empty(
+  $$
+    select grantee, table_name, privilege_type
+    from information_schema.table_privileges
+    where table_schema = 'public'
+      and grantee in ('anon', 'authenticated')
+      and table_name in (
+        'activity_events',
+        'organization_memberships',
+        'organizations',
+        'profiles',
+        'repositories',
+        'repository_user_grants',
+        'resources'
+      )
+      and privilege_type in ('MAINTAIN', 'REFERENCES', 'TRIGGER', 'TRUNCATE')
+  $$,
+  'Data API roles cannot bypass row authorization through table maintenance privileges'
 );
 
 set local role authenticated;

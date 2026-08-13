@@ -1,7 +1,9 @@
 import { appendFileSync } from 'node:fs';
 import { spawnSync } from 'node:child_process';
+import { resolve } from 'node:path';
 
-const result = spawnSync('pnpm', ['exec', 'supabase', 'status', '-o', 'env'], {
+const supabaseCliPath = resolve(process.cwd(), 'node_modules/supabase/dist/supabase.js');
+const result = spawnSync(process.execPath, [supabaseCliPath, 'status', '-o', 'env'], {
   cwd: process.cwd(),
   encoding: 'utf8',
   timeout: 30_000,

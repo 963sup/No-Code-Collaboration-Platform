@@ -3,6 +3,7 @@ import { resolve } from 'node:path';
 import { spawnSync } from 'node:child_process';
 
 const mode = process.argv[2];
+const supabaseCliPath = resolve(process.cwd(), 'node_modules/supabase/dist/supabase.js');
 const outputPath = resolve(
   process.cwd(),
   'packages/infrastructure/supabase/src/generated/database.types.ts'
@@ -12,7 +13,7 @@ if (!['check', 'write'].includes(mode)) {
   throw new Error('Usage: node tooling/database-types.mjs <check|write>');
 }
 
-const status = spawnSync('pnpm', ['exec', 'supabase', 'status', '-o', 'env'], {
+const status = spawnSync(process.execPath, [supabaseCliPath, 'status', '-o', 'env'], {
   cwd: process.cwd(),
   encoding: 'utf8',
   timeout: 30_000,
@@ -35,8 +36,8 @@ if (!dbUrlLine) {
 
 const dbUrl = dbUrlLine.slice('DB_URL='.length).replace(/^"|"$/gu, '');
 const result = spawnSync(
-  'pnpm',
-  ['exec', 'supabase', 'gen', 'types', 'typescript', '--db-url', dbUrl],
+  process.execPath,
+  [supabaseCliPath, 'gen', 'types', 'typescript', '--db-url', dbUrl],
   {
     cwd: process.cwd(),
     encoding: 'utf8',
