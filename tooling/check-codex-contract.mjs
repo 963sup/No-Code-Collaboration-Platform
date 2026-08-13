@@ -4,6 +4,8 @@ import { spawnSync } from 'node:child_process';
 
 const root = process.cwd();
 const failures = [];
+const ROOT_INSTRUCTION_MAX_BYTES = 8192;
+const SESSION_CONTEXT_MAX_BYTES = 4096;
 
 const read = (path) => {
   try {
@@ -207,6 +209,24 @@ for (const path of instructionScopes) {
   if (!read(path).trim()) failures.push(`${path}: instruction scope is empty`);
 }
 
+const rootInstructions = read('AGENTS.md');
+check('AGENTS.md', rootInstructions, [
+  [/## Zero-context cold start/, 'zero-context cold-start contract is missing'],
+  [/Historical evidence is opt-in/, 'historical evidence is not opt-in'],
+  [/docs\/README\.md/, 'current-truth router is missing'],
+  [
+    /Do not redesign architecture while solving a local task/,
+    'task-scoped architecture redesign guard is missing'
+  ],
+  [/do not invent the missing architecture/i, 'missing-context speculation guard is missing']
+]);
+const rootInstructionBytes = Buffer.byteLength(rootInstructions, 'utf8');
+if (rootInstructionBytes > ROOT_INSTRUCTION_MAX_BYTES) {
+  failures.push(
+    `AGENTS.md: always-on context exceeds ${ROOT_INSTRUCTION_MAX_BYTES} bytes (${rootInstructionBytes})`
+  );
+}
+
 const workspace = read('pnpm-workspace.yaml');
 check('pnpm-workspace.yaml', workspace, [
   [/^\s*- ['"]apps\/\*['"]$/m, 'apps/* pattern is missing'],
@@ -255,7 +275,10 @@ check('docs/CODEX_DESKTOP.md', read('docs/CODEX_DESKTOP.md'), [
   [/Supabase Docs/, 'Supabase route is missing'],
   [/machine-local Supabase project context/i, 'machine-local Supabase boundary is missing'],
   [/read-only by default/i, 'machine-local Supabase access is not read-only by default'],
-  [/documentation[- ]only/i, 'committed Supabase boundary is not explicit']
+  [/documentation[- ]only/i, 'committed Supabase boundary is not explicit'],
+  [/Historical evidence is opt-in/, 'historical evidence opt-in boundary is missing'],
+  [/docs\/architecture\/ADR_INDEX\.md/, 'ADR history router is missing'],
+  [/zero-context cold-start/i, 'zero-context SessionStart contract is missing']
 ]);
 check('supabase/config.toml', read('supabase/config.toml'), [
   [/^\[db\.migrations\]$/m, 'declarative migrations are missing'],
@@ -292,6 +315,7 @@ check('.codex/rules/.supabase.rules', read('.codex/rules/.supabase.rules'), [
   ]
 ]);
 
+let sessionContextBytes = 0;
 const hookRun = spawnSync(process.execPath, [resolve(root, '.codex/hooks/session-start.mjs')], {
   cwd: root,
   encoding: 'utf8',
@@ -304,9 +328,19 @@ if (hookRun.status !== 0) {
   try {
     const output = JSON.parse(hookRun.stdout);
     const context = output?.hookSpecificOutput?.additionalContext ?? '';
+    sessionContextBytes = Buffer.byteLength(context, 'utf8');
+    if (sessionContextBytes > SESSION_CONTEXT_MAX_BYTES) {
+      failures.push(
+        `SessionStart context exceeds ${SESSION_CONTEXT_MAX_BYTES} bytes (${sessionContextBytes})`
+      );
+    }
     if (output?.hookSpecificOutput?.hookEventName !== 'SessionStart')
       failures.push('SessionStart event shape is invalid');
     for (const expected of [
+      'Cold-start contract',
+      'docs/README.md',
+      'Historical evidence is opt-in',
+      'do not invent architecture',
       'Workspace packages',
       'Turbo',
       'Reference context',
@@ -340,6 +374,12 @@ const result = {
   skills: { found: skills.length, required: requiredSkills.length },
   hooks: Array.isArray(sessionHandlers) ? sessionHandlers.length : 0,
   instructionScopes: instructionScopes.length,
+  contextBudget: {
+    rootInstructionBytes,
+    rootInstructionMaxBytes: ROOT_INSTRUCTION_MAX_BYTES,
+    sessionContextBytes,
+    sessionContextMaxBytes: SESSION_CONTEXT_MAX_BYTES
+  },
   workspacePackages,
   failures
 };
