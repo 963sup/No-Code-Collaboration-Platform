@@ -6,9 +6,9 @@ set local search_path = extensions, public, pg_catalog;
 select plan(2);
 
 select has_table(
-  'public',
+  'private',
   'repository_owner_namespaces',
-  'User and Organization Repository owners share one globally unique URL namespace registry'
+  'User and Organization Repository owners share one private globally unique URL namespace registry'
 );
 
 select is(
