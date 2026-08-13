@@ -158,7 +158,7 @@ async function createRepositoryFixture(
   return { organizationSlug, repositoryId, repositorySlug };
 }
 
-test('Page collaboration uses semantic Repository routes while stable IDs remain authorization targets', async ({
+test('Page collaboration uses owner-semantic Repository routes while stable IDs remain authorization targets', async ({
   page,
   request
 }) => {
@@ -171,8 +171,12 @@ test('Page collaboration uses semantic Repository routes while stable IDs remain
     request,
     identity
   );
-  const repositoryPath = `/app/${organizationSlug}/${repositorySlug}`;
+  const repositoryPath = `/${organizationSlug}/${repositorySlug}`;
   const pagesPath = `${repositoryPath}/pages`;
+
+  await page.goto('/app');
+  await page.getByRole('link', { name: /E2E Repository/u }).click();
+  await expect(page).toHaveURL(repositoryPath);
 
   await page.goto(`/app/repositories/${repositoryId}`);
   await expect(page).toHaveURL(repositoryPath);
