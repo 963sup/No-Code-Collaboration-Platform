@@ -1,158 +1,114 @@
 # PR #24 Recovery Merge-Gate Repair Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** Use the Superpowers execution/TDD workflow task by task. This document records both completed repair steps and the remaining exact-head verification gates.
 
 **Goal:** Restore truthful exact-head verification for PR #24 and prove the password-recovery lifecycle without expanding the open Identity gap.
 
-**Architecture:** Preserve the existing provider-neutral Application boundary and Supabase adapter. Repair the verification harness by separating local email-delivery timing from the recovery behavioral contract, then strengthen the browser post-condition that Recovery authority terminates before ordinary sign-in.
+**Architecture:** Keep Application provider-neutral. Use Supabase's provider-native PKCE recovery FlowState to establish signed recovery authority, preserve Human-action/scanner resistance at delivery, and verify authority again at the password mutation boundary.
 
 **Tech Stack:** TypeScript, Next.js App Router/Server Actions, Supabase CLI 2.111.0/Auth, Playwright 1.62.1, oxfmt 0.42.0, GitHub Actions.
 
-## Global Constraints
+## Global constraints
 
 - `packages/domain` remains provider-free business truth.
-- `packages/application` remains provider-neutral and may depend on Domain, not Next.js or Supabase SDKs.
+- `packages/application` remains provider-neutral and does not depend on Next.js or Supabase SDKs.
 - Supabase-specific behavior remains in `packages/infrastructure/supabase` and composition.
 - Server Actions revalidate authentication/authorization at the mutation boundary.
 - `pnpm` is the only JavaScript package manager.
 - `oxfmt` is the only formatter and `oxlint` the general JS/TS linter.
 - `GAP-IDENTITY-001` remains Open after this slice.
 - Do not add MFA, onboarding, invitation acceptance, Session-management UI, or hosted-provider claims.
+- No merge to `main` is authorized by this plan.
 
 ---
 
-### Task 1: Expose the hidden Browser RED
+### Task 1: Expose hidden Browser evidence — completed
 
 **Files:**
-- Modify: `apps/web/src/app/(auth)/recover-password/page.tsx`
-- Create: `docs/superpowers/specs/2026-08-13-pr24-recovery-merge-gate-design.md`
-- Create: `docs/superpowers/plans/2026-08-13-pr24-recovery-merge-gate-repair.md`
+- `apps/web/src/app/(auth)/recover-password/page.tsx`
+- `apps/web/src/app/(auth)/recover-password/recovery-confirmation-form.tsx`
+- design/plan documents
 
-**Interfaces:**
-- Consumes: existing PR #24 recovery flow and GitHub Actions dependency graph.
-- Produces: formatter-clean repository job so Browser contracts can execute.
+- [x] Fix the `oxfmt` blocker in `recover-password/page.tsx`.
+- [x] Replace unsupported `<Button asChild>` usage with the repository's existing `Link + buttonVariants + cn` pattern.
+- [x] Re-run exact-head CI until Repository contracts reached the Browser gate.
 
-- [ ] **Step 1: Apply only the oxfmt-equivalent multiline UI import to `recover-password/page.tsx`.**
+**Observed result:** Repository contracts became green and Browser contracts exposed a real authorization defect rather than a formatting/build symptom.
 
-```ts
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle
-} from '@no-code-collaboration-platform/ui';
-```
-
-- [ ] **Step 2: Commit and push without changing Supabase email frequency or the 61-second browser fallback.**
-
-Expected GitHub outcome: Repository contracts progresses beyond `oxfmt`; Browser contracts becomes runnable. If Browser reaches the fallback, Playwright should expose the current timing defect rather than it remaining skipped.
-
-- [ ] **Step 3: Inspect exact-head workflow jobs/logs.**
-
-Evidence required: Repository contracts result plus Browser contracts result on the same pushed head.
-
-### Task 2: Remove test-environment timing coupling
+### Task 2: Correct the Recovery Session provider primitive — completed
 
 **Files:**
-- Modify: `supabase/config.toml`
-- Modify: `apps/web/e2e/auth.spec.ts`
+- `packages/infrastructure/supabase/src/identity/supabase-identity-provider.ts`
+- `packages/infrastructure/supabase/src/server/create-supabase-server-adapters.ts`
+- `packages/infrastructure/supabase/tests/supabase-identity-provider.test.ts`
 
-**Interfaces:**
-- Consumes: Supabase CLI 2.111.0 local Auth configuration and Mailpit message polling.
-- Produces: deterministic recovery email delivery evidence without an arbitrary 61-second sleep.
+- [x] Trace Browser failure from `/app` reachability through `GetCurrentIdentity` to signed `amr` claims.
+- [x] Verify against current Supabase Auth source that POST `verifyOtp(type='recovery')` creates an `otp` Session rather than preserving recovery FlowState authority.
+- [x] Verify that Supabase PKCE recovery records `authentication_method=recovery` in FlowState and exchanges an auth code into a Session using that method.
+- [x] Reject non-`pkce_` recovery proofs before provider exchange.
+- [x] On explicit Human POST, call the provider GET verify endpoint with redirects disabled, extract the provider auth code, then call `exchangeCodeForSession`.
+- [x] Require signed `amr=recovery` after exchange; if absent, remove the local Session and fail closed.
+- [x] Keep `ResetPassword` revalidation immediately before `updateUser({ password })`.
+- [x] Update canonical Supabase adapter tests for PKCE exchange and non-PKCE fail-closed behavior.
 
-- [ ] **Step 1: Set the local/CI email frequency to the pinned CLI development default.**
+**Observed result:** Repository contracts and Supabase contracts pass. Browser contracts now pass scanner resistance, Human proof exchange, Recovery Session creation, and `/app` isolation, then reach the password form.
 
-```toml
-# Keep local/CI Auth delivery fast so browser contracts test recovery behavior rather than a
-# production-like email-frequency interval. Hosted abuse-protection policy is a separate gate.
-max_frequency = "1s"
-```
-
-- [ ] **Step 2: Delete `requestRecoveryAndReadTokenHash`'s catch/retry/fixed-wait behavior.**
-
-Replace the helper body with:
-
-```ts
-async function requestRecoveryAndReadTokenHash(
-  page: Page,
-  request: APIRequestContext,
-  email: string
-) {
-  await requestRecovery(page, email);
-  return readRecoveryTokenHash(request, email);
-}
-```
-
-- [ ] **Step 3: Strengthen the post-reset regression before ordinary sign-in.**
-
-Immediately after the successful reset notice, add:
-
-```ts
-await page.goto('/reset-password');
-await expect(page).toHaveURL(/\/forgot-password\?error=invalid-recovery-session$/u);
-
-await page.goto('/sign-in?notice=password-reset');
-```
-
-Then continue with the existing new-password sign-in assertions.
-
-- [ ] **Step 4: Commit the minimal GREEN change and inspect GitHub Actions.**
-
-Expected: Repository, Supabase, and Browser contracts green. Browser execution must not contain a 61-second fixed wait.
-
-### Task 3: Synchronize PR evidence with executable truth
+### Task 3: Finish deterministic Browser evidence — in progress
 
 **Files:**
-- GitHub PR #24 description (metadata only)
+- `apps/web/e2e/auth.spec.ts`
 
-**Interfaces:**
-- Consumes: exact implementation after Task 2.
-- Produces: review narrative that matches executable recovery handoff.
+- [x] Verify the old 61-second fallback assumption against Supabase Auth source.
+- [x] Establish that signup confirmation uses `ConfirmationSentAt` while password recovery uses `RecoverySentAt`; registration does not consume the first recovery-send window.
+- [x] Remove the fixed 61-second recovery retry path without weakening local `max_frequency`.
+- [x] Use exact Playwright labels for `New password` and `Confirm new password`.
+- [x] Add a post-reset negative path: before fresh ordinary sign-in, `/reset-password` must fail closed to `/forgot-password?error=invalid-recovery-session`.
+- [ ] Push the Browser evidence repair and obtain a green Browser contract on the exact head.
 
-- [ ] **Step 1: Replace obsolete cookie/bootstrap claims.**
-
-Required wording must describe:
+Expected final browser chain:
 
 ```text
-/recover-password#token_hash=<opaque proof>
+register + verify
+→ sign out ordinary Session
+→ one recovery request
+→ scanner GET cannot consume fragment proof
+→ Human POST
+→ provider PKCE recovery Session
+→ /app denied
+→ reset password
+→ Recovery Session no longer reusable
+→ fresh ordinary sign-in with new password
+→ /app allowed
+→ ordinary Session denied from recovery-only page
+```
+
+### Task 4: Synchronize PR evidence with executable truth — remaining
+
+**Target:** GitHub PR #24 description.
+
+- [ ] Remove obsolete `/auth/recovery` and HttpOnly staging-cookie claims.
+- [ ] Remove the direct `verifyOtp(type='recovery')` implementation claim.
+- [ ] Describe the actual recovery handoff:
+
+```text
+/recover-password#token_hash=pkce_<opaque proof>
 → fragment omitted from HTTP GET
 → browser reads and clears fragment
 → explicit Human POST
-→ verifyOtp(type='recovery')
-→ Recovery Session
+→ server asks Supabase to verify the PKCE recovery proof
+→ provider returns auth code
+→ exchangeCodeForSession
+→ signed Recovery Session (`amr=recovery`)
 ```
 
-- [ ] **Step 2: Keep the evidence boundary explicit.**
+- [ ] Keep the evidence boundary explicit: no hosted Supabase project is connected, so hosted SMTP, redirect allowlists, abuse protection, notifications, and Session policy remain unverified.
+- [ ] Keep `GAP-IDENTITY-001` Open for onboarding, invitations, MFA, Session management, and hosted-provider evidence.
 
-State that no hosted Supabase project is connected and that SMTP, redirect allowlists, abuse protection, notification templates, and Session policy are not proven by this PR.
+### Task 5: Final security and merge-gate verification — remaining
 
-- [ ] **Step 3: Keep `GAP-IDENTITY-001` open.**
-
-Do not claim closure for onboarding, invitations, MFA, Session management, or hosted-provider evidence.
-
-### Task 4: Final security and merge-gate verification
-
-**Files:**
-- No planned production changes unless verification produces a new evidence-backed finding.
-
-**Interfaces:**
-- Consumes: final PR diff and exact-head CI/status evidence.
-- Produces: merge/no-merge decision.
-
-- [ ] **Step 1: Re-run diff-scoped source → control → sink review.**
-
-Check recovery proof input, Server Action entry points, `amr=recovery` discrimination, `updateUser` mutation, Session cleanup, redirect handling, token exposure, and Product Actor isolation.
-
-- [ ] **Step 2: Verify external dependency assumptions against Context7/Supabase current docs.**
-
-Required checks: Playwright test timeout semantics, Next.js Server Action authorization requirement, Supabase recovery `amr`, `verifyOtp(type='recovery')`, and local email-frequency behavior.
-
-- [ ] **Step 3: Inspect exact-head GitHub checks and Vercel status.**
-
-Do not mark Ready for review while any required check is red or skipped.
-
-- [ ] **Step 4: Keep PR Draft unless all merge gates are satisfied.**
-
-No merge to `main` is authorized by this repair plan.
+- [ ] Re-run diff-scoped source → control → sink review over the final diff.
+- [ ] Check recovery proof exposure, scanner behavior, PKCE verifier/code exchange, signed `amr=recovery`, password mutation, Session cleanup, redirect handling, account enumeration, and Product Actor isolation.
+- [ ] Verify dependency assumptions against current Context7/Supabase documentation/source.
+- [ ] Confirm the final exact head has Workflow guardrails, Repository contracts, Supabase contracts, Browser contracts, and Vercel all green.
+- [ ] Keep PR Draft unless separately authorized to mark Ready for review.
+- [ ] Do not merge to `main` without separate merge authorization.

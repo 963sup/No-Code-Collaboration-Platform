@@ -106,16 +106,7 @@ async function requestRecoveryAndReadTokenHash(
   email: string
 ) {
   await requestRecovery(page, email);
-
-  try {
-    return await readRecoveryTokenHash(request, email, 5_000);
-  } catch {
-    // Local Supabase can throttle a recovery email shortly after a registration email.
-    // The product response stays enumeration-safe, so wait for the provider frequency window and retry.
-    await page.waitForTimeout(61_000);
-    await requestRecovery(page, email);
-    return readRecoveryTokenHash(request, email);
-  }
+  return readRecoveryTokenHash(request, email);
 }
 
 async function registerAndVerify(
@@ -197,8 +188,8 @@ test('password recovery survives scanner GETs and creates only a recovery sessio
   await expect(page).toHaveURL(/\/sign-in\?next=%2Fapp$/u);
 
   await page.goto('/reset-password');
-  await page.getByLabel('New password').fill(newPassword);
-  await page.getByLabel('Confirm new password').fill(newPassword);
+  await page.getByLabel('New password', { exact: true }).fill(newPassword);
+  await page.getByLabel('Confirm new password', { exact: true }).fill(newPassword);
   await page.getByRole('button', { name: 'Update password' }).click();
 
   await expect(page).toHaveURL(/\/sign-in\?notice=password-reset$/u);
@@ -206,6 +197,10 @@ test('password recovery survives scanner GETs and creates only a recovery sessio
     page.getByText('Your password was updated. Sign in with your new password.')
   ).toBeVisible();
 
+  await page.goto('/reset-password');
+  await expect(page).toHaveURL(/\/forgot-password\?error=invalid-recovery-session$/u);
+
+  await page.goto('/sign-in?notice=password-reset');
   await page.getByLabel('Email').fill(email);
   await page.getByLabel('Password').fill(newPassword);
   await page.getByRole('button', { name: 'Sign in' }).click();
