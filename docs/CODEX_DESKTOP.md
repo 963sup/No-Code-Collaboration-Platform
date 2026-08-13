@@ -11,7 +11,7 @@ Authority remains:
 1. the current task and applicable `AGENTS.md` chain;
 2. `docs/PRODUCT.md`, accepted Domain contracts, and `docs/architecture/README.md` for current target truth;
 3. `docs/IMPLEMENTATION_GAPS.md` for current Open or Contained target-to-executable differences;
-4. executable code, schema, policies, migrations, and tests for current behavior;
+4. executable code, `supabase/schemas`, policies, and tests for current behavior;
 5. direct provider observations and current official external documentation;
 6. generated or session context as non-authoritative projections.
 
