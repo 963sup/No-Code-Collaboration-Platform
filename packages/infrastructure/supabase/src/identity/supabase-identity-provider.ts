@@ -5,6 +5,7 @@ import type {
   IdentityProvider,
   PasswordCredentials,
   PasswordRecoveryRequestResult,
+  PasswordRecoveryVerificationFailureReason,
   PasswordRecoveryVerificationResult,
   PasswordResetResult,
   RegistrationCredentials,
@@ -21,6 +22,8 @@ const RATE_LIMIT_CODES = new Set(['over_email_send_rate_limit', 'over_request_ra
 
 const PROVIDER_UNAVAILABLE_CODES = new Set(['request_timeout', 'unexpected_failure']);
 
+const EXPIRED_RECOVERY_CODES = new Set(['flow_state_expired', 'otp_expired']);
+
 const INVALID_RECOVERY_SESSION_CODES = new Set([
   'reauthentication_needed',
   'session_expired',
@@ -33,8 +36,24 @@ const SIGN_OUT_SCOPE = {
   'other-sessions': 'others'
 } as const satisfies Record<SignOutScope, 'global' | 'local' | 'others'>;
 
+interface PasswordRecoveryExchangeOptions {
+  readonly fetch: typeof globalThis.fetch;
+  readonly projectUrl: string;
+  readonly publishableKey: string;
+}
+
 function isProviderUnavailable(error: { readonly code?: string; readonly status?: number }) {
   return (error.status ?? 0) >= 500 || PROVIDER_UNAVAILABLE_CODES.has(error.code ?? '');
+}
+
+function mapPasswordRecoveryVerificationFailure(error: {
+  readonly code?: string;
+  readonly status?: number;
+}): PasswordRecoveryVerificationFailureReason {
+  if (RATE_LIMIT_CODES.has(error.code ?? '') || error.status === 429) return 'rate-limited';
+  if (EXPIRED_RECOVERY_CODES.has(error.code ?? '')) return 'expired-code';
+  if (isProviderUnavailable(error)) return 'provider-unavailable';
+  return 'invalid-code';
 }
 
 function hasAuthenticationMethod(claims: unknown, method: string) {
@@ -68,7 +87,10 @@ function mapClaimsIdentity(claims: unknown) {
 }
 
 export class SupabaseIdentityProvider implements IdentityProvider {
-  public constructor(private readonly client: SupabaseClient<Database>) {}
+  public constructor(
+    private readonly client: SupabaseClient<Database>,
+    private readonly passwordRecoveryExchange?: PasswordRecoveryExchangeOptions
+  ) {}
 
   private async getClaimsIdentity(purpose: 'ordinary' | 'password-recovery') {
     const { data, error } = await this.client.auth.getClaims();
@@ -328,44 +350,76 @@ export class SupabaseIdentityProvider implements IdentityProvider {
   public async verifyPasswordRecovery(
     tokenHash: string
   ): Promise<PasswordRecoveryVerificationResult> {
-    const { data, error } = await this.client.auth.verifyOtp({
-      token_hash: tokenHash,
-      type: 'recovery'
-    });
-
-    if (error) {
-      if (RATE_LIMIT_CODES.has(error.code ?? '')) {
-        return {
-          ok: false,
-          reason: 'rate-limited'
-        };
-      }
-
-      if (error.code === 'otp_expired') {
-        return {
-          ok: false,
-          reason: 'expired-code'
-        };
-      }
-
+    if (!tokenHash.startsWith('pkce_') || !this.passwordRecoveryExchange) {
       return {
         ok: false,
-        reason: isProviderUnavailable(error) ? 'provider-unavailable' : 'invalid-code'
+        reason: 'invalid-code'
       };
     }
 
-    if (!data.user) {
+    const verifyUrl = new URL('/auth/v1/verify', this.passwordRecoveryExchange.projectUrl);
+    verifyUrl.searchParams.set('token', tokenHash);
+    verifyUrl.searchParams.set('type', 'recovery');
+
+    let response: Response;
+    try {
+      response = await this.passwordRecoveryExchange.fetch(verifyUrl.toString(), {
+        headers: {
+          apikey: this.passwordRecoveryExchange.publishableKey
+        },
+        redirect: 'manual'
+      });
+    } catch {
       return {
         ok: false,
         reason: 'provider-unavailable'
       };
     }
 
+    const location = response.headers.get('location');
+    if (!location) {
+      return {
+        ok: false,
+        reason: mapPasswordRecoveryVerificationFailure({ status: response.status })
+      };
+    }
+
+    const redirectUrl = new URL(location, this.passwordRecoveryExchange.projectUrl);
+    const redirectErrorCode = redirectUrl.searchParams.get('error_code');
+    if (redirectUrl.searchParams.has('error') || redirectErrorCode) {
+      return {
+        ok: false,
+        reason: mapPasswordRecoveryVerificationFailure({ code: redirectErrorCode ?? undefined })
+      };
+    }
+
+    const authCode = redirectUrl.searchParams.get('code');
+    if (!authCode) {
+      return {
+        ok: false,
+        reason: 'invalid-code'
+      };
+    }
+
+    const { error } = await this.client.auth.exchangeCodeForSession(authCode);
+    if (error) {
+      return {
+        ok: false,
+        reason: mapPasswordRecoveryVerificationFailure(error)
+      };
+    }
+
+    const recoveryIdentity = await this.getPasswordRecoveryIdentity();
+    if (!recoveryIdentity) {
+      await this.client.auth.signOut({ scope: 'local' });
+      return {
+        ok: false,
+        reason: 'invalid-code'
+      };
+    }
+
     return {
-      identity: mapSupabaseIdentity({
-        email: data.user.email,
-        id: data.user.id
-      }),
+      identity: recoveryIdentity,
       ok: true
     };
   }
