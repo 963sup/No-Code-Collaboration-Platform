@@ -6,6 +6,10 @@ import { ListAccessibleRepositories } from '../src/index';
 const repositories = [
   {
     id: 'repository-1',
+    owner: {
+      kind: 'organization' as const,
+      organizationId: 'organization-1'
+    },
     organizationId: 'organization-1',
     slug: 'platform',
     name: 'Platform',
