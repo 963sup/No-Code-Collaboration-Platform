@@ -15,6 +15,16 @@ For normal development, resolve questions in this order:
 
 PRs, commits, closed-gap archives, migration history, and ADR rationale are historical evidence. Do not use them as current truth unless the task asks why a decision changed or requires regression archaeology.
 
+## Zero-context cold start
+
+A fresh agent must resolve current work through the current task, the applicable `AGENTS.md` chain, `docs/README.md`, the narrowest task-specific current contract, and then executable evidence.
+
+Historical evidence is opt-in. Do not reconstruct current project state from ADR bodies, Closed gaps, pull requests, commits, Git history, or migration history unless the task explicitly requires why, regression analysis, or provenance.
+
+Do not recursively read documentation directories or broad repository history to build context. Use `docs/README.md` as the current-truth router and load only the smallest authoritative context that can falsify or support the task.
+
+When current authorities disagree or required context is missing, do not invent the missing architecture. Resolve the conflict from the nearest current contract and executable evidence; if the mismatch is real, register or update the current gap.
+
 ## Architecture boundaries
 
 - `packages/domain` owns business truth, invariants, state transitions, and capability semantics. It does not depend on framework or provider code.
@@ -37,6 +47,7 @@ Infrastructure
 
 - Read the complete applicable `AGENTS.md` chain before editing. Nested instructions contain only scope-specific deltas.
 - Make the smallest sufficient reversible change. Do not add speculative frameworks, services, stores, APIs, abstractions, or dependencies.
+- Do not redesign architecture while solving a local task. A task-scoped implementation must not create a bounded context, move ownership between Domain/Application/Infrastructure/Web, change canonical routing composition, change authorization semantics, or change persistence ownership unless the explicit task requires that architectural decision.
 - Prefer machine-verifiable evidence over prose. Verify the narrowest affected scope first, then broaden only when impact requires it.
 - Keep command and tool output bounded. Do not dump generated files, lockfiles, full logs, recursive listings, or repository-wide diffs when a focused excerpt is sufficient.
 - Never commit secrets, tokens, `.env` files, credentials, project references, or private production data.
