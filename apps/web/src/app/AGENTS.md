@@ -5,14 +5,42 @@ This directory owns URL identity, rendering, route composition, and delivery-spe
 ## Inviolable invariants
 
 - Route special files are delivery adapters. They may orchestrate Application use cases but may not own business decisions or provider queries.
-- Parallel Route slots are presentation responsibilities, not Domain entities, principals, capabilities, or authorization contexts.
-- The canonical Repository workspace is `/app/[organizationSlug]/[repositorySlug]` and MUST remain one shared Parallel Route layout with the implicit `children` slot plus `@navigation`, `@workspace`, `@context`, and `@activity`.
-- The named `@slot` folders do not create URL segments. Concrete child URLs such as `/pages`, `/pages/[pageId]`, and `/activity` select product surfaces inside the same Repository namespace.
-- A layout using named slots MUST declare and render the implicit `children` slot and every named slot explicitly.
-- Soft navigation may replace the active workspace surface while persistent sibling slots remain part of the same Repository shell and authorization target.
-- Every persistent named slot and the implicit `children` slot MUST have a `default.tsx` wherever a hard navigation can leave that slot unmatched.
-- A persistent surface default MUST render a safe base surface or an explicit failure state; it MUST NOT silently return `null`.
-- Hard navigation or refresh of a nested Repository URL must reconstruct the same persistent Repository shell through those meaningful defaults.
-- Soft navigation and direct hard navigation to the same URL MUST preserve the same Repository identity and product responsibilities.
-- URL state may select a presentation surface, but it must never alter authenticated identity or server-side authorization facts.
-- `page.tsx`, `layout.tsx`, `default.tsx`, `loading.tsx`, and `not-found.tsx` must remain thin and must not import Supabase adapters outside the composition boundary.
+- Route Groups are presentation/access composition only. Their names never become Product URL semantics.
+- The canonical Repository workspace URL is `/{ownerSlug}/{repositorySlug}`. The owner segment resolves a User or Organization owner namespace; it never implies Organization ownership.
+- `/app` is an authenticated Repository discovery/dashboard surface, not part of Repository identity.
+- Canonical Repository routes must not inherit an authenticated-only layout because `public` Repository visibility is an accepted anonymous read baseline. Repository read access is decided from Repository visibility/authority, not from Route Group membership.
+- The canonical Repository shell follows the mature owner/repository interaction model: one owner/Repository header, horizontal primary navigation, and one active content surface. Do not require persistent navigation/context/activity panes merely because Parallel Routes are available.
+- Current accepted Repository child surfaces are `/pages`, `/pages/[pageId]`, and `/activity`. Future GitHub-inspired surfaces enter the same namespace only after Product/Domain acceptance.
+- `Context` is a presentation concept; it does not require a permanent screen region and must never become authorization input.
+- `Activity` is a Repository-scoped projection and may be a normal navigation surface rather than a permanently visible side panel.
+- Legacy `/app/[organizationSlug]/[repositorySlug]/**` and `/app/repositories/[repositoryId]/**` routes are compatibility concerns only. They must not own a second Repository business-flow/UI implementation.
+- Soft navigation and direct hard navigation to the same canonical URL must resolve the same Repository stable identity and authorization result.
+- URL state may select a presentation surface, but it must never alter authenticated identity, ownership, Membership, Principal resolution, or server-side authorization facts.
+- `page.tsx`, `layout.tsx`, `loading.tsx`, `not-found.tsx`, Server Actions, and Route Handlers remain thin and must not import Supabase adapters outside the composition boundary.
+- Public Repository reads must not be converted into authenticated-only behavior by delivery wrappers. Authenticated mutations still establish Actor identity and evaluate Application/Domain Capability independently.
+
+## Canonical Repository route shape
+
+```text
+src/app/(repository)/
+└─ [ownerSlug]/
+   └─ [repositorySlug]/
+      ├─ layout.tsx
+      ├─ page.tsx
+      ├─ pages/
+      │  ├─ page.tsx
+      │  └─ [pageId]/page.tsx
+      └─ activity/page.tsx
+```
+
+The canonical layout renders:
+
+```text
+Owner / Repository      Visibility
+----------------------------------
+Overview   Pages   Activity
+----------------------------------
+active child content
+```
+
+This is a presentation projection of one Repository, not a new Domain hierarchy.
