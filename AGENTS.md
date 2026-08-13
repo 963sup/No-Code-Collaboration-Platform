@@ -2,6 +2,20 @@
 
 This repository defines a no-code collaboration platform. `Repository` is a no-code collaboration container, not a Git code repository. GitHub is a semantic benchmark, not implementation authority.
 
+When adapting a collaboration concept, classify its durable mechanism with the smallest applicable semantic roles before creating entities or boundaries:
+
+```text
+Actor        = who acts
+Scope        = which ownership or governance boundary applies
+Principal    = who may receive authority
+Container    = where collaboration has one stable boundary
+Relationship = how actors, principals, scopes, and containers are connected
+Artifact     = what collaborative work exists inside a container
+Process      = how artifacts or relationships validly change
+```
+
+These are reasoning roles, not a seven-package, seven-table, or seven-entity architecture. Authorization (`Role`, `Capability`, `Policy`), presentation (`Context`, `Projection`), and historical evidence remain separate cross-cutting semantics. A concept may play more than one semantic role in different causal positions.
+
 ## Current truth order
 
 For normal development, resolve questions in this order:
@@ -58,7 +72,7 @@ Infrastructure
 
 Report consequential violations and state the safe alternative.
 
-- **Product semantic drift:** Flag changes that redefine `Repository` as a Git/code container or copy benchmark concepts without proving the collaboration problem, scope, relationships, invariants, and minimum sufficient model.
+- **Product semantic drift:** Flag changes that redefine `Repository` as a Git/code container, introduce a competing collaboration container without evidence, or copy benchmark concepts without first classifying their Actor/Scope/Principal/Container/Relationship/Artifact/Process role and proving the collaboration problem, lifecycle, invariants, and minimum sufficient model.
 - **Architecture truth-boundary violations:** Flag framework/provider leakage into Domain or Application, provider queries outside the Infrastructure/composition boundary, generated database type leakage, or business decisions owned by delivery/adapters.
 - **Authorization enforcement bypass:** Flag authentication treated as resource authorization, UI visibility as sole enforcement, service/secret credentials in browser code, weakened RLS without an equivalent invariant, user-editable metadata used as authority, or external mutation without explicit intent.
 
