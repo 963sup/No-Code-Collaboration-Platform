@@ -14,8 +14,12 @@ export function mapSupabaseRepositoryRow(row: AccessibleRepositoryRow): Reposito
     description: row.description,
     id: row.id,
     name: row.name,
+    owner: {
+      kind: 'organization',
+      organizationId: row.organization_id
+    },
     organizationId: row.organization_id,
     slug: row.slug,
-    visibility: row.visibility
+    visibility: row.visibility === 'organization' ? 'private' : row.visibility
   };
 }
