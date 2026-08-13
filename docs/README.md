@@ -4,7 +4,8 @@ This directory separates current product/architecture truth from historical evid
 
 ## Durable contract set
 
-- [`PRODUCT.md`](./PRODUCT.md): canonical product meaning, semantic boundaries, invariants, deferred concepts, and falsification conditions.
+- [`PRODUCT.md`](./PRODUCT.md): canonical root product meaning, semantic boundaries, invariants, deferred concepts, and falsification conditions.
+- [`ONTOLOGY.md`](./ONTOLOGY.md): canonical expansion of the Product Contract for GitHub semantic decomposition, the complete 1–22 ontology map, non-confusion boundaries, derivations, and admission rules. It does not replace `PRODUCT.md` as the root product contract.
 - [`IMPLEMENTATION_GAPS.md`](./IMPLEMENTATION_GAPS.md): **current Open or Contained** differences between target contracts and executable behavior, including risk, containment, and required closure evidence.
 - [`history/CLOSED_GAPS.md`](./history/CLOSED_GAPS.md): historical closure evidence for Closed or Superseded gaps. It is audit/regression evidence, not current implementation truth.
 - [`architecture/README.md`](./architecture/README.md): current target architecture, ownership/dependency boundaries, and current Next.js Repository Parallel Route composition.
@@ -19,6 +20,7 @@ This directory separates current product/architecture truth from historical evid
 ```mermaid
 flowchart TB
   product["Product Contract<br/>why the platform exists and what it means"]
+  ontology["Product Ontology<br/>semantic decomposition and admission rules"]
   domain["Domain Contracts<br/>entities, relationships, states, invariants"]
   architecture["Current Architecture Contract<br/>ownership, boundaries, Parallel Route composition"]
   executable["Executable Contracts<br/>schema, code, policies, tests, CI"]
@@ -27,7 +29,8 @@ flowchart TB
   history["Historical Evidence<br/>Closed gaps, ADRs, PRs, commits, migrations"]
   runbook["Operations Runbook<br/>deploy, recover, and restore"]
 
-  product --> domain
+  product --> ontology
+  ontology --> domain
   domain --> architecture
   architecture --> executable
   executable --> production
@@ -47,6 +50,7 @@ The diagram is a projection of the written contracts, not an independent source 
 | Question | Primary authority |
 | --- | --- |
 | What does the product mean? | `docs/PRODUCT.md` |
+| How should a GitHub-inspired concept be classified before it becomes an Entity/Relationship/Process/Projection? | `docs/ONTOLOGY.md`, under the root rules in `docs/PRODUCT.md` |
 | What business problem, vocabulary, and invariants does a domain own? | Accepted Domain contract, with Domain code/tests as implementation evidence |
 | What are the current target ownership, dependency, and Repository Parallel Route boundaries? | `docs/architecture/README.md` and executable route/checker contracts |
 | Why was an architecture decision made, and which parts are still current? | `docs/architecture/ADR_INDEX.md`, then only the relevant ADR |
@@ -67,7 +71,7 @@ A selected provider is not proof of a provisioned environment. A migration file 
 ## Repository work instruction order
 
 1. Current explicit task and the applicable `AGENTS.md` chain.
-2. Canonical Product, Domain, and current Architecture contracts.
+2. Canonical Product and Product Ontology, then the narrowest relevant Domain/current Architecture contract.
 3. Current Open/Contained implementation gaps and their containment requirements.
 4. Executable code, schema, policies, migrations, and tests for current behavior.
 5. Direct observations and current official external documentation.
