@@ -43,6 +43,10 @@ export type {
 } from './ports/identity-provider';
 export type { AccessiblePageQuery, PageReader, PageWriter } from './ports/page-repository';
 export type {
+  RepositoryAccessQuery,
+  RepositoryAccessReader
+} from './ports/repository-access-reader';
+export type {
   RepositoryAuthoritySourceQuery,
   RepositoryAuthoritySourceReader
 } from './ports/repository-authority-source-reader';
