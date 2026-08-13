@@ -21,14 +21,13 @@ describe('SupabaseIdentityProvider password recovery PKCE', () => {
         exchangeCodeForSession
       }
     } as unknown as SupabaseClient<Database>;
-    const providerFetch = vi.fn(async () =>
-      new Response(null, {
-        headers: {
-          location: 'http://127.0.0.1:3000/?code=recovery-auth-code'
-        },
-        status: 303
-      })
-    );
+    const response = new Response(null, {
+      headers: {
+        location: 'http://127.0.0.1:3000/?code=recovery-auth-code'
+      },
+      status: 303
+    });
+    const providerFetch = vi.fn(async () => response);
     const provider = new SupabaseIdentityProvider(client, {
       fetch: providerFetch,
       projectUrl: 'http://127.0.0.1:54321',
@@ -71,7 +70,9 @@ describe('SupabaseIdentityProvider password recovery PKCE', () => {
       publishableKey: 'sb_publishable_test'
     });
 
-    await expect(provider.verifyPasswordRecovery('opaque-recovery-token-hash')).resolves.toEqual({
+    await expect(
+      provider.verifyPasswordRecovery('opaque-recovery-token-hash')
+    ).resolves.toEqual({
       ok: false,
       reason: 'invalid-code'
     });
