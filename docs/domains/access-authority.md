@@ -8,176 +8,209 @@
 
 The platform must determine and explain:
 
-> Which authenticated actor may perform which action on which Repository-scoped target, through which authority source, under which constraints, and why?
+> Which authenticated Actor may perform which action on which Repository-scoped target, through which authority source, under which constraints, and why?
 
-This contract succeeds when Domain decisions, Application use cases, database enforcement, and UI explanations agree without treating session existence, selected context, or a role label as the authorization fact.
+This contract succeeds when User-owned and Organization-owned Repositories produce the same Capability vocabulary and decision semantics without treating ownership, Membership, selected Context, or Role labels as interchangeable authority facts.
 
 ## Evidence ledger
 
 ### Observations
 
-- The current Domain defines Repository Roles and explicit Repository Capabilities.
-- The current database stores direct User-to-Repository grants.
-- Organization `owner` and `admin` relationships already authorize Repository creation/administration at the Organization ownership boundary; Repository creation would be incoherent if the same accepted governance relationship immediately lost authority over the created Repository.
-- The database has historically projected Organization owner/admin governance authority to Repository admin; the Page slice makes that rule provider-neutral Domain truth instead of leaving SQL as its accidental owner.
-- `Collaborator` is already modeled as a relationship-derived classification rather than a User subtype.
-- Repository reads pass through authorization-sensitive Application and database boundaries.
-- RLS and helper functions enforce row access independently of UI visibility.
-- Operation capability and role-delegation authority are distinct authorization decisions.
+- Domain defines Repository Roles and explicit Repository Capabilities.
+- Database stores direct User-to-Repository Grants.
+- Existing implementation derives Repository admin from Organization owner/admin because every current Repository row is Organization-owned.
+- Product truth now accepts User or Organization Repository ownership, so authorization must become owner-neutral.
+- `Collaborator` is relationship-derived rather than User subtype.
+- RLS independently enforces row access; UI visibility is not sufficient enforcement.
+- Operation Capability and delegation authority are distinct decisions.
 
-### Constraints
+### Hard constraints
 
 - Authentication and authorization remain separate.
-- UI context cannot alter server-side authorization facts.
-- Domain and Application cannot depend on Supabase clients, DTOs, Rows, or generated database types.
-- Database enforcement must fail closed.
-- An actor cannot grant authority beyond the accepted delegation rules.
-- Provider service credentials must never become browser authority.
-- Organization governance authority must not be represented as a fabricated direct Repository Grant.
-- Semantic-role classification cannot replace explicit authority facts or decision semantics.
+- Ownership and Grant remain separate relationships.
+- UI Context cannot alter server-side authorization facts.
+- Domain/Application cannot depend on Supabase Rows/DTOs/clients/generated types.
+- Database enforcement fails closed.
+- Actor cannot delegate beyond accepted delegation rules.
+- Service credentials never become browser/end-user authority.
+- Semantic-role classification cannot replace persisted authority facts.
+
+### Corrected ownership authority model
+
+Repository ownership contributes an explicit governance authority source without fabricating direct Grant rows:
+
+```text
+Personal Repository
+Repository.owner = User U
+Actor = U
+→ Repository admin authority
+
+Organization-owned Repository
+Repository.owner = Organization O
+Actor Membership in O = owner | admin
+→ Repository admin authority
+```
+
+Ordinary Organization Membership contributes no Repository Role.
+
+A User-owned Repository has no Organization governance source by implication.
 
 ### Assumptions
 
-- The first model can use additive capability sources without explicit deny precedence.
-- Direct User grants plus Organization owner/admin governance authority are sufficient for the current implemented slice.
-- Roles remain a small fixed set while Capabilities are the decision primitive.
-- Repository is the primary grant scope.
-- Database RLS can project the same accepted semantics without becoming the Domain owner.
+- First model can use additive authority sources without explicit deny precedence.
+- Personal ownership + Organization governance + direct User Grants are sufficient for the corrected executable slice.
+- Roles remain small fixed bundles while Capability is decision primitive.
+- Repository remains primary grant scope.
+- RLS can project the same accepted semantics without becoming Domain owner.
 
 ### Unknowns
 
-- Whether ordinary Organization membership should contribute a Repository base permission.
-- Whether Team or another Organization-scoped group principal is required.
-- Whether Enterprise or Organization policies must cap granted Capabilities.
-- Whether custom roles are needed.
-- Whether temporary, expiring, conditional, or resource-specific grants are needed.
-- Whether explicit deny is necessary and, if so, how precedence remains explainable.
+- Whether ordinary Organization Membership should later contribute a Repository base permission.
+- Whether Team or another group Principal is required.
+- Whether Enterprise/Organization Policies must cap granted Capabilities.
+- Whether custom roles, temporary/conditional/resource-specific grants, or explicit deny are required.
+- How ownership transfer should modify effective authority during a pending transition, if transfer is accepted.
 
 ### Value choices
 
-- Organization owner/admin is accepted as governance-derived Repository admin authority because those roles administer the Organization-owned Repository lifecycle; ordinary membership remains non-authoritative.
-- Prefer explicit Capabilities over scattered role-name conditionals.
-- Prefer explainable additive authority before adding deny precedence.
-- Prefer least privilege and fail-closed behavior over convenience.
-- Prefer one semantic decision projected into several enforcement layers over duplicated business rules.
-- Prefer derived labels over permanent actor subtypes.
+- Personal Owner and Organization owner/admin governance are accepted authority sources because ownership must include administration of the owned collaboration Container.
+- Do not create one direct Grant per owner/governor merely to represent authority already explained by ownership/governance relationships.
+- Prefer explicit Capabilities over scattered Role checks.
+- Prefer explainable additive sources before deny precedence.
+- Prefer least privilege and fail closed.
+- Prefer one semantic decision projected into Domain/Application/RLS/UI explanation.
 
 ## Boundary and owner
 
 This contract owns:
 
-- Principal-to-Repository Grant semantics;
-- accepted governance-derived Repository authority sources;
+- direct Principal-to-Repository Grant semantics;
+- ownership/governance-derived Repository authority sources;
 - Repository Role definitions as Capability bundles;
 - effective Capability calculation;
-- delegation rules for creating, changing, and revoking grants;
+- delegation rules for Grant mutation;
 - authorization explanations; and
 - semantic consistency between Domain decisions and enforcement projections.
 
 This contract does not own:
 
 - authentication credential lifecycle;
-- Organization or Team membership lifecycle;
-- Repository or Resource lifecycle;
-- UI navigation and selected context;
+- Repository ownership lifecycle itself;
+- Organization/Team Membership lifecycle;
+- Repository/Resource lifecycle;
+- UI navigation/selected Context;
 - provider session transport;
 - PostgreSQL policy syntax; or
-- audit-feed presentation.
+- audit/feed presentation.
 
 ## Semantic role mapping
 
-The Product semantic-role lens maps into authorization as follows:
-
 ```text
-Actor        = authenticated User attempting the action
-Scope        = Organization ownership/governance scope plus Repository authorization target scope
-Principal    = subject that may receive Repository authority; currently User
-Container    = Repository, the primary collaboration/authorization boundary
-Relationship = Membership, ownership/governance relationship, direct Grant; future Team Membership/Grant or App Installation
-Artifact     = Repository-contained target such as Resource; authorization does not create a second Artifact model
-Process      = authorization-sensitive command/transition, including Grant mutation and future delegation workflows
+Actor        = authenticated User attempting action
+Scope        = Repository Owner relationship + applicable Organization/future Enterprise governance scope
+Principal    = subject eligible to receive Repository authority; currently User
+Container    = Repository
+Relationship = Repository ownership, Membership, direct Grant; future Team Membership/Grant or App Installation
+Artifact     = Repository-contained target such as Resource
+Process      = authorization-sensitive command/transition, including Grant mutation
 ```
 
-Cross-cutting authorization semantics remain first-class:
+Cross-cutting authorization semantics:
 
 - `Role` = assignment/explanation bundle.
 - `Capability` = decision primitive.
-- `Policy`/constraint = restriction on otherwise candidate authority; it must not silently fabricate access.
-- `Context` = presentation state only.
-- `Activity Event` = historical evidence when an accepted mutation requires a fact.
+- `Policy`/constraint = restriction on candidate authority; cannot silently fabricate content access.
+- `Context` = presentation only.
+- `Activity Event` = historical evidence for accepted mutations.
 
-The semantic roles are not persistence supertypes. A User can be both request Actor and direct-grant Principal without merging Actor and Principal. A future App may be a machine Actor and/or Principal; a Team, if accepted, is an Organization-scoped Principal, not a Context or Container.
+A User can be request Actor, Repository Owner, and direct-grant Principal in different causal positions. Those roles must not be merged.
 
 ## Vocabulary
 
 | Term | Meaning |
 | --- | --- |
-| Actor | Authenticated User attempting an action |
-| Principal | Subject eligible to receive authority; currently a User |
-| Grant | Relationship assigning one Role to one Principal for one Repository |
-| Governance authority source | Accepted ownership/administration relationship that derives Repository authority without creating a Grant |
+| Actor | Authenticated User attempting action |
+| Repository Owner | User or Organization owning the target Repository |
+| Principal | Subject eligible to receive explicit authority; currently User |
+| Grant | Relationship assigning one Repository Role to one Principal |
+| Governance authority source | Ownership/administration relationship deriving Repository authority without Grant |
 | Role | Named Capability bundle |
-| Capability | Specific allowed action on a defined target |
-| Effective Capabilities | Capabilities produced by accepted authority sources after accepted constraints |
-| Delegation | Authority to create, change, or revoke another Grant |
-| Context | Selected view or filter; never an authority source by itself |
+| Capability | Specific allowed action on defined target |
+| Effective Capabilities | Capabilities produced from accepted sources after constraints/state preconditions |
+| Delegation | Authority to create/change/revoke another Grant |
+| Context | Selected view/filter; never authority source by itself |
 | Collaborator | User with effective Repository access |
-| Authorization explanation | Trace of authority sources and constraints producing a decision |
+| Authorization explanation | Trace of owner/governance/Grant/visibility/constraint evidence producing decision |
 
-## Entities, relationships, and derived concepts
+## Authority sources
 
-### Grant
-
-Grant is a relationship, not an actor type:
+### Personal ownership
 
 ```text
-Principal ── receives Role for ──> Repository
-Role      ── expands to ─────────> Capabilities
-Actor     ── exercises ──────────> Effective Capabilities
+Repository.owner = User U
+Actor = U
+→ Repository admin
 ```
 
-The current minimum implementation allows one direct User grant per Repository.
+This is not a Grant row.
 
-### Organization governance authority
-
-Organization ownership/administration contributes one separate authority source:
+### Organization governance
 
 ```text
-Organization owner/admin relationship
-↓
-Repository owned by that Organization
-↓
-Repository admin authority
+Repository.owner = Organization O
+Actor Membership in O = owner | admin
+→ Repository admin
 ```
 
-This is not a direct Grant row and is not an Organization-wide base permission for ordinary members. A `member` relationship alone contributes no Repository Role.
+This is not an Organization-wide ordinary-member base permission and not a direct Grant row.
 
-The rule is accepted because owner/admin actors already administer Repository creation and Organization-owned Repository settings. Requiring a fabricated direct Grant for each governed Repository would duplicate the ownership relationship and could leave an administrator able to create a Repository but unable to administer the object it just created.
+### Direct User Grant
 
-### Role and Capability
+```text
+User Principal ── receives Role for ──> Repository
+Role ── expands to ──> Capabilities
+```
 
-Current Role bundles are:
+### Public visibility
+
+Public visibility contributes accepted read baseline semantics; it is not a Principal Grant and does not create a Role identity.
+
+`organization` visibility is not accepted until a specific Organization-member baseline is defined.
+
+## Role and Capability
+
+Current Role bundles:
 
 | Role | Capabilities |
 | --- | --- |
 | Viewer | `repository.view`, `resource.view` |
-| Contributor | Viewer plus `resource.create`, `resource.update` |
-| Manager | Contributor plus `resource.delete`, `member.manage` |
-| Admin | All current Repository Capabilities, including `repository.manage` |
+| Contributor | Viewer + `resource.create`, `resource.update` |
+| Manager | Contributor + `resource.delete`, `member.manage` |
+| Admin | all current Repository Capabilities including `repository.manage` |
 
-Role rank is an assignment and conflict-resolution aid. It does not replace explicit Capability checks.
+Role rank may help assignment/explanation while bundles remain nested. Capability remains decision truth.
 
-### Derived classifications
+## Effective authorization
 
-- `Collaborator`: User with effective Repository access.
-- `Outside collaborator`: User with Repository access and no relevant Organization membership.
-- `Highest role`: explanatory projection when several additive Role sources exist.
+Conceptual chain:
 
-These classifications do not create independent identities or lifecycles.
+```text
+Actor
+→ resolve target Repository
+→ inspect Repository Owner
+→ collect ownership/governance authority
+→ collect direct Principal Grants
+→ add accepted visibility baseline
+→ apply governance constraints
+→ apply target-state/transition preconditions
+→ Capability decision
+```
 
-## States and transitions
+Application authority readers accept stable `actorId + repositoryId`; callers must not supply `organizationId` as an authorization assumption. The authority source reader resolves Repository ownership itself.
 
-A direct Repository grant has these states:
+`Highest role` is an explanation projection, not canonical persisted access state.
+
+## Direct Grant states and delegation
 
 ```text
 Absent
@@ -193,45 +226,42 @@ viewer / contributor / manager / admin
 
 Every transition evaluates:
 
-1. whether the actor may enter the member-management use case;
-2. whether the actor may manage the target's current Role;
-3. whether the actor may assign the proposed Role;
-4. whether governance and continuity invariants remain valid; and
-5. whether attribution records the authenticated actor.
+1. Actor may enter member-management operation;
+2. Actor may manage target current Role;
+3. Actor may assign proposed Role;
+4. ownership/governance continuity invariants remain valid; and
+5. attribution records authenticated Actor.
 
-`member.manage` alone does not imply unlimited role assignment.
+`member.manage` alone does not imply unlimited Role assignment.
 
 ## Invariants
 
-1. A valid session proves identity only; it never proves Repository access.
-2. Effective authorization is evaluated against the stable Repository and target Resource identities.
-3. UI visibility and selected context are never the only enforcement.
-4. Capability is the authorization decision primitive; Role is a bundle and explanation.
-5. A Grant connects one Principal, one Repository, and one Role.
-6. Organization owner/admin governance authority derives Repository admin only for Repositories owned by that Organization; ordinary Organization membership derives no Repository Role.
-7. Governance-derived authority and direct Grants remain distinct evidence even when both contribute to the same effective Role.
-8. The actor cannot assign, change, or revoke authority beyond accepted delegation rules.
-9. Grant attribution must identify the authenticated actor responsible for the change.
-10. A lower-authority manager cannot create, alter, or remove higher-authority grants merely because the manager has `member.manage`.
-11. Domain/Application semantics and database enforcement must agree; either layer being more permissive is a security defect.
-12. Authorization fails closed when identity, authority sources, constraints, or target identity cannot be established.
-13. Service-role or secret credentials never reach browser code and never substitute for an end-user authorization decision.
-14. `Collaborator`, `Outside collaborator`, and `Highest role` remain derived from relationships.
-15. Actor/Scope/Principal/Container/Relationship/Artifact/Process classification never grants authority by itself.
+1. Valid Session proves identity only, never Repository access.
+2. Authorization targets stable Repository/Resource IDs, not owner slug, Repository slug, URL, tab, or selected Context.
+3. UI visibility/Context is never sole enforcement.
+4. Capability is authorization decision primitive; Role is bundle/explanation.
+5. Grant connects one Principal, one Repository, one Role.
+6. Repository ownership and direct Grants remain distinct facts.
+7. Personal owner derives Repository admin only for that User-owned Repository.
+8. Organization owner/admin derives Repository admin only when that Organization owns the Repository.
+9. Ordinary Organization Membership derives no Repository Role.
+10. Governance-derived authority and direct Grants remain distinct evidence even if they produce same effective Role.
+11. Actor cannot delegate beyond accepted rules.
+12. Grant attribution identifies authenticated Actor.
+13. Lower-authority manager cannot mutate higher-authority Grants merely because it has `member.manage`.
+14. Domain/Application and RLS must agree; either layer being more permissive is a security defect.
+15. Authorization fails closed when Actor, owner relationship, authority sources, constraints, or target identity cannot be established.
+16. Service/secret credentials never substitute for end-user authorization.
+17. Collaborator/Outside Collaborator/Highest Role remain derived classifications/projections.
+18. Semantic-role classification never grants authority by itself.
 
-## Actors, principals, contexts, and permissions
+## Derived classifications
 
-- **Actor** answers “who is making this request?”
-- **Principal** answers “which subject received authority?”
-- **Scope** answers “which ownership/governance boundary constrains the decision?”
-- **Repository/Resource** answers “what Container/Artifact target is being acted upon?”
-- **Context** answers “which view or presentation scope is selected?”
-- **Capability** answers “which action is being decided?”
-- **Grant, governance source, and policy evidence** answers “why is it allowed or denied?”
+- `Collaborator(user, repository)`: User has effective Repository read access.
+- `Outside collaborator(user, organization)`: for an Organization-owned Repository, User has effective Repository access but no Membership in the owning Organization.
+- Personal Repository ownership does not create an "outside collaborator" classification because no Organization relationship exists.
 
-A User may eventually act through several effective Principals, such as direct User authority and an accepted group principal. Adding a Principal type requires its own lifecycle, membership, trust, and revocation model.
-
-## Events and workflows
+## Events and explanations
 
 Candidate immutable events include:
 
@@ -239,70 +269,66 @@ Candidate immutable events include:
 - `repository_grant.role_changed`
 - `repository_grant.revoked`
 - `authorization.denied`
-- `authorization.policy_capped`
+- future `authorization.policy_capped`
 
-Grant changes should record actor, target Principal, Repository, previous Role, proposed Role, authority source, and timestamp without exposing secrets.
-
-Authorization-denied events require sampling and privacy rules before broad use; denial telemetry is useful evidence but can become noisy or sensitive.
+Grant mutation history should record Actor, target Principal, Repository, previous/proposed Role, source, timestamp without secrets.
 
 ## Dependencies and failure behavior
 
-- **Identity provider**: if the authenticated actor cannot be established, fail closed.
-- **Repository Collaboration**: if the Repository or target Resource cannot be resolved, fail without revealing inaccessible existence.
-- **Organization membership**: owner/admin may contribute the accepted governance authority source; ordinary membership does not. Stale or unavailable membership data must not silently increase access.
-- **Database enforcement**: RLS and grants project least-privilege row access; provider policy syntax does not own Role or Capability meaning.
-- **Application layer**: coordinates authorization-sensitive use cases and maps denied decisions to safe delivery responses.
-- **Delivery layer**: may hide or explain actions for usability but cannot authorize them.
+- **Identity provider**: if Actor cannot be established where authentication is required, fail closed.
+- **Repository Collaboration**: ownership and target Repository/Resource must resolve by stable IDs.
+- **Organization Membership**: consulted only when Repository owner is Organization; stale/unavailable data must not increase access.
+- **Database enforcement**: RLS projects least privilege; SQL does not own Role/Capability meaning.
+- **Application**: coordinates authorization-sensitive use cases and safe denied results.
+- **Delivery**: may hide/explain actions for usability but cannot authorize.
 
-## Alternatives and removal test
+## Rejected alternatives
+
+### Organization-only authority assumption
+
+Rejected because User-owned Repositories are first-class and have no mandatory Organization. Requiring caller-supplied `organizationId` makes authorization depend on a false ownership invariant.
+
+### Fabricated owner Grants
+
+Rejected because ownership/governance already explains authority and must remain separately revocable/transferable from direct Grant facts.
 
 ### UI-only authorization
 
-This is simple but predicts direct requests, stale clients, and alternate delivery paths can bypass restrictions.
+Rejected because direct/stale/alternate clients bypass presentation.
 
 ### Scattered Role checks
 
-Checking `role === 'admin'` or `role !== 'viewer'` throughout routes, SQL, and components duplicates meaning and makes delegation rules inconsistent.
+Rejected because duplicated role-name conditionals diverge across Web/Application/SQL.
 
-### Generic Principal or Relationship persistence too early
+### Generic Principal/Relationship persistence too early
 
-Turning semantic roles into a generic `principals(type,id)` or `relationships(type,source,target)` persistence model before multiple concrete lifecycles exist weakens FK integrity and hides scope-specific invariants. Domain vocabulary may abstract; persistence remains typed until evidence justifies a supertype.
+Rejected until multiple accepted lifecycles justify a supertype without weakening FK integrity.
 
-### Fabricate direct grants for Organization governors
+### Database as only Domain model
 
-Creating one direct Repository Grant for every Organization owner/admin duplicates the Organization governance relationship, complicates revocation, and can make the same authority look like two unrelated facts.
-
-### Database as the only Domain model
-
-RLS is essential enforcement, but making SQL policy expressions the only business language couples product meaning to persistence and weakens provider-neutral testing and explanation.
-
-### External authorization service now
-
-A separate policy service adds network, consistency, deployment, and failure boundaries before the current Role/Capability model has proven insufficient.
-
-Removing this contract would leave no single owner for access decisions or explanations.
+Rejected because RLS is enforcement projection, not provider-neutral Product explanation.
 
 ## Falsification conditions
 
-Reopen the model when:
+Reopen when:
 
-- real decisions require resource-level grants as the common case;
-- additive Capability sources cannot express required restrictions without explicit deny;
-- Organization admin proves too broad as a governance-derived Repository authority source;
+- real decisions require Resource-level Grants as common case;
+- additive sources cannot express required restrictions without explicit deny;
+- personal-owner or Organization-governance authority proves too broad;
 - fixed Role bundles cause pervasive exceptions;
-- group principals require delegation or revocation behavior incompatible with direct User grants;
-- policy caps cannot be separated from grants; or
-- Domain and RLS cannot implement the same decisions without duplicated, contradictory logic.
+- new Principal types require incompatible delegation/revocation semantics;
+- policy caps cannot remain separate from Grants; or
+- Domain and RLS cannot implement the same decisions without contradictory logic.
 
 ## Minimum discriminating tests
 
-1. A User with no accepted authority source cannot read a private Repository.
-2. Viewer, Contributor, Manager, and Admin receive exactly their defined Capabilities.
-3. Organization owner/admin receives Repository admin for a Repository owned by that Organization without a fabricated direct Grant; ordinary member does not.
-4. A Manager can manage permitted lower Roles but cannot create, alter, or remove Manager/Admin authority unless an accepted delegation rule allows it.
-5. Changing only UI context cannot change access for the same actor and Repository.
-6. A direct request to a hidden UI action is denied server-side.
-7. Grant attribution differing from the authenticated actor is rejected.
-8. Domain tests and database tests produce the same decision matrix for representative actors, Roles, authority sources, and targets.
-9. Introducing a second Principal type or an ordinary-member base permission must not require Role-name conditionals outside the owning contract.
-10. Classifying a candidate as Team/App/Enterprise-related must not create authority until accepted relationships and constraints exist.
+1. Personal owner receives Repository admin without direct Grant.
+2. Organization owner/admin receives Repository admin for Organization-owned Repository without direct Grant; ordinary member does not.
+3. Personal owner of Repository A gains no authority over unrelated Repository B.
+4. Organization admin of O gains no governance authority over User-owned Repository or Repository owned by another Organization.
+5. Viewer/Contributor/Manager/Admin receive exactly defined Capabilities.
+6. Manager cannot create/alter/remove Manager/Admin authority unless an accepted delegation rule allows it.
+7. Changing UI Context cannot change access for identical Actor/Repository/persisted relationships.
+8. Direct request to hidden UI action is denied server-side.
+9. Grant attribution differing from authenticated Actor is rejected.
+10. Domain tests and database tests produce same decision matrix for representative owner modes, Grants, visibility, targets.
