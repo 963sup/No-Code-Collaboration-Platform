@@ -8,7 +8,6 @@ const instructionScopes = [
   'AGENTS.md',
   'apps/web/AGENTS.md',
   'apps/web/src/app/AGENTS.md',
-  'apps/web/src/app/(app)/app/repositories/[repositoryId]/AGENTS.md',
   'docs/AGENTS.md',
   'docs/architecture/AGENTS.md',
   'docs/domains/AGENTS.md',
@@ -27,18 +26,32 @@ const instructionScopes = [
 ];
 
 const invariantContracts = {
+  'apps/web/AGENTS.md': [
+    [/Web -> Application -> Domain/i, 'Web dependency direction is missing'],
+    [
+      /canonical Repository workspace.*organizationSlug.*repositorySlug/is,
+      'canonical semantic Repository namespace is missing'
+    ],
+    [
+      /repositories.*repositoryId.*compatibility redirect/is,
+      'legacy Repository compatibility-only boundary is missing'
+    ],
+    [/Authentication is not Authorization/i, 'authentication/authorization separation is missing']
+  ],
   'apps/web/src/app/AGENTS.md': [
+    [
+      /\/app\/\[organizationSlug\]\/\[repositorySlug\]/,
+      'canonical Repository App Router path is missing'
+    ],
+    [
+      /@navigation.*@workspace.*@context.*@activity/is,
+      'Repository Parallel Route slots are missing'
+    ],
     [/implicit `children` slot/i, 'implicit children slot invariant is missing'],
     [/persistent named slot/i, 'persistent named-slot invariant is missing'],
+    [/Soft navigation.*persistent sibling slots/is, 'soft-navigation slot invariant is missing'],
+    [/Hard navigation.*meaningful defaults/is, 'hard-navigation recovery invariant is missing'],
     [/MUST NOT silently return `null`/i, 'non-null fallback invariant is missing']
-  ],
-  'apps/web/src/app/(app)/app/repositories/[repositoryId]/AGENTS.md': [
-    [/@navigation.*@workspace.*@context.*@activity/is, 'Repository slot ownership is incomplete'],
-    [/hard navigation/i, 'hard-navigation recovery invariant is missing'],
-    [
-      /may grant, revoke, or reinterpret Repository authority/i,
-      'route authorization boundary is missing'
-    ]
   ],
   'docs/operations/AGENTS.md': [
     [
