@@ -1,6 +1,6 @@
 'use client';
 
-import { Button } from '@no-code-collaboration-platform/ui';
+import { Button, buttonVariants, cn } from '@no-code-collaboration-platform/ui';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
@@ -38,9 +38,9 @@ export function RecoveryConfirmationForm() {
         <p className='text-sm text-destructive' role='alert'>
           This password recovery link is missing or invalid.
         </p>
-        <Button asChild className='w-full'>
-          <Link href='/forgot-password'>Request a new recovery link</Link>
-        </Button>
+        <Link className={cn(buttonVariants(), 'w-full')} href='/forgot-password'>
+          Request a new recovery link
+        </Link>
       </div>
     );
   }
