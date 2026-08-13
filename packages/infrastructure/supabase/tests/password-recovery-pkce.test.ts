@@ -35,7 +35,9 @@ describe('SupabaseIdentityProvider password recovery PKCE', () => {
       publishableKey: 'sb_publishable_test'
     });
 
-    await expect(provider.verifyPasswordRecovery('pkce_opaque-recovery-token-hash')).resolves.toEqual({
+    await expect(
+      provider.verifyPasswordRecovery('pkce_opaque-recovery-token-hash')
+    ).resolves.toEqual({
       identity: {
         email: 'actor@example.com',
         id: 'actor-1'
