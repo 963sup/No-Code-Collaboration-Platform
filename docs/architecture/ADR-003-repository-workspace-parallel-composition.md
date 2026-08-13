@@ -4,7 +4,7 @@
 
 Accepted for Repository Parallel Route composition.
 
-The route identity and user-facing child-route vocabulary in this ADR are **partially superseded by [ADR-008](./ADR-008-repository-semantic-routing.md)**. The current canonical namespace is `/app/{organizationSlug}/{repositorySlug}`, and the first concrete child surface is `/pages`. Historical `/app/repositories/[repositoryId]` and `/resources` examples below remain decision evidence, not current route truth.
+The route identity and user-facing child-route vocabulary in this ADR are **superseded by [ADR-010](./ADR-010-repository-owner-namespace.md)**. The current canonical namespace is `/{ownerSlug}/{repositorySlug}`, and the first concrete child surface is `/pages`. Historical `/app/repositories/[repositoryId]`, `/app/{organizationSlug}/{repositorySlug}`, and `/resources` examples below remain decision evidence, not current route truth.
 
 ## Current interpretation
 
@@ -18,7 +18,7 @@ shared Next.js layout
 children + @navigation + @workspace + @context + @activity
 ```
 
-Parallel Route slots remain presentation responsibilities. ADR-008 changes how the Repository is addressed and how the Page surface is named; it does not flatten or replace this Parallel Route architecture.
+Parallel Route slots remain presentation responsibilities. ADR-010 changes who may own a Repository and how the Repository is addressed; it does not flatten or replace this Parallel Route architecture.
 
 ## Decision
 
@@ -79,7 +79,7 @@ Hard navigation / refresh
 - A nested workspace route can be bookmarked or refreshed while navigation, header, context, and activity remain present.
 - Unauthorized and nonexistent Repository identities are not distinguishable through the delivery response.
 - The first workspace truthfully renders empty resource and activity states until real vertical slices justify additional capabilities.
-- The parent `/app` overview remains a simple Repository list and links into the composite workspace.
+- The authenticated dashboard may remain at `/app`, but canonical Repository identity no longer contains `/app`.
 
 ## Falsification conditions
 
@@ -92,5 +92,5 @@ Reopen the default-recovery rule if Next.js changes the hard-navigation contract
 - Application unit tests prove found and unavailable Repository outcomes through the neutral port.
 - Architecture checks require the implicit and named slot defaults, reject `null` persistent fallbacks, and require a real nested workspace route.
 - Next.js production build validates the slot contract, async params, nested route, and default fallbacks.
-- Playwright proves nested Repository URLs, including the resources surface, preserve the requested destination through authentication.
-- Supabase verification continues to prove Repository RLS and generated database type consistency without a schema change.
+- Playwright must prove `/app` dashboard → Repository card → canonical `/{owner}/{repository}` plus nested Page routes preserve one Repository shell.
+- Supabase verification proves Repository RLS and generated database type consistency for the current ownership model.
