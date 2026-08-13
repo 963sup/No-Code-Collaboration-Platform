@@ -18,11 +18,16 @@ function requireMatch(path, content, pattern, message) {
   if (!pattern.test(content)) failures.push(`${path}: ${message}`);
 }
 
+function forbidMatch(path, content, pattern, message) {
+  if (pattern.test(content)) failures.push(`${path}: ${message}`);
+}
+
 const requiredDocuments = [
   'README.md',
   'docs/AGENTS.md',
   'docs/PRODUCT.md',
   'docs/IMPLEMENTATION_GAPS.md',
+  'docs/history/CLOSED_GAPS.md',
   'docs/README.md',
   'docs/architecture/ADR-005-local-first-supabase-lifecycle.md',
   'docs/domains/DOMAIN_TEMPLATE.md',
@@ -35,6 +40,7 @@ const requiredDocuments = [
 
 const documents = Object.fromEntries(requiredDocuments.map((path) => [path, read(path)]));
 const gapRegister = documents['docs/IMPLEMENTATION_GAPS.md'];
+const closedGapArchive = documents['docs/history/CLOSED_GAPS.md'];
 
 requireMatch(
   'README.md',
@@ -83,6 +89,12 @@ requireMatch(
 requireMatch(
   'docs/README.md',
   documents['docs/README.md'],
+  /history\/CLOSED_GAPS\.md/,
+  'closed-gap historical archive is not part of the documentation map'
+);
+requireMatch(
+  'docs/README.md',
+  documents['docs/README.md'],
   /open authorization or data-integrity gap/is,
   'production-blocking gap rule is missing'
 );
@@ -93,20 +105,18 @@ requireMatch(
   'provider/provisioning truth boundary is missing'
 );
 
-for (const gapId of [
-  'GAP-AUTH-001',
-  'GAP-IDENTITY-001',
-  'GAP-LIFECYCLE-001',
-  'GAP-LIFECYCLE-002',
-  'GAP-PAGE-001'
-]) {
-  requireMatch(
-    'docs/IMPLEMENTATION_GAPS.md',
-    gapRegister,
-    new RegExp(`^### ${gapId}\\b`, 'm'),
-    `${gapId} is missing`
-  );
-}
+requireMatch(
+  'docs/IMPLEMENTATION_GAPS.md',
+  gapRegister,
+  /^### GAP-IDENTITY-001\b/m,
+  'GAP-IDENTITY-001 is missing'
+);
+requireMatch(
+  'docs/IMPLEMENTATION_GAPS.md',
+  gapRegister,
+  /### GAP-IDENTITY-001[\s\S]*?- Status: Open/i,
+  'GAP-IDENTITY-001 must remain open until the full identity lifecycle is verified'
+);
 for (const section of ['Direct evidence', 'Temporary containment', 'Closure evidence']) {
   requireMatch(
     'docs/IMPLEMENTATION_GAPS.md',
@@ -115,57 +125,59 @@ for (const section of ['Direct evidence', 'Temporary containment', 'Closure evid
     `${section} section is missing`
   );
 }
+for (const closedGapId of [
+  'GAP-AUTH-001',
+  'GAP-LIFECYCLE-001',
+  'GAP-LIFECYCLE-002',
+  'GAP-PAGE-001'
+]) {
+  forbidMatch(
+    'docs/IMPLEMENTATION_GAPS.md',
+    gapRegister,
+    new RegExp(`^### ${closedGapId}\\b`, 'm'),
+    `${closedGapId} detail belongs in docs/history/CLOSED_GAPS.md, not the current register`
+  );
+  requireMatch(
+    'docs/IMPLEMENTATION_GAPS.md',
+    gapRegister,
+    new RegExp(`\\b${closedGapId}\\b`),
+    `${closedGapId} archive index entry is missing`
+  );
+  requireMatch(
+    'docs/history/CLOSED_GAPS.md',
+    closedGapArchive,
+    new RegExp(`^### ${closedGapId}\\b`, 'm'),
+    `${closedGapId} historical closure section is missing`
+  );
+  requireMatch(
+    'docs/history/CLOSED_GAPS.md',
+    closedGapArchive,
+    new RegExp(`### ${closedGapId}[\\s\\S]*?- Status: Closed`, 'i'),
+    `${closedGapId} must retain its verified closed status`
+  );
+}
+
 requireMatch(
-  'docs/IMPLEMENTATION_GAPS.md',
-  gapRegister,
-  /### GAP-AUTH-001[\s\S]*?- Status: Closed/i,
-  'GAP-AUTH-001 must retain its verified closed status'
-);
-requireMatch(
-  'docs/IMPLEMENTATION_GAPS.md',
-  gapRegister,
+  'docs/history/CLOSED_GAPS.md',
+  closedGapArchive,
   /### GAP-AUTH-001[\s\S]*?02f33f4ba75cc250378a6fba38f4b926eb62c355[\s\S]*?31505215295/i,
   'GAP-AUTH-001 exact commit and CI closure evidence is missing'
 );
 requireMatch(
-  'docs/IMPLEMENTATION_GAPS.md',
-  gapRegister,
-  /### GAP-IDENTITY-001[\s\S]*?- Status: Open/i,
-  'GAP-IDENTITY-001 must remain open until the full identity lifecycle is verified'
-);
-requireMatch(
-  'docs/IMPLEMENTATION_GAPS.md',
-  gapRegister,
-  /### GAP-LIFECYCLE-001[\s\S]*?- Status: Closed/i,
-  'GAP-LIFECYCLE-001 must retain its verified closed status'
-);
-requireMatch(
-  'docs/IMPLEMENTATION_GAPS.md',
-  gapRegister,
+  'docs/history/CLOSED_GAPS.md',
+  closedGapArchive,
   /### GAP-LIFECYCLE-001[\s\S]*?d8af47d0b3c6225c79efbd708106f42176e443ad[\s\S]*?31524256329/i,
   'GAP-LIFECYCLE-001 exact implementation head and CI closure evidence is missing'
 );
 requireMatch(
-  'docs/IMPLEMENTATION_GAPS.md',
-  gapRegister,
-  /### GAP-LIFECYCLE-002[\s\S]*?- Status: Closed/i,
-  'GAP-LIFECYCLE-002 must retain its verified fail-closed status'
-);
-requireMatch(
-  'docs/IMPLEMENTATION_GAPS.md',
-  gapRegister,
+  'docs/history/CLOSED_GAPS.md',
+  closedGapArchive,
   /### GAP-LIFECYCLE-002[\s\S]*?c5ab97474e8c3f538fd5966a70d40450048a1952[\s\S]*?31567572157/i,
   'GAP-LIFECYCLE-002 exact implementation head and CI closure evidence is missing'
 );
 requireMatch(
-  'docs/IMPLEMENTATION_GAPS.md',
-  gapRegister,
-  /### GAP-PAGE-001[\s\S]*?- Status: Closed/i,
-  'GAP-PAGE-001 must retain its verified closed status'
-);
-requireMatch(
-  'docs/IMPLEMENTATION_GAPS.md',
-  gapRegister,
+  'docs/history/CLOSED_GAPS.md',
+  closedGapArchive,
   /### GAP-PAGE-001[\s\S]*?a6bba75bb08cd0c6742ad6932e103698a9ab0bf2[\s\S]*?31577420974/i,
   'GAP-PAGE-001 exact implementation head and CI closure evidence is missing'
 );
@@ -253,9 +265,8 @@ requireMatch(
 const result = {
   ok: failures.length === 0,
   requiredDocuments: requiredDocuments.length,
-  registeredGaps: 5,
-  openGaps: 1,
-  closedGaps: 4,
+  currentGaps: 1,
+  archivedClosedGaps: 4,
   failures
 };
 

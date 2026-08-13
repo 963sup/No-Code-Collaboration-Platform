@@ -1,35 +1,33 @@
 # Implementation Gap Register
 
-- Status: Active evidence register
+- Status: Active current-gap register
 - Register owner: Project maintainer until an explicit governance owner is assigned
 - Last reviewed: 2026-08-13
 
 ## Purpose
 
-This register records observed differences between accepted or candidate target contracts and the current executable baseline.
+This register records current observed differences between accepted or candidate target contracts and the executable baseline.
+
+It contains detailed entries only for **Open** or **Contained** gaps. Closed and Superseded gap evidence is historical and lives in [`history/CLOSED_GAPS.md`](./history/CLOSED_GAPS.md), so historical failure states do not compete with current truth during normal development.
 
 A gap is not permission to redefine the target model, postpone an invariant silently, or treat unsafe behavior as supported. It is a bounded statement of prediction error with explicit containment and closure evidence.
 
-The register answers:
-
-> Where does executable behavior differ from the intended contract, what risk does that create, how is the risk contained, and what evidence is required to close the difference?
-
 ## Register rules
 
-1. Every gap has a stable identifier, status, affected contract, direct evidence, risk, containment, owner, and closure evidence.
+1. Every current gap has a stable identifier, status, affected contract, direct evidence, risk, containment, owner, and closure evidence.
 2. Evidence must name the exact code, schema, policy, test, provider observation, or incident. Inference must be labeled as inference.
 3. Open authorization or data-integrity gaps block claims of production validation for the affected capability.
 4. Temporary containment must fail closed where identity, authority, or data integrity is uncertain.
 5. A merged implementation does not close a gap by itself. Required tests and runtime evidence must pass for the exact change.
-6. Closed gaps remain in this file for traceability and identify the closing commit, pull request, and verification evidence.
+6. Once a gap is Closed or Superseded, move its detailed evidence to `history/CLOSED_GAPS.md` and retain only an index entry here.
 7. If a gap proves the target contract wrong, update the earliest invalid product, domain, or architecture boundary rather than weakening executable enforcement silently.
 
 ## Status model
 
 - **Open**: the mismatch exists and closure evidence is incomplete.
 - **Contained**: the mismatch still exists, but a verified control prevents the affected behavior from being treated as supported or production-safe.
-- **Closed**: executable behavior and required evidence match the target contract.
-- **Superseded**: another gap or contract replaces this framing; historical evidence remains linked.
+- **Closed**: executable behavior and required evidence match the target contract; detail belongs in the historical archive.
+- **Superseded**: another gap or contract replaces this framing; detail belongs in the historical archive.
 
 ## Open gaps
 
@@ -71,208 +69,14 @@ Close this gap only after:
 5. hosted Supabase redirect, SMTP, abuse-protection, template, notification, and Session settings are verified against the intended production project; and
 6. Application, adapter, browser, provider, and operational tests produce consistent evidence.
 
-## Closed gaps
+## Closed gap index
 
-### GAP-PAGE-001 — Generic Data API mutation bypassed accepted Page commands
+Detailed closure evidence is historical and is intentionally excluded from the normal current-state context.
 
-- Status: Closed
-- Affected contracts: [`domains/page-resource.md`](./domains/page-resource.md), [`architecture/ADR-007-first-page-resource-vertical-slice.md`](./architecture/ADR-007-first-page-resource-vertical-slice.md), and [`architecture/ADR-009-controlled-page-command-mutation-boundary.md`](./architecture/ADR-009-controlled-page-command-mutation-boundary.md)
-- Affected invariants: blank Page creation, optimistic concurrency, accepted transition provenance, and historical fact integrity
-- Risk class: Data integrity / collaboration concurrency / historical evidence
-- Closed by: Pull request [#23](https://github.com/963sup/No-Code-Collaboration-Platform/pull/23)
-
-#### Direct evidence
-
-At detection time on `main` commit `96eb996accc03409d0535a45c5ce15058305926b`:
-
-- The Page contract required `CreatePage` to create the accepted blank Page state and `UpdatePage` to supply matching server-managed `updated_at` concurrency evidence.
-- `packages/infrastructure/supabase/src/resources/supabase-page-repository.ts` implemented those rules when the application used its Page ports.
-- `supabase/schemas/99_rls.sql` nevertheless granted authenticated Resource INSERT and title/content UPDATE and authorized those statements through Capability-only RLS policies.
-- `supabase/tests/page-resource.test.sql` directly demonstrated that a Contributor could INSERT a Page with non-blank body content and directly UPDATE Page state without supplying the prior `updated_at` value.
-- `resource_created_activity` and `resource_updated_activity` triggers recorded historical facts for those direct mutations, so an Activity Event did not prove that the transition passed through accepted Page command semantics.
-
-#### Predicted failure
-
-A legitimate Contributor could bypass the Application Page command boundary through the Supabase Data API. The actor could not cross Repository authority, but could create or overwrite Page state using a transition that violated the accepted Page lifecycle and optimistic-concurrency contract while still producing apparently valid historical evidence.
-
-#### Resolution
-
-ADR-009 establishes one controlled Page command mutation boundary without weakening RLS:
-
-- `supabase/schemas/92_page_commands.sql` exposes only the concrete `create_page` and `update_page` Page write commands as authenticated RPCs.
-- Both functions are `SECURITY INVOKER`, use `search_path = ''`, derive Actor identity from `auth.uid()`, and never introduce a service-role or privileged write bypass.
-- The functions establish a short-lived transaction-local `app.page_command` marker around Resource DML and restore the prior value before successful return.
-- `supabase/schemas/99_rls.sql` retains the table privileges required by caller-privileged RPC execution but requires command provenance **and** the existing Actor/Repository Capability checks; raw authenticated Resource INSERT/UPDATE therefore fails closed.
-- `create_page` normalizes the title and creates the accepted blank body state; `update_page` requires matching server-managed `updated_at` evidence and scopes the update to the stable Page and Repository identities.
-- `packages/infrastructure/supabase/src/resources/supabase-page-repository.ts` now projects Page writes through those RPCs instead of generic Resource INSERT/UPDATE.
-- Existing Resource triggers continue to make accepted Page state transitions and required Activity facts atomic in the same PostgreSQL transaction.
-- `tooling/database-types.mjs` now reports bounded generated-type drift rather than an unbounded generated projection, and the committed Supabase function types match the reset schema.
-
-#### Temporary containment
-
-The former temporary containment is now the executable command boundary itself: a valid `resource.create` or `resource.update` Capability permits the accepted Page use case, not arbitrary SQL mutation of the Resource row. Raw Page INSERT/UPDATE lacks accepted command provenance and fails RLS. This closure does not grant new Repository authority or accept any Page delete/archive/restore transition.
-
-#### Closure evidence
-
-- Verified implementation head: [`a6bba75bb08cd0c6742ad6932e103698a9ab0bf2`](https://github.com/963sup/No-Code-Collaboration-Platform/commit/a6bba75bb08cd0c6742ad6932e103698a9ab0bf2)
-- Pull request: [#23](https://github.com/963sup/No-Code-Collaboration-Platform/pull/23)
-- Migration: `supabase/migrations/20260812073000_enforce_page_command_boundary.sql`
-- Page attack-path regression: `supabase/tests/page-resource.test.sql`, 28 assertions covering raw Contributor INSERT/UPDATE denial, command-context restoration, valid create/update, stale evidence, no-op stability, Viewer denial, outsider isolation, and Activity facts
-- Full database regression: all four pgTAP suites passed with 85 total assertions
-- Exact implementation-head verification: [GitHub Actions Verify #118](https://github.com/963sup/No-Code-Collaboration-Platform/actions/runs/31577420974)
-- Passed gates: Workflow guardrails, Repository contracts, Supabase contracts, and Browser contracts
-- Database evidence: migration replay from an empty disposable local database, database lint, all pgTAP suites, and generated-type consistency passed on the same implementation head
-- Browser evidence: production build and local Auth/Repository/Page collaboration behavior passed on the same implementation head
-- Vercel status for the implementation head succeeded independently
-- Remote boundary: no hosted Supabase database was accessed or mutated; this proves local/CI command enforcement, not an Applied preview, staging, or production migration
-
-Closing this executable gap does **not** claim that every future Resource mutation should use the same marker or that Page archive/delete/restore/idempotency semantics are accepted. A later command model must be justified by its own evidence and cannot silently restore generic Resource mutation reachability.
-
-### GAP-LIFECYCLE-002 — Resource destructive lifecycle was not accepted
-
-- Status: Closed
-- Affected contract: [`domains/repository-collaboration.md`](./domains/repository-collaboration.md)
-- Affected invariants: Resource lifecycle, historical evidence, retention, and recovery
-- Risk class: Data integrity, audit continuity, and recovery
-- Closed by: Pull request [#22](https://github.com/963sup/No-Code-Collaboration-Platform/pull/22)
-
-#### Direct evidence
-
-At detection time:
-
-- `supabase/schemas/99_rls.sql` granted `DELETE` on `public.resources` to `authenticated` and defined `resources_delete_manager` through the `resource.delete` capability.
-- The Repository Collaboration contract listed `resource.deleted` only as a candidate event and required deletion to have explicit idempotency, failure, and audit behavior before acceptance.
-- Repository search found no executable `resource.deleted` fact or event implementation outside the candidate contract.
-- No accepted Resource lifecycle defined archive, restore, retention, lawful redaction, purge, confirmation, or user-visible consequences.
-
-#### Predicted failure
-
-An authenticated actor with `resource.delete` could hard-delete a Resource even though the product could not explain whether the action meant archive, deletion, purge, or redaction, and no required historical fact or recovery contract proved what must survive.
-
-#### Resolution
-
-The executable-capability-removal alternative was selected instead of inventing an incomplete generic soft-delete lifecycle:
-
-- `supabase/schemas/99_rls.sql` no longer grants authenticated `DELETE` on `public.resources` and no longer defines any Resource DELETE RLS policy.
-- `supabase/migrations/20260812050000_disable_destructive_resource_deletion.sql` revokes the previously reachable table privilege and drops `resources_delete_manager` as an append-only replayable transition.
-- `supabase/tests/destructive-lifecycle.test.sql` proves both fail-closed layers: `authenticated` lacks the table DELETE privilege and `pg_catalog.pg_policies` contains no Resource DELETE policy.
-- The same regression proves Repository admin authority may still resolve the `resource.delete` capability as authority vocabulary while the unaccepted concrete destructive transition remains unavailable.
-- An authenticated Repository administrator attempting `DELETE public.resources` receives SQLSTATE `42501`, and the denied transition preserves the Resource and historical Activity Events.
-- Non-destructive Organization, Repository, and Page administration remains independently available; no archive, tombstone, restore, purge, or generic lifecycle engine was introduced.
-- Type-generation verification now connects directly to the already-running local PostgreSQL database through the Supabase CLI `--db-url` path, removing a nonessential `postgres-meta` image pull that had made exact-head CI evidence depend on an external container-registry rate limit.
-
-#### Temporary containment
-
-The former temporary containment is now the executable product boundary itself: end-user roles cannot invoke Resource hard DELETE. `resource.delete` remains a capability name for future authorization modeling, not proof that any Page delete/archive/purge transition exists.
-
-#### Closure evidence
-
-- Verified implementation head: [`c5ab97474e8c3f538fd5966a70d40450048a1952`](https://github.com/963sup/No-Code-Collaboration-Platform/commit/c5ab97474e8c3f538fd5966a70d40450048a1952)
-- Pull request: [#22](https://github.com/963sup/No-Code-Collaboration-Platform/pull/22)
-- Migration: `supabase/migrations/20260812050000_disable_destructive_resource_deletion.sql`
-- Database regression: `supabase/tests/destructive-lifecycle.test.sql`, 13 assertions after the final defense-in-depth assertion was added
-- Exact implementation-head verification: [GitHub Actions Verify #108](https://github.com/963sup/No-Code-Collaboration-Platform/actions/runs/31567572157)
-- Passed gates: Workflow guardrails, Repository contracts, Supabase contracts, and Browser contracts
-- Database evidence: migration replay from an empty disposable local database, database lint, all four pgTAP suites with 79 total assertions, and generated-type consistency passed
-- Browser evidence: production build, local Auth/Repository/Page collaboration flows, and Playwright behavior passed on the same implementation head
-- Remote boundary: no hosted Supabase database was accessed or mutated; this proves local/CI enforcement, not an Applied production migration
-
-Closing this executable gap does **not** accept Resource archive, delete, restore, retention, purge, redaction, or lawful-erasure semantics. A future destructive lifecycle must enter through a new evidence-backed contract and transition rather than restoring the old DELETE grant or policy implicitly.
-
-### GAP-LIFECYCLE-001 — Destructive Organization and Repository lifecycle was not accepted
-
-- Status: Closed
-- Affected contracts: [`PRODUCT.md`](./PRODUCT.md) and [`domains/repository-collaboration.md`](./domains/repository-collaboration.md)
-- Affected invariants: Product Activity Event durability and Repository containment/history invariants
-- Risk class: Data integrity, audit continuity, and recovery
-- Closed by: Pull request [#16](https://github.com/963sup/No-Code-Collaboration-Platform/pull/16)
-
-#### Direct evidence
-
-At detection time:
-
-- `supabase/schemas/99_rls.sql` exposed Organization and Repository DELETE operations to authenticated actors who satisfied the narrowed owner or Repository-admin authority policies.
-- Repository, Resource, grant, membership, and Activity Event foreign keys used cascading deletion across the containment graph.
-- No accepted lifecycle contract defined tombstones, retention, redaction, restore behavior, event continuity, user-visible consequences, or recovery objectives for destructive deletion.
-- ADR-004 had already separated destructive lifecycle acceptance from delegation authority.
-
-#### Predicted failure
-
-A permitted hard delete could erase contained Resources, grants, and Activity Events even though the target product model treats Activity Events as historical facts and requires destructive transitions to preserve accepted audit and recovery guarantees.
-
-#### Resolution
-
-- ADR-006 accepts the minimum fail-closed model: Organization and Repository hard deletion are not end-user product capabilities until a later lifecycle defines containment fate, retention, restore, redaction, recovery, and user-visible consequences.
-- `supabase/schemas/99_rls.sql` removes `DELETE` from authenticated Organization and Repository table grants and removes the matching DELETE policies.
-- `supabase/migrations/20260812000000_disable_destructive_container_deletion.sql` reproduces the accepted transition from the prior baseline.
-- `supabase/tests/destructive-lifecycle.test.sql` proves non-destructive Organization/Repository updates still work, authenticated deletes fail with SQLSTATE `42501`, and denied Repository deletion preserves the Repository, contained Page Resource, and Activity Events.
-- `supabase/tests/role-delegation.test.sql` separately proves the owner-continuity trigger permits privileged parent-cascade mechanics without exposing that privileged DML as an end-user authorization path.
-- Resource hard deletion remained a separate unresolved lifecycle at this gap's closure and was later closed independently by `GAP-LIFECYCLE-002` through the same fail-closed principle.
-
-#### Temporary containment
-
-The temporary containment is now the executable product boundary itself: end-user roles cannot invoke Organization or Repository hard DELETE. A future lifecycle must introduce a new accepted contract rather than silently restoring the old grants or policies.
-
-#### Closure evidence
-
-- Verified implementation head: [`d8af47d0b3c6225c79efbd708106f42176e443ad`](https://github.com/963sup/No-Code-Collaboration-Platform/commit/d8af47d0b3c6225c79efbd708106f42176e443ad)
-- Pull request: [#16](https://github.com/963sup/No-Code-Collaboration-Platform/pull/16)
-- Migration: `supabase/migrations/20260812000000_disable_destructive_container_deletion.sql`
-- Database regression: `supabase/tests/destructive-lifecycle.test.sql`, 8 assertions at the time of closure
-- Delegation regression: `supabase/tests/role-delegation.test.sql`, 19 assertions with end-user DELETE denial and privileged cascade-mechanics separation
-- Exact implementation-head verification: [GitHub Actions Verify #76](https://github.com/963sup/No-Code-Collaboration-Platform/actions/runs/31524256329)
-- Passed gates: Workflow guardrails, Repository contracts, Supabase contracts, and Browser contracts
-- Remote boundary: the connected Supabase account listed no project; no hosted database was accessed, provisioned, or mutated. Verification used disposable local CI stacks only.
-
-Closing this executable gap does not assert that the migration is Applied to production. Remote application remains governed by ADR-005 and environment-specific migration-ledger/provider evidence.
-
-### GAP-AUTH-001 — Authority mutation conflated operation capability and delegation authority
-
-- Status: Closed
-- Affected contract: [`domains/access-authority.md`](./domains/access-authority.md)
-- Affected invariants: Access Authority invariants 6, 7, 8, 9, and 10
-- Risk class: P0 authorization / privilege escalation
-- Closed by: Pull request [#13](https://github.com/963sup/No-Code-Collaboration-Platform/pull/13)
-
-#### Direct evidence
-
-At detection time:
-
-- `packages/domain/src/access/capability.ts` defined Role-to-Capability bundles but no provider-neutral role-transition policy evaluated the target's current Role and proposed Role.
-- `supabase/schemas/99_rls.sql` authorized Repository grant INSERT, UPDATE, and DELETE through `member.manage` alone.
-- Organization membership policies treated `admin` and `owner` as one management class.
-- Repository grant attribution could be supplied by the client without requiring `granted_by = auth.uid()`.
-
-#### Predicted failure
-
-- A Repository Manager could use `member.manage` to create or change a direct grant to `admin`, then obtain `repository.manage`.
-- An Organization Admin could create owner authority, promote itself to owner, or alter an existing owner relationship.
-- A grant mutation could falsely attribute the action to another User.
-
-#### Resolution
-
-- `packages/domain/src/access/delegation.ts` now owns explicit Organization and Repository delegation matrices over actor Role, current target Role, and proposed Role.
-- Repository Managers may manage only Viewer and Contributor grants; Organization Admins may manage only Member and Admin relationships.
-- `supabase/schemas/90_private_functions.sql` projects the same role ceilings through private, caller-aware helper functions.
-- `supabase/schemas/99_rls.sql` uses `USING` for the existing target Role and `WITH CHECK` for the proposed Role, and binds Repository grant attribution to the authenticated actor.
-- A serialized owner-continuity trigger protects the last Organization owner while allowing valid owner transfer and database cascade mechanics.
-- Scoped `AGENTS.md` contracts and machine checks make the authority, RLS, test, and migration invariants durable.
-
-#### Temporary containment
-
-The privilege-escalation path is closed by the accepted delegation matrix and database enforcement. Future authority sources must preserve the same current/proposed-role distinction rather than bypassing it.
-
-#### Closure evidence
-
-- Closing implementation head: [`02f33f4ba75cc250378a6fba38f4b926eb62c355`](https://github.com/963sup/No-Code-Collaboration-Platform/commit/02f33f4ba75cc250378a6fba38f4b926eb62c355)
-- Migration: `supabase/migrations/20260811123000_prevent_role_escalation.sql`
-- Domain regression matrix: `packages/domain/tests/delegation.test.ts`
-- Database attack-path suite: `supabase/tests/role-delegation.test.sql`, including 19 negative and legitimate positive-control assertions
-- Exact-head verification: [GitHub Actions Verify #44](https://github.com/963sup/No-Code-Collaboration-Platform/actions/runs/31505215295)
-- Passed gates: Workflow guardrails, Repository contracts, Supabase contracts, and Browser contracts
-- Remote boundary: no linked or remote Supabase project was accessed or mutated; database verification used the disposable local CI stack
-
-Closing this executable gap does not assert that a production deployment has occurred. Production validation remains governed by [`operations/RUNBOOK.md`](./operations/RUNBOOK.md) and its unresolved environment gates.
+- `GAP-PAGE-001` — Closed by PR #23; see [`history/CLOSED_GAPS.md`](./history/CLOSED_GAPS.md#gap-page-001--generic-data-api-mutation-bypassed-accepted-page-commands).
+- `GAP-LIFECYCLE-002` — Closed by PR #22; see [`history/CLOSED_GAPS.md`](./history/CLOSED_GAPS.md#gap-lifecycle-002--resource-destructive-lifecycle-was-not-accepted).
+- `GAP-LIFECYCLE-001` — Closed by PR #16; see [`history/CLOSED_GAPS.md`](./history/CLOSED_GAPS.md#gap-lifecycle-001--destructive-organization-and-repository-lifecycle-was-not-accepted).
+- `GAP-AUTH-001` — Closed by PR #13; see [`history/CLOSED_GAPS.md`](./history/CLOSED_GAPS.md#gap-auth-001--authority-mutation-conflated-operation-capability-and-delegation-authority).
 
 ## Closure protocol
 
@@ -280,4 +84,4 @@ Closing this executable gap does not assert that a production deployment has occ
 2. Fix the earliest invalid target or executable boundary.
 3. Add regression evidence at every enforcement layer that could independently permit the failure.
 4. Record the closing commit, pull request, CI run, migration identifiers when applicable, and operational evidence.
-5. Change the status only after the evidence is reviewed.
+5. Change the status only after the evidence is reviewed, then move the detailed entry to the historical archive.

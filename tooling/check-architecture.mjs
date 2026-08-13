@@ -228,18 +228,52 @@ if (existsSync(resolve(root, appHomePath))) {
 }
 
 const legacyRepositoryRoute = 'apps/web/src/app/(app)/app/repositories/[repositoryId]';
-for (const path of [
-  `${legacyRepositoryRoute}/page.tsx`,
-  `${legacyRepositoryRoute}/@workspace/resources/page.tsx`,
-  `${legacyRepositoryRoute}/@workspace/resources/[pageId]/page.tsx`
-]) {
-  if (!existsSync(resolve(root, path))) {
-    failures.push(`${path}: legacy Repository URL must remain an access-aware redirect alias`);
-    continue;
+const legacyCompatibilityPath = `${legacyRepositoryRoute}/[[...legacyPath]]/page.tsx`;
+if (!existsSync(resolve(root, legacyCompatibilityPath))) {
+  failures.push(
+    `${legacyCompatibilityPath}: legacy Repository namespace must be one access-aware compatibility redirect`
+  );
+} else {
+  const content = readFileSync(resolve(root, legacyCompatibilityPath), 'utf8');
+  for (const symbol of [
+    'GetAccessibleRepositoryRouteById',
+    'repositoryPath',
+    'repositoryPagesPath',
+    'repositoryPagePath',
+    'redirect',
+    'notFound'
+  ]) {
+    if (!content.includes(symbol)) {
+      failures.push(`${legacyCompatibilityPath}: ${symbol} compatibility boundary is missing`);
+    }
   }
-  const content = readFileSync(resolve(root, path), 'utf8');
-  if (!content.includes('GetAccessibleRepositoryRouteById') || !content.includes('redirect')) {
-    failures.push(`${path}: legacy Repository alias must authorize before canonical redirect`);
+}
+
+const legacySourceFiles = collectSourceFiles(legacyRepositoryRoute);
+if (
+  legacySourceFiles.length !== 1 ||
+  legacySourceFiles[0] !== legacyCompatibilityPath
+) {
+  failures.push(
+    `${legacyRepositoryRoute}: legacy Repository namespace must contain only the compatibility route`
+  );
+}
+
+for (const forbidden of [
+  'AGENTS.md',
+  'layout.tsx',
+  'default.tsx',
+  'not-found.tsx',
+  '_queries',
+  '@activity',
+  '@context',
+  '@navigation',
+  '@workspace'
+]) {
+  if (existsSync(resolve(root, legacyRepositoryRoute, forbidden))) {
+    failures.push(
+      `${legacyRepositoryRoute}/${forbidden}: legacy Repository namespace is redirect-only and must not own presentation or query state`
+    );
   }
 }
 
