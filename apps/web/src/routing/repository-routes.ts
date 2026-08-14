@@ -8,30 +8,14 @@ export type RepositoryRouteAddress =
       readonly repository: {
         readonly slug: string;
       };
-    }
-  | {
-      /** @deprecated Use ownerSlug. */
-      readonly organizationSlug: string;
-      readonly repositorySlug: string;
-    }
-  | {
-      /** @deprecated Use ownerSlug. */
-      readonly organizationSlug: string;
-      readonly repository: {
-        readonly slug: string;
-      };
     };
-
-function ownerSlug(route: RepositoryRouteAddress) {
-  return 'ownerSlug' in route ? route.ownerSlug : route.organizationSlug;
-}
 
 function repositorySlug(route: RepositoryRouteAddress) {
   return 'repositorySlug' in route ? route.repositorySlug : route.repository.slug;
 }
 
 export function repositoryPath(route: RepositoryRouteAddress) {
-  return `/${encodeURIComponent(ownerSlug(route))}/${encodeURIComponent(repositorySlug(route))}`;
+  return `/${encodeURIComponent(route.ownerSlug)}/${encodeURIComponent(repositorySlug(route))}`;
 }
 
 export function repositoryPagesPath(route: RepositoryRouteAddress) {
