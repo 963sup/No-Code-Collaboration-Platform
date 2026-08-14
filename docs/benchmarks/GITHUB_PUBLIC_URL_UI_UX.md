@@ -34,11 +34,11 @@ Saved Playwright evidence mirrors sanitized host/path resource identity. Query p
 
 ```text
 .playwright-mcp/github/dashboard/{urls.json,ui-ux.md,screenshots/}
-.playwright-mcp/github/369sup/{urls.json,ui-ux.md,screenshots/}
-.playwright-mcp/github/369sup/support/issues/{urls.json,ui-ux.md,screenshots/}
-.playwright-mcp/github/github/docs/issues/45464/{urls.json,ui-ux.md,screenshots/}
-.playwright-mcp/github/vercel/next.js/discussions/{urls.json,ui-ux.md,screenshots/}
-.playwright-mcp/github/gollum/gollum/wiki/{urls.json,ui-ux.md,screenshots/}
+.playwright-mcp/github/users/369sup/{urls.json,ui-ux.md,screenshots/}
+.playwright-mcp/github/repositories/369sup/support/issues/{urls.json,ui-ux.md,screenshots/}
+.playwright-mcp/github/repositories/github/docs/issues/45464/{urls.json,ui-ux.md,screenshots/}
+.playwright-mcp/github/repositories/vercel/next.js/discussions/{urls.json,ui-ux.md,screenshots/}
+.playwright-mcp/github/repositories/gollum/gollum/wiki/{urls.json,ui-ux.md,screenshots/}
 .playwright-mcp/github/components/user-menu/{urls.json,ui-ux.md,screenshots/}
 .playwright-mcp/github/components/account-switcher/{urls.json,ui-ux.md,screenshots/}
 ```

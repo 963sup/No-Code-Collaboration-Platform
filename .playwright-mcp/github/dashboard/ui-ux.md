@@ -16,4 +16,4 @@
 ## Captured states
 
 - Default personal dashboard: Desktop 1440x900, Laptop 1280x800, Tablet 768x1024, Mobile 390x844.
-- Organization dashboard is filed separately under `github/orgs/ac-sup/dashboard/` because it has its own URL and ownership context.
+- Organization dashboard is filed separately under `github/organizations/ac-sup/dashboard/` because it has its own URL and ownership context.

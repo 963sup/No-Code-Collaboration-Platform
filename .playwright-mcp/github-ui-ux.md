@@ -18,11 +18,11 @@ Evidence labels used below:
 
 ## Storage convention and screenshot index
 
-Resource screenshots mirror the sanitized GitHub URL path. For example, `/dashboard` is stored at `github/dashboard/`, `/github/docs/issues/45464` at `github/github/docs/issues/45464/`, and `/orgs/ac-sup/dashboard` at `github/orgs/ac-sup/dashboard/`. UI-only state never creates a fake URL directory; it lives at `github/components/{component}/`.
+Resource screenshots mirror the sanitized GitHub URL path. For example, `/dashboard` is stored at `github/dashboard/`, `/github/docs/issues/45464` at `github/repositories/github/docs/issues/45464/`, and `/orgs/ac-sup/dashboard` at `github/organizations/ac-sup/dashboard/`. UI-only state never creates a fake URL directory; it lives at `github/components/{component}/`.
 
 There are **294 screenshots** across 55 URL resource inventories and 11 component groups. Authenticated and anonymous views of the same URL are distinguished by filenames, not by extra path hierarchy.
 
-The owner-looking directories `github/github/`, `github/vercel/`, `github/369sup/`, `github/ac-sup/`, and `github/gollum/` are not arbitrary categories. They mirror the first stable path segment of observed URLs: GitHub and ac-sup are Organization owners; 369sup is the test User owner; vercel/next.js and gollum/gollum are benchmark Repository identities. Redirect-only command/alias paths retain their requested path inventory and point to the canonical screenshot rather than duplicating files.
+The owner-looking directories `github/organizations/github/`, `github/vercel/`, `github/users/369sup/`, `github/organizations/ac-sup/`, and `github/gollum/` are not arbitrary categories. They mirror the first stable path segment of observed URLs: GitHub and ac-sup are Organization owners; 369sup is the test User owner; vercel/next.js and gollum/gollum are benchmark Repository identities. Redirect-only command/alias paths retain their requested path inventory and point to the canonical screenshot rather than duplicating files.
 
 ## Visual system
 
