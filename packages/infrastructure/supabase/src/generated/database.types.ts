@@ -138,6 +138,7 @@ export type Database = {
           display_name: string | null
           id: string
           updated_at: string
+          username: string
         }
         Insert: {
           avatar_url?: string | null
@@ -145,6 +146,7 @@ export type Database = {
           display_name?: string | null
           id: string
           updated_at?: string
+          username: string
         }
         Update: {
           avatar_url?: string | null
@@ -152,6 +154,7 @@ export type Database = {
           display_name?: string | null
           id?: string
           updated_at?: string
+          username?: string
         }
         Relationships: []
       }
@@ -162,7 +165,8 @@ export type Database = {
           description: string | null
           id: string
           name: string
-          organization_id: string
+          owner_organization_id: string | null
+          owner_user_id: string | null
           slug: string
           updated_at: string
           visibility: Database["public"]["Enums"]["repository_visibility"]
@@ -173,7 +177,8 @@ export type Database = {
           description?: string | null
           id?: string
           name: string
-          organization_id: string
+          owner_organization_id?: string | null
+          owner_user_id?: string | null
           slug: string
           updated_at?: string
           visibility?: Database["public"]["Enums"]["repository_visibility"]
@@ -184,15 +189,16 @@ export type Database = {
           description?: string | null
           id?: string
           name?: string
-          organization_id?: string
+          owner_organization_id?: string | null
+          owner_user_id?: string | null
           slug?: string
           updated_at?: string
           visibility?: Database["public"]["Enums"]["repository_visibility"]
         }
         Relationships: [
           {
-            foreignKeyName: "repositories_organization_id_fkey"
-            columns: ["organization_id"]
+            foreignKeyName: "repositories_owner_organization_id_fkey"
+            columns: ["owner_organization_id"]
             isOneToOne: false
             referencedRelation: "organizations"
             referencedColumns: ["id"]
@@ -296,25 +302,31 @@ export type Database = {
           description: string
           id: string
           name: string
-          organization_id: string
-          organization_slug: string
+          owner_id: string
+          owner_kind: string
+          owner_slug: string
           slug: string
           visibility: Database["public"]["Enums"]["repository_visibility"]
         }[]
       }
       get_accessible_repository_route_by_key: {
-        Args: {
-          target_organization_slug: string
-          target_repository_slug: string
-        }
+        Args: { target_owner_slug: string; target_repository_slug: string }
         Returns: {
           description: string
           id: string
           name: string
-          organization_id: string
-          organization_slug: string
+          owner_id: string
+          owner_kind: string
+          owner_slug: string
           slug: string
           visibility: Database["public"]["Enums"]["repository_visibility"]
+        }[]
+      }
+      get_current_repository_access_sources: {
+        Args: { target_repository_id: string }
+        Returns: {
+          direct_role: Database["public"]["Enums"]["repository_role"]
+          governance_role: Database["public"]["Enums"]["repository_role"]
         }[]
       }
       list_accessible_repository_routes: {
@@ -323,8 +335,9 @@ export type Database = {
           description: string
           id: string
           name: string
-          organization_id: string
-          organization_slug: string
+          owner_id: string
+          owner_kind: string
+          owner_slug: string
           slug: string
           visibility: Database["public"]["Enums"]["repository_visibility"]
         }[]
@@ -352,7 +365,7 @@ export type Database = {
     Enums: {
       organization_role: "member" | "admin" | "owner"
       repository_role: "viewer" | "contributor" | "manager" | "admin"
-      repository_visibility: "private" | "organization" | "public"
+      repository_visibility: "private" | "public"
       resource_kind: "page"
     }
     CompositeTypes: {
@@ -486,7 +499,7 @@ export const Constants = {
     Enums: {
       organization_role: ["member", "admin", "owner"],
       repository_role: ["viewer", "contributor", "manager", "admin"],
-      repository_visibility: ["private", "organization", "public"],
+      repository_visibility: ["private", "public"],
       resource_kind: ["page"],
     },
   },
