@@ -191,7 +191,7 @@ The only accepted Repository compatibility namespace is stable-ID based:
 
 It must:
 
-1. resolve Repository through an access-aware read;
+1. perform access-aware resolution of the Repository before any redirect;
 2. avoid leaking inaccessible private Repository names;
 3. translate only supported child destinations;
 4. redirect to the canonical Owner/Repository URL; and
