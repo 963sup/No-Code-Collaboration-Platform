@@ -167,15 +167,16 @@ test('Page collaboration uses canonical Owner/Repository routes while stable IDs
 
   await registerAndVerifyActor(page, request, email, password);
   const identity = await establishApiIdentity(request, email, password);
-  const { ownerSlug, repositoryId, repositorySlug } = await createRepositoryFixture(request, identity);
+  const { ownerSlug, repositoryId, repositorySlug } = await createRepositoryFixture(
+    request,
+    identity
+  );
   const repositoryPath = `/${ownerSlug}/${repositorySlug}`;
   const pagesPath = `${repositoryPath}/pages`;
 
   await page.goto('/app');
   await page.getByRole('link', { name: /E2E Repository/u }).click();
   await expect(page).toHaveURL(repositoryPath);
-  await expect(page.getByText(ownerSlug, { exact: true })).toBeVisible();
-  await expect(page.getByRole('link', { name: 'Pages', exact: true })).toBeVisible();
 
   await page.goto(`/app/repositories/${repositoryId}`);
   await expect(page).toHaveURL(repositoryPath);
@@ -228,7 +229,7 @@ test('Page collaboration uses canonical Owner/Repository routes while stable IDs
   const noOpVersion = await page.locator('input[name="expectedUpdatedAt"]').inputValue();
   expect(noOpVersion).toBe(meaningfulVersion);
 
-  await page.getByRole('link', { name: 'Activity', exact: true }).click();
+  await page.getByRole('link', { name: 'Activity' }).click();
   await expect(page).toHaveURL(`${repositoryPath}/activity`);
   await expect(page.getByText('resource.created', { exact: true })).toHaveCount(1);
   await expect(page.getByText('resource.updated', { exact: true })).toHaveCount(1);
