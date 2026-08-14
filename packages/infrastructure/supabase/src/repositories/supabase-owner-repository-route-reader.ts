@@ -7,23 +7,22 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 
 import type { Database } from '../generated/database.types';
 
-type LegacyRepositoryRouteRow =
+type RepositoryRouteRow =
   Database['public']['Functions']['list_accessible_repository_routes']['Returns'][number];
 
-function mapLegacyRepositoryRoute(row: LegacyRepositoryRouteRow): RepositoryRouteSummary {
+function mapRepositoryRoute(row: RepositoryRouteRow): RepositoryRouteSummary {
   return {
-    ownerSlug: row.organization_slug,
+    ownerSlug: row.owner_slug,
     repository: {
       description: row.description,
       id: row.id,
       name: row.name,
-      organizationId: row.organization_id,
-      owner: {
-        kind: 'organization',
-        organizationId: row.organization_id
-      },
+      owner:
+        row.owner_kind === 'user'
+          ? { kind: 'user', userId: row.owner_id }
+          : { kind: 'organization', organizationId: row.owner_id },
       slug: row.slug,
-      visibility: row.visibility === 'organization' ? 'private' : row.visibility
+      visibility: row.visibility
     }
   };
 }
@@ -43,17 +42,14 @@ export class SupabaseOwnerRepositoryRouteReader implements RepositoryRouteReader
     }
 
     const row = data[0];
-    return row ? mapLegacyRepositoryRoute(row) : null;
+    return row ? mapRepositoryRoute(row) : null;
   }
 
   public async findAccessibleRepositoryRouteByKey(
     key: RepositoryRouteKey
   ): Promise<RepositoryRouteSummary | null> {
-    const ownerSlug = key.ownerSlug ?? key.organizationSlug;
-    if (!ownerSlug) return null;
-
     const { data, error } = await this.client.rpc('get_accessible_repository_route_by_key', {
-      target_organization_slug: ownerSlug,
+      target_owner_slug: key.ownerSlug,
       target_repository_slug: key.repositorySlug
     });
 
@@ -62,7 +58,7 @@ export class SupabaseOwnerRepositoryRouteReader implements RepositoryRouteReader
     }
 
     const row = data[0];
-    return row ? mapLegacyRepositoryRoute(row) : null;
+    return row ? mapRepositoryRoute(row) : null;
   }
 
   public async listAccessibleRepositoryRoutes(): Promise<readonly RepositoryRouteSummary[]> {
@@ -72,6 +68,6 @@ export class SupabaseOwnerRepositoryRouteReader implements RepositoryRouteReader
       throw new Error('Unable to list accessible Repository routes.', { cause: error });
     }
 
-    return data.map(mapLegacyRepositoryRoute);
+    return data.map(mapRepositoryRoute);
   }
 }
