@@ -24,11 +24,9 @@ export function RepositoryShell({
         <div className='mx-auto max-w-7xl px-4 pt-5 sm:px-6 lg:px-8'>
           <div className='flex flex-wrap items-center justify-between gap-3 pb-4'>
             <div className='flex min-w-0 items-center gap-2 text-lg'>
-              <Link className='truncate text-muted-foreground hover:text-foreground' href='/app'>
-                {ownerSlug}
-              </Link>
+              <span className='truncate text-muted-foreground'>{ownerSlug}</span>
               <span aria-hidden='true' className='text-muted-foreground'>/</span>
-              <Link className='truncate font-semibold' href={basePath}>
+              <Link className='truncate font-semibold hover:underline' href={basePath}>
                 {repositoryName}
               </Link>
             </div>
