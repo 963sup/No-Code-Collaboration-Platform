@@ -1,0 +1,173 @@
+- generic [ref=f4e2]:
+  - generic [ref=f4e3]:
+    - link "Skip to content" [ref=f4e4] [cursor=pointer]:
+      - /url: "#start-of-content"
+    - banner "Global navigation menu" [ref=f4e8]:
+      - generic [ref=f4e9]:
+        - generic [ref=f4e10]:
+          - button "Open menu" [ref=f4e12] [cursor=pointer]
+          - link "Homepage (g then d)" [ref=f4e15] [cursor=pointer]:
+            - /url: /
+        - generic [ref=f4e18]:
+          - navigation "Breadcrumbs" [ref=f4e19]:
+            - list [ref=f4e20]:
+              - listitem [ref=f4e21]:
+                - link "369sup" [ref=f4e22] [cursor=pointer]:
+                  - /url: /369sup
+          - button "Open quick search dialog, type / to search" [ref=f4e26] [cursor=pointer]:
+            - generic [ref=f4e28]:
+              - generic:
+                - text: Type
+                - generic: /
+                - text: to search
+        - generic [ref=f4e29]:
+          - generic [ref=f4e30]:
+            - generic [ref=f4e33]:
+              - link "Chat with Copilot" [ref=f4e35] [cursor=pointer]:
+                - /url: /copilot
+              - button "Open Copilot…" [ref=f4e40] [cursor=pointer]
+            - button "Create new..." [ref=f4e42] [cursor=pointer]
+            - generic [ref=f4e44]:
+              - link "All issues (g then i)" [ref=f4e45] [cursor=pointer]:
+                - /url: /issues
+              - link "All pull requests (g then p)" [ref=f4e49] [cursor=pointer]:
+                - /url: /pulls
+              - link "All repositories" [ref=f4e52] [cursor=pointer]:
+                - /url: /repos
+          - link "You have no unread notifications (g then n)" [ref=f4e55] [cursor=pointer]:
+            - /url: /notifications
+          - button "Open user navigation menu" [ref=f4e59] [cursor=pointer]:
+            - img "sup" [ref=f4e60]
+      - heading "User navigation" [level=2] [ref=f4e61]
+      - navigation "User" [ref=f4e62]:
+        - list [ref=f4e63]:
+          - listitem [ref=f4e64]:
+            - link "Overview" [ref=f4e65] [cursor=pointer]:
+              - /url: /369sup
+          - listitem [ref=f4e70]:
+            - link "Repositories (4)" [ref=f4e71] [cursor=pointer]:
+              - /url: /369sup?tab=repositories
+              - generic [ref=f4e75]: Repositories
+              - generic [ref=f4e76]:
+                - generic [ref=f4e77]: "4"
+                - generic [ref=f4e78]: (4)
+          - listitem [ref=f4e79]:
+            - link "Projects" [ref=f4e80] [cursor=pointer]:
+              - /url: /369sup?tab=projects
+          - listitem [ref=f4e85]:
+            - link "Packages" [ref=f4e86] [cursor=pointer]:
+              - /url: /369sup?tab=packages
+          - listitem [ref=f4e91]:
+            - link "Stars (7)" [ref=f4e92] [cursor=pointer]:
+              - /url: /369sup?tab=stars
+              - generic [ref=f4e96]: Stars
+              - generic [ref=f4e97]:
+                - generic [ref=f4e98]: "7"
+                - generic [ref=f4e99]: (7)
+  - main [ref=f4e102]:
+    - generic [ref=f4e104]:
+      - generic [ref=f4e107]:
+        - generic [ref=f4e108]:
+          - generic [ref=f4e109]:
+            - link "Change your avatar" [ref=f4e111] [cursor=pointer]:
+              - /url: https://github.com/account
+            - button "Set status" [ref=f4e116] [cursor=pointer]
+          - heading "sup 369sup" [level=1] [ref=f4e125]:
+            - generic [ref=f4e126]: sup
+            - generic [ref=f4e127]: 369sup
+        - generic [ref=f4e129]:
+          - button "Edit profile" [ref=f4e131] [cursor=pointer]
+          - list
+        - generic [ref=f4e132]:
+          - heading [level=2] [ref=f4e133]:
+            - link "Achievements" [ref=f4e134] [cursor=pointer]:
+              - /url: /369sup?tab=achievements
+          - generic [ref=f4e135]:
+            - 'link "Achievement: Pull Shark x2" [ref=f4e136] [cursor=pointer]':
+              - /url: /369sup?achievement=pull-shark&tab=achievements
+              - 'img "Achievement: Pull Shark" [ref=f4e137]'
+              - generic [ref=f4e138]: x2
+            - link [ref=f4e139] [cursor=pointer]:
+              - /url: /369sup?achievement=yolo&tab=achievements
+              - 'img "Achievement: YOLO" [ref=f4e140]'
+        - generic [ref=f4e141]:
+          - heading "Organizations" [level=2] [ref=f4e142]
+          - link "ac-sup" [ref=f4e143] [cursor=pointer]:
+            - /url: /ac-sup
+            - img "@ac-sup" [ref=f4e144]
+      - generic [ref=f4e147]:
+        - generic [ref=f4e149]:
+          - button "Close" [ref=f4e152] [cursor=pointer]
+          - generic [ref=f4e155]:
+            - text: You unlocked new Achievements with private contributions! Show them off by including private contributions in your Profile in
+            - link "settings" [ref=f4e156] [cursor=pointer]:
+              - /url: /settings/profile#contributions-activity-heading
+            - text: .
+        - generic [ref=f4e158]:
+          - button "Customize your pins" [ref=f4e160] [cursor=pointer]
+          - heading "Popular repositories Loading" [level=2] [ref=f4e163]:
+            - text: Popular repositories
+            - generic: Loading
+            - status
+          - list [ref=f4e165]:
+            - listitem [ref=f4e166]:
+              - generic [ref=f4e168]:
+                - generic [ref=f4e169]:
+                  - link "support" [ref=f4e171] [cursor=pointer]:
+                    - /url: /369sup/support
+                  - generic [ref=f4e172]: Public
+                - paragraph [ref=f4e174]
+                - paragraph [ref=f4e175]:
+                  - generic [ref=f4e176]: TypeScript
+            - listitem [ref=f4e178]:
+              - generic [ref=f4e180]:
+                - generic [ref=f4e181]:
+                  - link "tw-governance-compliance" [ref=f4e183] [cursor=pointer]:
+                    - /url: /369sup/tw-governance-compliance
+                  - generic [ref=f4e184]: Public
+                - paragraph [ref=f4e186]: Taiwan enterprise governance and compliance automation toolkit for official-source discovery, obligation traceability, document mapping, validation, and index generation.
+                - paragraph
+            - listitem [ref=f4e187]:
+              - generic [ref=f4e189]:
+                - generic [ref=f4e190]:
+                  - link "www.a-i.tw" [ref=f4e192] [cursor=pointer]:
+                    - /url: /369sup/www.a-i.tw
+                  - generic [ref=f4e193]: Public
+                - paragraph [ref=f4e195]: github-non-code
+                - paragraph
+        - img "Loading" [ref=f4e200]
+  - contentinfo [ref=f4e203]:
+    - heading "Footer" [level=2] [ref=f4e204]
+    - generic [ref=f4e205]:
+      - generic [ref=f4e206]:
+        - link "GitHub Homepage" [ref=f4e207] [cursor=pointer]:
+          - /url: https://github.com
+        - generic [ref=f4e210]: © 2026 GitHub, Inc.
+      - navigation "Footer" [ref=f4e211]:
+        - heading "Footer navigation" [level=3] [ref=f4e212]
+        - list "Footer navigation" [ref=f4e213]:
+          - listitem [ref=f4e214]:
+            - link "Terms" [ref=f4e215] [cursor=pointer]:
+              - /url: https://docs.github.com/site-policy/github-terms/github-terms-of-service
+          - listitem [ref=f4e216]:
+            - link "Privacy" [ref=f4e217] [cursor=pointer]:
+              - /url: https://docs.github.com/site-policy/privacy-policies/github-privacy-statement
+          - listitem [ref=f4e218]:
+            - link "Security" [ref=f4e219] [cursor=pointer]:
+              - /url: https://github.com/security
+          - listitem [ref=f4e220]:
+            - link "Status" [ref=f4e221] [cursor=pointer]:
+              - /url: https://www.githubstatus.com/
+          - listitem [ref=f4e222]:
+            - link "Community" [ref=f4e223] [cursor=pointer]:
+              - /url: https://github.community/
+          - listitem [ref=f4e224]:
+            - link "Docs" [ref=f4e225] [cursor=pointer]:
+              - /url: https://docs.github.com/
+          - listitem [ref=f4e226]:
+            - link "Contact" [ref=f4e227] [cursor=pointer]:
+              - /url: https://support.github.com?tags=dotcom-footer
+          - listitem [ref=f4e228]:
+            - button "Manage cookies" [ref=f4e230] [cursor=pointer]
+          - listitem [ref=f4e231]:
+            - button "Do not share my personal information" [ref=f4e233] [cursor=pointer]

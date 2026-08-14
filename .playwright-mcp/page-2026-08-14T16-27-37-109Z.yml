@@ -1,0 +1,469 @@
+- generic [ref=f8e2]:
+  - generic [ref=f8e3]:
+    - link "Skip to content" [ref=f8e4] [cursor=pointer]:
+      - /url: "#start-of-content"
+    - banner "Global navigation menu" [ref=f8e8]:
+      - generic [ref=f8e9]:
+        - generic [ref=f8e10]:
+          - button "Open menu" [ref=f8e12] [cursor=pointer]
+          - link "Homepage (g then d)" [ref=f8e15] [cursor=pointer]:
+            - /url: /
+        - generic [ref=f8e18]:
+          - navigation "Breadcrumbs" [ref=f8e19]:
+            - list [ref=f8e20]:
+              - listitem [ref=f8e21]:
+                - link "gollum" [ref=f8e22] [cursor=pointer]:
+                  - /url: /gollum
+          - button "Open quick search dialog, type / to search" [ref=f8e26] [cursor=pointer]:
+            - generic [ref=f8e28]:
+              - generic:
+                - text: Type
+                - generic: /
+                - text: to search
+        - generic [ref=f8e29]:
+          - generic [ref=f8e30]:
+            - generic [ref=f8e33]:
+              - link "Chat with Copilot" [ref=f8e35] [cursor=pointer]:
+                - /url: /copilot
+              - button "Open Copilot…" [ref=f8e40] [cursor=pointer]
+            - button "Create new..." [ref=f8e42] [cursor=pointer]
+            - generic [ref=f8e44]:
+              - link "All issues (g then i)" [ref=f8e45] [cursor=pointer]:
+                - /url: /issues
+              - link "All pull requests (g then p)" [ref=f8e49] [cursor=pointer]:
+                - /url: /pulls
+              - link "All repositories" [ref=f8e52] [cursor=pointer]:
+                - /url: /repos
+          - link "You have no unread notifications (g then n)" [ref=f8e55] [cursor=pointer]:
+            - /url: /notifications
+          - button "Open user navigation menu" [ref=f8e59] [cursor=pointer]:
+            - img "sup" [ref=f8e60]
+      - heading "Organization navigation" [level=2] [ref=f8e61]
+      - navigation "Organization" [ref=f8e62]:
+        - list [ref=f8e63]:
+          - listitem [ref=f8e64]:
+            - link "Overview" [ref=f8e65] [cursor=pointer]:
+              - /url: /gollum
+          - listitem [ref=f8e70]:
+            - link "Repositories (7)" [ref=f8e71] [cursor=pointer]:
+              - /url: /orgs/gollum/repositories
+              - generic [ref=f8e75]: Repositories
+              - generic [ref=f8e76]:
+                - generic [ref=f8e77]: "7"
+                - generic [ref=f8e78]: (7)
+          - listitem [ref=f8e79]:
+            - link "Projects" [ref=f8e80] [cursor=pointer]:
+              - /url: /orgs/gollum/projects
+          - listitem [ref=f8e85]:
+            - link "Packages" [ref=f8e86] [cursor=pointer]:
+              - /url: /orgs/gollum/packages
+          - listitem [ref=f8e91]:
+            - link "People (6)" [ref=f8e92] [cursor=pointer]:
+              - /url: /orgs/gollum/people
+              - generic [ref=f8e96]: People
+              - generic [ref=f8e97]:
+                - generic [ref=f8e98]: "6"
+                - generic [ref=f8e99]: (6)
+  - main [ref=f8e102]:
+    - generic [ref=f8e103]:
+      - generic [ref=f8e106]:
+        - img "@gollum" [ref=f8e108]
+        - generic [ref=f8e109]:
+          - heading "gollum" [level=1] [ref=f8e110]
+          - list:
+            - listitem
+        - button "Follow gollum" [ref=f8e114] [cursor=pointer]: Follow
+      - generic [ref=f8e116]:
+        - generic [ref=f8e119]:
+          - generic [ref=f8e120]:
+            - heading "Popular repositories Loading" [level=2] [ref=f8e121]:
+              - text: Popular repositories
+              - generic: Loading
+              - status
+            - list [ref=f8e123]:
+              - listitem [ref=f8e124]:
+                - generic [ref=f8e126]:
+                  - generic [ref=f8e127]:
+                    - link "gollum" [ref=f8e129] [cursor=pointer]:
+                      - /url: /gollum/gollum
+                    - generic [ref=f8e130]: Public
+                  - paragraph [ref=f8e132]: A simple, Git-powered wiki with a local frontend and support for many kinds of markup and content.
+                  - paragraph [ref=f8e133]:
+                    - generic [ref=f8e134]: Ruby
+                    - link [ref=f8e136] [cursor=pointer]:
+                      - /url: /gollum/gollum/stargazers
+                      - img "stars" [ref=f8e137]
+                      - text: 14.3k
+                    - link [ref=f8e139] [cursor=pointer]:
+                      - /url: /gollum/gollum/forks
+                      - img "forks" [ref=f8e140]
+                      - text: 1.6k
+              - listitem [ref=f8e142]:
+                - generic [ref=f8e144]:
+                  - generic [ref=f8e145]:
+                    - link "gollum-lib" [ref=f8e147] [cursor=pointer]:
+                      - /url: /gollum/gollum-lib
+                    - generic [ref=f8e148]: Public
+                  - paragraph [ref=f8e150]: A simple, Git-powered wiki with a sweet API.
+                  - paragraph [ref=f8e151]:
+                    - generic [ref=f8e152]: Ruby
+                    - link [ref=f8e154] [cursor=pointer]:
+                      - /url: /gollum/gollum-lib/stargazers
+                      - img "stars" [ref=f8e155]
+                      - text: "181"
+                    - link [ref=f8e157] [cursor=pointer]:
+                      - /url: /gollum/gollum-lib/forks
+                      - img "forks" [ref=f8e158]
+                      - text: "169"
+              - listitem [ref=f8e160]:
+                - generic [ref=f8e162]:
+                  - generic [ref=f8e163]:
+                    - link "rugged_adapter" [ref=f8e165] [cursor=pointer]:
+                      - /url: /gollum/rugged_adapter
+                    - generic [ref=f8e166]: Public
+                  - paragraph [ref=f8e168]: Adapter to make gollum use Rugged (libgit2) at the backend.
+                  - paragraph [ref=f8e169]:
+                    - generic [ref=f8e170]: Ruby
+                    - link [ref=f8e172] [cursor=pointer]:
+                      - /url: /gollum/rugged_adapter/stargazers
+                      - img "stars" [ref=f8e173]
+                      - text: "37"
+                    - link [ref=f8e175] [cursor=pointer]:
+                      - /url: /gollum/rugged_adapter/forks
+                      - img "forks" [ref=f8e176]
+                      - text: "24"
+              - listitem [ref=f8e178]:
+                - generic [ref=f8e180]:
+                  - generic [ref=f8e181]:
+                    - link "grit_adapter" [ref=f8e183] [cursor=pointer]:
+                      - /url: /gollum/grit_adapter
+                    - generic [ref=f8e184]: Public
+                  - paragraph [ref=f8e186]: Adapter for Gollum to use Grit at the backend
+                  - paragraph [ref=f8e187]:
+                    - generic [ref=f8e188]: Ruby
+                    - link [ref=f8e190] [cursor=pointer]:
+                      - /url: /gollum/grit_adapter/stargazers
+                      - img "stars" [ref=f8e191]
+                      - text: "10"
+                    - link [ref=f8e193] [cursor=pointer]:
+                      - /url: /gollum/grit_adapter/forks
+                      - img "forks" [ref=f8e194]
+                      - text: "11"
+              - listitem [ref=f8e196]:
+                - generic [ref=f8e198]:
+                  - generic [ref=f8e199]:
+                    - link "grit" [ref=f8e201] [cursor=pointer]:
+                      - /url: /gollum/grit
+                    - generic [ref=f8e202]: Public
+                  - paragraph [ref=f8e204]:
+                    - text: Forked from
+                    - link "gitlabhq/grit" [ref=f8e205] [cursor=pointer]:
+                      - /url: /gitlabhq/grit
+                  - paragraph [ref=f8e206]: GitLab Dependency | Grit gives you object oriented read/write access to Git repositories via Ruby. Patched for GITLAB. Requires ruby 1.9+
+                  - paragraph [ref=f8e207]:
+                    - generic [ref=f8e208]: Ruby
+                    - link [ref=f8e210] [cursor=pointer]:
+                      - /url: /gollum/grit/stargazers
+                      - img "stars" [ref=f8e211]
+                      - text: "10"
+              - listitem [ref=f8e213]:
+                - generic [ref=f8e215]:
+                  - generic [ref=f8e216]:
+                    - link "adapter_specs" [ref=f8e218] [cursor=pointer]:
+                      - /url: /gollum/adapter_specs
+                    - generic [ref=f8e219]: Public
+                  - paragraph [ref=f8e221]: The spec suite for Gollum Git adapters.
+                  - paragraph [ref=f8e222]:
+                    - generic [ref=f8e223]: Ruby
+                    - link [ref=f8e225] [cursor=pointer]:
+                      - /url: /gollum/adapter_specs/stargazers
+                      - img "stars" [ref=f8e226]
+                      - text: "8"
+                    - link [ref=f8e228] [cursor=pointer]:
+                      - /url: /gollum/adapter_specs/forks
+                      - img "forks" [ref=f8e229]
+                      - text: "8"
+          - generic [ref=f8e232]:
+            - heading "Repositories" [level=3] [ref=f8e233]
+            - search [ref=f8e238]:
+              - generic [ref=f8e239]:
+                - generic [ref=f8e240]:
+                  - searchbox "Find a repository…" [ref=f8e241]
+                  - generic: Loading
+                - generic [ref=f8e245]:
+                  - group [ref=f8e246]:
+                    - button "Type" [ref=f8e247] [cursor=pointer]
+                  - group [ref=f8e249]:
+                    - button "Language" [ref=f8e250] [cursor=pointer]
+                  - group [ref=f8e252]:
+                    - button "Sort" [ref=f8e253] [cursor=pointer]
+            - generic [ref=f8e256]:
+              - generic [ref=f8e257]: Showing 7 of 7 repositories
+              - list [ref=f8e259]:
+                - listitem [ref=f8e260]:
+                  - generic [ref=f8e261]:
+                    - generic [ref=f8e262]:
+                      - generic [ref=f8e263]:
+                        - link "gollum-lib" [ref=f8e264] [cursor=pointer]:
+                          - /url: /gollum/gollum-lib
+                        - 'generic "Label: Public" [ref=f8e265]': Public
+                        - paragraph [ref=f8e266]: A simple, Git-powered wiki with a sweet API.
+                      - generic:
+                        - generic:
+                          - link "gollum/gollum-lib's past year of commit activity":
+                            - /url: /gollum/gollum-lib/graphs/commit-activity
+                    - generic [ref=f8e267]:
+                      - generic [ref=f8e268]: Ruby
+                      - link "181 stars" [ref=f8e270] [cursor=pointer]:
+                        - /url: /gollum/gollum-lib/stargazers
+                        - text: "181"
+                      - generic [ref=f8e273]: MIT
+                      - link "169 forks" [ref=f8e276] [cursor=pointer]:
+                        - /url: /gollum/gollum-lib/forks
+                        - text: "169"
+                      - link "11 issues" [ref=f8e279] [cursor=pointer]:
+                        - /url: /gollum/gollum-lib/issues
+                        - text: "11"
+                      - link "4 pull requests" [ref=f8e283] [cursor=pointer]:
+                        - /url: /gollum/gollum-lib/pulls
+                        - text: "4"
+                      - generic [ref=f8e286]: Updated Apr 20, 2026on Apr 20
+                - listitem [ref=f8e287]:
+                  - generic [ref=f8e288]:
+                    - generic [ref=f8e289]:
+                      - generic [ref=f8e290]:
+                        - link "gollum" [ref=f8e291] [cursor=pointer]:
+                          - /url: /gollum/gollum
+                        - 'generic "Label: Public" [ref=f8e292]': Public
+                        - paragraph [ref=f8e293]: A simple, Git-powered wiki with a local frontend and support for many kinds of markup and content.
+                      - generic:
+                        - generic:
+                          - link "gollum/gollum's past year of commit activity":
+                            - /url: /gollum/gollum/graphs/commit-activity
+                    - generic [ref=f8e294]:
+                      - generic [ref=f8e295]: Ruby
+                      - link "14311 stars" [ref=f8e297] [cursor=pointer]:
+                        - /url: /gollum/gollum/stargazers
+                        - text: 14,311
+                      - generic [ref=f8e300]: MIT
+                      - link "1559 forks" [ref=f8e303] [cursor=pointer]:
+                        - /url: /gollum/gollum/forks
+                        - text: 1,559
+                      - link "73 issues" [ref=f8e306] [cursor=pointer]:
+                        - /url: /gollum/gollum/issues
+                        - text: "73"
+                      - link "(14 issues need help)" [ref=f8e310] [cursor=pointer]:
+                        - /url: /gollum/gollum/issues?q=label%3A%22help+wanted%22+is%3Aissue+is%3Aopen
+                      - link "18 pull requests" [ref=f8e311] [cursor=pointer]:
+                        - /url: /gollum/gollum/pulls
+                        - text: "18"
+                      - generic [ref=f8e314]: Updated Nov 25, 2025on Nov 25, 2025
+                - listitem [ref=f8e315]:
+                  - generic [ref=f8e316]:
+                    - generic [ref=f8e317]:
+                      - generic [ref=f8e318]:
+                        - link "rjgit_adapter" [ref=f8e319] [cursor=pointer]:
+                          - /url: /gollum/rjgit_adapter
+                        - 'generic "Label: Public" [ref=f8e320]': Public
+                        - paragraph [ref=f8e321]: Adapter for Gollum to use RJGit at the backend (JRuby).
+                      - generic:
+                        - generic:
+                          - link "gollum/rjgit_adapter's past year of commit activity":
+                            - /url: /gollum/rjgit_adapter/graphs/commit-activity
+                    - generic [ref=f8e322]:
+                      - generic [ref=f8e323]: Ruby
+                      - link "5 stars" [ref=f8e325] [cursor=pointer]:
+                        - /url: /gollum/rjgit_adapter/stargazers
+                        - text: "5"
+                      - link "8 forks" [ref=f8e328] [cursor=pointer]:
+                        - /url: /gollum/rjgit_adapter/forks
+                        - text: "8"
+                      - link "0 issues" [ref=f8e331] [cursor=pointer]:
+                        - /url: /gollum/rjgit_adapter/issues
+                        - text: "0"
+                      - link "2 pull requests" [ref=f8e335] [cursor=pointer]:
+                        - /url: /gollum/rjgit_adapter/pulls
+                        - text: "2"
+                      - generic [ref=f8e338]: Updated Jan 12, 2025on Jan 12, 2025
+                - listitem [ref=f8e339]:
+                  - generic [ref=f8e340]:
+                    - generic [ref=f8e341]:
+                      - generic [ref=f8e342]:
+                        - link "adapter_specs" [ref=f8e343] [cursor=pointer]:
+                          - /url: /gollum/adapter_specs
+                        - 'generic "Label: Public" [ref=f8e344]': Public
+                        - paragraph [ref=f8e345]: The spec suite for Gollum Git adapters.
+                      - generic:
+                        - generic:
+                          - link "gollum/adapter_specs's past year of commit activity":
+                            - /url: /gollum/adapter_specs/graphs/commit-activity
+                    - generic [ref=f8e346]:
+                      - generic [ref=f8e347]: Ruby
+                      - link "8 stars" [ref=f8e349] [cursor=pointer]:
+                        - /url: /gollum/adapter_specs/stargazers
+                        - text: "8"
+                      - link "8 forks" [ref=f8e352] [cursor=pointer]:
+                        - /url: /gollum/adapter_specs/forks
+                        - text: "8"
+                      - link "2 issues" [ref=f8e355] [cursor=pointer]:
+                        - /url: /gollum/adapter_specs/issues
+                        - text: "2"
+                      - link "1 pull request" [ref=f8e359] [cursor=pointer]:
+                        - /url: /gollum/adapter_specs/pulls
+                        - text: "1"
+                      - generic [ref=f8e362]: Updated Jan 12, 2025on Jan 12, 2025
+                - listitem [ref=f8e363]:
+                  - generic [ref=f8e364]:
+                    - generic [ref=f8e365]:
+                      - generic [ref=f8e366]:
+                        - link "rugged_adapter" [ref=f8e367] [cursor=pointer]:
+                          - /url: /gollum/rugged_adapter
+                        - 'generic "Label: Public" [ref=f8e368]': Public
+                        - paragraph [ref=f8e369]: Adapter to make gollum use Rugged (libgit2) at the backend.
+                      - generic:
+                        - generic:
+                          - link "gollum/rugged_adapter's past year of commit activity":
+                            - /url: /gollum/rugged_adapter/graphs/commit-activity
+                    - generic [ref=f8e370]:
+                      - generic [ref=f8e371]: Ruby
+                      - link "37 stars" [ref=f8e373] [cursor=pointer]:
+                        - /url: /gollum/rugged_adapter/stargazers
+                        - text: "37"
+                      - generic [ref=f8e376]: MIT
+                      - link "24 forks" [ref=f8e379] [cursor=pointer]:
+                        - /url: /gollum/rugged_adapter/forks
+                        - text: "24"
+                      - link "3 issues" [ref=f8e382] [cursor=pointer]:
+                        - /url: /gollum/rugged_adapter/issues
+                        - text: "3"
+                      - link "2 pull requests" [ref=f8e386] [cursor=pointer]:
+                        - /url: /gollum/rugged_adapter/pulls
+                        - text: "2"
+                      - generic [ref=f8e389]: Updated Jan 12, 2025on Jan 12, 2025
+                - listitem [ref=f8e390]:
+                  - generic [ref=f8e391]:
+                    - generic [ref=f8e392]:
+                      - generic [ref=f8e393]:
+                        - link "grit_adapter" [ref=f8e394] [cursor=pointer]:
+                          - /url: /gollum/grit_adapter
+                        - 'generic "Label: Public" [ref=f8e395]': Public
+                        - paragraph [ref=f8e396]: Adapter for Gollum to use Grit at the backend
+                      - generic:
+                        - generic:
+                          - link "gollum/grit_adapter's past year of commit activity":
+                            - /url: /gollum/grit_adapter/graphs/commit-activity
+                    - generic [ref=f8e397]:
+                      - generic [ref=f8e398]: Ruby
+                      - link "10 stars" [ref=f8e400] [cursor=pointer]:
+                        - /url: /gollum/grit_adapter/stargazers
+                        - text: "10"
+                      - generic [ref=f8e403]: MIT
+                      - link "11 forks" [ref=f8e406] [cursor=pointer]:
+                        - /url: /gollum/grit_adapter/forks
+                        - text: "11"
+                      - link "1 issue" [ref=f8e409] [cursor=pointer]:
+                        - /url: /gollum/grit_adapter/issues
+                        - text: "1"
+                      - link "0 pull requests" [ref=f8e413] [cursor=pointer]:
+                        - /url: /gollum/grit_adapter/pulls
+                        - text: "0"
+                      - generic [ref=f8e416]: Updated Oct 5, 2017on Oct 5, 2017
+                - listitem [ref=f8e417]:
+                  - generic [ref=f8e418]:
+                    - generic [ref=f8e419]:
+                      - generic [ref=f8e420]:
+                        - link "grit" [ref=f8e421] [cursor=pointer]:
+                          - /url: /gollum/grit
+                        - 'generic "Label: Public" [ref=f8e422]': Public
+                        - generic [ref=f8e423]:
+                          - text: Forked from
+                          - link "gitlabhq/grit" [ref=f8e424] [cursor=pointer]:
+                            - /url: /gitlabhq/grit
+                        - paragraph [ref=f8e425]: GitLab Dependency | Grit gives you object oriented read/write access to Git repositories via Ruby. Patched for GITLAB. Requires ruby 1.9+
+                      - generic:
+                        - generic:
+                          - link "gollum/grit's past year of commit activity":
+                            - /url: /gollum/grit/graphs/commit-activity
+                    - generic [ref=f8e426]:
+                      - generic [ref=f8e427]: Ruby
+                      - link "10 stars" [ref=f8e429] [cursor=pointer]:
+                        - /url: /gollum/grit/stargazers
+                        - text: "10"
+                      - generic [ref=f8e432]: MIT
+                      - link "596 forks" [ref=f8e435] [cursor=pointer]:
+                        - /url: /gollum/grit/forks
+                        - text: "596"
+                      - link "0 issues" [ref=f8e438] [cursor=pointer]:
+                        - /url: /gollum/grit/issues
+                        - text: "0"
+                      - link "0 pull requests" [ref=f8e442] [cursor=pointer]:
+                        - /url: /gollum/grit/pulls
+                        - text: "0"
+                      - generic [ref=f8e445]: Updated Jun 30, 2013on Jun 30, 2013
+        - generic [ref=f8e447]:
+          - generic [ref=f8e450]:
+            - link [ref=f8e451] [cursor=pointer]:
+              - /url: /orgs/gollum/people
+              - heading "People" [level=4] [ref=f8e452]
+            - generic [ref=f8e453]:
+              - link [ref=f8e454] [cursor=pointer]:
+                - /url: /sunny
+                - img "@sunny" [ref=f8e455]
+              - link [ref=f8e456] [cursor=pointer]:
+                - /url: /dometto
+                - img "@dometto" [ref=f8e457]
+              - link [ref=f8e458] [cursor=pointer]:
+                - /url: /bartkamphorst
+                - img "@bartkamphorst" [ref=f8e459]
+              - link [ref=f8e460] [cursor=pointer]:
+                - /url: /benjaminwil
+                - img "@benjaminwil" [ref=f8e461]
+              - link [ref=f8e462] [cursor=pointer]:
+                - /url: /bootstraponline
+                - img "@bootstraponline" [ref=f8e463]
+              - link [ref=f8e464] [cursor=pointer]:
+                - /url: /heavywatal
+                - img "@heavywatal" [ref=f8e465]
+          - generic [ref=f8e468]:
+            - heading "Top languages" [level=4] [ref=f8e469]
+            - paragraph [ref=f8e470]: Loading…
+          - generic [ref=f8e473]:
+            - heading "Most used topics" [level=4] [ref=f8e474]
+            - paragraph [ref=f8e475]: Loading…
+          - link "Report abuse" [ref=f8e477] [cursor=pointer]:
+            - /url: /contact/report-abuse?report=gollum
+  - contentinfo [ref=f8e478]:
+    - heading "Footer" [level=2] [ref=f8e479]
+    - generic [ref=f8e480]:
+      - generic [ref=f8e481]:
+        - link "GitHub Homepage" [ref=f8e482] [cursor=pointer]:
+          - /url: https://github.com
+        - generic [ref=f8e485]: © 2026 GitHub, Inc.
+      - navigation "Footer" [ref=f8e486]:
+        - heading "Footer navigation" [level=3] [ref=f8e487]
+        - list "Footer navigation" [ref=f8e488]:
+          - listitem [ref=f8e489]:
+            - link "Terms" [ref=f8e490] [cursor=pointer]:
+              - /url: https://docs.github.com/site-policy/github-terms/github-terms-of-service
+          - listitem [ref=f8e491]:
+            - link "Privacy" [ref=f8e492] [cursor=pointer]:
+              - /url: https://docs.github.com/site-policy/privacy-policies/github-privacy-statement
+          - listitem [ref=f8e493]:
+            - link "Security" [ref=f8e494] [cursor=pointer]:
+              - /url: https://github.com/security
+          - listitem [ref=f8e495]:
+            - link "Status" [ref=f8e496] [cursor=pointer]:
+              - /url: https://www.githubstatus.com/
+          - listitem [ref=f8e497]:
+            - link "Community" [ref=f8e498] [cursor=pointer]:
+              - /url: https://github.community/
+          - listitem [ref=f8e499]:
+            - link "Docs" [ref=f8e500] [cursor=pointer]:
+              - /url: https://docs.github.com/
+          - listitem [ref=f8e501]:
+            - link "Contact" [ref=f8e502] [cursor=pointer]:
+              - /url: https://support.github.com?tags=dotcom-footer
+          - listitem [ref=f8e503]:
+            - button "Manage cookies" [ref=f8e505] [cursor=pointer]
+          - listitem [ref=f8e506]:
+            - button "Do not share my personal information" [ref=f8e508] [cursor=pointer]

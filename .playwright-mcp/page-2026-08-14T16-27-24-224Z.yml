@@ -1,0 +1,634 @@
+- generic [ref=f6e2]:
+  - generic [ref=f6e3]:
+    - link "Skip to content" [ref=f6e4] [cursor=pointer]:
+      - /url: "#start-of-content"
+    - banner "Global navigation menu" [ref=f6e8]:
+      - generic [ref=f6e9]:
+        - generic [ref=f6e10]:
+          - button "Open menu" [ref=f6e12] [cursor=pointer]
+          - link "Homepage (g then d)" [ref=f6e15] [cursor=pointer]:
+            - /url: /
+        - generic [ref=f6e18]:
+          - navigation "Breadcrumbs" [ref=f6e19]:
+            - list [ref=f6e20]:
+              - listitem [ref=f6e21]:
+                - link "vercel" [ref=f6e22] [cursor=pointer]:
+                  - /url: /vercel
+          - button "Open quick search dialog, type / to search" [ref=f6e26] [cursor=pointer]:
+            - generic [ref=f6e28]:
+              - generic:
+                - text: Type
+                - generic: /
+                - text: to search
+        - generic [ref=f6e29]:
+          - generic [ref=f6e30]:
+            - generic [ref=f6e33]:
+              - link "Chat with Copilot" [ref=f6e35] [cursor=pointer]:
+                - /url: /copilot
+              - button "Open Copilot…" [ref=f6e40] [cursor=pointer]
+            - button "Create new..." [ref=f6e42] [cursor=pointer]
+            - generic [ref=f6e44]:
+              - link "All issues (g then i)" [ref=f6e45] [cursor=pointer]:
+                - /url: /issues
+              - link "All pull requests (g then p)" [ref=f6e49] [cursor=pointer]:
+                - /url: /pulls
+              - link "All repositories" [ref=f6e52] [cursor=pointer]:
+                - /url: /repos
+          - link "You have no unread notifications (g then n)" [ref=f6e55] [cursor=pointer]:
+            - /url: /notifications
+          - button "Open user navigation menu" [ref=f6e59] [cursor=pointer]:
+            - img "sup" [ref=f6e60]
+      - heading "Organization navigation" [level=2] [ref=f6e61]
+      - navigation "Organization" [ref=f6e62]:
+        - list [ref=f6e63]:
+          - listitem [ref=f6e64]:
+            - link "Overview" [ref=f6e65] [cursor=pointer]:
+              - /url: /vercel
+          - listitem [ref=f6e70]:
+            - link "Repositories (240)" [ref=f6e71] [cursor=pointer]:
+              - /url: /orgs/vercel/repositories
+              - generic [ref=f6e75]: Repositories
+              - generic [ref=f6e76]:
+                - generic [ref=f6e77]: "240"
+                - generic [ref=f6e78]: (240)
+          - listitem [ref=f6e79]:
+            - link "Projects" [ref=f6e80] [cursor=pointer]:
+              - /url: /orgs/vercel/projects
+          - listitem [ref=f6e85]:
+            - link "Packages" [ref=f6e86] [cursor=pointer]:
+              - /url: /orgs/vercel/packages
+          - listitem [ref=f6e91]:
+            - link "People (73)" [ref=f6e92] [cursor=pointer]:
+              - /url: /orgs/vercel/people
+              - generic [ref=f6e96]: People
+              - generic [ref=f6e97]:
+                - generic [ref=f6e98]: "73"
+                - generic [ref=f6e99]: (73)
+          - listitem [ref=f6e100]:
+            - link "Sponsoring (4)" [ref=f6e101] [cursor=pointer]:
+              - /url: /orgs/vercel/sponsoring
+              - generic [ref=f6e105]: Sponsoring
+              - generic [ref=f6e106]:
+                - generic [ref=f6e107]: "4"
+                - generic [ref=f6e108]: (4)
+  - main [ref=f6e111]:
+    - generic [ref=f6e112]:
+      - generic [ref=f6e115]:
+        - img "@vercel" [ref=f6e117]
+        - generic [ref=f6e118]:
+          - heading "Vercel" [level=1] [ref=f6e119]
+          - generic [ref=f6e120]: Agentic infrastructure for every app and agent.
+          - list [ref=f6e122]:
+            - listitem [ref=f6e123]:
+              - group [ref=f6e124]:
+                - generic "Verified" [ref=f6e125] [cursor=pointer]
+            - listitem
+            - listitem [ref=f6e126]:
+              - link "Sponsor" [ref=f6e127] [cursor=pointer]:
+                - /url: /sponsors
+          - list [ref=f6e130]:
+            - listitem [ref=f6e131]:
+              - link "30.3k followers" [ref=f6e134] [cursor=pointer]:
+                - /url: /orgs/vercel/followers
+            - listitem [ref=f6e135]:
+              - link "https://vercel.com" [ref=f6e138] [cursor=pointer]:
+                - /url: https://vercel.com
+            - listitem [ref=f6e139]:
+              - img "X" [ref=f6e140]
+              - link "@vercel" [ref=f6e142] [cursor=pointer]:
+                - /url: https://x.com/vercel
+        - button "Follow vercel" [ref=f6e146] [cursor=pointer]: Follow
+      - generic [ref=f6e148]:
+        - generic [ref=f6e151]:
+          - generic [ref=f6e152]:
+            - heading "Pinned Loading" [level=2] [ref=f6e153]:
+              - text: Pinned
+              - generic: Loading
+              - status
+            - list [ref=f6e155]:
+              - listitem [ref=f6e156]:
+                - generic [ref=f6e158]:
+                  - generic [ref=f6e160]:
+                    - link "next.js" [ref=f6e164] [cursor=pointer]:
+                      - /url: /vercel/next.js
+                    - text: Public
+                  - paragraph [ref=f6e165]: The React Framework
+                  - paragraph [ref=f6e166]:
+                    - generic [ref=f6e167]: JavaScript
+                    - link [ref=f6e169] [cursor=pointer]:
+                      - /url: /vercel/next.js/stargazers
+                      - img "stars" [ref=f6e170]
+                      - text: 142k
+                    - link [ref=f6e172] [cursor=pointer]:
+                      - /url: /vercel/next.js/forks
+                      - img "forks" [ref=f6e173]
+                      - text: 31.8k
+              - listitem [ref=f6e175]:
+                - generic [ref=f6e177]:
+                  - generic [ref=f6e179]:
+                    - link "vercel" [ref=f6e183] [cursor=pointer]:
+                      - /url: /vercel/vercel
+                    - text: Public
+                  - paragraph [ref=f6e184]: Develop. Preview. Ship.
+                  - paragraph [ref=f6e185]:
+                    - generic [ref=f6e186]: TypeScript
+                    - link [ref=f6e188] [cursor=pointer]:
+                      - /url: /vercel/vercel/stargazers
+                      - img "stars" [ref=f6e189]
+                      - text: 16.1k
+                    - link [ref=f6e191] [cursor=pointer]:
+                      - /url: /vercel/vercel/forks
+                      - img "forks" [ref=f6e192]
+                      - text: 3.7k
+              - listitem [ref=f6e194]:
+                - generic [ref=f6e196]:
+                  - generic [ref=f6e198]:
+                    - link "ai" [ref=f6e202] [cursor=pointer]:
+                      - /url: /vercel/ai
+                    - text: Public
+                  - paragraph [ref=f6e203]: The AI Toolkit for TypeScript. From the creators of Next.js, the AI SDK is a free open-source library for building AI-powered applications and agents
+                  - paragraph [ref=f6e204]:
+                    - generic [ref=f6e205]: TypeScript
+                    - link [ref=f6e207] [cursor=pointer]:
+                      - /url: /vercel/ai/stargazers
+                      - img "stars" [ref=f6e208]
+                      - text: 26.2k
+                    - link [ref=f6e210] [cursor=pointer]:
+                      - /url: /vercel/ai/forks
+                      - img "forks" [ref=f6e211]
+                      - text: 5k
+              - listitem [ref=f6e213]:
+                - generic [ref=f6e215]:
+                  - generic [ref=f6e217]:
+                    - link "turborepo" [ref=f6e221] [cursor=pointer]:
+                      - /url: /vercel/turborepo
+                    - text: Public
+                  - paragraph [ref=f6e222]: Build system optimized for JavaScript and TypeScript, written in Rust
+                  - paragraph [ref=f6e223]:
+                    - generic [ref=f6e224]: Rust
+                    - link [ref=f6e226] [cursor=pointer]:
+                      - /url: /vercel/turborepo/stargazers
+                      - img "stars" [ref=f6e227]
+                      - text: 30.9k
+                    - link [ref=f6e229] [cursor=pointer]:
+                      - /url: /vercel/turborepo/forks
+                      - img "forks" [ref=f6e230]
+                      - text: 2.4k
+              - listitem [ref=f6e232]:
+                - generic [ref=f6e234]:
+                  - generic [ref=f6e236]:
+                    - link "swr" [ref=f6e240] [cursor=pointer]:
+                      - /url: /vercel/swr
+                    - text: Public
+                  - paragraph [ref=f6e241]: React Hooks for Data Fetching
+                  - paragraph [ref=f6e242]:
+                    - generic [ref=f6e243]: TypeScript
+                    - link [ref=f6e245] [cursor=pointer]:
+                      - /url: /vercel/swr/stargazers
+                      - img "stars" [ref=f6e246]
+                      - text: 32.5k
+                    - link [ref=f6e248] [cursor=pointer]:
+                      - /url: /vercel/swr/forks
+                      - img "forks" [ref=f6e249]
+                      - text: 1.4k
+              - listitem [ref=f6e251]:
+                - generic [ref=f6e253]:
+                  - generic [ref=f6e255]:
+                    - link "commerce" [ref=f6e259] [cursor=pointer]:
+                      - /url: /vercel/commerce
+                    - text: Public
+                  - paragraph [ref=f6e260]: Next.js Commerce
+                  - paragraph [ref=f6e261]:
+                    - generic [ref=f6e262]: TypeScript
+                    - link [ref=f6e264] [cursor=pointer]:
+                      - /url: /vercel/commerce/stargazers
+                      - img "stars" [ref=f6e265]
+                      - text: 14.2k
+                    - link [ref=f6e267] [cursor=pointer]:
+                      - /url: /vercel/commerce/forks
+                      - img "forks" [ref=f6e268]
+                      - text: 5.5k
+          - generic [ref=f6e271]:
+            - heading "Repositories" [level=3] [ref=f6e272]
+            - search [ref=f6e277]:
+              - generic [ref=f6e278]:
+                - generic [ref=f6e279]:
+                  - searchbox "Find a repository…" [ref=f6e280]
+                  - generic: Loading
+                - generic [ref=f6e284]:
+                  - group [ref=f6e285]:
+                    - button "Type" [ref=f6e286] [cursor=pointer]
+                  - group [ref=f6e288]:
+                    - button "Language" [ref=f6e289] [cursor=pointer]
+                  - group [ref=f6e291]:
+                    - button "Sort" [ref=f6e292] [cursor=pointer]
+            - generic [ref=f6e295]:
+              - generic [ref=f6e296]: Showing 10 of 240 repositories
+              - generic [ref=f6e297]:
+                - list [ref=f6e298]:
+                  - listitem [ref=f6e299]:
+                    - generic [ref=f6e300]:
+                      - generic [ref=f6e301]:
+                        - generic [ref=f6e302]:
+                          - link "next.js" [ref=f6e303] [cursor=pointer]:
+                            - /url: /vercel/next.js
+                          - 'generic "Label: Public" [ref=f6e304]': Public
+                          - paragraph [ref=f6e305]: The React Framework
+                        - link "vercel/next.js's past year of commit activity" [ref=f6e308] [cursor=pointer]:
+                          - /url: /vercel/next.js/graphs/commit-activity
+                      - generic [ref=f6e313]:
+                        - generic [ref=f6e314]: JavaScript
+                        - link "141791 stars" [ref=f6e316] [cursor=pointer]:
+                          - /url: /vercel/next.js/stargazers
+                          - text: 141,791
+                        - generic [ref=f6e319]: MIT
+                        - link "31755 forks" [ref=f6e322] [cursor=pointer]:
+                          - /url: /vercel/next.js/forks
+                          - text: 31,755
+                        - link "2,122 issues" [ref=f6e325] [cursor=pointer]:
+                          - /url: /vercel/next.js/issues
+                          - text: 2,122
+                        - link "(11 issues need help)" [ref=f6e329] [cursor=pointer]:
+                          - /url: /vercel/next.js/issues?q=label%3A%22good+first+issue%22+is%3Aissue+is%3Aopen
+                        - link "2,145 pull requests" [ref=f6e330] [cursor=pointer]:
+                          - /url: /vercel/next.js/pulls
+                          - text: 2,145
+                        - generic [ref=f6e333]: Updated Aug 14, 20263 minutes ago
+                  - listitem [ref=f6e334]:
+                    - generic [ref=f6e335]:
+                      - generic [ref=f6e336]:
+                        - generic [ref=f6e337]:
+                          - link "ai" [ref=f6e338] [cursor=pointer]:
+                            - /url: /vercel/ai
+                          - 'generic "Label: Public" [ref=f6e339]': Public
+                          - paragraph [ref=f6e340]: The AI Toolkit for TypeScript. From the creators of Next.js, the AI SDK is a free open-source library for building AI-powered applications and agents
+                        - link "vercel/ai's past year of commit activity" [ref=f6e343] [cursor=pointer]:
+                          - /url: /vercel/ai/graphs/commit-activity
+                      - generic [ref=f6e348]:
+                        - generic [ref=f6e349]: TypeScript
+                        - link "26188 stars" [ref=f6e351] [cursor=pointer]:
+                          - /url: /vercel/ai/stargazers
+                          - text: 26,188
+                        - link "4961 forks" [ref=f6e354] [cursor=pointer]:
+                          - /url: /vercel/ai/forks
+                          - text: 4,961
+                        - link "775 issues" [ref=f6e357] [cursor=pointer]:
+                          - /url: /vercel/ai/issues
+                          - text: "775"
+                        - link "957 pull requests" [ref=f6e361] [cursor=pointer]:
+                          - /url: /vercel/ai/pulls
+                          - text: "957"
+                        - generic [ref=f6e364]: Updated Aug 14, 20264 minutes ago
+                  - listitem [ref=f6e365]:
+                    - generic [ref=f6e366]:
+                      - generic [ref=f6e367]:
+                        - generic [ref=f6e368]:
+                          - link "eve" [ref=f6e369] [cursor=pointer]:
+                            - /url: /vercel/eve
+                          - 'generic "Label: Public" [ref=f6e370]': Public
+                          - paragraph [ref=f6e371]: The Open Framework for Building Agents
+                        - link "vercel/eve's past year of commit activity" [ref=f6e374] [cursor=pointer]:
+                          - /url: /vercel/eve/graphs/commit-activity
+                      - generic [ref=f6e379]:
+                        - generic [ref=f6e380]: TypeScript
+                        - link "4629 stars" [ref=f6e382] [cursor=pointer]:
+                          - /url: /vercel/eve/stargazers
+                          - text: 4,629
+                        - generic [ref=f6e385]: Apache-2.0
+                        - link "446 forks" [ref=f6e388] [cursor=pointer]:
+                          - /url: /vercel/eve/forks
+                          - text: "446"
+                        - link "228 issues" [ref=f6e391] [cursor=pointer]:
+                          - /url: /vercel/eve/issues
+                          - text: "228"
+                        - link "342 pull requests" [ref=f6e395] [cursor=pointer]:
+                          - /url: /vercel/eve/pulls
+                          - text: "342"
+                        - generic [ref=f6e398]: Updated Aug 14, 20265 minutes ago
+                  - listitem [ref=f6e399]:
+                    - generic [ref=f6e400]:
+                      - generic [ref=f6e401]:
+                        - generic [ref=f6e402]:
+                          - link "vercel-py" [ref=f6e403] [cursor=pointer]:
+                            - /url: /vercel/vercel-py
+                          - 'generic "Label: Public" [ref=f6e404]': Public
+                          - paragraph [ref=f6e405]: Develop. Preview. Ship. Python.
+                        - generic:
+                          - generic:
+                            - link "vercel/vercel-py's past year of commit activity":
+                              - /url: /vercel/vercel-py/graphs/commit-activity
+                      - generic [ref=f6e406]:
+                        - generic [ref=f6e407]: Python
+                        - link "23 stars" [ref=f6e409] [cursor=pointer]:
+                          - /url: /vercel/vercel-py/stargazers
+                          - text: "23"
+                        - generic [ref=f6e412]: MIT
+                        - link "8 forks" [ref=f6e415] [cursor=pointer]:
+                          - /url: /vercel/vercel-py/forks
+                          - text: "8"
+                        - link "7 issues" [ref=f6e418] [cursor=pointer]:
+                          - /url: /vercel/vercel-py/issues
+                          - text: "7"
+                        - link "17 pull requests" [ref=f6e422] [cursor=pointer]:
+                          - /url: /vercel/vercel-py/pulls
+                          - text: "17"
+                        - generic [ref=f6e425]: Updated Aug 15, 20265 minutes ago
+                  - listitem [ref=f6e426]:
+                    - generic [ref=f6e427]:
+                      - generic [ref=f6e428]:
+                        - generic [ref=f6e429]:
+                          - link "workflow" [ref=f6e430] [cursor=pointer]:
+                            - /url: /vercel/workflow
+                          - 'generic "Label: Public" [ref=f6e431]': Public
+                          - paragraph [ref=f6e432]: "Workflow SDK: Build durable, reliable, and observable apps and AI Agents in TypeScript"
+                        - link "vercel/workflow's past year of commit activity" [ref=f6e435] [cursor=pointer]:
+                          - /url: /vercel/workflow/graphs/commit-activity
+                      - generic [ref=f6e440]:
+                        - generic [ref=f6e441]: TypeScript
+                        - link "2316 stars" [ref=f6e443] [cursor=pointer]:
+                          - /url: /vercel/workflow/stargazers
+                          - text: 2,316
+                        - generic [ref=f6e446]: Apache-2.0
+                        - link "329 forks" [ref=f6e449] [cursor=pointer]:
+                          - /url: /vercel/workflow/forks
+                          - text: "329"
+                        - link "92 issues" [ref=f6e452] [cursor=pointer]:
+                          - /url: /vercel/workflow/issues
+                          - text: "92"
+                        - link "236 pull requests" [ref=f6e456] [cursor=pointer]:
+                          - /url: /vercel/workflow/pulls
+                          - text: "236"
+                        - generic [ref=f6e459]: Updated Aug 14, 202620 minutes ago
+                  - listitem [ref=f6e460]:
+                    - generic [ref=f6e461]:
+                      - generic [ref=f6e462]:
+                        - generic [ref=f6e463]:
+                          - link "vercel" [ref=f6e464] [cursor=pointer]:
+                            - /url: /vercel/vercel
+                          - 'generic "Label: Public" [ref=f6e465]': Public
+                          - paragraph [ref=f6e466]: Develop. Preview. Ship.
+                        - generic:
+                          - generic:
+                            - link "vercel/vercel's past year of commit activity":
+                              - /url: /vercel/vercel/graphs/commit-activity
+                      - generic [ref=f6e467]:
+                        - generic [ref=f6e468]: TypeScript
+                        - link "16081 stars" [ref=f6e470] [cursor=pointer]:
+                          - /url: /vercel/vercel/stargazers
+                          - text: 16,081
+                        - generic [ref=f6e473]: Apache-2.0
+                        - link "3741 forks" [ref=f6e476] [cursor=pointer]:
+                          - /url: /vercel/vercel/forks
+                          - text: 3,741
+                        - link "335 issues" [ref=f6e479] [cursor=pointer]:
+                          - /url: /vercel/vercel/issues
+                          - text: "335"
+                        - link "480 pull requests" [ref=f6e483] [cursor=pointer]:
+                          - /url: /vercel/vercel/pulls
+                          - text: "480"
+                        - generic [ref=f6e486]: Updated Aug 15, 202620 minutes ago
+                  - listitem [ref=f6e487]:
+                    - generic [ref=f6e488]:
+                      - generic [ref=f6e489]:
+                        - generic [ref=f6e490]:
+                          - link "chat" [ref=f6e491] [cursor=pointer]:
+                            - /url: /vercel/chat
+                          - 'generic "Label: Public" [ref=f6e492]': Public
+                          - paragraph [ref=f6e493]: A unified TypeScript SDK for building chat bots across Slack, Microsoft Teams, Google Chat, Discord, and more.
+                        - generic:
+                          - generic:
+                            - link "vercel/chat's past year of commit activity":
+                              - /url: /vercel/chat/graphs/commit-activity
+                      - generic [ref=f6e494]:
+                        - generic [ref=f6e495]: TypeScript
+                        - link "2287 stars" [ref=f6e497] [cursor=pointer]:
+                          - /url: /vercel/chat/stargazers
+                          - text: 2,287
+                        - generic [ref=f6e500]: MIT
+                        - link "281 forks" [ref=f6e503] [cursor=pointer]:
+                          - /url: /vercel/chat/forks
+                          - text: "281"
+                        - link "22 issues" [ref=f6e506] [cursor=pointer]:
+                          - /url: /vercel/chat/issues
+                          - text: "22"
+                        - link "15 pull requests" [ref=f6e510] [cursor=pointer]:
+                          - /url: /vercel/chat/pulls
+                          - text: "15"
+                        - generic [ref=f6e513]: Updated Aug 15, 202621 minutes ago
+                  - listitem [ref=f6e514]:
+                    - generic [ref=f6e515]:
+                      - generic [ref=f6e516]:
+                        - generic [ref=f6e517]:
+                          - link "shop" [ref=f6e518] [cursor=pointer]:
+                            - /url: /vercel/shop
+                          - 'generic "Label: Public" [ref=f6e519]': Public
+                          - paragraph [ref=f6e520]: vercel/shop
+                        - generic:
+                          - generic:
+                            - link "vercel/shop's past year of commit activity":
+                              - /url: /vercel/shop/graphs/commit-activity
+                      - generic [ref=f6e521]:
+                        - generic [ref=f6e522]: TypeScript
+                        - link "48 stars" [ref=f6e524] [cursor=pointer]:
+                          - /url: /vercel/shop/stargazers
+                          - text: "48"
+                        - generic [ref=f6e527]: MIT
+                        - link "13 forks" [ref=f6e530] [cursor=pointer]:
+                          - /url: /vercel/shop/forks
+                          - text: "13"
+                        - link "0 issues" [ref=f6e533] [cursor=pointer]:
+                          - /url: /vercel/shop/issues
+                          - text: "0"
+                        - link "5 pull requests" [ref=f6e537] [cursor=pointer]:
+                          - /url: /vercel/shop/pulls
+                          - text: "5"
+                        - generic [ref=f6e540]: Updated Aug 14, 202637 minutes ago
+                  - listitem [ref=f6e541]:
+                    - generic [ref=f6e542]:
+                      - generic [ref=f6e543]:
+                        - generic [ref=f6e544]:
+                          - link "sandbox" [ref=f6e545] [cursor=pointer]:
+                            - /url: /vercel/sandbox
+                          - 'generic "Label: Public" [ref=f6e546]': Public
+                          - paragraph [ref=f6e547]: Vercel Sandbox is an ephemeral compute primitive designed to safely run untrusted or user-generated code.
+                        - link "vercel/sandbox's past year of commit activity" [ref=f6e550] [cursor=pointer]:
+                          - /url: /vercel/sandbox/graphs/commit-activity
+                      - generic [ref=f6e555]:
+                        - generic [ref=f6e556]: TypeScript
+                        - link "179 stars" [ref=f6e558] [cursor=pointer]:
+                          - /url: /vercel/sandbox/stargazers
+                          - text: "179"
+                        - generic [ref=f6e561]: Apache-2.0
+                        - link "34 forks" [ref=f6e564] [cursor=pointer]:
+                          - /url: /vercel/sandbox/forks
+                          - text: "34"
+                        - link "3 issues" [ref=f6e567] [cursor=pointer]:
+                          - /url: /vercel/sandbox/issues
+                          - text: "3"
+                        - link "22 pull requests" [ref=f6e571] [cursor=pointer]:
+                          - /url: /vercel/sandbox/pulls
+                          - text: "22"
+                        - generic [ref=f6e574]: Updated Aug 14, 202638 minutes ago
+                  - listitem [ref=f6e575]:
+                    - generic [ref=f6e576]:
+                      - generic [ref=f6e577]:
+                        - generic [ref=f6e578]:
+                          - link "nomad" [ref=f6e579] [cursor=pointer]:
+                            - /url: /vercel/nomad
+                          - 'generic "Label: Public" [ref=f6e580]': Public
+                          - generic [ref=f6e581]:
+                            - text: Forked from
+                            - link "hashicorp/nomad" [ref=f6e582] [cursor=pointer]:
+                              - /url: /hashicorp/nomad
+                          - paragraph [ref=f6e583]: Nomad is an easy-to-use, flexible, and performant workload orchestrator that can deploy a mix of microservice, batch, containerized, and non-containerized applications. Nomad is easy to operate and scale and has native Consul and Vault integrations.
+                        - link "vercel/nomad's past year of commit activity" [ref=f6e586] [cursor=pointer]:
+                          - /url: /vercel/nomad/graphs/commit-activity
+                      - generic [ref=f6e591]:
+                        - generic [ref=f6e592]: Go
+                        - link "2 stars" [ref=f6e594] [cursor=pointer]:
+                          - /url: /vercel/nomad/stargazers
+                          - text: "2"
+                        - link "2238 forks" [ref=f6e597] [cursor=pointer]:
+                          - /url: /vercel/nomad/forks
+                          - text: 2,238
+                        - link "0 issues" [ref=f6e600] [cursor=pointer]:
+                          - /url: /vercel/nomad/issues
+                          - text: "0"
+                        - link "0 pull requests" [ref=f6e604] [cursor=pointer]:
+                          - /url: /vercel/nomad/pulls
+                          - text: "0"
+                        - generic [ref=f6e607]: Updated Aug 14, 202644 minutes ago
+                - link "View all repositories" [ref=f6e609] [cursor=pointer]:
+                  - /url: /orgs/vercel/repositories?type=all
+        - generic [ref=f6e611]:
+          - generic [ref=f6e614]:
+            - link [ref=f6e615] [cursor=pointer]:
+              - /url: /orgs/vercel/people
+              - heading "People" [level=4] [ref=f6e616]
+            - generic [ref=f6e617]:
+              - link [ref=f6e618] [cursor=pointer]:
+                - /url: /rauchg
+                - img "@rauchg" [ref=f6e619]
+              - link [ref=f6e620] [cursor=pointer]:
+                - /url: /tomocchino
+                - img "@tomocchino" [ref=f6e621]
+              - link [ref=f6e622] [cursor=pointer]:
+                - /url: /TooTallNate
+                - img "@TooTallNate" [ref=f6e623]
+              - link [ref=f6e624] [cursor=pointer]:
+                - /url: /vvo
+                - img "@vvo" [ref=f6e625]
+              - link [ref=f6e626] [cursor=pointer]:
+                - /url: /bgw
+                - img "@bgw" [ref=f6e627]
+              - link [ref=f6e628] [cursor=pointer]:
+                - /url: /feugy
+                - img "@feugy" [ref=f6e629]
+              - link [ref=f6e630] [cursor=pointer]:
+                - /url: /sebastianroming
+                - img "@sebastianroming" [ref=f6e631]
+              - link [ref=f6e632] [cursor=pointer]:
+                - /url: /styfle
+                - img "@styfle" [ref=f6e633]
+              - link [ref=f6e634] [cursor=pointer]:
+                - /url: /1st1
+                - img "@1st1" [ref=f6e635]
+              - link [ref=f6e636] [cursor=pointer]:
+                - /url: /qiao
+                - img "@qiao" [ref=f6e637]
+              - link [ref=f6e638] [cursor=pointer]:
+                - /url: /posva
+                - img "@posva" [ref=f6e639]
+              - link [ref=f6e640] [cursor=pointer]:
+                - /url: /plmrry
+                - img "@plmrry" [ref=f6e641]
+              - link [ref=f6e642] [cursor=pointer]:
+                - /url: /dvoytenko
+                - img "@dvoytenko" [ref=f6e643]
+              - link [ref=f6e644] [cursor=pointer]:
+                - /url: /benjamincanac
+                - img "@benjamincanac" [ref=f6e645]
+              - link [ref=f6e646] [cursor=pointer]:
+                - /url: /wbinnssmith
+                - img "@wbinnssmith" [ref=f6e647]
+              - link [ref=f6e648] [cursor=pointer]:
+                - /url: /atinux
+                - img "@atinux" [ref=f6e649]
+              - link [ref=f6e650] [cursor=pointer]:
+                - /url: /swarnava
+                - img "@swarnava" [ref=f6e651]
+              - link [ref=f6e652] [cursor=pointer]:
+                - /url: /sokra
+                - img "@sokra" [ref=f6e653]
+              - link [ref=f6e654] [cursor=pointer]:
+                - /url: /tajo
+                - img "@tajo" [ref=f6e655]
+              - link [ref=f6e656] [cursor=pointer]:
+                - /url: /timolins
+                - img "@timolins" [ref=f6e657]
+            - link "View all" [ref=f6e659] [cursor=pointer]:
+              - /url: /orgs/vercel/people
+          - generic [ref=f6e661]:
+            - heading "Sponsoring" [level=4] [ref=f6e662]
+            - list "Sponsoring" [ref=f6e664]:
+              - listitem [ref=f6e665]:
+                - link [ref=f6e667] [cursor=pointer]:
+                  - /url: /pilcrowonpaper
+                  - img "@pilcrowonpaper" [ref=f6e668]
+              - listitem [ref=f6e669]:
+                - link [ref=f6e671] [cursor=pointer]:
+                  - /url: /dai-shi
+                  - img "@dai-shi" [ref=f6e672]
+              - listitem [ref=f6e673]:
+                - link [ref=f6e675] [cursor=pointer]:
+                  - /url: /rafaelalmeidatk
+                  - img "@rafaelalmeidatk" [ref=f6e676]
+              - listitem [ref=f6e677]:
+                - link [ref=f6e679] [cursor=pointer]:
+                  - /url: /yyx990803
+                  - img "@yyx990803" [ref=f6e680]
+          - generic [ref=f6e683]:
+            - heading "Top languages" [level=4] [ref=f6e684]
+            - paragraph [ref=f6e685]: Loading…
+          - generic [ref=f6e688]:
+            - heading "Most used topics" [level=4] [ref=f6e689]
+            - paragraph [ref=f6e690]: Loading…
+          - link "GitHub Sponsor" [ref=f6e692] [cursor=pointer]:
+            - /url: /sponsors
+          - link "Report abuse" [ref=f6e696] [cursor=pointer]:
+            - /url: /contact/report-abuse?report=vercel
+  - contentinfo [ref=f6e697]:
+    - heading "Footer" [level=2] [ref=f6e698]
+    - generic [ref=f6e699]:
+      - generic [ref=f6e700]:
+        - link "GitHub Homepage" [ref=f6e701] [cursor=pointer]:
+          - /url: https://github.com
+        - generic [ref=f6e704]: © 2026 GitHub, Inc.
+      - navigation "Footer" [ref=f6e705]:
+        - heading "Footer navigation" [level=3] [ref=f6e706]
+        - list "Footer navigation" [ref=f6e707]:
+          - listitem [ref=f6e708]:
+            - link "Terms" [ref=f6e709] [cursor=pointer]:
+              - /url: https://docs.github.com/site-policy/github-terms/github-terms-of-service
+          - listitem [ref=f6e710]:
+            - link "Privacy" [ref=f6e711] [cursor=pointer]:
+              - /url: https://docs.github.com/site-policy/privacy-policies/github-privacy-statement
+          - listitem [ref=f6e712]:
+            - link "Security" [ref=f6e713] [cursor=pointer]:
+              - /url: https://github.com/security
+          - listitem [ref=f6e714]:
+            - link "Status" [ref=f6e715] [cursor=pointer]:
+              - /url: https://www.githubstatus.com/
+          - listitem [ref=f6e716]:
+            - link "Community" [ref=f6e717] [cursor=pointer]:
+              - /url: https://github.community/
+          - listitem [ref=f6e718]:
+            - link "Docs" [ref=f6e719] [cursor=pointer]:
+              - /url: https://docs.github.com/
+          - listitem [ref=f6e720]:
+            - link "Contact" [ref=f6e721] [cursor=pointer]:
+              - /url: https://support.github.com?tags=dotcom-footer
+          - listitem [ref=f6e722]:
+            - button "Manage cookies" [ref=f6e724] [cursor=pointer]
+          - listitem [ref=f6e725]:
+            - button "Do not share my personal information" [ref=f6e727] [cursor=pointer]

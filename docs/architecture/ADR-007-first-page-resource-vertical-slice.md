@@ -39,7 +39,7 @@ Page has a title and an exact plain-text content shape:
 { "body": "..." }
 ```
 
-The existing `resources` row remains the persistence boundary while Page is the only accepted Resource kind. JSON is constrained to exactly one string `body` field. This is reversible and does not approve a generic Resource JSON runtime.
+At the time of this decision, the existing `resources` row remained the persistence boundary while Page was the only accepted Resource kind. JSON is constrained to exactly one string `body` field. This remains the Page persistence decision; later Product admission of Issue and Discussion does not authorize storing either through this generic Resource JSON shape.
 
 Create/update authorization is an explicit Application decision using provider-neutral authority-source facts and Domain Capability policy. RLS independently enforces the database boundary. Updates use the previous server-managed `updated_at` timestamp as optimistic concurrency evidence. Only a meaningful title/content change advances that evidence and emits an actor-attributed immutable fact; a no-op update advances neither. Meaningful state change and its fact commit in the same PostgreSQL transaction.
 

@@ -2,7 +2,7 @@
 
 - Status: Candidate
 - Contract owner: Product and Domain
-- Last reviewed: 2026-08-14
+- Last reviewed: 2026-08-15
 
 ## Problem owned and success condition
 
@@ -20,6 +20,7 @@ This contract succeeds when User-owned and Organization-owned Repositories conta
 - Repository-scoped authorization and historical evidence use stable Repository identity.
 - Canonical Web routing now uses an Owner namespace plus Repository slug.
 - Page is the first accepted concrete Repository-contained Resource kind.
+- Sanitized `.playwright-mcp/` benchmark evidence proves that Issue and Discussion each retain stable Repository-scoped identity across navigation, refresh, and responsive presentation, while Project-style planning remains a cross-scope Projection.
 
 ### Hard constraints
 
@@ -47,7 +48,7 @@ Any executable projection that still assumes Organization-only ownership is an i
 - User and Organization are sufficient Owner kinds for the current product horizon.
 - A Resource belongs to exactly one Repository at a time.
 - `private | public` is sufficient visibility vocabulary while ordinary Organization Membership contributes no Repository read baseline.
-- The current Resource envelope remains sufficient for Page until another real Resource kind or Page-specific storage invariant proves otherwise.
+- The current Resource envelope remains sufficient for the executable Page slice. Accepted Issue and Discussion semantics require their own subtype contracts before persistence; they do not justify turning the Page envelope into a generic JSON runtime.
 
 ### Unknowns
 
@@ -96,7 +97,7 @@ Scope        = Repository Owner relationship plus applicable Organization/future
 Principal    = authority-receiving subject resolved by Access Authority
 Container    = Repository
 Relationship = Repository ownership, Membership, Resource containment, Repository Grants
-Artifact     = Resource/Page and future independently proven Repository-scoped work types
+Artifact     = Resource/Page/Issue/Discussion and future independently proven Repository-scoped work types
 Process      = Repository, Resource, ownership, and authority state transitions
 ```
 
@@ -116,6 +117,9 @@ Semantic roles are not persistence supertypes.
 | Visibility | Discovery/read baseline; current target states are `private` and `public` |
 | Resource | Persistent Repository-scoped unit of collaborative work |
 | Page | First accepted concrete Resource kind |
+| Issue | Accepted actionable Repository Resource with stable issue identity; implementation contract remains Open |
+| Discussion | Accepted conversational Repository Resource with stable discussion identity; implementation contract remains Open |
+| Project-style planning | Derived planning/attachment Projection; not a Repository-owned Resource or Container |
 | Workspace | Presentation of one Repository; not a separate Entity or Container |
 
 ## Repository ownership
@@ -231,16 +235,23 @@ Canonical Repository namespace:
 
 ```text
 /{ownerSlug}/{repositorySlug}
+/{owner}/{repository}/issues
+/{owner}/{repository}/issues/{issueNumber}
+/{owner}/{repository}/projects
+/{owner}/{repository}/discussions
+/{owner}/{repository}/discussions/{discussionNumber}
 /{owner}/{repository}/pages
 /{owner}/{repository}/pages/{pageId}
 /{owner}/{repository}/activity
+/{owner}/{repository}/security
+/{owner}/{repository}/settings
 ```
 
 `/app` is an authenticated dashboard and discovery surface. A Repository card must navigate to the canonical Owner/Repository URL.
 
 A stable-ID compatibility route may resolve access and redirect to canonical URL. It must not host a second Repository UI/business-flow tree.
 
-The canonical Repository screen presents one Owner/Repository header, primary navigation, and one active content surface. Context and Activity do not require permanent side regions.
+The canonical Repository screen presents one Owner/Repository header, horizontal primary navigation, and one active child surface. Route-specific navigation, metadata, activity, or modal regions may compose independently only when their data/loading/recovery/responsive behavior is proven; they never become permanent Containers or URL identity. Project detail is owner-scoped rather than Repository-owned, and Wiki knowledge maps to Page canonical identity.
 
 ## Historical evidence
 

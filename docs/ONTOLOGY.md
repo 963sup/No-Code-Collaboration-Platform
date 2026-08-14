@@ -357,12 +357,14 @@ A future Organization-wide visibility/base-access mode requires an explicit effe
 
 ## 14. Resource and Page — accepted work Artifact
 
-Status: **Resource canonical; Page is first accepted concrete kind.**
+Status: **Resource canonical; Page, Issue, and Discussion are accepted concrete kinds.**
 
 ```text
 Repository
 └─ Resource
-   └─ Page
+   ├─ Page
+   ├─ Issue
+   └─ Discussion
 ```
 
 A Resource has one stable Repository boundary. It cannot independently redefine ownership, authority, or history semantics.
@@ -379,53 +381,49 @@ same-transaction historical evidence
 user-visible projection
 ```
 
-No additional Resource family is accepted from benchmark vocabulary alone.
+Issue and Discussion are admitted because their no-code problems, stable identities, and lifecycles are distinct from Page; their executable Domain/persistence contracts remain Open work. No additional Resource family is accepted from benchmark vocabulary alone.
 
-## 15. Issue-style work item — candidate Artifact
+## 15. Issue — accepted actionable Artifact
 
-Status: **Deferred candidate.**
+Status: **Accepted Product/Ontology semantic; executable Domain and persistence deferred.**
 
 Durable benchmark problem:
 
 > track a Repository-scoped item that should be acted on, assigned, discussed, and completed.
 
-If accepted:
-
 ```text
-Issue-style work item
+Issue
 = Repository-scoped actionable Artifact
+stable identity = Repository ID + issue number
 ```
 
-Its product name, states, assignment model, and lifecycle remain unaccepted until a real no-code use case proves them.
+Issue exists to track work that can be assigned, classified, discussed, and completed. Status, Assignee, Label, Milestone, Comment, Mention, and Reaction semantics are admitted only as Issue-contained state/relationships/events; their exact persistence and transition rules require the Issue Domain contract.
 
 It is never a collaboration Container.
 
-## 16. Discussion-style conversation — candidate Artifact
+## 16. Discussion — accepted conversation Artifact
 
-Status: **Deferred candidate.**
+Status: **Accepted Product/Ontology semantic; executable Domain and persistence deferred.**
 
 Durable benchmark problem:
 
 > create a Repository-scoped conversation whose primary goal is shared understanding rather than committed execution.
 
-If accepted:
-
 ```text
-Discussion-style conversation
+Discussion
 = Repository-scoped conversation/shared-understanding Artifact
+stable identity = Repository ID + discussion number
 ```
 
-It is distinct from an actionable work item and remains contained by Repository.
+It is distinct from actionable Issue work and remains contained by Repository. Category classifies the conversation; Answer selects a response without turning it into a separate Artifact owner; Comment, Mention, and Reaction remain contained relationships/events. Exact lifecycle and authorization require the Discussion Domain contract.
 
 ## 17. Project-style planning view — Projection
 
-Status: **Deferred/derived.**
+Status: **Accepted derived Projection; persistence as an independent ownership boundary is rejected.**
 
 Durable benchmark problem:
 
 > group, filter, prioritize, and plan already-existing work across one or more Repository sources.
-
-If accepted:
 
 ```text
 Project-style planning view
@@ -563,7 +561,7 @@ Concrete rules:
 - Keep User Grant persistence typed while User is the only accepted persisted Principal.
 - Add Team only when a real second group authority source is required.
 - Add Enterprise only when a real cross-Organization governance constraint is required.
-- Add Issue-style or Discussion-style entities only after a real use case proves identity, lifecycle, invariants, and Repository reuse.
+- Add Issue or Discussion persistence only after its Domain contract defines lifecycle, invariants, authorization, evidence, and Repository reuse; Product identity is already accepted.
 - Keep Project-style planning as a Projection unless independent lifecycle proves otherwise.
 - Add App/Installation only when a real machine authority use case exists.
 - Do not infer generic automation, policy, or plugin engines from benchmark feature catalogs.
@@ -587,7 +585,7 @@ Minimum discriminating tests:
 7. Changing UI Context does not change authorization for identical Actor/Repository/persisted relationships.
 8. Direct User Grant independently contributes its Role/Capabilities.
 9. Page create/update produces the expected state and historical Evidence in one accepted transaction boundary.
-10. A second real Resource kind, when introduced, must reuse Repository containment/authorization while keeping subtype rules isolated.
+10. Issue and Discussion reuse Repository containment/authorization while keeping subtype lifecycle rules isolated; any later Resource kind must pass the same test.
 11. Future Team must add a second Principal authority source without changing Actor/Context semantics.
 12. Future Enterprise constraint must limit Organization behavior without owning Repository or granting Repository content access.
 13. Feed/Notification/Audit/Planning projections may change without rewriting Artifact, authority, ownership, or source Evidence truth.

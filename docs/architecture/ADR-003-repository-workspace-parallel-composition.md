@@ -42,12 +42,17 @@ Current canonical route identity is owned by ADR-010; current route-specific sup
 
 ```text
 /{ownerSlug}/{repositorySlug}
+/{ownerSlug}/{repositorySlug}/issues[/{issueNumber}]
+/{ownerSlug}/{repositorySlug}/projects
+/{ownerSlug}/{repositorySlug}/discussions[/{discussionNumber}]
 /{ownerSlug}/{repositorySlug}/pages
 /{ownerSlug}/{repositorySlug}/pages/{pageId}
 /{ownerSlug}/{repositorySlug}/activity
+/{ownerSlug}/{repositorySlug}/security
+/{ownerSlug}/{repositorySlug}/settings
 ```
 
-Current Next.js projection:
+Current executable Next.js projection (target-only routes above remain gaps):
 
 ```text
 apps/web/src/app/(repository)/[ownerSlug]/[repositorySlug]/

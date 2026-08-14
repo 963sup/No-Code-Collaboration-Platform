@@ -24,7 +24,7 @@ Legacy UUID URLs remain temporary compatibility aliases. They must establish Rep
 ## Evidence
 
 - Repository Collaboration already defines Repository ID as stable relationship/authorization identity and Repository slug as the human-readable name unique inside one owning Organization.
-- The first Page vertical slice is merged and proves that Page is the only accepted Resource kind today.
+- At adoption, the first Page vertical slice proved the only executable Resource kind. ADR-011 and the current Product/Ontology contract later admitted Issue and Discussion Product identity; their executable routes remain registered gaps.
 - Existing `/app/repositories/{uuid}/resources/{pageId}` routes expose persistence and ontology vocabulary rather than the product namespace people navigate.
 - Direct Repository grants can make a User a collaborator without Organization membership, so route resolution cannot require broad Organization row access first.
 - GitHub is benchmark evidence for a durable owner/repository namespace mechanism, not a requirement to copy its source-code semantics or root URL shape.
@@ -53,7 +53,7 @@ This leaks the shared Domain envelope into user navigation. Concrete Resource ki
 
 ### Move immediately to `/{organization}/{repository}`
 
-This copies the mature public GitHub URL shape before anonymous/public Repository delivery has been accepted and verified in this product.
+At the time of this decision, this would have copied the mature public GitHub URL shape before anonymous/public Repository delivery had been accepted and verified in this product. Later sanitized public and read-only authenticated benchmark evidence is governed by ADR-011 and does not retroactively change this historical rationale.
 
 ## Consequences
 

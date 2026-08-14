@@ -2,7 +2,7 @@
 
 - Status: Active current-gap register
 - Register owner: Project maintainer until an explicit governance owner is assigned
-- Last reviewed: 2026-08-14
+- Last reviewed: 2026-08-15
 
 ## Purpose
 
@@ -30,6 +30,46 @@ A gap is not permission to redefine the target model, postpone an invariant sile
 - **Superseded**: another gap/contract replaces the framing; detail belongs in history.
 
 ## Open gaps
+
+### GAP-COLLABORATION-SURFACES-001 — Accepted GitHub-derived non-Code collaboration surfaces are not yet executable
+
+- Status: Open
+- Affected contracts: [`PRODUCT.md`](./PRODUCT.md), [`ONTOLOGY.md`](./ONTOLOGY.md), [`domains/repository-collaboration.md`](./domains/repository-collaboration.md), [`architecture/README.md`](./architecture/README.md), [ADR-011](./architecture/ADR-011-github-surface-parallel-composition.md)
+- Affected invariants: Repository remains the only collaboration Container; Issue/Discussion stable identity is Repository-scoped; Project is a Projection; Wiki maps to Page; modal/full-page presentation preserves one canonical URL and authorization result
+- Risk class: target/executable mismatch and misleading feature-readiness claims
+
+#### Direct evidence
+
+- [`.playwright-mcp/github-urls.json`](../.playwright-mcp/github-urls.json) indexes 55 URL-resource inventories, 11 component inventories, and 294 screenshots across Desktop, Laptop, Tablet, and Mobile.
+- [`.playwright-mcp/github-ui-ux.md`](../.playwright-mcp/github-ui-ux.md) records canonical redirects, Dashboard/account context switching, Repository navigation, Issues, Projects attachment behavior, Discussions availability, Wiki/Page behavior, Activity, Security posture, Settings, Notifications, and governance surfaces.
+- The accepted target URL set now includes Repository Issues, Projects attachment list, Discussions, Pages, Activity, Security posture, and Settings.
+- The executable App Router currently exposes Repository Overview, Pages/Page detail, and Activity only. There are no accepted Issue or Discussion Domain/Application/persistence contracts, no corresponding Web routes, and no verified target Project/Security/Settings slices.
+
+#### Predicted failure
+
+Without containment, documentation or UI work could present target-only surfaces as available, invent Issue/Discussion state in React components, create Repository-owned Project detail identity, duplicate Page through `/wiki`, or add Parallel slots without independent loading/recovery value.
+
+#### Temporary containment
+
+- Product admission is explicitly separated from implementation status in Product, Architecture, and Web instruction contracts.
+- Unsupported routes are not claimed available and must fail closed rather than use placeholder Domain logic.
+- Issue and Discussion implementation is blocked until each has an accepted Domain identity, lifecycle, authorization, and evidence contract.
+- Project remains a read/planning Projection; Repository `/projects` cannot establish Project ownership or independent authority.
+- Code, Commit, Branch, Diff, Pull Request, Actions, Gist, and Git-backed Wiki semantics remain excluded even when visible in benchmark screenshots.
+
+#### Closure evidence
+
+Close only after the same exact change set proves:
+
+1. Issue and Discussion Domain contracts define stable Repository-scoped identity, lifecycle, authorization, comments/relationships, and historical evidence without Code-domain dependencies.
+2. Application use cases and provider adapters preserve Repository authorization and do not place Domain decisions in React components.
+3. The App Router implements accepted target routes with Server Components by default and only minimal interaction islands.
+4. Every `@sidebar`, `@activity`, and `@modal` slot has `default.tsx`, explicit unmatched soft-navigation behavior, and a removal test proving independent responsibility.
+5. Issue and Discussion modal/full-page modes share canonical URL and authorization; refresh, Back, and Forward behave identically for stable resource identity.
+6. Projects stays an attachment/list Projection and owner-scoped Project detail does not appear under a Repository-owned detail path.
+7. Wiki/Page knowledge has one canonical target identity and no Git-backed history semantics.
+8. Next DevTools reports no build, type, runtime, hydration, browser-log, or server-log errors for each implemented slice.
+9. Playwright compares GitHub and local behavior at `1440x900`, `1280x800`, `768x1024`, and `390x844`, then updates the sanitized inventory without credentials or private request material.
 
 ### GAP-OWNERSHIP-001 — Repository ownership correction is implemented across current contracts, but creation and exact-head verification evidence remain incomplete
 

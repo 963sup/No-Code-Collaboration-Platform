@@ -9,10 +9,10 @@ This directory owns URL identity, rendering, route composition, and delivery-spe
 - The canonical Repository workspace URL is `/{ownerSlug}/{repositorySlug}`. The owner segment resolves a User or Organization owner namespace; it never implies Organization ownership.
 - `/app` is an authenticated Repository discovery/dashboard surface, not part of Repository identity.
 - Canonical Repository routes must not inherit an authenticated-only layout because `public` Repository visibility is an accepted anonymous read baseline. Repository read access is decided from Repository visibility/authority, not from Route Group membership.
-- For GitHub-derived surfaces that pass Product admission, public GitHub URL hierarchy, information architecture, navigation, responsive composition, and interaction behavior are the constitutional presentation baseline. Deviations require an explicit target Product reason and a discriminating test.
+- For GitHub-derived surfaces that pass Product admission, sanitized public and read-only authenticated GitHub URL hierarchy, information architecture, navigation, responsive composition, and interaction evidence is the constitutional presentation baseline. Deviations require an explicit target Product reason and a discriminating test.
 - The canonical Repository shell has one owner/Repository header, horizontal primary navigation, and one active child resource surface. Route-specific supporting regions may use `@sidebar`, `@activity`, or `@modal` only when they have independent data/navigation/loading or canonical soft-navigation behavior. They never become Product regions, authority inputs, or URL segments.
 - Every Parallel Route slot must define `default.tsx` and explicit unmatched soft-navigation behavior. Intercepting Routes preserve the same canonical URL as their full-page resource; closing a route modal uses history navigation.
-- Current accepted Repository child surfaces are `/pages`, `/pages/[pageId]`, and `/activity`. Future GitHub-inspired surfaces enter the same namespace only after Product/Domain acceptance.
+- Accepted target Repository child surfaces are `/issues`, `/issues/[issueNumber]`, `/projects` (attachment/list Projection), `/discussions`, `/discussions/[discussionNumber]`, `/pages`, `/pages/[pageId]`, `/activity`, `/security`, and `/settings`. Only Pages and Activity are currently executable. Issue and Discussion Product identity is accepted, but their routes still require Domain/Application contracts; target acceptance is not implementation status.
 - `Context` is a presentation concept; it does not require a permanent screen region and must never become authorization input.
 - `Activity` is a Repository-scoped projection. A summary may support Repository Overview only when it has independent loading/failure behavior and a privacy-safe projection; the full Activity route remains canonical.
 - The only accepted Repository compatibility namespace is `/app/repositories/[repositoryId]/**`. It must be access-aware and redirect-only; it must not own a second Repository business-flow/UI implementation.
@@ -41,7 +41,7 @@ The canonical layout renders:
 ```text
 Owner / Repository      Visibility
 ----------------------------------
-Overview   Pages   Activity
+Overview   Issues   Projects   Discussions   Pages   Activity   Security   Settings
 ----------------------------------
 active content
 ```

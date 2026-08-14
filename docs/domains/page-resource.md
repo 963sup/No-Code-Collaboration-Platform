@@ -34,7 +34,7 @@ This contract owns the first Page Resource behavior. It succeeds when an authent
 ### Assumptions
 
 - A title and plain-text body are sufficient to discriminate the first useful Page lifecycle.
-- One exact Page content shape in the existing Resource row is sufficient while Page is the only accepted Resource kind.
+- One exact Page content shape in the existing Resource row is sufficient while Page is the only implemented Resource kind. Product acceptance of Issue and Discussion does not authorize their persistence through the Page envelope.
 - The prior `updated_at` value is sufficient optimistic concurrency evidence for the current single-row transition when only meaningful state changes advance it.
 - Personal-owner governance, Organization owner/admin governance, and direct User authority are sufficient for this slice.
 

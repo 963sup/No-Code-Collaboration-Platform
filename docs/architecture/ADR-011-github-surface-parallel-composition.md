@@ -3,17 +3,17 @@
 - Status: Accepted
 - Date: 2026-08-14
 - Decision owner: Product and Web architecture
-- Affected scopes: Product benchmark rule, canonical Repository Web presentation, App Router composition, future Issue delivery slice
+- Affected scopes: Product benchmark rule, canonical Repository Web presentation, App Router composition, accepted-but-unimplemented Issue and Discussion delivery slices
 
 ## Decision
 
-For a GitHub-derived surface that passes the no-code semantic admission test, GitHub's public URL hierarchy, information architecture, navigation, responsive composition, and interaction behavior are the constitutional presentation baseline. A deviation requires an explicit target Product reason and a discriminating test. This authority never admits Code, Commit, Branch, Diff, Actions, Git-backed history, a second collaboration Container, or a weakened authorization boundary.
+For a GitHub-derived surface that passes the no-code semantic admission test, GitHub's observed public and read-only authenticated test-account URL hierarchy, information architecture, navigation, responsive composition, and interaction behavior are the constitutional presentation baseline. A deviation requires an explicit target Product reason and a discriminating test. This authority never admits Code, Commit, Branch, Diff, Actions, Git-backed history, a second collaboration Container, or a weakened authorization boundary.
 
-The Repository shell will support responsive, route-specific supporting regions through `@sidebar`, `@activity`, and `@modal` Parallel Route slots. Slots never appear in the URL and never own Domain or authorization semantics. The current executable Page routes remain valid while the future Issue route enters implementation only after its Domain lifecycle and authorization contract is accepted.
+The Repository shell will support responsive, route-specific supporting regions through `@sidebar`, `@activity`, and `@modal` Parallel Route slots. Slots never appear in the URL and never own Domain or authorization semantics. Page remains the current executable vertical slice. Issue and Discussion are accepted Product Resources, but their routes enter implementation only after their Domain lifecycle, authorization, and evidence contracts are accepted.
 
 ## Problem and success condition
 
-The current architecture over-corrected an earlier framework-driven multi-pane design by declaring every Repository page to have only one active content surface. Public GitHub evidence shows that this rule loses mature collaboration behavior: Issues uses an independent sticky navigation rail and Issue detail uses an independent metadata rail, while mobile collapses those regions without changing the resource URL.
+The current architecture over-corrected an earlier framework-driven multi-pane design by declaring every Repository page to have only one active content surface. GitHub evidence shows that this rule loses mature collaboration behavior: Issues uses an independent sticky navigation rail and Issue detail uses an independent metadata rail, while mobile collapses those regions without changing the resource URL.
 
 The decision succeeds when canonical URLs survive direct load, refresh, Back, Forward, and soft navigation; supporting regions reconstruct safely on hard navigation; mobile retains the same information without permanent rails; and no slot or selected UI state changes Repository authorization.
 
@@ -21,11 +21,12 @@ The decision succeeds when canonical URLs survive direct load, refresh, Back, Fo
 
 ### Observations
 
-- Public GitHub Issues renders a `256px` sticky navigation rail at observed `1440`, `1024`, and `768` widths and a single-column surface at `390`.
+- GitHub Issues renders a `256px` sticky navigation rail at retained `1440`, `1280`, and `768` widths and a single-column surface at `390`.
 - Public Issue detail uses one main timeline plus a separate metadata rail.
 - Issue search/filter state is encoded in the query string.
 - Repository Projects is an attachment list whose detail links resolve to owner-scoped project identity.
 - GitHub Issue list navigation rendered a full detail page, not a modal.
+- Authenticated test-account evidence covers Dashboard, Top repositories, account switching, global/user/create menus, Notifications, Organization Membership/Team navigation, Repository Settings, Organization audit, and responsive Repository navigation without retaining credentials or private request material.
 - Next.js 16 Parallel Routes render named slots through layout props; unmatched hard-navigation slots require `default.tsx` or produce a 404.
 - Next.js Intercepting Routes preserve a canonical full page on direct/hard navigation while allowing a soft-navigation modal; `@slot` folders do not count as route-segment levels.
 
@@ -40,19 +41,20 @@ The decision succeeds when canonical URLs survive direct load, refresh, Back, Fo
 
 ### Assumptions
 
-- Issue is the next independently useful Repository-contained Artifact after Page once its Domain contract is accepted.
+- Accepted Issue and Discussion Product identities can reuse the Repository authorization/evidence boundary without requiring a second primary Container.
 - A summarized Activity region can load and fail independently from Repository Overview without exposing raw private historical evidence.
 - The requested Issue modal improves list-context preservation enough to justify a deliberate deviation from observed GitHub Issue navigation.
 
 ### Unknowns
 
-- The accepted Issue state machine, assignment semantics, comment model, numbering allocation, and evidence contract.
+- The executable Issue state machine, assignment semantics, comment model, numbering allocation, and evidence contract.
+- The executable Discussion lifecycle, category/answer semantics, numbering allocation, moderation, and evidence contract.
 - Whether the Activity summary belongs on Overview after privacy/redaction requirements are tested.
 - Whether Discussion detail benefits from the same modal behavior after the Issue modal is validated.
 
 ### Value choices
 
-- Preserve public GitHub surface semantics after admission.
+- Preserve observed GitHub surface semantics after admission.
 - Prefer stable resource URLs over component-shaped paths.
 - Prefer independently recoverable supporting regions over one monolithic Client Component.
 - Keep deviations explicit and reversible.
@@ -63,8 +65,8 @@ The decision succeeds when canonical URLs survive direct load, refresh, Back, Fo
 Owner (User | Organization)
   └─ owns Repository                          # Container
        ├─ Page                                # accepted Artifact
-       ├─ Issue                               # next Artifact after Domain acceptance
-       ├─ Discussion                          # deferred candidate Artifact
+       ├─ Issue                               # accepted; execution awaits Domain contract
+       ├─ Discussion                          # accepted; execution awaits Domain contract
        ├─ supporting navigation/metadata      # Projection/UI
        └─ Activity summary                    # Evidence Projection
 
@@ -85,12 +87,13 @@ Canonical URL decisions:
 | Repository | `/{ownerSlug}/{repositorySlug}` | Stable collaboration Container identity |
 | Issues list | `/{ownerSlug}/{repositorySlug}/issues` | Repository Artifact collection |
 | Issue detail | `/{ownerSlug}/{repositorySlug}/issues/{issueNumber}` | Stable Repository-scoped Artifact |
-| Discussions list/detail | `/{ownerSlug}/{repositorySlug}/discussions[/{discussionNumber}]` | Deferred Repository Artifact collection/detail |
+| Discussions list/detail | `/{ownerSlug}/{repositorySlug}/discussions[/{discussionNumber}]` | Accepted Repository Artifact collection/detail; not yet executable |
 | Repository Projects | `/{ownerSlug}/{repositorySlug}/projects` | Attachment/list Projection only |
 | Organization Project detail | `/organizations/{organizationSlug}/projects/{projectNumber}` | Deferred owner-scoped planning Projection |
 | User Project detail | `/users/{username}/projects/{projectNumber}` | Deferred owner-scoped planning Projection |
 | Existing Page | `/{ownerSlug}/{repositorySlug}/pages/{pageId}` | Accepted Artifact; remains Wiki-admission baseline |
 | Repository Activity | `/{ownerSlug}/{repositorySlug}/activity` | Repository evidence Projection |
+| Repository Security | `/{ownerSlug}/{repositorySlug}/security` | Admitted governance/access-posture/security-evidence Projection only |
 | Repository Settings | `/{ownerSlug}/{repositorySlug}/settings` | Repository management surface |
 | Organization Team | `/organizations/{organizationSlug}/teams/{teamSlug}` | Deferred Organization-scoped Principal |
 | Organization Memberships | `/organizations/{organizationSlug}/members` | Membership collection Projection |
@@ -133,7 +136,12 @@ apps/web/src/app/
 │        ├─ issues/
 │        │  ├─ page.tsx
 │        │  └─ [issueNumber]/page.tsx
+│        ├─ projects/page.tsx
+│        ├─ discussions/
+│        │  ├─ page.tsx
+│        │  └─ [discussionNumber]/page.tsx
 │        ├─ activity/page.tsx
+│        ├─ security/page.tsx
 │        ├─ settings/page.tsx
 │        ├─ @sidebar/
 │        │  ├─ default.tsx
@@ -150,13 +158,14 @@ apps/web/src/app/
 │           ├─ default.tsx
 │           ├─ page.tsx              # explicit null at Repository Overview
 │           ├─ [...catchAll]/page.tsx
-│           └─ (.)issues/[issueNumber]/page.tsx
+│           ├─ (.)issues/[issueNumber]/page.tsx
+│           └─ (.)discussions/[discussionNumber]/page.tsx
 └─ (settings)/
    ├─ settings/page.tsx
    └─ organizations/[organizationSlug]/settings/page.tsx
 ```
 
-Deferred `projects`, `discussions`, and Wiki/knowledge presentation routes are not added to the executable tree merely to fill the structure.
+The tree above is the accepted target projection, not a claim that those routes exist. Issue, Discussion, Projects, Security, and Settings execution remains registered in `IMPLEMENTATION_GAPS.md`. Owner-scoped Project detail and a distinct Wiki route remain deferred; Page continues to own target knowledge identity.
 
 ## Parallel Route necessity
 
@@ -164,7 +173,7 @@ Deferred `projects`, `discussions`, and Wiki/knowledge presentation routes are n
 | --- | --- | --- | --- |
 | `@sidebar` | Route-specific Issues navigation or Issue metadata with independently resolved data | `default.tsx`, root `page.tsx`, and catch-all render no stale route-specific rail; explicit matching pages reconstruct supported rails | Same content is exposed through Sheet/inline metadata, not discarded |
 | `@activity` | Independently loaded, privacy-safe Repository Overview summary | `default.tsx` and catch-all return no summary outside supported routes | Moves below Overview or into a disclosure |
-| `@modal` | Requested soft-navigation Issue detail overlay while preserving canonical URL; Discussion may reuse it only after acceptance | Direct URL is rendered by `children`; default, root page, and catch-all clear modal state | Full-screen Dialog/Sheet while retaining canonical URL |
+| `@modal` | Requested soft-navigation Issue or Discussion detail overlay while preserving canonical URL | Direct URL is rendered by `children`; default, root page, and catch-all clear modal state | Full-screen Dialog/Sheet while retaining canonical URL |
 
 `@activity` must be removed if the Activity summary cannot prove independent loading/failure value or a safe redacted projection. It cannot exist only to satisfy a symmetric folder tree.
 
@@ -177,15 +186,15 @@ Deferred `projects`, `discussions`, and Wiki/knowledge presentation routes are n
 | Team as workspace | Team is deferred Organization-scoped Principal | Its retained value is shared authority assignment, not content containment | Future `/organizations/{org}/teams/{team}`; no Team collaboration Container |
 | Membership implies Repository access | Membership records belonging only | Authority must remain an explicit Role/Capability relationship | Domain authorization and UI explanations remain separate from membership lists |
 | Repository as code store | Repository is the only No-Code Collaboration Container | Ownership, containment, authority, navigation, and collaboration remain useful without code | Preserve shell and `/{owner}/{repository}`; reject code mechanics |
-| Issue as developer ticket | Issue is a candidate actionable Repository Artifact | Actionable work has independent lifecycle and conversation in arbitrary collaboration | Future `/issues/{issueNumber}` after Domain acceptance |
+| Issue as developer ticket | Issue is an accepted actionable Repository Artifact | Actionable work has independent lifecycle and conversation in arbitrary collaboration | Canonical `/issues/{issueNumber}`; execution awaits its Domain contract |
 | Project under one Repository | Project-style view is an owner-scoped planning Projection attached to Repositories | One planning view can span work; attachment does not establish ownership | Repository `/projects` is a list; detail uses owner-scoped URL |
-| Discussion as forum Container | Discussion is a candidate Repository-contained shared-understanding Artifact | Conversation remains useful, but cannot create another primary Container | Future Repository discussion URLs after Domain acceptance |
+| Discussion as forum Container | Discussion is an accepted Repository-contained shared-understanding Artifact | Conversation remains useful, but cannot create another primary Container | Canonical Repository discussion URLs; execution awaits its Domain contract |
 | Wiki as Git-backed knowledge system | Existing Page is the admission baseline | Git storage/history is excluded and duplicate canonical identity is invalid | Keep `/pages/{pageId}` until distinct Wiki behavior is proven |
 | Notification/Activity/Audit as source truth | They are actor/repository/governance Projections over facts and Evidence | Delivery, summaries, and audit views have different consumers and retention from source facts | Stable projection URLs; no authority or Artifact ownership |
 | Parallel Route as Product region | Parallel Route is a delivery mechanism for independently recoverable supporting UI | Framework composition has no Domain identity | `@sidebar`, `@activity`, `@modal` stay out of public URLs |
 | Modal URL | Modal and full page share one canonical resource URL | Presentation mode cannot create a second resource identity | Intercepting Route only; direct load renders the full page |
 
-Semantic roles retained by this decision are explicit: User is Actor and possible Owner; Organization is Scope and possible Owner; Team is a deferred Principal; Membership and Grant are Relationships; Repository is Container; Page is the accepted Artifact; Issue and Discussion are candidate Artifacts; Activity, Notification, Audit, Search, and Project-style planning are Projections; Role/Capability/Policy remain authorization semantics rather than content entities.
+Semantic roles retained by this decision are explicit: User is Actor and possible Owner; Organization is Scope and possible Owner; Team is a deferred Principal; Membership and Grant are Relationships; Repository is Container; Page, Issue, and Discussion are accepted Artifacts; Activity, Notification, Audit, Search, Security posture, and Project-style planning are Projections; Role/Capability/Policy remain authorization semantics rather than content entities.
 
 ## Alternatives and counterfactuals
 
@@ -210,7 +219,7 @@ Rejected by the Product axiom and no-code admission rule.
 - Product and App Router instructions must stop claiming that a Repository always has only one content region.
 - The Web layout gains explicit slot props but no Domain authority.
 - Mobile requires Sheet/Dialog interaction islands while data loading remains server-owned.
-- Issue implementation is blocked until the Issue Domain contract defines identity, lifecycle, authorization, and evidence.
+- Issue and Discussion implementation is blocked until their Domain contracts define identity, lifecycle, authorization, moderation where applicable, and evidence.
 - Project and Wiki candidate URLs are corrected before implementation, avoiding false ownership and duplicate canonical identity.
 
 ## Falsification conditions
@@ -235,7 +244,7 @@ Stop and reopen the earliest invalid model layer on the first failed invariant.
 ## Follow-up contract changes
 
 - Update `docs/PRODUCT.md`, `docs/ONTOLOGY.md`, `docs/architecture/README.md`, `docs/architecture/ADR_INDEX.md`, and `apps/web/src/app/AGENTS.md`.
-- Add an Issue Domain contract before implementing Issue persistence or Application use cases.
+- Add Issue and Discussion Domain contracts before implementing their persistence or Application use cases.
 - Add only the shadcn primitives selected after inspecting existing UI exports; do not use `add --all`.
 - Add Playwright coverage for direct, soft, refresh, Back, Forward, query, responsive rail, and authorization-equivalence behavior.
 

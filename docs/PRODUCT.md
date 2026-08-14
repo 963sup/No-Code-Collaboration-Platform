@@ -158,9 +158,16 @@ Repository human identity follows the Owner namespace:
 
 ```text
 /{ownerSlug}/{repositorySlug}
+/{ownerSlug}/{repositorySlug}/issues
+/{ownerSlug}/{repositorySlug}/issues/{issueNumber}
+/{ownerSlug}/{repositorySlug}/projects
+/{ownerSlug}/{repositorySlug}/discussions
+/{ownerSlug}/{repositorySlug}/discussions/{discussionNumber}
 /{ownerSlug}/{repositorySlug}/pages
 /{ownerSlug}/{repositorySlug}/pages/{pageId}
 /{ownerSlug}/{repositorySlug}/activity
+/{ownerSlug}/{repositorySlug}/security
+/{ownerSlug}/{repositorySlug}/settings
 ```
 
 Examples:
@@ -174,11 +181,13 @@ The first path segment resolves either a User or Organization Owner namespace. I
 
 `/app` is an authenticated discovery/dashboard surface. It is not part of Repository identity.
 
-Repository presentation follows one owner/Repository header and primary navigation. An active child surface may compose independently recoverable, route-specific supporting regions when public GitHub evidence and target behavior prove their necessity. Framework layout mechanisms never create additional Product boundaries or URL identities.
+Repository presentation follows one owner/Repository header and primary navigation. An active child surface may compose independently recoverable, route-specific supporting regions when sanitized public or read-only authenticated GitHub benchmark evidence and target behavior prove their necessity. Framework layout mechanisms never create additional Product boundaries or URL identities.
 
-## Current collaboration surface
+`/projects` is a Repository attachment/list Projection; Project detail does not inherit Repository ownership and therefore does not use `/{owner}/{repository}/projects/{id}`. GitHub Wiki maps to the existing Page Resource family, so Git-backed `/wiki/{slug}` is not a second target canonical identity. `/security` contains only admitted governance, access-posture, policy, and security-evidence projections; code/dependency/secret scanning is excluded.
 
-The currently accepted executable collaboration family is intentionally small:
+## Accepted collaboration semantics and executable baseline
+
+The currently executable collaboration family is intentionally small:
 
 ```text
 Repository
@@ -197,17 +206,20 @@ Actor
 → user-visible result
 ```
 
-A second Resource kind is admitted only when it proves behavior or lifecycle that Page does not already represent while reusing the Repository boundary.
+Issue and Discussion are also accepted Repository-contained Resource kinds. Issue represents actionable work with assignment/status/completion behavior; Discussion represents category/answer/conversation behavior. Both retain stable Repository-scoped identity and reuse Repository authorization. Their Domain lifecycle, persistence, authorization, historical-evidence, and delivery contracts are not yet executable and remain explicitly registered gaps.
 
-## GitHub-derived candidates that remain valid to investigate
+## GitHub-derived admissions and remaining candidates
 
-The following benchmark concepts solve collaboration problems that do not inherently require software-development mechanics, but they remain unaccepted until a real use case proves lifecycle and reuse:
+Accepted Product semantics:
+
+- **Issue**: Repository-scoped actionable work Artifact with stable Repository + issue-number identity.
+- **Discussion**: Repository-scoped shared-understanding Artifact with stable Repository + discussion-number identity.
+- **Project-style planning view**: Projection over Repository-scoped work; never ownership or authorization boundary. Repository `/projects` lists attachments; detail identity is owner-scoped.
+
+The following remain candidates until a real use case proves lifecycle and reuse:
 
 - **Team**: Organization-scoped group Principal for shared Repository authority.
 - **Enterprise**: cross-Organization governance Scope; never a Repository Owner by implication.
-- **Issue-style work item**: Repository-scoped actionable work Artifact.
-- **Discussion-style conversation**: Repository-scoped shared-understanding Artifact.
-- **Project-style planning view**: Projection over accepted Repository-scoped work; never ownership or authorization boundary.
 - **App/Installation**: machine identity/Principal plus explicit access Relationship when integrations require it.
 
 A future product capability not justified by these durable GitHub collaboration semantics must be derived independently from this platform's own user problem.
@@ -242,7 +254,7 @@ A projection becomes an Entity only when independent identity, lifecycle ownersh
 15. Collaborator and Outside collaborator are derived classifications, never identity types.
 16. Policy may constrain accepted authority but cannot silently create Repository content authority.
 17. Historical Evidence is append-oriented; presentation projections cannot rewrite its product meaning.
-18. Page is the only currently accepted concrete Resource kind.
+18. Page, Issue, and Discussion are accepted concrete Repository-contained Resource kinds; only Page is currently executable.
 19. Canonical Repository URL is Owner namespace + Repository slug; internal delivery prefixes are not product identity.
 20. Domain semantics remain provider-neutral; implementation technologies project rather than define Product truth.
 21. Generated types, migrations, diagrams, CI output, and runtime observations cannot silently replace this contract.
@@ -254,13 +266,13 @@ These remain unaccepted until direct evidence requires them:
 
 - Team persistence and Team Repository Grants.
 - Enterprise persistence and typed cross-Organization policies.
-- Issue-style and Discussion-style entities.
+- Issue and Discussion Domain lifecycle, persistence, authorization, evidence, and delivery implementation; Product identity is accepted, executable contracts are not.
 - Project-style planning persistence beyond a derivable Projection.
 - App Principal and Installation lifecycle.
 - Organization-wide Repository base permission for ordinary members.
 - Custom Roles, explicit deny precedence, nested groups, or generic policy engines.
 - Repository transfer, archive, restore, and destructive lifecycle semantics.
-- Any new Resource family beyond Page.
+- Any new Resource family beyond Page, Issue, and Discussion.
 - Any automation capability whose problem has not been independently demonstrated by this no-code collaboration product.
 
 ## Success model
@@ -272,6 +284,7 @@ The Product Contract is working when:
 - the system can explain why an Actor can or cannot perform an action;
 - `/app` navigates to canonical `/{owner}/{repository}` Repository identity;
 - Page collaboration works through the same authorization and evidence boundary for both ownership modes;
+- accepted Issue and Discussion identities remain Repository-scoped, canonical, and authorization-equivalent across full-page/modal presentation;
 - ownership, Membership, Grants, Roles, Capabilities, Context, and projections are not conflated;
 - new GitHub benchmark concepts are classified and tested before persistence or architecture is introduced; and
 - production/provider observations may correct the earliest invalid contract without turning undocumented runtime behavior into Product truth.

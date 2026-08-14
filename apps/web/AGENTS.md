@@ -15,10 +15,10 @@
 - The canonical Repository workspace is `/{ownerSlug}/{repositorySlug}`. The Owner segment resolves either a User or Organization Owner namespace and never implies Organization ownership.
 - `/app` is an authenticated discovery/dashboard surface. It is not part of Repository identity.
 - Canonical Repository reads must not inherit an authenticated-only wrapper because public Repository visibility is an accepted anonymous read baseline. Authenticated mutations establish Actor identity and independently evaluate Capability.
-- For GitHub-derived surfaces that pass Product admission, public GitHub URL/IA, navigation, responsive composition, and interaction are the constitutional presentation baseline; deviations require an explicit Product reason and discriminating test.
+- For GitHub-derived surfaces that pass Product admission, sanitized public and read-only authenticated GitHub URL/IA, navigation, responsive composition, and interaction evidence is the constitutional presentation baseline; deviations require an explicit Product reason and discriminating test.
 - Canonical Repository presentation is one Owner/Repository header, primary navigation, one active child resource surface, and only proven route-specific supporting regions. Framework composition features never create Product boundaries, permanent panes, or URL identity.
 - Parallel Route slots require `default.tsx` plus explicit unmatched soft-navigation behavior. Intercepting Routes preserve the full-page resource's canonical URL and authorization result.
-- Current accepted Repository child surfaces are `/pages`, `/pages/[pageId]`, and `/activity`.
+- Accepted target Repository child surfaces are `/issues`, `/issues/[issueNumber]`, `/projects` (attachment/list Projection), `/discussions`, `/discussions/[discussionNumber]`, `/pages`, `/pages/[pageId]`, `/activity`, `/security`, and `/settings`. Only Pages and Activity are currently executable; other surfaces must not be represented as implemented until their registered gaps close.
 - `Context` may change navigation/filtering/presentation but never persisted authorization facts.
 - Activity is a Repository-scoped projection with a canonical navigation surface. An independently loaded Overview summary is allowed only when its privacy-safe projection and removal test are proven.
 - `/app/repositories/[repositoryId]/**` is compatibility-only. It must perform access-aware resolution and redirect to the canonical Owner/Repository URL; it must never own a second Repository UI/business-flow tree.
@@ -48,7 +48,7 @@ The Repository layout presents:
 ```text
 Owner / Repository      Visibility
 ----------------------------------
-Overview   Pages   Activity
+Overview   Issues   Projects   Discussions   Pages   Activity   Security   Settings
 ----------------------------------
 route-specific support | active child resource | route-specific support
 ```

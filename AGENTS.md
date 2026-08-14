@@ -84,7 +84,7 @@ RLS is independent database enforcement; it does not replace Domain/Application 
 - Collaborator/Outside collaborator are derived labels, not identity types.
 - Historical Evidence is distinct from Feed/Notification/Audit/Analytics projections.
 - Team/Enterprise remain Deferred until their Product/Ontology discriminating tests require them.
-- Page is the only accepted concrete Resource kind until a second real Resource proves distinct behavior/lifecycle while reusing Repository containment/authorization.
+- Page, Issue, and Discussion are accepted Repository-contained Resource kinds. Page is the only executable vertical slice today; Issue and Discussion persistence/Domain/Application/Web delivery remain Open gaps and must reuse Repository containment/authorization. Project-style planning remains a Projection, not another Resource owner or Container.
 
 ## Working rules
 
@@ -110,6 +110,6 @@ RLS is independent database enforcement; it does not replace Domain/Application 
 - `oxfmt` formats; `oxlint` lints.
 - Run `pnpm codex:check` when instructions/skills/hooks/environment rules change.
 - Run `pnpm verify:fast` after normal changes and `pnpm verify:full` before integration when build/exports/dependencies/reachability change.
-- Playwright must cover `/app` → canonical `/{owner}/{repository}` → accepted Page/Activity journeys.
+- Playwright must cover `/app` → canonical `/{owner}/{repository}` → currently implemented Page/Activity journeys; newly implemented accepted surfaces must extend this journey coverage before their gaps close.
 - Supabase changes start from `supabase/schemas`, include reviewed replayable migrations, and regenerate checked-in DB types rather than hand-editing projections.
 - Use `docs/CODEX_DESKTOP.md` for Codex context/trust boundaries and `docs/DEVELOPMENT_ENVIRONMENT.md` for workstation setup.

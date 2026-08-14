@@ -44,8 +44,8 @@ Currently accepted/durable:
 - Organization is a Membership/administration Scope and possible Owner, not mandatory Repository parent.
 - Team is a future Organization-scoped group Principal pending a real second authority-source test.
 - Enterprise is a future cross-Organization governance Scope pending a real governance constraint.
-- Issue-style work tracking and Discussion-style conversation remain candidate Repository Artifacts because their collaboration problems can stand independently.
-- Project-style planning remains a Projection over accepted work, not an ownership/authorization Container.
+- Issue-style work tracking and Discussion-style conversation are accepted Repository Artifacts because actionable work and shared-understanding conversation remain distinct no-code collaboration problems with stable Repository-scoped identity. Their executable Domain/persistence contracts remain separate Open work.
+- Project-style planning is an accepted Projection over Repository-scoped work, not an ownership/authorization Container; Repository `/projects` is an attachment/list projection and detail identity is owner-scoped.
 - App/Installation remains a future machine identity/authority Relationship candidate.
 
 Not accepted merely because GitHub exposes them:
@@ -70,6 +70,6 @@ principals(type,id)
 
 Do not create a Collaborator aggregate or identity subtype.
 
-Do not promote Team, Enterprise, Issue-style work, Discussion-style conversation, Project persistence, App/Installation, or another Resource family from Deferred/Candidate solely because of taxonomy completeness.
+Do not promote Team, Enterprise, Project persistence, App/Installation, or another Resource family from Deferred/Candidate solely because of taxonomy completeness. Do not infer Issue/Discussion persistence or implementation from Product admission; require their Domain identity, lifecycle, authorization, and evidence contracts first.
 
 Use `docs/PRODUCT.md` as the root Product Contract and `docs/ONTOLOGY.md` as its canonical semantic expansion.

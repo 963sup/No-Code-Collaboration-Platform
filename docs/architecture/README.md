@@ -135,9 +135,16 @@ Product URL:
 
 ```text
 /{ownerSlug}/{repositorySlug}
+/{ownerSlug}/{repositorySlug}/issues
+/{ownerSlug}/{repositorySlug}/issues/{issueNumber}
+/{ownerSlug}/{repositorySlug}/projects
+/{ownerSlug}/{repositorySlug}/discussions
+/{ownerSlug}/{repositorySlug}/discussions/{discussionNumber}
 /{ownerSlug}/{repositorySlug}/pages
 /{ownerSlug}/{repositorySlug}/pages/{pageId}
 /{ownerSlug}/{repositorySlug}/activity
+/{ownerSlug}/{repositorySlug}/security
+/{ownerSlug}/{repositorySlug}/settings
 ```
 
 Current executable Next.js delivery projection:
@@ -172,7 +179,7 @@ Repository shell:
 ```text
 Owner / Repository      Visibility
 ----------------------------------
-Overview   Pages   Activity
+Overview   Issues   Projects   Discussions   Pages   Activity   Security   Settings
 ----------------------------------
 route-specific support | active child resource | route-specific support
 ```
@@ -181,7 +188,7 @@ Supporting regions are absent when the active route does not prove a separate na
 
 `Context` remains a presentation concept but does not require a permanent pane. Activity is a Repository-scoped projection with a canonical route; a privacy-safe Overview summary may be composed independently only under ADR-011's removal test.
 
-ADR-011 defines the target `@sidebar`, `@activity`, and `@modal` composition for the future accepted Issue slice. The executable tree above does not claim those routes already exist. Framework composition mechanisms do not establish new Product responsibilities merely because the framework supports them.
+ADR-011 defines the target `@sidebar`, `@activity`, and `@modal` composition for accepted-but-unimplemented Issue and Discussion slices plus route-specific responsive support. The executable tree above deliberately lists only current Pages and Activity delivery; target URL acceptance does not claim those routes already exist. Framework composition mechanisms do not establish new Product responsibilities merely because the framework supports them.
 
 ## Compatibility routing
 

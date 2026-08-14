@@ -142,7 +142,7 @@ The Repository layout owns one shared Repository shell:
 ```text
 Owner / Repository      Visibility
 ----------------------------------
-Overview   Pages   Activity
+Overview   Issues   Projects   Discussions   Pages   Activity   Security   Settings
 ----------------------------------
 active child content
 ```
@@ -210,5 +210,5 @@ Reopen if:
 4. Organization admin/owner gets admin only on that Organization-owned Repository; ordinary member does not.
 5. Repository card from `/app` lands on `/{owner}/{repository}`.
 6. Stable-ID compatibility route redirects to that canonical URL.
-7. Overview, Pages, Page detail, and Activity support direct hard navigation through the same Repository shell.
+7. Every implemented child route supports direct hard navigation through the same Repository shell; the accepted target set is Overview, Issues, Projects attachment list, Discussions, Pages, Activity, Security posture, and Settings.
 8. Page create/update/activity continues through the owner-neutral route and authorization boundary.

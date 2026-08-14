@@ -1,15 +1,15 @@
-# GitHub Public URL/UI/UX Benchmark
+# GitHub URL/UI/UX Benchmark — Public and Authenticated Test Contexts
 
-- Evidence state: External public benchmark
-- Observed: 2026-08-14
-- Account context: Anonymous, isolated browser contexts
+- Evidence state: External benchmark; public surfaces plus read-only authenticated test-account surfaces
+- Observed: 2026-08-14; inventory reconciled 2026-08-15
+- Account context: Anonymous isolated context and authorized `369sup` test-account context
 - Target decision supported: No-code Repository shell, URL identity, responsive supporting regions, and collaboration-surface admission
 
-This document records public GitHub evidence. It is not Product, Domain, Architecture, provider, or implementation truth for this repository.
+This document summarizes the canonical evidence inventory in [`.playwright-mcp/github-urls.json`](../../.playwright-mcp/github-urls.json) and [`.playwright-mcp/github-ui-ux.md`](../../.playwright-mcp/github-ui-ux.md). It is benchmark evidence, not Product, Domain, Architecture, provider, or implementation truth for this repository. The historical filename is retained so existing references do not break; the evidence is no longer public-only.
 
 ## 1. Research scope
 
-Observed public surfaces:
+The reconciled inventory contains 55 URL-resource inventories, 11 component inventories, and 294 screenshots. Representative surfaces include:
 
 - `https://github.com/`
 - `https://github.com/github/docs`
@@ -18,35 +18,38 @@ Observed public surfaces:
 - `https://github.com/github/docs/projects`
 - `https://github.com/vercel/next.js/discussions`
 - `https://github.com/gollum/gollum/wiki`
+- `https://github.com/dashboard`
+- `https://github.com/notifications`
+- `https://github.com/repos`
+- `https://github.com/issues` → `/issues/assigned`
+- `https://github.com/369sup?tab=repositories|projects|stars|achievements`
+- `https://github.com/settings/profile|organizations|enterprises`
+- `https://github.com/orgs/ac-sup/dashboard|people|teams`
+- `https://github.com/organizations/ac-sup/settings/profile|audit-log|custom-properties`
+- `https://github.com/369sup/support[/issues|projects|discussions|wiki|security|pulse|settings]`
 
-Chrome DevTools MCP supplied DOM, computed-style, token, responsive, console, and request-URL/status evidence. Playwright MCP supplied navigation, search/filter, history, accessibility-tree, and viewport evidence. No Cookie, token, request header, private content, or authenticated page was captured.
+Chrome DevTools MCP supplied DOM, computed-style, token, responsive, console, and request-URL/status evidence. Playwright MCP supplied navigation, search/filter, history, accessibility-tree, menu/dialog state, context switching, canonical redirects, and four-viewport evidence. Authenticated test-account pages were captured read-only; no Cookie, session, token, authorization/CSRF header, secret value, or private Repository content was stored.
 
-Saved Playwright evidence follows the information architecture from the public home page inward:
+Saved Playwright evidence mirrors sanitized host/path resource identity. Query projections remain in their owner directory, and component-only states remain under `github/components/`:
 
 ```text
-.playwright-mcp/github-reference/desktop/00-home.png
-.playwright-mcp/github-reference/desktop/01-organization.png
-.playwright-mcp/github-reference/desktop/02-repository-overview.png
-.playwright-mcp/github-reference/desktop/03-issues-list.png
-.playwright-mcp/github-reference/desktop/04-issue-detail.png
-.playwright-mcp/github-reference/desktop/05-repository-projects.png
-.playwright-mcp/github-reference/desktop/06-discussions.png
-.playwright-mcp/github-reference/desktop/07-wiki.png
-
-.playwright-mcp/github-reference/mobile/00-home.png
-.playwright-mcp/github-reference/mobile/01-organization.png
-.playwright-mcp/github-reference/mobile/02-repository-overview.png
-.playwright-mcp/github-reference/mobile/03-issues-list.png
-.playwright-mcp/github-reference/mobile/04-issue-detail.png
+.playwright-mcp/github/dashboard/{urls.json,ui-ux.md,screenshots/}
+.playwright-mcp/github/369sup/{urls.json,ui-ux.md,screenshots/}
+.playwright-mcp/github/369sup/support/issues/{urls.json,ui-ux.md,screenshots/}
+.playwright-mcp/github/github/docs/issues/45464/{urls.json,ui-ux.md,screenshots/}
+.playwright-mcp/github/vercel/next.js/discussions/{urls.json,ui-ux.md,screenshots/}
+.playwright-mcp/github/gollum/gollum/wiki/{urls.json,ui-ux.md,screenshots/}
+.playwright-mcp/github/components/user-menu/{urls.json,ui-ux.md,screenshots/}
+.playwright-mcp/github/components/account-switcher/{urls.json,ui-ux.md,screenshots/}
 ```
 
-Additional Issues-only responsive evidence:
+Required viewport set:
 
 ```text
-.playwright-mcp/github-issues-desktop-1440x900.png
-.playwright-mcp/github-issues-compact-1024x768.png
-.playwright-mcp/github-issues-tablet-768x1024.png
-.playwright-mcp/github-issues-mobile-390x844.png
+Desktop  1440x900
+Laptop   1280x800
+Tablet    768x1024
+Mobile    390x844
 ```
 
 ## 2. Product model
@@ -54,12 +57,17 @@ Additional Issues-only responsive evidence:
 | GitHub surface | Publicly observed problem | Stable identity | Supporting UI |
 | --- | --- | --- | --- |
 | Owner / Repository shell | Preserve owner and Repository context while changing collaboration surfaces | `/{owner}/{repository}` | Global header, owner/Repository header, horizontal Repository navigation |
+| Dashboard / Top repositories | Discover recent/frequent Repositories in the current account context | `/dashboard` on GitHub; target keeps `/app` by explicit Product decision | Account context switcher, local Repository filter, New command, Repository links |
+| Global and user navigation | Reach user, organization, discovery, settings, notification, and creation surfaces | Stable resource/command URLs after selection | Global drawer, anchored user menu, create menu, status dialog, unread indicator |
 | Issues | Find and track actionable items | Repository-scoped issue number | Filter/search query, state tabs, labels, assignees, sorting, pagination |
 | Issue detail | Discuss and progress one actionable item | `/{owner}/{repository}/issues/{number}` | Timeline plus metadata rail |
 | Projects attachment | Discover planning views associated with a Repository | Repository attachment list; project detail has separate owner identity | Search, state filter, sort |
 | Discussions | Hold category-based conversations distinct from actionable work | Repository-scoped discussion number | Category rail, search, state/answer filters, sort |
 | Wiki | Navigate and edit long-form linked knowledge pages | Repository-scoped page slug | Page index/sidebar, edit/history actions |
 | Activity | Inspect Repository activity | Repository-scoped projection URL | Link from Repository metadata region |
+| Repository Settings | Manage one Repository's admitted features, access, integration, moderation, and lifecycle | `/{owner}/{repository}/settings` | Permission-gated grouped settings navigation |
+| Organization governance | Manage Membership, Team, profile, custom-property, and audit projections | `/orgs/{org}/…` and `/organizations/{org}/settings/…` | Account-context navigation plus permission-gated management surfaces |
+| Notifications | Triage actor-specific deliveries | `/notifications` | Unread indicator, filters, grouped inbox state |
 
 GitHub's public Repository surface also contains Code, Pull requests, Actions, branches, commits, diffs, and other software-development mechanisms. Those observations are explicitly inadmissible for the target Product.
 
@@ -87,7 +95,7 @@ The public home screenshot establishes the outer navigation and entry-point hier
 ### Issues list
 
 - Desktop uses a `256px` sticky Issues navigation rail plus an independently scrolling main list.
-- At observed widths `1440`, `1024`, and `768`, the rail remains visible.
+- At the retained `1440`, `1280`, and `768` evidence widths, the rail remains visible.
 - At `390px`, the rail is absent, the page becomes one column, secondary filters collapse, and list rows reflow vertically.
 - Search submission changed the URL to:
 
@@ -110,6 +118,14 @@ The public home screenshot establishes the outer navigation and entry-point hier
 - Discussions use a category rail plus a searchable/sortable conversation list. Category URLs remain under the Repository discussion namespace.
 - Repository Projects lists attached planning views, but detail links leave the Repository namespace for an owner-scoped project identity.
 - Wiki uses `/wiki/{slug}` with a page rail and history/edit actions. `Home` has a shortened `/wiki` presentation URL.
+
+### Dashboard, menus, and context switching
+
+- The authenticated Dashboard keeps acting User identity stable while the account switcher changes the personal/Organization discovery projection.
+- `Top repositories` is a user-specific discovery projection. Desktop/Laptop place it in the Account rail; Mobile moves it into the main flow and omits the inline New action while preserving search and Repository links.
+- Global menu, user menu, create menu, status dialog, notification indicator, profile tabs, Repository navigation, and Repository settings navigation are UI states/components, not URL resources.
+- `/issues` redirects to `/issues/assigned`; `/account/organizations/new` redirects to `/organizations/plan`; `/gist` transfers to `gist.github.com`; `/logout` was observed as a command href but intentionally not executed.
+- `/369sup/support/discussions` returns 404 because Discussions is unavailable for that Repository. Availability does not invalidate the stable Discussion collection/detail URL model for enabled Repositories.
 
 ## 5. Design tokens and layout evidence
 
@@ -181,21 +197,21 @@ The ordered journey matters: it proves that Owner and Repository identity are es
 
 ## 8. Assumptions, contradictions, and unknowns
 
-- Authenticated Settings, Notification, and Audit screens were not opened; their interaction model is supported only by official public documentation.
+- Authenticated Settings, Notification, Organization dashboard/Membership/Team, audit, account-switcher, and menu states were opened read-only with the authorized test account and recorded in the sanitized inventory.
 - GitHub's own Issue-list navigation produced a full page, while the requested target includes an intercepting modal. That deviation must remain explicit and reversible.
 - The exact responsive breakpoint was bounded between the observed `768px` rail and `390px` single-column layouts; implementation must determine it by visual comparison rather than assume a GitHub source breakpoint.
 - Public GitHub returned an anonymous `401` for an in-product messaging request. This was not required for the observed page and no response headers/body were retained.
 
 ## 9. Documentation gaps and coverage limitations
 
-- No private Organization, Team, Membership administration, Repository Settings, Notification inbox, or Audit data was accessed.
+- Test-account Organization, Membership/Team navigation, Repository Settings, Notification inbox, and Audit UI were observed read-only. No secret, credential, raw private Repository content, private request material, or mutation result was retained.
 - No claim is made about GitHub's internal React architecture, data model, authorization implementation, or use of framework Parallel Routes.
 - Public DOM and CSS may change; target semantics and tests must not depend on GitHub class names or private endpoints.
 
 ## 10. Confidence
 
-- High: public URL hierarchy, Repository shell, Issues list/detail layout, query behavior, responsive rail behavior, Discussions category rail, Repository Projects attachment behavior, Wiki page URL.
-- Medium: exact breakpoint and authenticated interaction details.
+- High: URL hierarchy, Repository shell, Issues list/detail layout, query behavior, responsive rail behavior, authenticated menu/context-switch behavior, Repository Settings navigation, Discussions category rail, Repository Projects attachment behavior, and Wiki page URL.
+- Medium: exact breakpoint, plan/permission variants, and states not present in the test account.
 - Low/unproven: internal GitHub implementation architecture.
 
 ## 11. Benchmark handoff
