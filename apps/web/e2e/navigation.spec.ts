@@ -32,7 +32,9 @@ test('dashboard remains authenticated-only', async ({ page }) => {
   await expectSignInRedirect(page, '/app');
 });
 
-test('canonical Repository route is not forced through dashboard authentication', async ({ page }) => {
+test('canonical Repository route is not forced through dashboard authentication', async ({
+  page
+}) => {
   const repositoryPath = '/example-owner/example-repository';
   const response = await page.goto(repositoryPath);
 
@@ -52,9 +54,10 @@ test('canonical Page collection hard navigation remains outside the authenticate
   await expect(page).not.toHaveURL(/\/sign-in/u);
 });
 
-test('canonical Page detail hard navigation preserves Owner and Repository identity', async ({ page }) => {
-  const pagePath =
-    '/example-owner/example-repository/pages/00000000-0000-4000-8000-000000000002';
+test('canonical Page detail hard navigation preserves Owner and Repository identity', async ({
+  page
+}) => {
+  const pagePath = '/example-owner/example-repository/pages/00000000-0000-4000-8000-000000000002';
   const response = await page.goto(pagePath);
 
   expect(response?.status()).toBe(404);
