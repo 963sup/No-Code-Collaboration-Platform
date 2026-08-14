@@ -84,7 +84,7 @@ RLS is independent database enforcement; it does not replace Domain/Application 
 - Team/Enterprise remain Deferred until their Product/Ontology discriminating tests require them.
 - Page is the only accepted concrete Resource kind until a second real Resource proves distinct behavior/lifecycle while reusing Repository containment/authorization.
 
-## Working and review rules
+## Working rules
 
 - Read nested instructions before editing their scope.
 - Prefer the smallest sufficient reversible change. When the task explicitly corrects a false canonical boundary, replace the false definition and every affected projection rather than layering compatibility prose over it.
@@ -94,16 +94,11 @@ RLS is independent database enforcement; it does not replace Domain/Application 
 - Never publish secrets, credentials, `.env` files, project references, or private production data.
 - External mutation/destruction requires explicit user intent.
 
-Flag:
+## Code Review Rules
 
-- weakening `Repository = No-Code Collaboration Container`;
-- a second collaboration Container without falsifying evidence;
-- mandatory Organization ownership or Organization-only Repository routing;
-- Context affecting authorization;
-- benchmark features preserved after failing no-code admission;
-- framework/provider leakage into Domain/Application;
-- authentication treated as authorization, UI visibility as sole enforcement, service credentials in browser code, or weakened RLS;
-- obsolete routes/adapters/docs/checkers that preserve superseded current truth.
+- **Product semantic drift:** flag any weakening of the Repository axiom, mandatory Organization ownership, Context-derived authority, or benchmark feature that failed no-code admission.
+- **Architecture truth-boundary violations:** flag framework/provider leakage into Domain/Application or obsolete routes, adapters, docs, and checkers that preserve superseded current truth.
+- **Authorization enforcement bypass:** flag authentication treated as authorization, UI visibility as sole enforcement, browser service credentials, weakened RLS, or authority derived from untrusted presentation/provider metadata.
 
 ## Verification
 
