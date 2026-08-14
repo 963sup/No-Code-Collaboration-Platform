@@ -73,16 +73,16 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Verify Sentry configuration
-        if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
+        if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository)
         env:
           NEXT_PUBLIC_SENTRY_DSN: ${{ vars.NEXT_PUBLIC_SENTRY_DSN }}
-          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SENTRY_AUTH_TOKEN_CONFIGURED: ${{ secrets.SENTRY_AUTH_TOKEN != '' }}
           SENTRY_ORG: ${{ vars.SENTRY_ORG }}
           SENTRY_PROJECT: ${{ vars.SENTRY_PROJECT }}
         run: |
           set -euo pipefail
           test -n "${NEXT_PUBLIC_SENTRY_DSN}" || { echo 'NEXT_PUBLIC_SENTRY_DSN is not configured'; exit 1; }
-          test -n "${SENTRY_AUTH_TOKEN}" || { echo 'SENTRY_AUTH_TOKEN is not configured'; exit 1; }
+          test "${SENTRY_AUTH_TOKEN_CONFIGURED}" = 'true' || { echo 'SENTRY_AUTH_TOKEN is not configured'; exit 1; }
           test -n "${SENTRY_ORG}" || { echo 'SENTRY_ORG is not configured'; exit 1; }
           test -n "${SENTRY_PROJECT}" || { echo 'SENTRY_PROJECT is not configured'; exit 1; }
 
