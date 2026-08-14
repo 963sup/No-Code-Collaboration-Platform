@@ -44,11 +44,14 @@ const requiredDocuments = [
 ];
 
 const documents = Object.fromEntries(requiredDocuments.map((path) => [path, read(path)]));
+const product = documents['docs/PRODUCT.md'];
+const ontology = documents['docs/ONTOLOGY.md'];
+const repositoryDomain = documents['docs/domains/repository-collaboration.md'];
 const gapRegister = documents['docs/IMPLEMENTATION_GAPS.md'];
 const closedGapArchive = documents['docs/history/CLOSED_GAPS.md'];
 const architectureReadme = documents['docs/architecture/README.md'];
 const architectureDecisionIndex = documents['docs/architecture/ADR_INDEX.md'];
-const parallelRouteAdr =
+const compositionAdr =
   documents['docs/architecture/ADR-003-repository-workspace-parallel-composition.md'];
 
 requireMatch(
@@ -64,54 +67,74 @@ requireMatch(
   'migration application evidence boundary is missing'
 );
 
-requireMatch(
+for (const [pattern, message] of [
+  [/^- Status: Canonical$/m, 'canonical product status is missing'],
+  [/Repository\s*=\s*No-Code Collaboration Container/i, 'absolute Repository axiom is missing'],
+  [/Repository Owner[\s\S]*User[\s\S]*Organization/i, 'typed Repository ownership is missing'],
+  [/\/\{ownerSlug\}\/\{repositorySlug\}/, 'canonical Owner/Repository URL is missing'],
+  [/^## Falsification conditions$/m, 'falsification conditions are missing'],
+  [/^## Contract update protocol$/m, 'contract update protocol is missing'],
+  [
+    /reject the candidate[\s\S]*software-development-specific/i,
+    'benchmark exclusion rule is missing'
+  ]
+]) {
+  requireMatch('docs/PRODUCT.md', product, pattern, message);
+}
+
+forbidMatch(
   'docs/PRODUCT.md',
-  documents['docs/PRODUCT.md'],
-  /^- Status: Canonical$/m,
-  'canonical product status is missing'
+  product,
+  /Change Request|Pull Request →|GitHub Actions/i,
+  'excluded benchmark mechanism must not survive as target Product vocabulary'
 );
-requireMatch(
-  'docs/PRODUCT.md',
-  documents['docs/PRODUCT.md'],
-  /Repository.*no-code collaboration container/is,
-  'Repository product invariant is missing'
+
+for (const [pattern, message] of [
+  [
+    /Repository Owner[\s\S]*exactly one User OR one Organization/i,
+    'corrected Repository owner relationship is missing'
+  ],
+  [
+    /Prefer the mature GitHub owner\/Repository URL/i,
+    'owner/Repository URL benchmark rule is missing'
+  ],
+  [
+    /A benchmark feature whose usefulness depends[\s\S]*not translated, renamed, or retained/i,
+    'ontology exclusion boundary is missing'
+  ],
+  [
+    /Canonical Repository presentation is owner\/Repository header \+ primary navigation \+ one active content surface/i,
+    'canonical Repository interaction model is missing'
+  ]
+]) {
+  requireMatch('docs/ONTOLOGY.md', ontology, pattern, message);
+}
+
+forbidMatch(
+  'docs/ONTOLOGY.md',
+  ontology,
+  /Change Request|Pull Request →|GitHub Actions/i,
+  'excluded benchmark mechanism must not survive in canonical ontology'
 );
-requireMatch(
-  'docs/PRODUCT.md',
-  documents['docs/PRODUCT.md'],
-  /Repository Owner[\s\S]*User[\s\S]*Organization/i,
-  'User-or-Organization Repository ownership truth is missing'
-);
-requireMatch(
-  'docs/PRODUCT.md',
-  documents['docs/PRODUCT.md'],
-  /\/\{ownerSlug\}\/\{repositorySlug\}/,
-  'canonical Owner/Repository URL is missing'
-);
-requireMatch(
-  'docs/PRODUCT.md',
-  documents['docs/PRODUCT.md'],
-  /^## Falsification conditions$/m,
-  'falsification conditions are missing'
-);
-requireMatch(
-  'docs/PRODUCT.md',
-  documents['docs/PRODUCT.md'],
-  /^## Contract update protocol$/m,
-  'contract update protocol is missing'
+
+forbidMatch(
+  'docs/domains/repository-collaboration.md',
+  repositoryDomain,
+  /Change Request|Pull Request →|GitHub Actions/i,
+  'excluded benchmark mechanism must not survive in Repository Domain contract'
 );
 
 requireMatch(
-  'docs/ONTOLOGY.md',
-  documents['docs/ONTOLOGY.md'],
-  /Repository Owner[\s\S]*exactly one User OR one Organization/i,
-  'ontology does not define the corrected Repository owner relationship'
+  'docs/domains/repository-collaboration.md',
+  repositoryDomain,
+  /Each Repository has exactly one active Owner relationship/i,
+  'Repository ownership invariant is missing'
 );
 requireMatch(
-  'docs/ONTOLOGY.md',
-  documents['docs/ONTOLOGY.md'],
-  /Prefer GitHub-style owner\/repository URL/i,
-  'ontology does not preserve the URL/IA benchmark rule'
+  'docs/domains/repository-collaboration.md',
+  repositoryDomain,
+  /Repository deletion remains unavailable[\s\S]*Resources[\s\S]*Grants[\s\S]*history[\s\S]*recovery/i,
+  'destructive Repository lifecycle rule is missing'
 );
 
 requireMatch(
@@ -145,74 +168,57 @@ requireMatch(
   'provider/provisioning truth boundary is missing'
 );
 
-requireMatch(
-  'docs/architecture/README.md',
-  architectureReadme,
-  /\/\[ownerSlug\]\/\[repositorySlug\]/,
-  'canonical Owner/Repository semantic route is missing'
-);
-requireMatch(
-  'docs/architecture/README.md',
-  architectureReadme,
-  /children.*@navigation.*@workspace.*@context.*@activity/is,
-  'canonical Repository Parallel Route composition is incomplete'
-);
-requireMatch(
-  'docs/architecture/README.md',
-  architectureReadme,
-  /Soft navigation[\s\S]*Hard navigation \/ refresh/i,
-  'Parallel Route navigation-mode contract is missing'
-);
-requireMatch(
-  'docs/architecture/README.md',
-  architectureReadme,
-  /legacy `\/app\/repositories\/\[repositoryId\]\/\*\*` namespace is compatibility-only/i,
-  'legacy UUID namespace boundary is missing'
-);
+for (const [pattern, message] of [
+  [/\/\[ownerSlug\]\/\[repositorySlug\]/, 'canonical Owner/Repository semantic route is missing'],
+  [
+    /one Owner\/Repository header, primary navigation, and one active child content surface/i,
+    'canonical Repository presentation contract is missing'
+  ],
+  [
+    /public Repository reads cannot inherit an authenticated-only wrapper/i,
+    'public Repository delivery boundary is missing'
+  ],
+  [
+    /Organization-only semantic Repository route is not a valid compatibility UI/i,
+    'obsolete Organization-only route rejection is missing'
+  ],
+  [
+    /legacyPath[\s\S]*access-aware resolution/is,
+    'stable-ID compatibility redirect boundary is missing'
+  ]
+]) {
+  requireMatch('docs/architecture/README.md', architectureReadme, pattern, message);
+}
 
-requireMatch(
-  'docs/architecture/ADR_INDEX.md',
-  architectureDecisionIndex,
-  /ADR-003[\s\S]*superseded by ADR-010/i,
-  'ADR-003 route supersession by ADR-010 is missing'
-);
-requireMatch(
-  'docs/architecture/ADR_INDEX.md',
-  architectureDecisionIndex,
-  /children.*@navigation.*@workspace.*@context.*@activity/is,
-  'ADR index does not preserve the Parallel Route composition effect'
-);
-requireMatch(
-  'docs/architecture/ADR_INDEX.md',
-  architectureDecisionIndex,
-  /ADR-008[\s\S]*Historical[\s\S]*superseded by ADR-010/i,
-  'ADR-008 historical/superseded route status is missing'
-);
-requireMatch(
-  'docs/architecture/ADR_INDEX.md',
-  architectureDecisionIndex,
-  /ADR-010[\s\S]*Accepted current ownership\/routing identity/i,
-  'ADR-010 current ownership/routing status is missing'
-);
+for (const [pattern, message] of [
+  [/ADR-003[\s\S]*Superseded/i, 'ADR-003 superseded status is missing'],
+  [/ADR-008[\s\S]*Historical[\s\S]*superseded by ADR-010/i, 'ADR-008 historical status is missing'],
+  [
+    /ADR-010[\s\S]*Accepted current ownership\/routing identity/i,
+    'ADR-010 current ownership/routing status is missing'
+  ]
+]) {
+  requireMatch('docs/architecture/ADR_INDEX.md', architectureDecisionIndex, pattern, message);
+}
 
-requireMatch(
-  'docs/architecture/ADR-003-repository-workspace-parallel-composition.md',
-  parallelRouteAdr,
-  /superseded by \[ADR-010\]/i,
-  'ADR-003 does not identify ADR-010 route-identity supersession'
-);
-requireMatch(
-  'docs/architecture/ADR-003-repository-workspace-parallel-composition.md',
-  parallelRouteAdr,
-  /current canonical namespace is `\/\{ownerSlug\}\/\{repositorySlug\}`/i,
-  'ADR-003 current Owner/Repository namespace annotation is missing'
-);
-requireMatch(
-  'docs/architecture/ADR-003-repository-workspace-parallel-composition.md',
-  parallelRouteAdr,
-  /does not flatten or replace this Parallel Route architecture/i,
-  'ADR-003 does not preserve the Parallel Route decision'
-);
+for (const [pattern, message] of [
+  [/\*\*Superseded\.\*\*/m, 'ADR-003 is not explicitly superseded'],
+  [
+    /one Owner\/Repository header, primary navigation, and one active content surface/i,
+    'ADR-003 replacement interaction model is missing'
+  ],
+  [
+    /current canonical route identity is owned by ADR-010/i,
+    'ADR-003 does not defer current route identity to ADR-010'
+  ]
+]) {
+  requireMatch(
+    'docs/architecture/ADR-003-repository-workspace-parallel-composition.md',
+    compositionAdr,
+    pattern,
+    message
+  );
+}
 
 for (const openGapId of ['GAP-OWNERSHIP-001', 'GAP-IDENTITY-001']) {
   requireMatch(
@@ -272,25 +278,25 @@ requireMatch(
   'docs/history/CLOSED_GAPS.md',
   closedGapArchive,
   /### GAP-AUTH-001[\s\S]*?02f33f4ba75cc250378a6fba38f4b926eb62c355[\s\S]*?31505215295/i,
-  'GAP-AUTH-001 exact commit and CI closure evidence is missing'
+  'GAP-AUTH-001 exact implementation and CI closure evidence is missing'
 );
 requireMatch(
   'docs/history/CLOSED_GAPS.md',
   closedGapArchive,
   /### GAP-LIFECYCLE-001[\s\S]*?d8af47d0b3c6225c79efbd708106f42176e443ad[\s\S]*?31524256329/i,
-  'GAP-LIFECYCLE-001 exact implementation head and CI closure evidence is missing'
+  'GAP-LIFECYCLE-001 exact implementation and CI closure evidence is missing'
 );
 requireMatch(
   'docs/history/CLOSED_GAPS.md',
   closedGapArchive,
   /### GAP-LIFECYCLE-002[\s\S]*?c5ab97474e8c3f538fd5966a70d40450048a1952[\s\S]*?31567572157/i,
-  'GAP-LIFECYCLE-002 exact implementation head and CI closure evidence is missing'
+  'GAP-LIFECYCLE-002 exact implementation and CI closure evidence is missing'
 );
 requireMatch(
   'docs/history/CLOSED_GAPS.md',
   closedGapArchive,
   /### GAP-PAGE-001[\s\S]*?a6bba75bb08cd0c6742ad6932e103698a9ab0bf2[\s\S]*?31577420974/i,
-  'GAP-PAGE-001 exact implementation head and CI closure evidence is missing'
+  'GAP-PAGE-001 exact implementation and CI closure evidence is missing'
 );
 
 const lifecycleAdrPath = 'docs/architecture/ADR-005-local-first-supabase-lifecycle.md';
@@ -298,14 +304,8 @@ const lifecycleAdr = documents[lifecycleAdrPath];
 for (const [pattern, message] of [
   [/^- Status: Accepted$/m, 'ADR is not accepted'],
   [/Migration artifact\s*≠\s*Applied deployment/u, 'migration/deployment distinction is missing'],
-  [
-    /Selected provider\s*≠\s*Provisioned environment/u,
-    'provider/provisioning distinction is missing'
-  ],
-  [
-    /Local verification\s*≠\s*Production validation/u,
-    'verification/production distinction is missing'
-  ],
+  [/Selected provider\s*≠\s*Provisioned environment/u, 'provider/provisioning distinction is missing'],
+  [/Local verification\s*≠\s*Production validation/u, 'verification/production distinction is missing'],
   [/^## Initial remote baseline gate$/m, 'initial remote baseline gate is missing']
 ]) {
   requireMatch(lifecycleAdrPath, lifecycleAdr, pattern, message);
@@ -334,12 +334,6 @@ requireMatch(
   documents['docs/domains/identity-lifecycle.md'],
   /Registration never creates Organization membership, Team membership, Repository Grant, or Resource authority/,
   'registration authority invariant is missing'
-);
-requireMatch(
-  'docs/domains/repository-collaboration.md',
-  documents['docs/domains/repository-collaboration.md'],
-  /Repository deletion remains unavailable[\s\S]*Resources[\s\S]*Grants[\s\S]*history[\s\S]*recovery/i,
-  'destructive Repository lifecycle rule is missing'
 );
 
 requireMatch(
