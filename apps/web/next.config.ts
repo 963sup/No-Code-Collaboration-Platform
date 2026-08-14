@@ -24,6 +24,7 @@ export default withSentryConfig(nextConfig, {
   project: process.env.SENTRY_PROJECT,
   authToken: isVercelBuild ? process.env.SENTRY_AUTH_TOKEN : undefined,
   silent: !isVercelBuild,
+  telemetry: false,
   useRunAfterProductionCompileHook: true,
   webpack: {
     treeshake: {
