@@ -15,7 +15,6 @@ const repository = {
     kind: 'organization' as const,
     organizationId: 'organization-1'
   },
-  organizationId: 'organization-1',
   slug: 'platform',
   visibility: 'private' as const
 };
