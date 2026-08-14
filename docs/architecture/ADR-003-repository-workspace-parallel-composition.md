@@ -16,14 +16,14 @@ Repository semantics never required permanent navigation, context, workspace, an
 
 ## Why it was superseded
 
-The corrected Repository interaction model is derived from the mature GitHub owner/Repository mental model and the current Product Contract:
+The corrected Repository interaction model is one Owner/Repository header, primary navigation, and one active content surface. It is derived from the mature GitHub owner/Repository mental model and the current Product Contract:
 
 ```text
 Owner / Repository      Visibility
 ----------------------------------
 Overview   Pages   Activity
 ----------------------------------
-active child content
+active content
 ```
 
 This model has stronger alignment with the actual user relationship:
