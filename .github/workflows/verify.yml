@@ -75,6 +75,25 @@ jobs:
       - name: Verify repository
         run: pnpm verify:full
 
+      - name: Show formatter patch
+        if: failure()
+        run: |
+          pnpm format
+          git diff --no-ext-diff --unified=3 -- \
+            apps/web/e2e/navigation.spec.ts \
+            apps/web/e2e/page-collaboration.spec.ts \
+            'apps/web/src/app/(app)/app/page.tsx' \
+            'apps/web/src/app/(repository)/[ownerSlug]/[repositorySlug]/_components/repository-shell.tsx' \
+            'apps/web/src/app/(repository)/[ownerSlug]/[repositorySlug]/_queries/get-accessible-repository-route.ts' \
+            'apps/web/src/app/(repository)/[ownerSlug]/[repositorySlug]/layout.tsx' \
+            'apps/web/src/app/(repository)/[ownerSlug]/[repositorySlug]/pages/[pageId]/page.tsx' \
+            'apps/web/src/app/(repository)/[ownerSlug]/[repositorySlug]/pages/actions.ts' \
+            'apps/web/src/app/(repository)/[ownerSlug]/[repositorySlug]/pages/page.tsx' \
+            packages/application/tests/can-read-repository-activity.test.ts \
+            packages/infrastructure/supabase/src/mappers/supabase-repository-mapper.ts \
+            tooling/check-architecture.mjs \
+            tooling/check-documentation-contracts.mjs
+
   database:
     name: Supabase contracts
     runs-on: ubuntu-latest
