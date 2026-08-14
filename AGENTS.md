@@ -43,9 +43,13 @@ Organization is a Membership/administration Scope and possible Owner, not a mand
 5. Direct provider/production observation and current official external docs.
 6. Generated projections and transient context.
 
-Use `docs/README.md` as the truth router. Historical ADRs, closed gaps, pull requests, migration history, and source history are opt-in evidence for why/regression/provenance; they are not current truth by default.
+Use `docs/README.md` as the truth router.
 
-When authorities disagree, correct the earliest invalid Product/Domain/Architecture/executable/evidence boundary instead of inventing a compatibility explanation.
+## Zero-context cold start
+
+A fresh agent starts from the current task, applicable `AGENTS.md` chain, `docs/README.md`, the narrowest current contract, then executable evidence. Historical evidence is opt-in for why, regression, or provenance; it is not current truth by default.
+
+Do not recursively reconstruct current state from broad history. When required current context is missing or authorities disagree, do not invent the missing architecture; resolve the nearest current contract and executable evidence or register the mismatch.
 
 ## Architecture boundaries
 
@@ -84,6 +88,7 @@ RLS is independent database enforcement; it does not replace Domain/Application 
 
 - Read nested instructions before editing their scope.
 - Prefer the smallest sufficient reversible change. When the task explicitly corrects a false canonical boundary, replace the false definition and every affected projection rather than layering compatibility prose over it.
+- Do not redesign architecture while solving a local task unless the explicit task requires that correction.
 - Do not add speculative frameworks, services, stores, APIs, abstractions, persistence supertypes, or dependencies.
 - Prefer machine-verifiable evidence over prose.
 - Never publish secrets, credentials, `.env` files, project references, or private production data.
