@@ -169,13 +169,16 @@ requireMatch(
 );
 
 for (const [pattern, message] of [
-  [/\/\[ownerSlug\]\/\[repositorySlug\]/, 'canonical Owner/Repository semantic route is missing'],
   [
-    /one Owner\/Repository header, primary navigation, and one active child content surface/i,
+    /\/\{ownerSlug\}\/\{repositorySlug\}/,
+    'canonical Owner/Repository semantic route is missing'
+  ],
+  [
+    /one Owner\/Repository header, primary navigation, and one active (?:child )?content surface/i,
     'canonical Repository presentation contract is missing'
   ],
   [
-    /public Repository reads cannot inherit an authenticated-only wrapper/i,
+    /Repository reads cannot inherit an authenticated-only wrapper[\s\S]*public Repository visibility/is,
     'public Repository delivery boundary is missing'
   ],
   [
