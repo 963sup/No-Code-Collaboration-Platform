@@ -51,7 +51,7 @@ A fresh agent starts from the current task, applicable `AGENTS.md` chain, `docs/
 
 Do not recursively reconstruct current state from broad history. When required current context is missing or authorities disagree, do not invent the missing architecture; resolve the nearest current contract and executable evidence or register the mismatch.
 
-For non-trivial product, implementation, review, release, or provider-validation work, use `.agents/skills/plugin-development-workflow/SKILL.md` to route connected Linear, GitHub, Notion, Context7, Codex Security, Vercel, and Supabase tools by truth class. Never invoke all seven ceremonially or let an external tool redefine repository truth.
+For non-trivial product, implementation, review, release, provider-validation, or production-learning work, use `.agents/skills/plugin-development-workflow/SKILL.md` to route connected Linear, GitHub, Notion, Context7, Codex Security, Vercel, Supabase, Sentry, and PostHog tools by truth class. Never invoke every connected plugin ceremonially or let an external tool redefine repository truth.
 
 ## Architecture boundaries
 
@@ -93,6 +93,8 @@ RLS is independent database enforcement; it does not replace Domain/Application 
 - Do not redesign architecture while solving a local task unless the explicit task requires that correction.
 - Do not add speculative frameworks, services, stores, APIs, abstractions, persistence supertypes, or dependencies.
 - Prefer machine-verifiable evidence over prose.
+- Treat Sentry and PostHog as production observation evidence, not Product/Domain truth or substitutes for deterministic verification.
+- Minimize telemetry and never intentionally capture credentials, auth tokens, secrets, or raw private Repository content merely for observability or analytics.
 - Never publish secrets, credentials, `.env` files, project references, or private production data.
 - External mutation/destruction requires explicit user intent.
 
