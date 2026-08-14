@@ -5,8 +5,7 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
-  Input,
-  Textarea
+  Input
 } from '@no-code-collaboration-platform/ui';
 import { notFound } from 'next/navigation';
 
@@ -83,7 +82,13 @@ export default async function RepositoryPageDetail({
               <label className='text-sm font-medium' htmlFor='page-body'>
                 Content
               </label>
-              <Textarea id='page-body' name='body' defaultValue={page.content.body} rows={14} />
+              <textarea
+                className='border-input bg-background focus-visible:border-ring focus-visible:ring-ring/50 min-h-36 w-full rounded-md border px-3 py-2 text-sm shadow-xs outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50'
+                defaultValue={page.content.body}
+                id='page-body'
+                name='body'
+                rows={14}
+              />
             </div>
             <Button type='submit'>Save Page</Button>
           </form>
