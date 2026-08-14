@@ -51,52 +51,6 @@ jobs:
           persona: regular
           version: '1.29.0'
 
-  lockfile-refresh:
-    name: One-time Sentry lockfile refresh
-    if: github.event_name == 'pull_request' && github.event.pull_request.number == 27 && github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.head.ref == 'docs/core-collaboration-semantics'
-    permissions:
-      contents: write
-    runs-on: ubuntu-latest
-    timeout-minutes: 12
-    steps:
-      - name: Checkout exact PR branch
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          ref: docs/core-collaboration-semantics
-          persist-credentials: false
-
-      - name: Setup Node.js
-        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
-        with:
-          node-version-file: .node-version
-
-      - name: Enable Corepack
-        run: corepack enable
-
-      - name: Generate exact lockfile
-        run: pnpm install --no-frozen-lockfile
-
-      - name: Commit generated lockfile through GitHub API
-        env:
-          GH_TOKEN: ${{ github.token }}
-          TARGET_BRANCH: docs/core-collaboration-semantics
-        run: |
-          set -euo pipefail
-          current_sha="$(gh api "repos/${GITHUB_REPOSITORY}/contents/pnpm-lock.yaml?ref=${TARGET_BRANCH}" --jq '.sha')"
-          base64 -w0 pnpm-lock.yaml > "${RUNNER_TEMP}/pnpm-lock.b64"
-          jq -n \
-            --arg message 'build: refresh pnpm lockfile for Sentry' \
-            --rawfile content "${RUNNER_TEMP}/pnpm-lock.b64" \
-            --arg sha "${current_sha}" \
-            --arg branch "${TARGET_BRANCH}" \
-            '{message: $message, content: $content, sha: $sha, branch: $branch}' \
-            > "${RUNNER_TEMP}/pnpm-lock-update.json"
-          gh api \
-            --method PUT \
-            "repos/${GITHUB_REPOSITORY}/contents/pnpm-lock.yaml" \
-            --input "${RUNNER_TEMP}/pnpm-lock-update.json" \
-            > /dev/null
-
   repository:
     name: Repository contracts
     runs-on: ubuntu-latest
@@ -116,9 +70,28 @@ jobs:
         run: corepack enable
 
       - name: Install dependencies
-        run: pnpm install --no-frozen-lockfile
+        run: pnpm install --frozen-lockfile
+
+      - name: Verify Sentry configuration
+        if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
+        env:
+          NEXT_PUBLIC_SENTRY_DSN: ${{ vars.NEXT_PUBLIC_SENTRY_DSN }}
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SENTRY_ORG: ${{ vars.SENTRY_ORG }}
+          SENTRY_PROJECT: ${{ vars.SENTRY_PROJECT }}
+        run: |
+          set -euo pipefail
+          test -n "${NEXT_PUBLIC_SENTRY_DSN}" || { echo 'NEXT_PUBLIC_SENTRY_DSN is not configured'; exit 1; }
+          test -n "${SENTRY_AUTH_TOKEN}" || { echo 'SENTRY_AUTH_TOKEN is not configured'; exit 1; }
+          test -n "${SENTRY_ORG}" || { echo 'SENTRY_ORG is not configured'; exit 1; }
+          test -n "${SENTRY_PROJECT}" || { echo 'SENTRY_PROJECT is not configured'; exit 1; }
 
       - name: Verify repository
+        env:
+          NEXT_PUBLIC_SENTRY_DSN: ${{ vars.NEXT_PUBLIC_SENTRY_DSN }}
+          SENTRY_ENVIRONMENT: ci
+          SENTRY_ORG: ${{ vars.SENTRY_ORG }}
+          SENTRY_PROJECT: ${{ vars.SENTRY_PROJECT }}
         run: pnpm verify:full
 
   database:
@@ -140,7 +113,7 @@ jobs:
         run: corepack enable
 
       - name: Install dependencies
-        run: pnpm install --no-frozen-lockfile
+        run: pnpm install --frozen-lockfile
 
       - name: Start minimal local Supabase stack
         run: pnpm supabase:start:ci
@@ -172,7 +145,7 @@ jobs:
         run: corepack enable
 
       - name: Install dependencies
-        run: pnpm install --no-frozen-lockfile
+        run: pnpm install --frozen-lockfile
 
       - name: Start browser Supabase stack with Mailpit
         run: pnpm supabase:start:browser
@@ -181,6 +154,11 @@ jobs:
         run: pnpm supabase:env:github
 
       - name: Build web application
+        env:
+          NEXT_PUBLIC_SENTRY_DSN: ${{ vars.NEXT_PUBLIC_SENTRY_DSN }}
+          SENTRY_ENVIRONMENT: ci
+          SENTRY_ORG: ${{ vars.SENTRY_ORG }}
+          SENTRY_PROJECT: ${{ vars.SENTRY_PROJECT }}
         run: pnpm build
 
       - name: Install Chromium
