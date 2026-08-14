@@ -22,14 +22,12 @@ values (
 insert into public.repositories (
   id,
   owner_organization_id,
-  organization_id,
   slug,
   name,
   created_by
 )
 values (
   '20000000-0000-0000-0000-000000000001',
-  '10000000-0000-0000-0000-000000000001',
   '10000000-0000-0000-0000-000000000001',
   'example-repository',
   'Example Repository',
