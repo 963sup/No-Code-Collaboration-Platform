@@ -123,7 +123,7 @@ async function createRepositoryFixture(
   const organizationId = randomUUID();
   const repositoryId = randomUUID();
   const suffix = randomUUID().slice(0, 8);
-  const organizationSlug = `e2e-org-${suffix}`;
+  const ownerSlug = `e2e-org-${suffix}`;
   const repositorySlug = `e2e-repo-${suffix}`;
   const headers = {
     apikey: publishableKey,
@@ -137,7 +137,7 @@ async function createRepositoryFixture(
       created_by: identity.user.id,
       id: organizationId,
       name: 'E2E Organization',
-      slug: organizationSlug
+      slug: ownerSlug
     },
     headers
   });
@@ -148,17 +148,17 @@ async function createRepositoryFixture(
       created_by: identity.user.id,
       id: repositoryId,
       name: 'E2E Repository',
-      organization_id: organizationId,
+      owner_organization_id: organizationId,
       slug: repositorySlug
     },
     headers
   });
   expect(repositoryResponse.status()).toBe(201);
 
-  return { organizationSlug, repositoryId, repositorySlug };
+  return { ownerSlug, repositoryId, repositorySlug };
 }
 
-test('Page collaboration uses owner-semantic Repository routes while stable IDs remain authorization targets', async ({
+test('Page collaboration uses canonical Owner/Repository routes while stable IDs remain authorization targets', async ({
   page,
   request
 }) => {
@@ -167,16 +167,15 @@ test('Page collaboration uses owner-semantic Repository routes while stable IDs 
 
   await registerAndVerifyActor(page, request, email, password);
   const identity = await establishApiIdentity(request, email, password);
-  const { organizationSlug, repositoryId, repositorySlug } = await createRepositoryFixture(
-    request,
-    identity
-  );
-  const repositoryPath = `/${organizationSlug}/${repositorySlug}`;
+  const { ownerSlug, repositoryId, repositorySlug } = await createRepositoryFixture(request, identity);
+  const repositoryPath = `/${ownerSlug}/${repositorySlug}`;
   const pagesPath = `${repositoryPath}/pages`;
 
   await page.goto('/app');
   await page.getByRole('link', { name: /E2E Repository/u }).click();
   await expect(page).toHaveURL(repositoryPath);
+  await expect(page.getByText(ownerSlug, { exact: true })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Pages', exact: true })).toBeVisible();
 
   await page.goto(`/app/repositories/${repositoryId}`);
   await expect(page).toHaveURL(repositoryPath);
@@ -190,7 +189,6 @@ test('Page collaboration uses owner-semantic Repository routes while stable IDs 
 
   await expect(page).toHaveURL(new RegExp(`${pagesPath}/[0-9a-f-]+$`, 'u'));
   await expect(page.getByRole('heading', { name: 'Edit Page' })).toBeVisible();
-  await expect(page.getByText('Page “Product brief” created', { exact: true })).toBeVisible();
 
   const canonicalPagePath = new URL(page.url()).pathname;
   const pageId = canonicalPagePath.split('/').at(-1);
@@ -211,7 +209,6 @@ test('Page collaboration uses owner-semantic Repository routes while stable IDs 
 
   const meaningfulVersion = await page.locator('input[name="expectedUpdatedAt"]').inputValue();
   expect(meaningfulVersion).not.toBe(initialVersion);
-  await expect(page.getByText('Page “Product brief” updated', { exact: true })).toHaveCount(1);
 
   await stalePage.getByLabel('Content').fill('Stale overwrite');
   await stalePage.getByRole('button', { name: 'Save Page' }).click();
@@ -230,5 +227,9 @@ test('Page collaboration uses owner-semantic Repository routes while stable IDs 
 
   const noOpVersion = await page.locator('input[name="expectedUpdatedAt"]').inputValue();
   expect(noOpVersion).toBe(meaningfulVersion);
-  await expect(page.getByText('Page “Product brief” updated', { exact: true })).toHaveCount(1);
+
+  await page.getByRole('link', { name: 'Activity', exact: true }).click();
+  await expect(page).toHaveURL(`${repositoryPath}/activity`);
+  await expect(page.getByText('resource.created', { exact: true })).toHaveCount(1);
+  await expect(page.getByText('resource.updated', { exact: true })).toHaveCount(1);
 });
