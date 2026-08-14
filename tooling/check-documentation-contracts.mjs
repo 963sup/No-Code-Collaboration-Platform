@@ -169,10 +169,7 @@ requireMatch(
 );
 
 for (const [pattern, message] of [
-  [
-    /\/\{ownerSlug\}\/\{repositorySlug\}/,
-    'canonical Owner/Repository semantic route is missing'
-  ],
+  [/\/\{ownerSlug\}\/\{repositorySlug\}/, 'canonical Owner/Repository semantic route is missing'],
   [
     /one Owner\/Repository header, primary navigation, and one active (?:child )?content surface/i,
     'canonical Repository presentation contract is missing'
@@ -307,8 +304,14 @@ const lifecycleAdr = documents[lifecycleAdrPath];
 for (const [pattern, message] of [
   [/^- Status: Accepted$/m, 'ADR is not accepted'],
   [/Migration artifact\s*≠\s*Applied deployment/u, 'migration/deployment distinction is missing'],
-  [/Selected provider\s*≠\s*Provisioned environment/u, 'provider/provisioning distinction is missing'],
-  [/Local verification\s*≠\s*Production validation/u, 'verification/production distinction is missing'],
+  [
+    /Selected provider\s*≠\s*Provisioned environment/u,
+    'provider/provisioning distinction is missing'
+  ],
+  [
+    /Local verification\s*≠\s*Production validation/u,
+    'verification/production distinction is missing'
+  ],
   [/^## Initial remote baseline gate$/m, 'initial remote baseline gate is missing']
 ]) {
   requireMatch(lifecycleAdrPath, lifecycleAdr, pattern, message);
