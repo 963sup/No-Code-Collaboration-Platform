@@ -6,6 +6,7 @@ interface RepositoryShellProps {
   readonly ownerSlug: string;
   readonly repositorySlug: string;
   readonly repositoryName: string;
+  readonly showActivity: boolean;
   readonly visibility: 'private' | 'public';
 }
 
@@ -14,6 +15,7 @@ export function RepositoryShell({
   ownerSlug,
   repositorySlug,
   repositoryName,
+  showActivity,
   visibility
 }: RepositoryShellProps) {
   const basePath = `/${encodeURIComponent(ownerSlug)}/${encodeURIComponent(repositorySlug)}`;
@@ -41,9 +43,11 @@ export function RepositoryShell({
             <Link className='px-3 py-2 text-sm font-medium' href={`${basePath}/pages`}>
               Pages
             </Link>
-            <Link className='px-3 py-2 text-sm font-medium' href={`${basePath}/activity`}>
-              Activity
-            </Link>
+            {showActivity ? (
+              <Link className='px-3 py-2 text-sm font-medium' href={`${basePath}/activity`}>
+                Activity
+              </Link>
+            ) : null}
           </nav>
         </div>
       </header>
