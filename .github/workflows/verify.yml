@@ -72,26 +72,17 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Verify Sentry configuration
+      - name: Verify Sentry Actions secret
         if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository)
         env:
-          NEXT_PUBLIC_SENTRY_DSN: ${{ vars.NEXT_PUBLIC_SENTRY_DSN }}
           SENTRY_AUTH_TOKEN_CONFIGURED: ${{ secrets.SENTRY_AUTH_TOKEN != '' }}
-          SENTRY_ORG: ${{ vars.SENTRY_ORG }}
-          SENTRY_PROJECT: ${{ vars.SENTRY_PROJECT }}
         run: |
           set -euo pipefail
-          test -n "${NEXT_PUBLIC_SENTRY_DSN}" || { echo 'NEXT_PUBLIC_SENTRY_DSN is not configured'; exit 1; }
           test "${SENTRY_AUTH_TOKEN_CONFIGURED}" = 'true' || { echo 'SENTRY_AUTH_TOKEN is not configured'; exit 1; }
-          test -n "${SENTRY_ORG}" || { echo 'SENTRY_ORG is not configured'; exit 1; }
-          test -n "${SENTRY_PROJECT}" || { echo 'SENTRY_PROJECT is not configured'; exit 1; }
 
       - name: Verify repository
         env:
-          NEXT_PUBLIC_SENTRY_DSN: ${{ vars.NEXT_PUBLIC_SENTRY_DSN }}
           SENTRY_ENVIRONMENT: ci
-          SENTRY_ORG: ${{ vars.SENTRY_ORG }}
-          SENTRY_PROJECT: ${{ vars.SENTRY_PROJECT }}
         run: pnpm verify:full
 
   database:
@@ -155,10 +146,7 @@ jobs:
 
       - name: Build web application
         env:
-          NEXT_PUBLIC_SENTRY_DSN: ${{ vars.NEXT_PUBLIC_SENTRY_DSN }}
           SENTRY_ENVIRONMENT: ci
-          SENTRY_ORG: ${{ vars.SENTRY_ORG }}
-          SENTRY_PROJECT: ${{ vars.SENTRY_PROJECT }}
         run: pnpm build
 
       - name: Install Chromium
