@@ -4,7 +4,7 @@ import {
   CreatePage,
   type IdentityProvider,
   type PageWriter,
-  type RepositoryAuthoritySourceReader,
+  type RepositoryAccessReader,
   type RepositoryReader
 } from '../src/index';
 
@@ -12,7 +12,10 @@ const repository = {
   description: null,
   id: 'repository-1',
   name: 'Platform',
-  organizationId: 'organization-1',
+  owner: {
+    kind: 'organization' as const,
+    organizationId: 'organization-1'
+  },
   slug: 'platform',
   visibility: 'private' as const
 };
@@ -63,12 +66,13 @@ function createRepositoryReader(): RepositoryReader {
 
 describe('CreatePage', () => {
   it('rejects an unauthenticated request before reading Repository authority', async () => {
-    const readRepositoryAuthoritySources = vi.fn();
+    const readRepositoryAccess = vi.fn();
     const createPage = vi.fn();
+    const accessReader: RepositoryAccessReader = { readRepositoryAccess };
     const useCase = new CreatePage(
       createIdentityProvider(null),
       createRepositoryReader(),
-      { readRepositoryAuthoritySources },
+      accessReader,
       { createPage, updatePage: vi.fn() }
     );
 
@@ -76,22 +80,22 @@ describe('CreatePage', () => {
       ok: false,
       reason: 'unauthenticated'
     });
-    expect(readRepositoryAuthoritySources).not.toHaveBeenCalled();
+    expect(readRepositoryAccess).not.toHaveBeenCalled();
     expect(createPage).not.toHaveBeenCalled();
   });
 
   it('rejects a Viewer through the Domain capability decision', async () => {
     const createPage = vi.fn();
-    const authoritySourceReader: RepositoryAuthoritySourceReader = {
-      async readRepositoryAuthoritySources() {
-        return { directRole: 'viewer', organizationRole: null };
+    const accessReader: RepositoryAccessReader = {
+      async readRepositoryAccess() {
+        return { directRole: 'viewer', governanceRole: null };
       }
     };
     const pageWriter: PageWriter = { createPage, updatePage: vi.fn() };
     const useCase = new CreatePage(
       createIdentityProvider('user-1'),
       createRepositoryReader(),
-      authoritySourceReader,
+      accessReader,
       pageWriter
     );
 
@@ -118,8 +122,8 @@ describe('CreatePage', () => {
       createIdentityProvider('user-1'),
       createRepositoryReader(),
       {
-        async readRepositoryAuthoritySources() {
-          return { directRole: null, organizationRole: 'admin' };
+        async readRepositoryAccess() {
+          return { directRole: null, governanceRole: 'admin' };
         }
       },
       { createPage, updatePage: vi.fn() }
@@ -147,8 +151,8 @@ describe('CreatePage', () => {
       createIdentityProvider('user-1'),
       createRepositoryReader(),
       {
-        async readRepositoryAuthoritySources() {
-          return { directRole: 'contributor', organizationRole: null };
+        async readRepositoryAccess() {
+          return { directRole: 'contributor', governanceRole: null };
         }
       },
       { createPage, updatePage: vi.fn() }
@@ -171,8 +175,8 @@ describe('CreatePage', () => {
       createIdentityProvider('user-1'),
       createRepositoryReader(),
       {
-        async readRepositoryAuthoritySources() {
-          return { directRole: 'contributor', organizationRole: null };
+        async readRepositoryAccess() {
+          return { directRole: 'contributor', governanceRole: null };
         }
       },
       { createPage: vi.fn().mockResolvedValue(null), updatePage: vi.fn() }
@@ -190,8 +194,8 @@ describe('CreatePage', () => {
       createIdentityProvider('user-1'),
       createRepositoryReader(),
       {
-        async readRepositoryAuthoritySources() {
-          return { directRole: 'contributor', organizationRole: null };
+        async readRepositoryAccess() {
+          return { directRole: 'contributor', governanceRole: null };
         }
       },
       { createPage, updatePage: vi.fn() }

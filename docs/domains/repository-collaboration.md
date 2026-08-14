@@ -2,214 +2,312 @@
 
 - Status: Candidate
 - Contract owner: Product and Domain
-- Last reviewed: 2026-08-11
+- Last reviewed: 2026-08-14
 
 ## Problem owned and success condition
 
-Collaborative work needs one stable boundary that owns its identity, contained work, visibility, lifecycle, authorization target, and history.
+Collaborative work needs one stable Container that owns containment, authorization target, lifecycle coordination, human navigation identity, and historical scope while ownership of that Container remains a separate relationship.
 
-This contract succeeds when a Repository can contain multiple Resource kinds while every Resource, permission decision, navigation surface, and historical event still has an unambiguous collaboration boundary.
+This contract succeeds when User-owned and Organization-owned Repositories contain the same accepted Resource kinds and use the same collaboration, authorization, URL, and evidence semantics without turning Organization, Owner, Context, or presentation into a second collaboration Container.
 
 ## Evidence ledger
 
 ### Observations
 
-- The root product invariant already defines `Repository` as a no-code collaboration container.
-- The current database gives each Repository one Organization owner and one visibility state.
-- The current Resource model requires every Resource to reference one Repository.
-- Repository-scoped authorization queries and activity history already use `repository_id` as their boundary key.
-- The first web workspace presents navigation, context, work, and activity simultaneously for one Repository.
+- Product axiom defines Repository as the No-Code Collaboration Container.
+- GitHub's mature owner/Repository relationship shows that personal and Organization ownership can share one Repository interaction model.
+- Current Resource semantics require every Resource to reference one Repository.
+- Repository-scoped authorization and historical evidence use stable Repository identity.
+- Canonical Web routing now uses an Owner namespace plus Repository slug.
+- Page is the first accepted concrete Repository-contained Resource kind.
 
-### Constraints
+### Hard constraints
 
-- Repository must not inherit Git concepts or source-code semantics.
-- Organization ownership, Repository identity, Resource containment, and access grants remain distinct.
-- Domain semantics cannot depend on Next.js routes, Supabase DTOs, generated database types, or a specific UI composition.
-- Cross-Repository behavior cannot bypass authorization or historical evidence.
+- Repository is the only accepted primary collaboration Container.
+- Repository ownership, Repository identity, Resource containment, Principal Grants, and Context remain distinct.
+- Exactly one accepted Owner owns a Repository at a time.
+- User and Organization are the accepted Repository Owner types.
+- Domain semantics cannot depend on framework folders, provider DTOs, generated rows, or a specific UI composition.
+- Cross-Repository presentation cannot bypass Repository authorization or evidence invariants.
+- A benchmark capability that has no independent no-code collaboration problem is not adapted into this Domain.
 
-### Assumptions
+### Current implementation mismatch
 
-- One owning Organization is sufficient for the current product horizon.
+The target Domain truth is:
+
+```text
+Repository Owner = User | Organization
+```
+
+Any executable projection that still assumes Organization-only ownership is an implementation gap, not evidence for redefining Product meaning.
+
+### Assumptions under validation
+
+- Exactly one Owner is sufficient at a time.
+- User and Organization are sufficient Owner kinds for the current product horizon.
 - A Resource belongs to exactly one Repository at a time.
-- Repository visibility can remain a small explicit state set while authority is evaluated separately.
-- A shared Resource envelope plus explicit subtype behavior is sufficient for the first resource families.
+- `private | public` is sufficient visibility vocabulary while ordinary Organization Membership contributes no Repository read baseline.
+- The current Resource envelope remains sufficient for Page until another real Resource kind or Page-specific storage invariant proves otherwise.
 
 ### Unknowns
 
-- Whether personal ownership is required.
-- Whether Repository transfer, archive, restore, templates, or cloning require explicit lifecycle states.
-- Which Resource kinds need independent identity and storage contracts.
-- Whether any normal use case requires one Resource to belong to multiple Repositories.
-- Whether public discovery and public access should be separate concepts.
+- Whether Repository ownership transfer requires intermediate states.
+- Whether archive/restore/templates need explicit Repository lifecycle states.
+- Which future Resource kinds need independent subtype storage/contracts.
+- Whether a normal use case requires one Resource to belong to multiple Repositories.
+- Whether a future Organization-wide Repository visibility/base-access mode is necessary.
 
 ### Value choices
 
-- Prefer one explicit collaboration boundary over feature-specific containers.
-- Prefer relational identity and ownership over an opaque generic JSON store.
+- Prefer one explicit collaboration Container over feature-specific containers.
+- Prefer typed User/Organization ownership over a weak polymorphic owner record.
+- Prefer globally unambiguous Owner namespaces for human URLs.
+- Prefer stable Repository IDs for relationships, authorization, and evidence while slugs remain mutable human routing identifiers.
 - Prefer deferred lifecycle states over speculative completeness.
-- Prefer explicit cross-Repository references over hidden containment exceptions.
 
 ## Boundary and owner
 
 This contract owns:
 
-- Repository identity and canonical naming within an owning Organization;
-- the Repository-to-Organization ownership relationship;
-- Repository visibility state;
-- the Repository-to-Resource containment relationship;
-- rules for entering, leaving, transferring, or deleting that boundary when those transitions are accepted; and
-- the semantic requirement that Repository-scoped history and authority target the same Repository identity.
+- Repository stable identity;
+- typed Repository ownership (`User | Organization`);
+- Owner namespace and Repository slug rules;
+- Repository visibility vocabulary;
+- Repository-to-Resource containment;
+- rules for ownership transfer/archive/destructive lifecycle when accepted; and
+- the requirement that Repository-scoped authority/history target the same stable Repository identity.
 
 This contract does not own:
 
-- authentication or User lifecycle;
-- Organization membership lifecycle;
-- grant evaluation, Role bundles, or capability delegation;
-- the internal content model of each Resource subtype;
-- feed, notification, or analytics projections;
-- Next.js route composition; or
-- PostgreSQL persistence mechanics.
+- authentication credential lifecycle;
+- User profile/onboarding beyond Owner namespace identity needed for routing;
+- Organization Membership lifecycle;
+- Principal Grant evaluation/Role bundles/delegation;
+- Resource subtype content model;
+- feed/notification/analytics projections;
+- framework route composition; or
+- database mechanics.
+
+## Semantic role mapping
+
+```text
+Actor        = authenticated User performing a Repository-scoped action
+Scope        = Repository Owner relationship plus applicable Organization/future Enterprise governance scope
+Principal    = authority-receiving subject resolved by Access Authority
+Container    = Repository
+Relationship = Repository ownership, Membership, Resource containment, Repository Grants
+Artifact     = Resource/Page and future independently proven Repository-scoped work types
+Process      = Repository, Resource, ownership, and authority state transitions
+```
+
+`Activity Event` is historical Evidence. `Context` is presentation. `Role`, `Capability`, and future Policy are authorization semantics.
+
+Semantic roles are not persistence supertypes.
 
 ## Vocabulary
 
 | Term | Meaning |
 | --- | --- |
-| Repository | Persistent no-code collaboration container |
-| Repository ID | Stable identity used by relationships and authorization |
-| Repository slug | Human-readable name unique within one owning Organization |
-| Visibility | Repository discovery/access baseline state; currently `private`, `organization`, or `public` |
+| Repository | Persistent No-Code Collaboration Container |
+| Repository ID | Stable identity used by relationships, authorization, and evidence |
+| Repository Owner | Exactly one User or Organization owning the Repository |
+| Owner namespace | Globally unambiguous User username or Organization slug used as URL owner segment |
+| Repository slug | Human-readable name unique within one Owner namespace |
+| Visibility | Discovery/read baseline; current target states are `private` and `public` |
 | Resource | Persistent Repository-scoped unit of collaborative work |
-| Resource kind | Explicit discriminator selecting subtype behavior |
-| Workspace | Presentation projection of one Repository; not a separate entity |
-| Owner | Organization that owns the Repository; not the authenticated actor |
+| Page | First accepted concrete Resource kind |
+| Workspace | Presentation of one Repository; not a separate Entity or Container |
 
-## Entities, relationships, and derived concepts
+## Repository ownership
 
-### Repository
-
-A Repository has stable identity, one owning Organization, slug, name, optional description, visibility, creator attribution, and timestamps.
-
-### Resource
-
-A Resource has stable identity, exactly one Repository, explicit kind, title, creator attribution, and timestamps. Shared fields form an envelope; subtype-specific rules remain explicit.
-
-### Relationships
+Canonical relationship:
 
 ```text
-Organization 1 ── owns ── * Repository
-Repository   1 ── contains ── * Resource
-Repository   1 ── scopes ── * Activity Event
-Repository   1 ── receives ── * Access Grant
+User         1 ── may own ── * Repository
+Organization 1 ── may own ── * Repository
 ```
 
-`Workspace`, `repository collaborator`, and navigation sections are derived views. They do not gain independent lifecycle ownership through presentation alone.
+Each Repository has exactly one active Owner relationship.
+
+A Repository does not require an Organization ancestor.
+
+Ownership does not fabricate an explicit Principal Grant.
+
+## Owner namespace and URL identity
+
+User username and Organization slug participate in one globally unambiguous Owner namespace:
+
+```text
+/{ownerSlug}/{repositorySlug}
+```
+
+Examples:
+
+```text
+/alice/personal-crm
+/acme/customer-success
+```
+
+The Owner slug is human routing identity. Repository relationships and authorization continue to target stable IDs.
+
+Reserved root product routes cannot be claimed as Owner namespaces.
+
+## Resource containment
+
+A Resource has stable identity and exactly one Repository boundary.
+
+```text
+Repository ── contains ──> Resource
+Resource kind = page (current accepted kind)
+```
+
+Shared Resource fields form an envelope; subtype-specific behavior remains explicit.
+
+A Resource subtype cannot redefine Repository ownership, authorization, or historical scope.
+
+Future work-item or conversation Artifacts are admitted only after a real use case proves independent identity/lifecycle. They remain Repository-contained if accepted.
 
 ## States and transitions
 
 ### Current Repository states
 
-The accepted implementation currently models only active Repositories with visibility states:
+Current active visibility states:
 
-- `private`
-- `organization`
-- `public`
+```text
+private
+public
+```
 
-Archive, soft-delete, transfer, template, and restore states remain unaccepted until a real lifecycle requires them.
+A future Organization-wide visibility state requires explicit effective-access semantics and discriminating tests before acceptance.
 
-### Current Resource states
-
-The minimum model has persistent Resources with an explicit kind. Resource-specific workflow states belong to the subtype contract rather than the shared envelope.
+Archive, transfer, templates, restore, and destructive lifecycle remain separate product decisions.
 
 ### Transition rules
 
-- Creating a Repository requires an existing owning Organization and a slug valid within that Organization.
-- Renaming a Repository may change display name without changing stable identity.
-- Changing visibility must not rewrite membership or grant facts.
+- Creating a personal Repository requires an authenticated User Owner with an established Owner namespace.
+- Creating an Organization-owned Repository requires an existing Organization and Actor authority to administer Repository ownership under it.
+- Repository slug is unique inside the chosen Owner namespace.
+- Renaming Repository display name does not change stable identity.
+- Changing Repository slug changes human URL but not stable identity.
+- Changing visibility does not rewrite ownership, Membership, or explicit Grant facts.
 - Creating a Resource requires an existing accessible Repository.
-- Moving or copying a Resource across Repositories is not implicit; it requires an accepted transition with source and target authorization, history, and failure behavior.
-- Deleting a Repository must define the fate of contained Resources, grants, and events before the operation becomes a public capability.
+- Cross-Repository movement or copying, if later accepted, requires explicit source/target authorization and evidence semantics.
+- Ownership transfer, if accepted, must preserve Repository/Resource stable identities and define authority/evidence consequences.
+- Repository deletion remains unavailable until contained Resources, Grants, namespace reuse, history, retention, recovery, and authority consequences are defined.
 
 ## Invariants
 
-1. A Repository is never a Git code store by implication.
-2. Every Repository has exactly one owning Organization in the current model.
-3. A Repository slug is unique only within its owning Organization.
-4. Every Resource belongs to exactly one Repository at a time.
-5. A Resource cannot be read or mutated by bypassing its Repository authorization boundary.
-6. Visibility does not change actor identity, Organization membership, or explicit grant facts.
-7. The Workspace is a presentation of a Repository, not a second collaboration container.
-8. Resource subtype content cannot redefine Repository ownership or authority.
-9. Repository-scoped Activity Events reference the same stable Repository identity.
-10. Provider-specific IDs or routes cannot become the canonical Repository model.
+1. Repository always means No-Code Collaboration Container.
+2. Every Repository has exactly one Owner.
+3. Repository Owner is User or Organization in the current target model.
+4. User-owned and Organization-owned Repositories share collaboration semantics.
+5. Repository slug uniqueness is scoped to Owner.
+6. User usernames and Organization slugs cannot create ambiguous canonical Owner namespaces.
+7. Every Resource belongs to exactly one Repository at a time.
+8. Resource read/mutation cannot bypass Repository authorization.
+9. Visibility does not change Actor identity, ownership, Membership, or explicit Grant facts.
+10. Workspace is a presentation of Repository, not a second Container.
+11. Resource subtype content cannot redefine Repository ownership/authority.
+12. Repository-scoped Activity Events reference stable Repository ID.
+13. Provider IDs or framework routes cannot become the canonical Repository model.
+14. Internal delivery prefixes such as `/app` are not Repository identity.
+15. Semantic-role classification cannot by itself create a new Domain, table, package, or persistence supertype.
+16. A benchmark feature is not admitted merely because GitHub exposes it.
 
-## Actors, principals, contexts, and permissions
+## Actors, owners, principals, contexts, and permissions
 
-- The authenticated User is the actor.
-- The owning Organization is not the actor.
-- A Principal may receive authority to the Repository.
-- A selected Organization, Team, tab, or Workspace section is context only.
-- The [Access Authority contract](./access-authority.md) determines effective Capabilities.
-- Repository and Resource commands must be authorized server-side even when the UI hides unavailable actions.
+- Authenticated User is the request Actor for authenticated actions.
+- User may independently be Repository Owner and/or explicit-grant Principal.
+- Organization may be Repository Owner but is never the authenticated Actor.
+- Owner relationship is not an explicit Grant row.
+- Principal may receive explicit Repository authority through Grant.
+- Selected Organization, Team, tab, or Workspace is Context only.
+- Access Authority determines effective Capabilities.
+- Repository/Resource commands are authorized server-side regardless of UI visibility.
 
-## Events and workflows
+## URLs and delivery projection
 
-Candidate event names include:
+Canonical Repository namespace:
 
-- `repository.created`
-- `repository.renamed`
-- `repository.visibility_changed`
-- `repository.transferred`
-- `repository.archived`
-- `repository.deleted`
-- `resource.created`
-- `resource.updated`
-- `resource.moved`
-- `resource.deleted`
+```text
+/{ownerSlug}/{repositorySlug}
+/{owner}/{repository}/pages
+/{owner}/{repository}/pages/{pageId}
+/{owner}/{repository}/activity
+```
 
-Only events tied to accepted commands and immutable facts should be emitted. A feed label is not sufficient reason to create an event.
+`/app` is an authenticated dashboard and discovery surface. A Repository card must navigate to the canonical Owner/Repository URL.
 
-Cross-Repository moves, transfer, archive, and deletion require explicit idempotency, partial-failure, and audit behavior before acceptance.
+A stable-ID compatibility route may resolve access and redirect to canonical URL. It must not host a second Repository UI/business-flow tree.
+
+The canonical Repository screen presents one Owner/Repository header, primary navigation, and one active content surface. Context and Activity do not require permanent side regions.
+
+## Historical evidence
+
+Current accepted collaboration facts include Page create/update and Repository creation where executable contracts require them.
+
+Candidate Repository lifecycle facts are not created until the corresponding lifecycle transition is accepted.
+
+A label in a feed is not sufficient reason to invent a historical fact.
+
+Mutation that requires historical evidence cannot report success unless required evidence is durably recorded in the accepted transaction boundary.
 
 ## Dependencies and failure behavior
 
-- **Organization ownership**: Repository creation fails closed when the owning Organization does not exist or the actor lacks authority.
-- **Access Authority**: Repository and Resource operations fail closed when effective Capabilities cannot be established.
-- **Activity recording**: an operation that requires audit evidence must not report success unless its required event is durably recorded; lower-value feed projections may recover asynchronously.
-- **Persistence adapter**: maps provider records to Domain contracts and cannot decide business ownership or visibility semantics.
-- **Delivery layer**: resolves request input and presents output; it cannot create alternate Repository identity or permission rules.
+- **Identity / Owner namespace**: personal Repository creation fails closed if User Owner namespace is missing or ambiguous.
+- **Organization**: Organization-owned Repository creation fails closed if Organization does not exist or Actor lacks applicable governance authority.
+- **Access Authority**: Repository/Resource operations fail closed when effective Capabilities cannot be established.
+- **Historical evidence**: mutation requiring evidence cannot report success if evidence persistence fails.
+- **Persistence adapter**: maps provider records to typed Owner/Repository contracts; it cannot decide Product ownership meaning.
+- **Delivery**: resolves Owner/Repository human identifiers and presents output; it cannot create alternate Repository identity or permissions.
 
-## Alternatives and removal test
+## Rejected alternatives
 
-### Organization as the work container
+### Organization-only ownership
 
-This removes Repository but predicts that unrelated work, permissions, settings, and histories become coupled at Organization scope. It fails when teams need multiple independently governed collaboration spaces.
+Rejected because it confuses one enterprise ownership mode with a Repository constraint, prevents personal ownership, and leaks Organization into unrelated authorization/routing decisions.
 
-### Feature-specific containers
+### Generic polymorphic Owner persistence
 
-Separate page spaces, workflow spaces, task spaces, and data spaces reduce shared modeling initially but duplicate ownership, permissions, navigation, activity, and lifecycle rules.
+Rejected while typed User/Organization references provide stronger integrity.
 
-### Generic `type + json` bucket
+### Organization as collaboration Container
 
-A single opaque resource table maximizes short-term flexibility but predicts weak invariants, provider-shaped Domain logic, difficult migrations, and subtype behavior hidden in application conditionals.
+Rejected because independent collaboration spaces require Repository-specific identity, authorization, containment, and evidence boundaries.
 
-Removing this contract would force each feature to invent its own collaboration and authorization boundary.
+### Feature-specific collaboration Containers
+
+Rejected because they duplicate Repository responsibilities without evidence that Repository fails.
+
+### Generic semantic-role persistence
+
+Rejected because reasoning roles do not prove shared lifecycle or storage ownership.
+
+### Generic Resource bucket as universal model
+
+Rejected as a universal target because subtype behavior and invariants must remain explicit.
 
 ## Falsification conditions
 
-Reopen the boundary when:
+Reopen this boundary when:
 
-- normal work requires Resources to have independent multi-Repository ownership;
+- normal work requires Resource multi-Repository ownership;
+- additional real Repository Owner kinds cannot be represented without weakening integrity;
 - Repository visibility cannot be separated from authority without pervasive exceptions;
-- multiple Repository types require contradictory identity or lifecycle invariants;
-- Organization ownership cannot support demonstrated transfer or governance needs; or
-- two real Resource vertical slices cannot share the envelope without leaking subtype rules into Repository behavior.
+- different Repository ownership modes require contradictory collaboration semantics;
+- a collaboration capability genuinely requires an independent primary Container; or
+- two real Resource vertical slices cannot share Repository containment without leaking subtype rules.
 
 ## Minimum discriminating tests
 
-1. Create two Repositories with the same slug under different Organizations; both should be valid.
-2. Attempt the same slug twice under one Organization; the second should fail.
-3. Create a Resource without a Repository; the operation should fail.
-4. Attempt to access a Resource through a different Repository ID; authorization should fail.
-5. Change UI context while holding actor and Repository constant; effective access must remain unchanged.
-6. Add a second real Resource kind; Repository behavior should remain stable while subtype rules remain isolated.
-7. Delete or transfer in a controlled test only after the required containment, history, and recovery behavior is explicitly defined.
+1. User-owned and Organization-owned Repositories may use the same Repository slug under distinct Owner namespaces.
+2. A User username and Organization slug cannot collide in canonical Owner namespace.
+3. Personal Owner derives Repository admin authority without fabricated direct Grant.
+4. Organization owner/admin derives admin only for Repositories owned by that Organization; ordinary member does not.
+5. `/app` dashboard Repository card navigates to `/{owner}/{repository}`.
+6. Stable-ID compatibility route redirects to the same canonical URL after access-aware resolution.
+7. Create Resource without Repository → fail.
+8. Access Resource through wrong Repository identity → fail.
+9. Change UI Context while Actor/Repository/persisted relationships remain fixed → authorization unchanged.
+10. Add a second real Resource kind → Repository behavior remains stable while subtype rules remain isolated.
+11. Repository transfer/destructive lifecycle tests remain unavailable until their lifecycle contracts are accepted.

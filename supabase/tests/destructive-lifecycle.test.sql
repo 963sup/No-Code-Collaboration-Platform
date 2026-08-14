@@ -20,7 +20,7 @@ values (
   '00000000-0000-0000-0000-000000000201'
 );
 
-insert into public.repositories (id, organization_id, slug, name, created_by)
+insert into public.repositories (id, owner_organization_id, slug, name, created_by)
 values (
   '20000000-0000-0000-0000-000000000201',
   '10000000-0000-0000-0000-000000000201',
@@ -64,8 +64,8 @@ select is(
     '20000000-0000-0000-0000-000000000201',
     'resource.delete'
   )),
-  true,
-  'Repository admin authority remains distinct from lifecycle acceptance'
+  false,
+  'an unaccepted Resource deletion operation is absent from Repository Capability vocabulary'
 );
 
 with changed as (
@@ -99,7 +99,7 @@ select throws_ok(
   $$,
   '42501',
   'permission denied for table resources',
-  'Resource hard deletion is unavailable even to Repository admin authority'
+  'Resource hard deletion is unavailable to Repository admin authority'
 );
 
 select is(

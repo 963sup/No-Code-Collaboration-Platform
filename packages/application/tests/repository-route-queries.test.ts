@@ -8,19 +8,22 @@ import {
 } from '../src/index';
 
 const route = {
-  organizationSlug: 'example-organization',
+  ownerSlug: 'example-owner',
   repository: {
     description: null,
     id: 'repository-1',
     name: 'Platform',
-    organizationId: 'organization-1',
+    owner: {
+      kind: 'organization' as const,
+      organizationId: 'organization-1'
+    },
     slug: 'platform',
     visibility: 'private' as const
   }
 };
 
 describe('Repository semantic route queries', () => {
-  it('resolves an accessible Repository by its human-readable namespace', async () => {
+  it('resolves an accessible Repository by owner namespace and Repository slug', async () => {
     const findAccessibleRepositoryRouteByKey = vi.fn().mockResolvedValue(route);
     const reader: RepositoryRouteReader = {
       async findAccessibleRepositoryRouteById() {
@@ -36,17 +39,17 @@ describe('Repository semantic route queries', () => {
 
     await expect(
       query.execute({
-        organizationSlug: route.organizationSlug,
+        ownerSlug: route.ownerSlug,
         repositorySlug: route.repository.slug
       })
     ).resolves.toEqual(route);
     expect(findAccessibleRepositoryRouteByKey).toHaveBeenCalledWith({
-      organizationSlug: route.organizationSlug,
+      ownerSlug: route.ownerSlug,
       repositorySlug: route.repository.slug
     });
   });
 
-  it('resolves a legacy stable Repository identity to its canonical route', async () => {
+  it('resolves a stable Repository compatibility identity to its canonical owner route', async () => {
     const findAccessibleRepositoryRouteById = vi.fn().mockResolvedValue(route);
     const reader: RepositoryRouteReader = {
       findAccessibleRepositoryRouteById,
@@ -64,7 +67,7 @@ describe('Repository semantic route queries', () => {
     expect(findAccessibleRepositoryRouteById).toHaveBeenCalledWith(route.repository.id);
   });
 
-  it('lists only route projections already visible to the current actor', async () => {
+  it('lists only owner-route projections already visible to the current actor', async () => {
     const listAccessibleRepositoryRoutes = vi.fn().mockResolvedValue([route]);
     const reader: RepositoryRouteReader = {
       async findAccessibleRepositoryRouteById() {

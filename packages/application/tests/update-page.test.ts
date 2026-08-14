@@ -11,7 +11,10 @@ const repository = {
   description: null,
   id: 'repository-1',
   name: 'Platform',
-  organizationId: 'organization-1',
+  owner: {
+    kind: 'organization' as const,
+    organizationId: 'organization-1'
+  },
   slug: 'platform',
   visibility: 'private' as const
 };
@@ -75,8 +78,8 @@ describe('UpdatePage', () => {
       identityProvider(),
       repositoryReader(),
       {
-        async readRepositoryAuthoritySources() {
-          return { directRole: 'viewer', organizationRole: null };
+        async readRepositoryAccess() {
+          return { directRole: 'viewer', governanceRole: null };
         }
       },
       { createPage: vi.fn(), updatePage }
@@ -103,8 +106,8 @@ describe('UpdatePage', () => {
       identityProvider(),
       repositoryReader(),
       {
-        async readRepositoryAuthoritySources() {
-          return { directRole: 'contributor', organizationRole: null };
+        async readRepositoryAccess() {
+          return { directRole: 'contributor', governanceRole: null };
         }
       },
       pageWriter
@@ -120,13 +123,13 @@ describe('UpdatePage', () => {
     });
   });
 
-  it('reports changed state when concurrency or authority evidence is stale', async () => {
+  it('reports changed state when concurrency or access evidence is stale', async () => {
     const useCase = new UpdatePage(
       identityProvider(),
       repositoryReader(),
       {
-        async readRepositoryAuthoritySources() {
-          return { directRole: 'contributor', organizationRole: null };
+        async readRepositoryAccess() {
+          return { directRole: 'contributor', governanceRole: null };
         }
       },
       { createPage: vi.fn(), updatePage: vi.fn().mockResolvedValue(null) }
@@ -144,8 +147,8 @@ describe('UpdatePage', () => {
       identityProvider(),
       repositoryReader(),
       {
-        async readRepositoryAuthoritySources() {
-          return { directRole: 'contributor', organizationRole: null };
+        async readRepositoryAccess() {
+          return { directRole: 'contributor', governanceRole: null };
         }
       },
       { createPage: vi.fn(), updatePage }

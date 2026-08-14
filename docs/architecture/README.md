@@ -2,96 +2,324 @@
 
 ## Purpose
 
-This directory holds the target architecture for a platform that reverse-engineers mature GitHub product semantics and rebuilds them from first principles, with Repository defined as a no-code collaboration container.
+This directory holds current target architecture for a platform whose only Product axiom is:
+
+> **Repository = No-Code Collaboration Container**
+
+GitHub supplies mature collaboration, ownership, organization, authorization, URL/IA, and interaction evidence. Architecture implements the accepted Product/Domain model; it does not translate benchmark feature catalogs into architecture by default.
 
 ## Current invariants
 
-1. `Repository` is a collaborative resource boundary, not a Git code store.
-2. Actor, principal, context, resource, ownership, membership, and authorization are distinct concepts.
-3. A UI-selected context may filter or explain access, but it must not alter server-side authorization facts.
-4. GitHub behavior is benchmark evidence, not the target contract.
-5. Generated diagrams and implementation snapshots cannot override an accepted semantic contract.
-6. No bounded context, service, datastore, or integration exists until its necessity and ownership are demonstrated.
-7. Turbo projects the application architecture graph from pnpm workspace packages and their declared dependencies.
-8. `packages/domain` owns business truth; `packages/application` orchestrates use cases and defines ports; `apps/web` is delivery and composition only.
-9. `packages/infrastructure/supabase` is the selected infrastructure adapter; `supabase/schemas` owns current database truth; migrations are replayable transition history; generated types are infrastructure projections; grants and RLS enforce database access.
-10. Supabase clients, DTOs, and generated database types do not cross into Domain, Application, or UI. Next.js wires provider adapters only at its composition boundary.
-11. `packages/ui` owns source-controlled presentation primitives. shadcn/ui accelerates implementation without defining product semantics.
-12. Next.js route groups express layout and access context only; they are neither URL segments nor business boundaries.
-13. Next.js Parallel Route slots express simultaneous presentation responsibilities. They never create Domain entities, aggregates, principals, or authorization facts.
-14. Every persistent Parallel Route slot, including implicit `children`, has a meaningful hard-navigation fallback.
-15. Operation capability and role delegation are distinct. Every role mutation evaluates actor authority, current role, and proposed role.
-16. Organization owner is protected governance authority, and every Organization that still exists retains at least one owner.
-17. A selected infrastructure adapter is not evidence that an external environment has been provisioned.
-18. A migration artifact proves a reviewed transition exists; only an environment-specific migration ledger and provider evidence prove that it was applied there.
-19. Local and CI database verification prove reproducibility and enforcement against disposable infrastructure, not preview or production validation.
-20. Default package scripts and verification workflows remain local-only until a separately accepted deployment boundary defines environment ownership, credentials, recovery, and evidence.
-21. Organization and Repository hard deletion are unavailable to end-user roles until an accepted lifecycle defines containment fate, historical continuity, retention, restore, redaction, and recovery behavior.
-22. Page is the first accepted Resource implementation; its create/update commands require explicit Domain Capability decisions, independent RLS enforcement, exact content shape, optimistic concurrency evidence, and same-transaction immutable facts.
-23. A Resource subtype may use shared persistence only while its invariants remain explicit and no second subtype proves an independent storage lifecycle.
-24. Resource hard deletion is unavailable to end-user roles until an accepted Resource lifecycle defines archive/delete meaning, retention, restore, redaction, historical continuity, subtype consequences, and recovery; the presence of `resource.delete` in authority vocabulary does not create an executable destructive transition.
-25. Human-facing Repository routes use the Organization/Repository slug namespace; route resolution produces the stable Repository UUID used by Application authorization and RLS.
-26. `Resource` is a Domain abstraction, not a required user-facing URL segment. Accepted concrete Resource kinds own their product navigation surface.
-27. Legacy UUID Repository URLs may redirect only after access-aware resolution; inaccessible private Repository names must not be disclosed through redirects.
-28. Accepted Page create/update transitions enter PostgreSQL through command-specific `SECURITY INVOKER` RPCs; raw authenticated Resource INSERT/UPDATE is not an alternate Page command API, and RLS requires both short-lived command provenance and ordinary Actor/Capability authorization.
+1. `Repository` is the primary No-Code Collaboration Container.
+2. Repository ownership, Actor identity, Principal authority, Membership, Context, Resource containment, and authorization are distinct concepts.
+3. Every Repository has exactly one typed Owner: User or Organization.
+4. User-owned and Organization-owned Repositories share the same collaboration, Resource, Capability, Process, and historical-evidence semantics.
+5. Organization is a Membership/administration Scope and possible Repository Owner; it is not a mandatory Repository parent or collaboration Container.
+6. Enterprise, if later accepted, governs Organizations and does not become a Repository Owner or content Principal by implication.
+7. A UI-selected Context may filter/explain access but cannot alter server-side authorization facts.
+8. GitHub is a semantic benchmark; target Domain/persistence semantics are independently admitted by Product contracts.
+9. Generated diagrams, framework route trees, migrations, generated types, and implementation snapshots cannot override Product/Domain contracts.
+10. No bounded context, service, datastore, integration, or generic abstraction exists until necessity and lifecycle ownership are demonstrated.
+11. Turbo projects coarse workspace architecture from actual pnpm package dependencies; ontology labels do not create packages.
+12. `packages/domain` owns business truth and pure decision logic.
+13. `packages/application` owns use cases and provider-neutral Ports.
+14. `packages/infrastructure/supabase` implements Ports and owns provider clients, DTO mapping, SQL-facing projections, and generated database types.
+15. `apps/web` owns delivery/composition only; provider wiring is limited to `apps/web/src/composition`.
+16. `packages/ui` owns presentation primitives and cannot define Product semantics.
+17. `supabase/schemas` is desired database truth; migrations are replayable transition history; generated database types are projections.
+18. Grants and RLS enforce database reachability/access but do not replace Domain/Application authorization explanation.
+19. Operation Capability and delegation authority are distinct; authority mutation evaluates Actor authority, current Role, proposed Role, and governance invariants.
+20. Selected provider is not proof of a provisioned environment; migration artifact is not proof of applied deployment; local/CI verification is not production validation.
+21. Organization, Repository, and Resource hard deletion remain unavailable to end-user roles until lifecycle contracts define containment fate, retention, restore/redaction, history, and recovery.
+22. Page is the first accepted Resource kind. Page create/update requires Domain Capability decision, independent RLS, exact content semantics, optimistic concurrency, and required same-transaction historical evidence.
+23. Shared Resource persistence remains acceptable only while subtype invariants remain explicit and no second real subtype proves an independent storage lifecycle.
+24. Canonical human Repository routes use the globally unambiguous Owner/Repository namespace; route resolution produces stable Repository UUID for Application authorization/RLS/evidence.
+25. `Resource` is a Domain abstraction, not a required public URL segment. Concrete accepted Resource kinds own product navigation surfaces.
+26. Stable-ID Repository compatibility routes may redirect only after access-aware resolution and must not own a second Repository UI.
+27. Accepted Page writes enter PostgreSQL through command-specific `SECURITY INVOKER` RPCs; raw authenticated table writes are not an alternate Page command API.
+28. Repository authority resolution is owner-neutral: callers supply stable Actor + Repository identity; authority resolves personal ownership, Organization governance, direct Grant, visibility, and future constraints.
+29. Current Repository visibility is `private | public`; no other visibility state is accepted without explicit effective-access semantics.
+30. Current canonical Repository presentation is one Owner/Repository header, primary navigation, and one active child content surface.
+31. Route Groups and framework layouts are presentation/access composition only. They do not create Product URL or Domain boundaries.
+32. Canonical Repository reads cannot inherit an authenticated-only wrapper because public Repository visibility is an accepted anonymous read baseline.
+33. An obsolete Organization-only Repository UI tree may not coexist with canonical Owner routing.
 
-## Canonical Repository Web composition
-
-The current Repository workspace is a Next.js App Router **Parallel Route** composition. The semantic URL identifies one Repository collaboration context; the named slots render simultaneous presentation responsibilities inside that context.
-
-```text
-/app/[organizationSlug]/[repositorySlug]/
-├── page.tsx                 # implicit children: Repository header
-├── default.tsx              # children hard-navigation recovery
-├── layout.tsx               # renders all persistent slots
-├── @navigation/
-│   └── default.tsx
-├── @workspace/
-│   ├── default.tsx
-│   ├── pages/
-│   │   ├── page.tsx
-│   │   └── [pageId]/page.tsx
-│   └── activity/page.tsx
-├── @context/
-│   └── default.tsx
-└── @activity/
-    └── default.tsx
-```
-
-The layout contract is:
+## Dependency direction
 
 ```text
-children + @navigation + @workspace + @context + @activity
+apps/web
+   │
+   ├──────────────> packages/ui
+   │
+   ▼
+packages/application
+   │
+   ▼
+packages/domain
+
+packages/infrastructure/supabase
+   │              │
+   └──────────────┴──> application/domain contracts
 ```
 
-`@slot` names are not URL segments. Concrete child URLs such as `/pages`, `/pages/{pageId}`, and `/activity` select a product surface while the shared Repository layout continues to compose the persistent sibling surfaces.
+Domain/Application never depend on Web or Supabase implementation.
 
-Next.js navigation behavior is part of the delivery contract:
+## Repository ownership architecture
+
+Repository ownership is a typed Relationship:
 
 ```text
-Soft navigation
-→ update the selected route surface while preserving active sibling slot state
-
-Hard navigation / refresh
-→ reconstruct every unmatched persistent slot through meaningful default.tsx recovery
+User ──────────┐
+               ├── owns ──> Repository ── contains ──> Resource
+Organization ──┘
 ```
 
-The repository intentionally uses a stricter rule than a generic nullable Parallel Route fallback: persistent Repository surfaces must recover a meaningful base surface or explicit failure state rather than silently disappear.
+Persistence target:
 
-The legacy `/app/repositories/[repositoryId]/**` namespace is compatibility-only. It resolves access first and redirects into the semantic namespace; it must never own another Parallel Route workspace.
+```text
+repositories.owner_user_id         nullable FK → auth.users
+repositories.owner_organization_id nullable FK → organizations
+CHECK exactly one Owner reference is present
+```
+
+Do not replace these strong concrete references with weak generic Owner persistence unless later evidence proves a stable additional Owner abstraction with equal integrity.
+
+Human Owner namespace:
+
+```text
+User.username ───────┐
+                     ├─ globally unambiguous Repository owner namespace
+Organization.slug ───┘
+```
+
+Human names are routing identifiers. Authorization and historical relationships target stable IDs.
+
+Root product paths are reserved and cannot be claimed as Owner namespaces.
+
+## Repository authority architecture
+
+Current accepted sources:
+
+```text
+Personal ownership
+Repository.owner_user_id = Actor.userId
+→ Repository admin authority
+
+Organization governance
+Repository.owner_organization_id = Organization O
++ Actor Organization role ∈ {admin, owner}
+→ Repository admin authority
+
+Direct User Grant
+→ assigned Repository Role
+
+Public visibility
+→ accepted read baseline
+```
+
+Ordinary Organization Membership contributes no Repository Role.
+
+Application authorization input:
+
+```text
+{ actorId, repositoryId }
+```
+
+The authority adapter resolves Repository ownership from Repository facts. Callers do not supply `organizationId` as an ownership premise.
+
+Capability remains decision truth; a highest Role can only be an explanation projection while bundles remain nested.
+
+## Canonical Repository Web architecture
+
+Product URL:
+
+```text
+/{ownerSlug}/{repositorySlug}
+/{ownerSlug}/{repositorySlug}/pages
+/{ownerSlug}/{repositorySlug}/pages/{pageId}
+/{ownerSlug}/{repositorySlug}/activity
+```
+
+Next.js delivery projection:
+
+```text
+apps/web/src/app/
+├─ (app)/
+│  └─ app/
+│     └─ page.tsx                     # authenticated discovery/dashboard
+│
+├─ (repository)/
+│  └─ [ownerSlug]/
+│     └─ [repositorySlug]/
+│        ├─ layout.tsx                # one Repository shell
+│        ├─ page.tsx                  # Overview
+│        ├─ pages/
+│        │  ├─ page.tsx
+│        │  └─ [pageId]/page.tsx
+│        └─ activity/page.tsx
+│
+└─ (auth)/                             # human/protocol identity surfaces
+```
+
+Route Group names do not appear in Product URLs.
+
+`(app)` is authenticated-only because `/app` is Actor dashboard/discovery.
+
+`(repository)` is not authenticated-only. Each Repository read is visibility/authority-aware; an authenticated mutation still re-establishes Actor identity and evaluates Capability.
+
+Repository shell:
+
+```text
+Owner / Repository      Visibility
+----------------------------------
+Overview   Pages   Activity
+----------------------------------
+active content
+```
+
+`Context` remains a presentation concept but does not require a permanent pane. Activity is a Repository-scoped projection and may be a normal navigation surface.
+
+Framework composition mechanisms do not establish new Product responsibilities merely because the framework supports them.
+
+## Compatibility routing
+
+The only accepted Repository compatibility namespace is stable-ID based:
+
+```text
+/app/repositories/[repositoryId]/[[...legacyPath]]
+```
+
+It must:
+
+1. perform access-aware resolution of the Repository before any redirect;
+2. avoid leaking inaccessible private Repository names;
+3. translate only supported child destinations;
+4. redirect to the canonical Owner/Repository URL; and
+5. contain no Repository presentation, business flow, or provider query tree beyond the redirect boundary.
+
+An Organization-only semantic Repository route is not a valid compatibility UI because it encodes a false mandatory-owner assumption.
+
+## Page collaboration boundary
+
+Accepted Page command path:
+
+```text
+Browser / Server Action
+→ Application Page command
+→ Actor identity
+→ RepositoryAccessReader(actorId, repositoryId)
+→ Domain Capability decision
+→ Page writer
+→ command-specific PostgreSQL RPC
+→ RLS + target preconditions
+→ Page state transition + required Activity Event
+→ read projection
+```
+
+The Web never authorizes by hiding controls.
+
+Provider DTO/row types remain inside Infrastructure.
+
+## Auth/Web ownership
+
+Delivery responsibilities:
+
+```text
+src/routing/auth-routes.ts
+= identity URL classification and safe post-auth destination policy
+
+src/app/(auth)/**
+= human/protocol identity delivery surfaces
+
+src/composition/**
+= provider/session wiring
+```
+
+`/auth/confirm` is one protocol URL with one physical Route Handler. Duplicate physical handlers for the same URL are invalid.
+
+A top-level `src/auth` helper directory is not an Identity Domain and should disappear once routing consumers use `src/routing/auth-routes.ts` directly.
+
+## Repository creation surface
+
+Target creation URL:
+
+```text
+/new
+```
+
+Creation is an authenticated delivery/use-case surface, not a new Container.
+
+It must support:
+
+- personal User Owner namespace;
+- Organizations the Actor may administer for Repository ownership;
+- Repository name and owner-scoped slug;
+- optional description;
+- `private | public` visibility.
+
+Creating a Repository derives owner authority from the ownership Relationship. It does not create a synthetic direct Grant for the Owner.
+
+## Database truth lifecycle
+
+```text
+Product / Domain contracts
+        ↓
+supabase/schemas              # desired state
+        ↓
+reviewed migration transition
+        ↓
+local PostgreSQL replay
+        ↓
+pgTAP / lint / generated types
+        ↓
+Infrastructure projection
+```
+
+Generated types are regenerated; never hand-edited as Product truth.
+
+Security-definer helper functions remain in a non-exposed private schema with controlled grants/search path. RLS remains independent enforcement.
+
+## Validation boundary
+
+A green CI job proves only what its checks exercise.
+
+Minimum Repository browser journey:
+
+```text
+verified Actor
+→ /app dashboard
+→ click Repository card
+→ /{owner}/{repository}
+→ Pages
+→ Page create/open/update
+→ Activity
+```
+
+Ownership validation must include both User-owned and Organization-owned Repository paths once creation is executable.
+
+Database validation must prove:
+
+- owner namespace uniqueness across User/Organization;
+- personal Owner authority;
+- Organization governance authority scoped only to Organization-owned Repositories;
+- ordinary Organization Membership does not create Repository authority;
+- public read baseline does not become write authority;
+- required Page state/evidence atomicity; and
+- generated database types match the replayed desired state.
 
 ## Decision process
 
-Use [`ADR_TEMPLATE.md`](./ADR_TEMPLATE.md) for decisions that change system boundaries, ownership, authorization, persistence, public contracts, or irreversible technology choices.
+Use `ADR_TEMPLATE.md` for decisions changing Product ownership projection, public routing, authorization, persistence, system boundaries, or irreversible technology choices.
 
-An accepted ADR must state the decision, evidence, constraints, assumptions, alternatives, consequences, falsification conditions, and validation plan. An ADR records why the model changed; it does not replace the canonical target contract that the decision updates.
+Current Architecture truth is this README plus accepted current Domain/Product contracts and executable evidence. ADRs explain decision history; they never remain current merely because they were once accepted.
 
 ## Decision history
 
-Use [`ADR_INDEX.md`](./ADR_INDEX.md) before opening individual ADRs. It identifies which decision effects remain current and which historical details were superseded by later decisions.
+Read `ADR_INDEX.md` before individual ADRs.
 
-Current architecture truth is this README plus executable contracts. ADR bodies are decision history and may intentionally retain the route names, implementation vocabulary, or constraints that existed when the decision was made. When a historical ADR example conflicts with a later accepted decision or this current architecture contract, the later/current contract wins.
+- ADR-003 is superseded; its former multi-surface framework composition is no longer current Repository architecture.
+- ADR-008 is historical evidence of the intermediate Organization-only semantic-route decision.
+- ADR-009 remains current for controlled Page write boundaries.
+- ADR-010 owns current Repository ownership and canonical Owner/Repository route identity.
 
-In particular, [ADR-003](./ADR-003-repository-workspace-parallel-composition.md) remains accepted for Parallel Route composition, while [ADR-008](./ADR-008-repository-semantic-routing.md) supersedes its original UUID route identity and `/resources` vocabulary with the semantic slug namespace and `/pages` surface.
-
-No final bounded-context map is declared yet. Domain modules must continue to be justified by coherent business problems rather than symmetry.
+No final bounded-context map is declared. Domain modules require coherent business ownership/lifecycle evidence rather than symmetry with ontology labels.

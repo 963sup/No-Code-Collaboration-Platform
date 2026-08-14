@@ -7,7 +7,7 @@ import {
 
 import type { IdentityProvider } from '../ports/identity-provider';
 import type { PageWriter } from '../ports/page-repository';
-import type { RepositoryAuthoritySourceReader } from '../ports/repository-authority-source-reader';
+import type { RepositoryAccessReader } from '../ports/repository-access-reader';
 import type { RepositoryReader } from '../ports/repository-reader';
 
 export interface CreatePageInput {
@@ -35,7 +35,7 @@ export class CreatePage {
   public constructor(
     private readonly identityProvider: IdentityProvider,
     private readonly repositoryReader: RepositoryReader,
-    private readonly authoritySourceReader: RepositoryAuthoritySourceReader,
+    private readonly repositoryAccessReader: RepositoryAccessReader,
     private readonly pageWriter: PageWriter
   ) {}
 
@@ -46,9 +46,8 @@ export class CreatePage {
     const repository = await this.repositoryReader.findAccessibleRepositoryById(input.repositoryId);
     if (repository === null) return { ok: false, reason: 'repository-unavailable' };
 
-    const sources = await this.authoritySourceReader.readRepositoryAuthoritySources({
+    const sources = await this.repositoryAccessReader.readRepositoryAccess({
       actorId: actor.id,
-      organizationId: repository.organizationId,
       repositoryId: repository.id
     });
     const role = effectiveRepositoryRole(sources);

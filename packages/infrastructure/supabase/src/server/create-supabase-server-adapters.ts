@@ -3,18 +3,18 @@ import type {
   IdentityProvider,
   PageReader,
   PageWriter,
-  RepositoryAuthoritySourceReader,
+  RepositoryAccessReader,
   RepositoryReader,
   RepositoryRouteReader
 } from '@no-code-collaboration-platform/application';
 import { createServerClient, type CookieMethodsServer } from '@supabase/ssr';
 
-import { SupabaseRepositoryAuthoritySourceReader } from '../access/supabase-repository-authority-source-reader';
+import { SupabaseRepositoryAccessReader } from '../access/supabase-repository-access-reader';
 import { SupabaseActivityEventReader } from '../activity/supabase-activity-event-reader';
 import type { Database } from '../generated/database.types';
 import { SupabaseIdentityProvider } from '../identity/supabase-identity-provider';
+import { SupabaseOwnerRepositoryRouteReader } from '../repositories/supabase-owner-repository-route-reader';
 import { SupabaseRepositoryReader } from '../repositories/supabase-repository-reader';
-import { SupabaseRepositoryRouteReader } from '../repositories/supabase-repository-route-reader';
 import { SupabasePageRepository } from '../resources/supabase-page-repository';
 
 export interface SupabaseServerAdapterOptions {
@@ -28,7 +28,7 @@ export interface SupabaseServerAdapters {
   readonly identityProvider: IdentityProvider;
   readonly pageReader: PageReader;
   readonly pageWriter: PageWriter;
-  readonly repositoryAuthoritySourceReader: RepositoryAuthoritySourceReader;
+  readonly repositoryAccessReader: RepositoryAccessReader;
   readonly repositoryReader: RepositoryReader;
   readonly repositoryRouteReader: RepositoryRouteReader;
 }
@@ -50,8 +50,8 @@ export function createSupabaseServerAdapters(
     }),
     pageReader: pageRepository,
     pageWriter: pageRepository,
-    repositoryAuthoritySourceReader: new SupabaseRepositoryAuthoritySourceReader(client),
+    repositoryAccessReader: new SupabaseRepositoryAccessReader(client),
     repositoryReader: new SupabaseRepositoryReader(client),
-    repositoryRouteReader: new SupabaseRepositoryRouteReader(client)
+    repositoryRouteReader: new SupabaseOwnerRepositoryRouteReader(client)
   };
 }

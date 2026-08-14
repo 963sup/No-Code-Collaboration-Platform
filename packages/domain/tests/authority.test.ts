@@ -3,26 +3,20 @@ import { describe, expect, it } from 'vitest';
 import { effectiveRepositoryRole } from '../src/index';
 
 describe('effective Repository authority', () => {
-  it('maps Organization governance authority to Repository admin', () => {
+  it('maps ownership/governance authority to Repository admin', () => {
     expect(
       effectiveRepositoryRole({
         directRole: null,
-        organizationRole: 'owner'
-      })
-    ).toBe('admin');
-    expect(
-      effectiveRepositoryRole({
-        directRole: 'viewer',
-        organizationRole: 'admin'
+        governanceRole: 'admin'
       })
     ).toBe('admin');
   });
 
-  it('keeps ordinary Organization membership separate from Repository authority', () => {
+  it('keeps absent governance authority separate from Repository authority', () => {
     expect(
       effectiveRepositoryRole({
         directRole: null,
-        organizationRole: 'member'
+        governanceRole: null
       })
     ).toBeNull();
   });
@@ -31,13 +25,13 @@ describe('effective Repository authority', () => {
     expect(
       effectiveRepositoryRole({
         directRole: 'manager',
-        organizationRole: null
+        governanceRole: null
       })
     ).toBe('manager');
     expect(
       effectiveRepositoryRole({
         directRole: 'contributor',
-        organizationRole: 'owner'
+        governanceRole: 'admin'
       })
     ).toBe('admin');
   });

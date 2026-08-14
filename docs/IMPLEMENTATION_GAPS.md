@@ -2,7 +2,7 @@
 
 - Status: Active current-gap register
 - Register owner: Project maintainer until an explicit governance owner is assigned
-- Last reviewed: 2026-08-13
+- Last reviewed: 2026-08-14
 
 ## Purpose
 
@@ -15,21 +15,89 @@ A gap is not permission to redefine the target model, postpone an invariant sile
 ## Register rules
 
 1. Every current gap has a stable identifier, status, affected contract, direct evidence, risk, containment, owner, and closure evidence.
-2. Evidence must name the exact code, schema, policy, test, provider observation, or incident. Inference must be labeled as inference.
-3. Open authorization or data-integrity gaps block claims of production validation for the affected capability.
-4. Temporary containment must fail closed where identity, authority, or data integrity is uncertain.
-5. A merged implementation does not close a gap by itself. Required tests and runtime evidence must pass for the exact change.
-6. Once a gap is Closed or Superseded, move its detailed evidence to `history/CLOSED_GAPS.md` and retain only an index entry here.
-7. If a gap proves the target contract wrong, update the earliest invalid product, domain, or architecture boundary rather than weakening executable enforcement silently.
+2. Evidence must name exact code, schema, policy, test, provider observation, or incident. Inference must be labeled.
+3. Open authorization or data-integrity gaps block production-validation claims for the affected capability.
+4. Temporary containment must fail closed where identity, authority, ownership, or data integrity is uncertain.
+5. A merged implementation does not close a gap by itself. Required tests/runtime evidence must pass for the exact change.
+6. Once a gap is Closed or Superseded, move detailed evidence to `history/CLOSED_GAPS.md` and retain only an index entry here.
+7. If a gap proves target contract wrong, update the earliest invalid Product/Domain/Architecture boundary rather than weakening executable enforcement silently.
 
 ## Status model
 
-- **Open**: the mismatch exists and closure evidence is incomplete.
-- **Contained**: the mismatch still exists, but a verified control prevents the affected behavior from being treated as supported or production-safe.
-- **Closed**: executable behavior and required evidence match the target contract; detail belongs in the historical archive.
-- **Superseded**: another gap or contract replaces this framing; detail belongs in the historical archive.
+- **Open**: mismatch exists and closure evidence is incomplete.
+- **Contained**: mismatch exists, but verified control prevents unsafe/supported claims.
+- **Closed**: executable behavior and required evidence match target contract; detail belongs in history.
+- **Superseded**: another gap/contract replaces the framing; detail belongs in history.
 
 ## Open gaps
+
+### GAP-OWNERSHIP-001 — Repository ownership correction is implemented across current contracts, but creation and exact-head verification evidence remain incomplete
+
+- Status: Open
+- Affected contracts: [`PRODUCT.md`](./PRODUCT.md), [`ONTOLOGY.md`](./ONTOLOGY.md), [`domains/repository-collaboration.md`](./domains/repository-collaboration.md), [`domains/access-authority.md`](./domains/access-authority.md), [`architecture/README.md`](./architecture/README.md), [ADR-010](./architecture/ADR-010-repository-owner-namespace.md)
+- Affected invariants: `Repository Owner = User | Organization`, owner-neutral authorization, globally unambiguous Owner namespace, canonical `/{owner}/{repository}` routing, visibility vocabulary
+- Risk class: incomplete ownership capability and incomplete exact-head evidence
+
+#### Direct evidence
+
+Current branch now implements the corrected target through these concrete projections:
+
+- `packages/domain/src/repository/ownership.ts` defines typed User/Organization Repository Owner.
+- `packages/domain/src/repository/repository.ts` exposes typed `owner` and `private | public` visibility with no Organization-only compatibility field.
+- `packages/domain/src/access/authority.ts` resolves only `directRole + governanceRole`; the Organization-only authority fallback is removed.
+- `packages/application/src/ports/repository-access-reader.ts` accepts stable `actorId + repositoryId`; the old Organization-specific authority Port is removed.
+- `packages/infrastructure/supabase/src/access/supabase-repository-access-reader.ts` reads owner-neutral direct/governance sources.
+- `supabase/schemas/30_repository.sql` models exactly one `owner_user_id XOR owner_organization_id`; the legacy `organization_id` ownership column is absent from current desired state.
+- `supabase/schemas/91_repository_access_projection.sql` declares owner-neutral authority-source projection.
+- `supabase/schemas/95_repository_routing.sql` resolves one global User/Organization Owner namespace.
+- `supabase/schemas/99_rls.sql` has separate personal-owner and Organization-admin Repository creation policies and no Organization-only owner field.
+- `supabase/migrations/20260814021000_remove_legacy_repository_organization_owner.sql` makes replayed final state drop the historical compatibility column.
+- `apps/web/src/app/(repository)/[ownerSlug]/[repositorySlug]/**` is the only Repository UI tree; the obsolete Organization-only tree has been removed.
+- `apps/web/src/routing/repository-routes.ts` builds canonical `/{owner}/{repository}` URLs; `/app` remains dashboard/discovery.
+- `apps/web/e2e/page-collaboration.spec.ts` now clicks a Repository card from `/app`, lands on the canonical route, follows stable-ID compatibility redirects, and executes Page collaboration through the canonical path.
+- pgTAP ownership contracts assert typed ownership, namespace collision rejection, personal/Organization authority separation, ordinary-Member non-authority, and absence of the legacy `repositories.organization_id` column.
+- Checked-in `packages/infrastructure/supabase/src/generated/database.types.ts` matches the replayed desired schema under `pnpm supabase:types:check`; generated types remain a projection and cannot redefine target truth.
+- Supabase contract verification has demonstrated migration replay, schema lint, pgTAP, and generated-type consistency on the corrected ownership baseline; exact-head closure still requires the complete required check set on one latest PR head.
+
+Current incomplete evidence/capability:
+
+- Human-facing Repository creation at `/new` is not implemented. Personal and Organization ownership can be represented/enforced by Domain/database contracts, but the Product does not yet expose one complete creation use case for both Owner kinds.
+- Exact-head end-to-end closure evidence remains incomplete until Repository, Supabase, Browser, and deployment checks all succeed for the same latest PR head; an individual green check does not close this gap.
+
+#### Root cause
+
+An early Organization-only executable shortcut was promoted into Product, Domain, authorization, persistence, and URL assumptions. Those assumptions then cited one another as evidence.
+
+The earliest invalid boundaries have now been replaced. This gap remains Open only for missing creation capability and exact-head end-to-end runtime/deployment evidence; it must not continue describing the removed Organization-only implementation as current truth.
+
+#### Predicted failure
+
+Until closure:
+
+- users cannot create a personal or Organization-owned Repository through the human Product UI; and
+- without one latest head proving the full verification matrix, a Web/browser/deployment regression could remain undetected even when narrower checks are green.
+
+#### Temporary containment
+
+- PR #27 remains Draft and must not be represented as production-ready while this gap is Open.
+- No `/new` Repository creation capability is claimed as available.
+- Unsupported creation paths fail closed because no incomplete Web/Application creation surface is exposed.
+- Generated database types remain projections; stale checked-in output is treated as a verification failure, never as Product truth.
+
+#### Closure evidence
+
+Close only after the same exact PR head proves all of the following:
+
+1. Domain models typed `RepositoryOwner = User | Organization` and `private | public` visibility.
+2. Application authority lookup accepts `actorId + repositoryId` without caller-supplied Organization ownership.
+3. Supabase desired state and replay history end with typed XOR Owner FKs plus one globally unambiguous User/Organization Owner namespace and no legacy ownership column.
+4. Personal Owner derives Repository admin without fabricated Grant; Organization admin/owner derives admin only for Organization-owned Repository; ordinary member does not.
+5. Route RPCs/adapters resolve `ownerSlug + repositorySlug` for both Owner kinds.
+6. Web canonical Repository URL is `/{ownerSlug}/{repositorySlug}`; `/app` is dashboard only; stable-ID compatibility routes redirect safely; no Organization-only Repository UI tree remains.
+7. `/new` supports personal ownership and authorized Organization ownership through explicit Application/Infrastructure contracts and RLS.
+8. Playwright explicitly clicks a Repository card from `/app`, verifies canonical navigation, and completes accepted Page collaboration through that route.
+9. pgTAP proves namespace collision rejection, typed ownership, creation/authorization matrix, legacy-column absence, and visibility semantics.
+10. Generated DB types match the replayed desired schema, Repository verification succeeds, Supabase verification succeeds, Browser contracts succeed, and deployment status succeeds for the same latest head.
 
 ### GAP-IDENTITY-001 — Identity lifecycle remains incomplete after verified Session and recovery establishment
 
@@ -41,37 +109,35 @@ A gap is not permission to redefine the target model, postpone an invariant sile
 #### Direct evidence
 
 - The executable slice implements password registration, email verification, ordinary Session establishment, current-Session sign-out, Profile creation through the existing `auth.users` trigger, password-recovery request, provider recovery proof, Recovery Session discrimination, and password reset.
-- Recovery is intentionally single-purpose: `GetCurrentIdentity` excludes signed Sessions whose `amr` contains `recovery`; `/reset-password` requires recovery evidence; an ordinary password Session cannot use the recovery reset operation; and recovery does not create Membership, Grant, Capability, or Activity facts.
-- `apps/web/e2e/auth.spec.ts` carries a local Mailpit discriminating path from registration and verification through recovery proof, recovery-only routing, password reset, fresh ordinary sign-in, and rejection of ordinary Sessions from the recovery page.
+- Recovery is intentionally single-purpose: `GetCurrentIdentity` excludes signed Sessions whose `amr` contains `recovery`; `/reset-password` requires recovery evidence; an ordinary password Session cannot use recovery reset; recovery creates no Membership, Grant, Capability, or Activity facts.
+- `apps/web/e2e/auth.spec.ts` carries a local Mailpit path from registration/verification through recovery proof, recovery-only routing, reset, fresh ordinary sign-in, and rejection of ordinary Sessions from recovery page.
 - No Application use case or human-facing route currently implements Product Actor readiness, onboarding, Organization invitation acceptance, email change, MFA, Session listing, selective revocation UI, or enterprise identity policy.
-- The repository contains local Auth configuration, confirmation and recovery templates, and Mailpit browser contracts, but the connected Supabase tool reports no hosted project. Production Auth provider settings, redirect allowlists, SMTP, CAPTCHA, notification templates, and Session policies therefore have no direct environment evidence.
-- Open registration intentionally creates no Organization membership or Repository Grant.
+- Repository contains local Auth configuration/templates/Mailpit browser contracts, but no hosted Supabase project evidence. Production Auth redirect, SMTP, CAPTCHA, notification, and Session settings are unverified.
+- Open registration intentionally creates no Organization Membership or Repository Grant.
 
 #### Predicted failure
 
-A User can establish and recover the current local email/password credential flow, but cannot complete Product Actor onboarding, accept an Organization invitation, or manage stronger account-security lifecycle operations through the product. A local passing flow could also be incorrectly described as production-ready even when hosted Auth delivery, abuse protection, redirect behavior, or Session policy differs.
+A User can establish/recover the current local email/password credential flow, but cannot complete Product Actor onboarding, accept an Organization invitation, or manage stronger account-security lifecycle operations through the product. Local success may not match hosted Auth delivery/security behavior.
 
 #### Temporary containment
 
 - Recovery is exposed only through the accepted single-purpose Recovery Session path; a recovery-authenticated request is not accepted as ordinary `/app` identity.
 - Unsupported onboarding, invitation, MFA, OAuth, SSO, Session-management, and broader account-security behavior is not described as available.
-- Registration and recovery do not create collaboration authority; authenticated Users without persisted Memberships or Grants remain unauthorized by RLS.
-- Production identity readiness remains blocked until hosted configuration and delivery are directly verified.
+- Registration/recovery do not create collaboration authority; authenticated Users without persisted authority remain unauthorized by RLS.
+- Production identity readiness remains blocked until hosted configuration/delivery are directly verified.
 
 #### Closure evidence
 
-Close this gap only after:
+Close only after:
 
-1. password recovery and reset are exact-head verified without account enumeration, ordinary-Session reset bypass, or Recovery-Session product access;
-2. Product Actor readiness and onboarding have one authoritative state model;
-3. Organization invitations survive sign-in, registration, verification, and recovery without implicitly granting invalid Memberships;
-4. credential and Session security operations have explicit scope and reauthentication rules;
-5. hosted Supabase redirect, SMTP, abuse-protection, template, notification, and Session settings are verified against the intended production project; and
+1. password recovery/reset are exact-head verified without account enumeration, ordinary-Session bypass, or Recovery-Session product access;
+2. Product Actor readiness/onboarding have one authoritative state model;
+3. Organization invitations survive sign-in/registration/verification/recovery without implicit invalid Membership;
+4. credential/Session security operations have explicit scope/reauthentication rules;
+5. hosted Supabase redirect, SMTP, abuse-protection, template, notification, and Session settings are verified; and
 6. Application, adapter, browser, provider, and operational tests produce consistent evidence.
 
 ## Closed gap index
-
-Detailed closure evidence is historical and is intentionally excluded from the normal current-state context.
 
 - `GAP-PAGE-001` — Closed by PR #23; see [`history/CLOSED_GAPS.md`](./history/CLOSED_GAPS.md#gap-page-001--generic-data-api-mutation-bypassed-accepted-page-commands).
 - `GAP-LIFECYCLE-002` — Closed by PR #22; see [`history/CLOSED_GAPS.md`](./history/CLOSED_GAPS.md#gap-lifecycle-002--resource-destructive-lifecycle-was-not-accepted).
@@ -80,8 +146,8 @@ Detailed closure evidence is historical and is intentionally excluded from the n
 
 ## Closure protocol
 
-1. Reproduce the mismatch with the minimum discriminating test.
-2. Fix the earliest invalid target or executable boundary.
-3. Add regression evidence at every enforcement layer that could independently permit the failure.
-4. Record the closing commit, pull request, CI run, migration identifiers when applicable, and operational evidence.
-5. Change the status only after the evidence is reviewed, then move the detailed entry to the historical archive.
+1. Reproduce mismatch with minimum discriminating test.
+2. Fix earliest invalid target/executable boundary.
+3. Add regression evidence at every independently permissive enforcement layer.
+4. Record closing commit/PR/CI/migration/operational evidence when applicable.
+5. Change status only after evidence review, then move detailed entry to historical archive.

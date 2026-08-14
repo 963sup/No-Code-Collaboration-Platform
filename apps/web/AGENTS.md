@@ -4,18 +4,54 @@
 
 ## Invariants
 
-- Use the App Router. URL structure, Route Groups, Dynamic Segments, and Parallel Route `@slots` are presentation concerns; they are not Domain entities or bounded-context evidence.
+- Use the App Router. URL structure, Route Groups, Dynamic Segments, and rendering composition are presentation concerns; they are not Domain entities or bounded-context evidence.
 - Prefer Server Components. Add Client Components only at the smallest boundary that needs browser APIs, local interactive state, effects, or event handlers.
 - Keep `page.tsx`, `layout.tsx`, Server Actions, and Route Handlers thin. Business rules and use-case orchestration belong to Domain/Application.
 - Server Actions and Route Handlers treat transport input as untrusted, validate it, invoke Application use cases, and map results back to the delivery protocol.
-- Dynamic route parameters provide identifiers only. Application/domain authorization determines whether a resource exists for the actor and which operations are allowed.
-- Routes, layouts, actions, handlers, and components must not query Supabase directly. Supabase SDKs, DTOs, Rows, generated database types, and provider-specific behavior stay in `packages/infrastructure/supabase` and `apps/web/src/composition`.
-- Web session integration uses `@supabase/ssr`; do not reintroduce `@supabase/auth-helpers-*`.
-- Authentication is not Authorization. A valid Session never implies Repository, Organization, Page, or other resource authority.
-- Parallel Routes are UI composition only. Follow `src/app/AGENTS.md` for persistent-slot and hard-navigation fallback invariants.
-- The canonical Repository workspace is `/app/[organizationSlug]/[repositorySlug]`. `/app/repositories/[repositoryId]/**` is a compatibility redirect namespace only; never add a second Repository UI, business flow, or provider query tree there.
-- Route-local UI may be colocated under private folders. Promote logic only when its ownership is clear; do not create a generic shared layer to hide uncertainty.
-- Do not use import-specifier `as` aliases to mask ownership or naming problems. Fix the exported name or introduce an explicit adapter/facade instead.
+- Dynamic route parameters provide human identifiers only. Application/Domain authorization resolves the stable Repository target and determines whether a resource exists for the Actor and which operations are allowed.
+- Routes, layouts, actions, handlers, and components must not query Supabase directly. Provider SDKs, DTOs, rows, generated database types, and provider-specific behavior stay in `packages/infrastructure/supabase` and `apps/web/src/composition`.
+- Web session integration uses `@supabase/ssr`; do not reintroduce deprecated provider helpers.
+- Authentication is not Authorization. A valid Session never implies Repository, Organization, Page, or other Resource authority.
+- The canonical Repository workspace is `/{ownerSlug}/{repositorySlug}`. The Owner segment resolves either a User or Organization Owner namespace and never implies Organization ownership.
+- `/app` is an authenticated discovery/dashboard surface. It is not part of Repository identity.
+- Canonical Repository reads must not inherit an authenticated-only wrapper because public Repository visibility is an accepted anonymous read baseline. Authenticated mutations establish Actor identity and independently evaluate Capability.
+- Canonical Repository presentation is one Owner/Repository header, primary navigation, and one active content surface. Framework composition features do not create permanent product panes by default.
+- Current accepted Repository child surfaces are `/pages`, `/pages/[pageId]`, and `/activity`.
+- `Context` may change navigation/filtering/presentation but never persisted authorization facts.
+- Activity is a Repository-scoped projection and may be a normal navigation surface rather than a permanently visible region.
+- `/app/repositories/[repositoryId]/**` is compatibility-only. It must perform access-aware resolution and redirect to the canonical Owner/Repository URL; it must never own a second Repository UI/business-flow tree.
+- Do not keep an Organization-only Repository route tree as a compatibility UI. It encodes a false ownership invariant and must not coexist with canonical Owner routing.
+- Soft navigation and direct hard navigation to the same canonical URL must resolve the same stable Repository identity and authorization result.
+- Route-local UI may be colocated under private folders. Promote logic only when ownership is clear; do not create a generic shared layer to hide uncertainty.
+- Do not use import aliases or compatibility facades indefinitely to mask obsolete ownership/routing contracts. Once consumers are migrated, remove the obsolete seam.
+
+## Canonical route shape
+
+```text
+src/app/(repository)/
+└─ [ownerSlug]/
+   └─ [repositorySlug]/
+      ├─ layout.tsx
+      ├─ page.tsx
+      ├─ pages/
+      │  ├─ page.tsx
+      │  └─ [pageId]/page.tsx
+      └─ activity/page.tsx
+```
+
+Route Groups do not become Product URL segments.
+
+The Repository layout presents:
+
+```text
+Owner / Repository      Visibility
+----------------------------------
+Overview   Pages   Activity
+----------------------------------
+active child content
+```
+
+This is one Repository presentation, not a second collaboration hierarchy.
 
 ## Placement test
 
@@ -32,4 +68,6 @@ If it is not the last category, do not place it under `apps/web` merely because 
 
 ## Verification
 
-Use current framework documentation through Context7 when Next.js behavior is version-sensitive instead of expanding this file with framework reference material. Run the narrow affected checks first; use `pnpm verify:fast` after normal Web changes and `pnpm verify:full` before merge when build, exports, dependencies, or reachability can change.
+Use current framework documentation through Context7 when framework behavior is version-sensitive. Run the narrow affected checks first; use `pnpm verify:fast` after normal Web changes and `pnpm verify:full` before integration when build, exports, dependencies, or reachability can change.
+
+Browser verification must explicitly cover `/app` → Repository card → `/{owner}/{repository}` → Pages → Page create/open/update → Activity. A green suite does not prove a journey it does not exercise.

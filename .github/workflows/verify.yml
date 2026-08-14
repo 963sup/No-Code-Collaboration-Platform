@@ -72,7 +72,17 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Verify Sentry Actions secret
+        if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository)
+        env:
+          SENTRY_AUTH_TOKEN_CONFIGURED: ${{ secrets.SENTRY_AUTH_TOKEN != '' }}
+        run: |
+          set -euo pipefail
+          test "${SENTRY_AUTH_TOKEN_CONFIGURED}" = 'true' || { echo 'SENTRY_AUTH_TOKEN is not configured'; exit 1; }
+
       - name: Verify repository
+        env:
+          SENTRY_ENVIRONMENT: ci
         run: pnpm verify:full
 
   database:
@@ -135,6 +145,8 @@ jobs:
         run: pnpm supabase:env:github
 
       - name: Build web application
+        env:
+          SENTRY_ENVIRONMENT: ci
         run: pnpm build
 
       - name: Install Chromium

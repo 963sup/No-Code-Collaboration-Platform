@@ -29,29 +29,56 @@ const invariantContracts = {
   'apps/web/AGENTS.md': [
     [/Web -> Application -> Domain/i, 'Web dependency direction is missing'],
     [
-      /canonical Repository workspace.*organizationSlug.*repositorySlug/is,
-      'canonical semantic Repository namespace is missing'
+      /canonical Repository workspace.*\/\{ownerSlug\}\/\{repositorySlug\}/is,
+      'canonical Owner/Repository namespace is missing'
     ],
     [
-      /repositories.*repositoryId.*compatibility redirect/is,
-      'legacy Repository compatibility-only boundary is missing'
+      /\/app\/repositories\/\[repositoryId\].*compatibility-only[\s\S]*access-aware resolution[\s\S]*redirect/is,
+      'stable-ID Repository redirect-only compatibility boundary is missing'
+    ],
+    [
+      /one Owner\/Repository header, primary navigation, and one active content surface/i,
+      'canonical single-content Repository presentation is missing'
+    ],
+    [
+      /Canonical Repository reads must not inherit an authenticated-only wrapper[\s\S]*public Repository visibility/is,
+      'public Repository delivery boundary is missing'
     ],
     [/Authentication is not Authorization/i, 'authentication/authorization separation is missing']
   ],
   'apps/web/src/app/AGENTS.md': [
     [
-      /\/app\/\[organizationSlug\]\/\[repositorySlug\]/,
-      'canonical Repository App Router path is missing'
+      /canonical Repository workspace URL is `\/\{ownerSlug\}\/\{repositorySlug\}`/i,
+      'canonical Repository App Router URL is missing'
     ],
     [
-      /@navigation.*@workspace.*@context.*@activity/is,
-      'Repository Parallel Route slots are missing'
+      /src\/app\/\(repository\)\/[\s\S]*\[ownerSlug\][\s\S]*\[repositorySlug\]/is,
+      'canonical Repository route-group projection is missing'
     ],
-    [/implicit `children` slot/i, 'implicit children slot invariant is missing'],
-    [/persistent named slot/i, 'persistent named-slot invariant is missing'],
-    [/Soft navigation.*persistent sibling slots/is, 'soft-navigation slot invariant is missing'],
-    [/Hard navigation.*meaningful defaults/is, 'hard-navigation recovery invariant is missing'],
-    [/MUST NOT silently return `null`/i, 'non-null fallback invariant is missing']
+    [
+      /one owner\/Repository header, horizontal primary navigation, and one active content surface/i,
+      'canonical Repository presentation invariant is missing'
+    ],
+    [
+      /Do not require persistent navigation\/context\/activity panes merely because Parallel Routes are available/i,
+      'framework composition must not become a persistent-pane Product invariant'
+    ],
+    [
+      /only accepted Repository compatibility namespace is `\/app\/repositories\/\[repositoryId\]\/\*\*`[\s\S]*access-aware[\s\S]*redirect-only/is,
+      'stable-ID compatibility route boundary is missing'
+    ],
+    [
+      /Organization-only `\/app\/\[organizationSlug\]\/\[repositorySlug\]\/\*\*` Repository routing must not exist/i,
+      'Organization-only Repository route rejection is missing'
+    ],
+    [
+      /Soft navigation and direct hard navigation[\s\S]*same Repository stable identity and authorization result/is,
+      'soft/hard navigation identity invariant is missing'
+    ],
+    [
+      /Public Repository reads must not be converted into authenticated-only behavior/i,
+      'public Repository delivery invariant is missing'
+    ]
   ],
   'docs/operations/AGENTS.md': [
     [

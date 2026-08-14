@@ -4,8 +4,8 @@ import { ResetPassword, SignOut } from '@no-code-collaboration-platform/applicat
 import { redirect } from 'next/navigation';
 import { z } from 'zod';
 
-import { buildPath } from '@/auth/auth-navigation';
 import { createRequestServices } from '@/composition/create-request-services';
+import { buildPath } from '@/routing/auth-routes';
 
 const resetPasswordSchema = z
   .object({

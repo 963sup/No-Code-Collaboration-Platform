@@ -8,4 +8,5 @@ failIfNoMatch: true
 
 allowBuilds:
   '@ast-grep/cli': true
+  '@sentry/cli@2.58.6': true
   lefthook: true

@@ -26,8 +26,8 @@ export default async function AppHomePage() {
         <p className='text-sm font-medium text-muted-foreground'>Collaboration containers</p>
         <h1 className='text-3xl font-semibold tracking-tight'>Repositories</h1>
         <p className='max-w-2xl text-muted-foreground'>
-          Choose an Organization-owned Repository. Human-readable routes are resolved to stable
-          Repository identities before authorization-sensitive work begins.
+          Choose a Repository you can access. Owner and Repository names resolve to stable
+          Repository identity before authorization-sensitive work begins.
         </p>
       </div>
 
@@ -37,7 +37,8 @@ export default async function AppHomePage() {
             <CardTitle>No accessible repositories</CardTitle>
             <CardDescription>
               Authentication alone creates no collaboration authority. A Repository appears here
-              only after an accepted authority source makes it accessible.
+              only after ownership, governance, an explicit Grant, or accepted visibility makes it
+              accessible.
             </CardDescription>
           </CardHeader>
         </Card>
@@ -53,7 +54,7 @@ export default async function AppHomePage() {
                 <CardHeader>
                   <CardTitle>{route.repository.name}</CardTitle>
                   <CardDescription>
-                    {route.organizationSlug}/{route.repository.slug}
+                    {route.ownerSlug}/{route.repository.slug}
                   </CardDescription>
                 </CardHeader>
                 <CardContent className='text-sm text-muted-foreground'>

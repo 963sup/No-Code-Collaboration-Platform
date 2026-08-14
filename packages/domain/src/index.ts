@@ -28,6 +28,7 @@ export {
   type PageSummary,
   type PageUpdate
 } from './resource/page';
+export type { RepositoryOwner } from './repository/ownership';
 export {
   isRepositorySlug,
   repositoryVisibilities,

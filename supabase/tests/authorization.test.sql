@@ -19,7 +19,13 @@ values (
   '00000000-0000-0000-0000-000000000001'
 );
 
-insert into public.repositories (id, organization_id, slug, name, created_by)
+insert into public.repositories (
+  id,
+  owner_organization_id,
+  slug,
+  name,
+  created_by
+)
 values (
   '20000000-0000-0000-0000-000000000001',
   '10000000-0000-0000-0000-000000000001',
@@ -144,8 +150,8 @@ select is(
     'private.get_accessible_repository_route_by_id(uuid)',
     'EXECUTE'
   ),
-  false,
-  'anonymous actors cannot execute the private route privilege implementation'
+  true,
+  'anonymous public-route facade may delegate to the private access-aware route resolver'
 );
 
 select is(
@@ -213,13 +219,13 @@ select is(
 
 select is(
   (
-    select organization_slug
+    select owner_slug
     from public.get_accessible_repository_route_by_id(
       '20000000-0000-0000-0000-000000000001'
     )
   ),
   'example-organization',
-  'stable Repository identity resolves to its canonical Organization namespace'
+  'stable Repository identity resolves to its canonical Owner namespace'
 );
 
 select is(
@@ -289,7 +295,7 @@ select is(
     )
   ),
   1,
-  'organization owner receives repository admin capability through the accepted Page command'
+  'Organization owner receives Repository admin capability through the accepted Page command'
 );
 
 update public.repositories

@@ -1,0 +1,45 @@
+begin;
+
+create extension if not exists pgtap with schema extensions;
+set local search_path = extensions, public, pg_catalog;
+
+select plan(4);
+
+select has_table(
+  'private',
+  'repository_owner_namespaces',
+  'User and Organization Repository owners share one private globally unique URL namespace registry'
+);
+
+select hasnt_column(
+  'public',
+  'repositories',
+  'organization_id',
+  'Repository ownership has no legacy Organization-only compatibility column'
+);
+
+select is(
+  (
+    select constraint_type
+    from information_schema.table_constraints
+    where table_schema = 'public'
+      and table_name = 'repositories'
+      and constraint_name = 'repositories_exactly_one_owner'
+  ),
+  'CHECK',
+  'Repository persistence enforces exactly one typed User-or-Organization Owner'
+);
+
+select is(
+  array(
+    select enumlabel
+    from pg_catalog.pg_enum
+    where enumtypid = 'public.repository_visibility'::regtype
+    order by enumsortorder
+  ),
+  array['private', 'public']::name[],
+  'Repository visibility exposes only states with accepted effective-access semantics'
+);
+
+select * from finish();
+rollback;
