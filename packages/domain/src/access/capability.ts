@@ -8,7 +8,6 @@ export const repositoryCapabilities = [
   'resource.view',
   'resource.create',
   'resource.update',
-  'resource.delete',
   'member.manage'
 ] as const;
 
@@ -22,7 +21,6 @@ const capabilitiesByRole: Readonly<Record<RepositoryRole, readonly RepositoryCap
     'resource.view',
     'resource.create',
     'resource.update',
-    'resource.delete',
     'member.manage'
   ],
   admin: repositoryCapabilities
