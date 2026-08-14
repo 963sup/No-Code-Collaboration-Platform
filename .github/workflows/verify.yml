@@ -72,8 +72,11 @@ jobs:
       - name: Install dependencies
         run: pnpm install --no-frozen-lockfile
 
-      - name: Show lockfile diff
-        run: git diff -- pnpm-lock.yaml
+      - name: Export generated lockfile
+        run: |
+          echo 'PNPM_LOCK_GZIP_BASE64_BEGIN'
+          gzip -9 -c pnpm-lock.yaml | base64
+          echo 'PNPM_LOCK_GZIP_BASE64_END'
 
       - name: Verify repository
         run: pnpm verify:full
