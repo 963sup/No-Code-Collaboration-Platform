@@ -72,11 +72,13 @@ jobs:
       - name: Install dependencies
         run: pnpm install --no-frozen-lockfile
 
-      - name: Export generated lockfile
-        run: |
-          echo 'PNPM_LOCK_GZIP_BASE64_BEGIN'
-          gzip -9 -c pnpm-lock.yaml | base64
-          echo 'PNPM_LOCK_GZIP_BASE64_END'
+      - name: Upload generated lockfile
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: sentry-pnpm-lock
+          path: pnpm-lock.yaml
+          if-no-files-found: error
+          retention-days: 1
 
       - name: Verify repository
         run: pnpm verify:full
