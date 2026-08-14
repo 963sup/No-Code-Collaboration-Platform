@@ -31,9 +31,7 @@ export default async function RepositoryPages({ params, searchParams }: Reposito
   const { ownerSlug, repositorySlug } = await params;
   const route = await requireAccessibleRepositoryRoute(ownerSlug, repositorySlug);
   const services = await createRequestServices();
-  const pages = await new ListAccessiblePages(services.pageReader).execute({
-    repositoryId: route.repository.id
-  });
+  const pages = await new ListAccessiblePages(services.pageReader).execute(route.repository.id);
   const { error } = await searchParams;
 
   return (
