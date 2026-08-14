@@ -8,13 +8,6 @@ export function proxy(request: NextRequest) {
 
 export const config = {
   matcher: [
-    '/app/:path*',
-    '/auth/:path*',
-    '/forgot-password',
-    '/recover-password',
-    '/reset-password',
-    '/sign-in',
-    '/sign-up',
-    '/verify-email'
+    '/((?!api|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)'
   ]
 };
