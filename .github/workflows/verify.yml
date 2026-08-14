@@ -121,6 +121,13 @@ jobs:
       - name: Verify database
         run: pnpm supabase:verify
 
+      - name: Show generated database type patch
+        if: failure()
+        run: |
+          pnpm supabase:types:local
+          git diff --no-ext-diff --unified=3 -- \
+            packages/infrastructure/supabase/src/generated/database.types.ts
+
       - name: Stop local Supabase
         if: always()
         run: pnpm supabase:stop
