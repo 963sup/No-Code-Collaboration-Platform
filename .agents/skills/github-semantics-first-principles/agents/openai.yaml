@@ -1,0 +1,6 @@
+interface:
+  display_name: "GitHub Semantics First Principles"
+  short_description: "Audit GitHub-derived semantics against the Repository axiom."
+  default_prompt: "Apply the Repository = No-Code Collaboration Container axiom, five-step decomposition procedure, and version-control exclusion boundaries to audit or redesign this GitHub-derived product concept."
+policy:
+  allow_implicit_invocation: true
