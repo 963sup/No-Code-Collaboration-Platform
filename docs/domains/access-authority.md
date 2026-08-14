@@ -8,7 +8,7 @@
 
 The platform must determine and explain:
 
-> Which authenticated Actor may perform which action on which Repository-scoped target, through which authority source, under which constraints, and why?
+> Which authenticated Actor may perform which accepted action on which Repository-scoped target, through which authority source, under which constraints, and why?
 
 This contract succeeds when User-owned and Organization-owned Repositories produce the same Capability vocabulary and decision semantics without treating ownership, Membership, selected Context, or Role labels as interchangeable authority facts.
 
@@ -18,11 +18,13 @@ This contract succeeds when User-owned and Organization-owned Repositories produ
 
 - Domain defines Repository Roles and explicit Repository Capabilities.
 - Database stores direct User-to-Repository Grants.
-- Existing implementation derives Repository admin from Organization owner/admin because every current Repository row is Organization-owned.
-- Product truth now accepts User or Organization Repository ownership, so authorization must become owner-neutral.
+- Current executable Repository ownership is typed User-or-Organization ownership.
+- Current executable authority resolution derives personal-owner governance, Organization owner/admin governance, and direct User Grant sources without caller-supplied Organization ownership.
+- Ordinary Organization Membership contributes no Repository Role.
 - `Collaborator` is relationship-derived rather than User subtype.
 - RLS independently enforces row access; UI visibility is not sufficient enforcement.
 - Operation Capability and delegation authority are distinct decisions.
+- Resource hard deletion is not an accepted Product operation, so it is absent from the current Capability vocabulary.
 
 ### Hard constraints
 
@@ -34,10 +36,11 @@ This contract succeeds when User-owned and Organization-owned Repositories produ
 - Actor cannot delegate beyond accepted delegation rules.
 - Service credentials never become browser/end-user authority.
 - Semantic-role classification cannot replace persisted authority facts.
+- An unaccepted Product operation cannot remain as a latent current Capability merely because enforcement later denies it.
 
 ### Corrected ownership authority model
 
-Repository ownership contributes an explicit governance authority source without fabricating direct Grant rows:
+Repository ownership contributes governance authority without fabricating direct Grant rows:
 
 ```text
 Personal Repository
@@ -60,7 +63,7 @@ A User-owned Repository has no Organization governance source by implication.
 - First model can use additive authority sources without explicit deny precedence.
 - Personal ownership + Organization governance + direct User Grants are sufficient for the corrected executable slice.
 - Roles remain small fixed bundles while Capability is decision primitive.
-- Repository remains primary grant scope.
+- Repository remains primary explicit Grant scope.
 - RLS can project the same accepted semantics without becoming Domain owner.
 
 ### Unknowns
@@ -68,14 +71,15 @@ A User-owned Repository has no Organization governance source by implication.
 - Whether ordinary Organization Membership should later contribute a Repository base permission.
 - Whether Team or another group Principal is required.
 - Whether Enterprise/Organization Policies must cap granted Capabilities.
-- Whether custom roles, temporary/conditional/resource-specific grants, or explicit deny are required.
+- Whether custom roles, temporary/conditional/resource-specific Grants, or explicit deny are required.
 - How ownership transfer should modify effective authority during a pending transition, if transfer is accepted.
+- Which lifecycle operation and Capability should represent Resource removal if archive/destructive lifecycle is later accepted.
 
 ### Value choices
 
 - Personal Owner and Organization owner/admin governance are accepted authority sources because ownership must include administration of the owned collaboration Container.
 - Do not create one direct Grant per owner/governor merely to represent authority already explained by ownership/governance relationships.
-- Prefer explicit Capabilities over scattered Role checks.
+- Prefer explicit accepted Capabilities over scattered Role checks or latent unusable permissions.
 - Prefer explainable additive sources before deny precedence.
 - Prefer least privilege and fail closed.
 - Prefer one semantic decision projected into Domain/Application/RLS/UI explanation.
@@ -112,13 +116,13 @@ Principal    = subject eligible to receive Repository authority; currently User
 Container    = Repository
 Relationship = Repository ownership, Membership, direct Grant; future Team Membership/Grant or App Installation
 Artifact     = Repository-contained target such as Resource
-Process      = authorization-sensitive command/transition, including Grant mutation
+Process      = authorization-sensitive accepted command/transition, including Grant mutation
 ```
 
 Cross-cutting authorization semantics:
 
 - `Role` = assignment/explanation bundle.
-- `Capability` = decision primitive.
+- `Capability` = decision primitive for an accepted action.
 - `Policy`/constraint = restriction on candidate authority; cannot silently fabricate content access.
 - `Context` = presentation only.
 - `Activity Event` = historical evidence for accepted mutations.
@@ -135,7 +139,7 @@ A User can be request Actor, Repository Owner, and direct-grant Principal in dif
 | Grant | Relationship assigning one Repository Role to one Principal |
 | Governance authority source | Ownership/administration relationship deriving Repository authority without Grant |
 | Role | Named Capability bundle |
-| Capability | Specific allowed action on defined target |
+| Capability | Specific accepted action on a defined target |
 | Effective Capabilities | Capabilities produced from accepted sources after constraints/state preconditions |
 | Delegation | Authority to create/change/revoke another Grant |
 | Context | Selected view/filter; never authority source by itself |
@@ -173,7 +177,9 @@ Role ── expands to ──> Capabilities
 
 ### Public visibility
 
-Public visibility contributes accepted read baseline semantics; it is not a Principal Grant and does not create a Role identity.
+Public visibility contributes accepted Repository/Resource read baseline semantics; it is not a Principal Grant and does not create a Role identity.
+
+Public visibility does not automatically publish the raw historical-evidence envelope. Current raw Activity access requires authenticated Repository read authority.
 
 `organization` visibility is not accepted until a specific Organization-member baseline is defined.
 
@@ -185,8 +191,21 @@ Current Role bundles:
 | --- | --- |
 | Viewer | `repository.view`, `resource.view` |
 | Contributor | Viewer + `resource.create`, `resource.update` |
-| Manager | Contributor + `resource.delete`, `member.manage` |
-| Admin | all current Repository Capabilities including `repository.manage` |
+| Manager | Contributor + `member.manage` |
+| Admin | all current Repository Capabilities + `repository.manage` |
+
+Current Repository Capability vocabulary:
+
+```text
+repository.view
+repository.manage
+resource.view
+resource.create
+resource.update
+member.manage
+```
+
+Resource hard deletion is not an accepted Product operation. No current Role grants a `resource.delete` Capability.
 
 Role rank may help assignment/explanation while bundles remain nested. Capability remains decision truth.
 
@@ -206,7 +225,7 @@ Actor
 → Capability decision
 ```
 
-Application authority readers accept stable `actorId + repositoryId`; callers must not supply `organizationId` as an authorization assumption. The authority source reader resolves Repository ownership itself.
+Application authority readers accept stable `actorId + repositoryId`; callers must not supply `organizationId` as an authorization assumption. The authority adapter resolves Repository ownership from stable Repository facts.
 
 `Highest role` is an explanation projection, not canonical persisted access state.
 
@@ -254,6 +273,7 @@ Every transition evaluates:
 16. Service/secret credentials never substitute for end-user authorization.
 17. Collaborator/Outside Collaborator/Highest Role remain derived classifications/projections.
 18. Semantic-role classification never grants authority by itself.
+19. A Product operation that is not accepted is absent from current Capability bundles.
 
 ## Derived classifications
 
@@ -263,15 +283,15 @@ Every transition evaluates:
 
 ## Events and explanations
 
-Candidate immutable events include:
+Candidate historical evidence for accepted Grant mutations may include:
 
 - `repository_grant.created`
 - `repository_grant.role_changed`
 - `repository_grant.revoked`
-- `authorization.denied`
-- future `authorization.policy_capped`
 
-Grant mutation history should record Actor, target Principal, Repository, previous/proposed Role, source, timestamp without secrets.
+Grant mutation history should record Actor, target Principal, Repository, previous/proposed Role, source, timestamp without secrets when that evidence contract is accepted.
+
+Authorization denials are decision outcomes, not automatically persistent Activity Events. Persisting denied attempts requires its own security/audit purpose and retention contract.
 
 ## Dependencies and failure behavior
 
@@ -300,6 +320,10 @@ Rejected because direct/stale/alternate clients bypass presentation.
 
 Rejected because duplicated role-name conditionals diverge across Web/Application/SQL.
 
+### Latent unavailable Capabilities
+
+Rejected because a Role must describe actions the Product actually accepts; unavailable lifecycle operations are not kept as current permissions merely to be denied later.
+
 ### Generic Principal/Relationship persistence too early
 
 Rejected until multiple accepted lifecycles justify a supertype without weakening FK integrity.
@@ -326,9 +350,10 @@ Reopen when:
 2. Organization owner/admin receives Repository admin for Organization-owned Repository without direct Grant; ordinary member does not.
 3. Personal owner of Repository A gains no authority over unrelated Repository B.
 4. Organization admin of O gains no governance authority over User-owned Repository or Repository owned by another Organization.
-5. Viewer/Contributor/Manager/Admin receive exactly defined Capabilities.
+5. Viewer/Contributor/Manager/Admin receive exactly defined accepted Capabilities.
 6. Manager cannot create/alter/remove Manager/Admin authority unless an accepted delegation rule allows it.
 7. Changing UI Context cannot change access for identical Actor/Repository/persisted relationships.
 8. Direct request to hidden UI action is denied server-side.
 9. Grant attribution differing from authenticated Actor is rejected.
 10. Domain tests and database tests produce same decision matrix for representative owner modes, Grants, visibility, targets.
+11. Any unaccepted lifecycle operation is absent from current Capability bundles and remains inaccessible through RLS/table privileges.
