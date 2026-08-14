@@ -4,8 +4,8 @@ import { SignInWithPassword } from '@no-code-collaboration-platform/application'
 import { redirect } from 'next/navigation';
 import { z } from 'zod';
 
-import { buildPath, resolvePostAuthDestination } from '@/auth/auth-navigation';
 import { createRequestServices } from '@/composition/create-request-services';
+import { buildPath, resolvePostAuthDestination } from '@/routing/auth-routes';
 
 const signInSchema = z.object({
   email: z.email().max(320),
