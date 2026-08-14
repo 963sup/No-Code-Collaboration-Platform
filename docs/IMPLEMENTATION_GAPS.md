@@ -31,7 +31,7 @@ A gap is not permission to redefine the target model, postpone an invariant sile
 
 ## Open gaps
 
-### GAP-OWNERSHIP-001 — Repository ownership correction is implemented across current contracts, but creation and exact-head projection/verification evidence remain incomplete
+### GAP-OWNERSHIP-001 — Repository ownership correction is implemented across current contracts, but creation and exact-head verification evidence remain incomplete
 
 - Status: Open
 - Affected contracts: [`PRODUCT.md`](./PRODUCT.md), [`ONTOLOGY.md`](./ONTOLOGY.md), [`domains/repository-collaboration.md`](./domains/repository-collaboration.md), [`domains/access-authority.md`](./domains/access-authority.md), [`architecture/README.md`](./architecture/README.md), [ADR-010](./architecture/ADR-010-repository-owner-namespace.md)
@@ -49,33 +49,33 @@ Current branch now implements the corrected target through these concrete projec
 - `packages/infrastructure/supabase/src/access/supabase-repository-access-reader.ts` reads owner-neutral direct/governance sources.
 - `supabase/schemas/30_repository.sql` models exactly one `owner_user_id XOR owner_organization_id`; the legacy `organization_id` ownership column is absent from current desired state.
 - `supabase/schemas/91_repository_access_projection.sql` declares owner-neutral authority-source projection.
-- `supabase/schemas/95_repository_routes.sql` resolves one global User/Organization Owner namespace.
+- `supabase/schemas/95_repository_routing.sql` resolves one global User/Organization Owner namespace.
 - `supabase/schemas/99_rls.sql` has separate personal-owner and Organization-admin Repository creation policies and no Organization-only owner field.
 - `supabase/migrations/20260814021000_remove_legacy_repository_organization_owner.sql` makes replayed final state drop the historical compatibility column.
 - `apps/web/src/app/(repository)/[ownerSlug]/[repositorySlug]/**` is the only Repository UI tree; the obsolete Organization-only tree has been removed.
 - `apps/web/src/routing/repository-routes.ts` builds canonical `/{owner}/{repository}` URLs; `/app` remains dashboard/discovery.
 - `apps/web/e2e/page-collaboration.spec.ts` now clicks a Repository card from `/app`, lands on the canonical route, follows stable-ID compatibility redirects, and executes Page collaboration through the canonical path.
 - pgTAP ownership contracts assert typed ownership, namespace collision rejection, personal/Organization authority separation, ordinary-Member non-authority, and absence of the legacy `repositories.organization_id` column.
+- Checked-in `packages/infrastructure/supabase/src/generated/database.types.ts` matches the replayed desired schema under `pnpm supabase:types:check`; generated types remain a projection and cannot redefine target truth.
+- Supabase contract verification has demonstrated migration replay, schema lint, pgTAP, and generated-type consistency on the corrected ownership baseline; exact-head closure still requires the complete required check set on one latest PR head.
 
 Current incomplete evidence/capability:
 
 - Human-facing Repository creation at `/new` is not implemented. Personal and Organization ownership can be represented/enforced by Domain/database contracts, but the Product does not yet expose one complete creation use case for both Owner kinds.
-- Checked-in `packages/infrastructure/supabase/src/generated/database.types.ts` must be regenerated from the corrected replayed local database; it is a projection and cannot be hand-maintained as target truth.
-- The same latest PR head has not yet produced successful Repository, Supabase, Browser, and deployment evidence after the full correction set.
+- Exact-head end-to-end closure evidence remains incomplete until Repository, Supabase, Browser, and deployment checks all succeed for the same latest PR head; an individual green check does not close this gap.
 
 #### Root cause
 
 An early Organization-only executable shortcut was promoted into Product, Domain, authorization, persistence, and URL assumptions. Those assumptions then cited one another as evidence.
 
-The earliest invalid boundaries have now been replaced. This gap remains Open only for missing creation capability and exact-head generated/runtime evidence; it must not continue describing the removed Organization-only implementation as current truth.
+The earliest invalid boundaries have now been replaced. This gap remains Open only for missing creation capability and exact-head end-to-end runtime/deployment evidence; it must not continue describing the removed Organization-only implementation as current truth.
 
 #### Predicted failure
 
 Until closure:
 
-- users cannot create a personal or Organization-owned Repository through the human Product UI;
-- generated TypeScript database projections may lag the corrected desired/replayed schema; and
-- ownership correction cannot be claimed exact-head verified across all CI/browser/deployment boundaries.
+- users cannot create a personal or Organization-owned Repository through the human Product UI; and
+- without one latest head proving the full verification matrix, a Web/browser/deployment regression could remain undetected even when narrower checks are green.
 
 #### Temporary containment
 

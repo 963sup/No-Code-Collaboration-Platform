@@ -1,6 +1,12 @@
 import Link from 'next/link';
 import type { ReactNode } from 'react';
 
+import {
+  repositoryActivityPath,
+  repositoryPagesPath,
+  repositoryPath
+} from '@/routing/repository-routes';
+
 interface RepositoryShellProps {
   readonly children: ReactNode;
   readonly ownerSlug: string;
@@ -18,7 +24,8 @@ export function RepositoryShell({
   showActivity,
   visibility
 }: RepositoryShellProps) {
-  const basePath = `/${encodeURIComponent(ownerSlug)}/${encodeURIComponent(repositorySlug)}`;
+  const repositoryRoute = { ownerSlug, repositorySlug };
+  const basePath = repositoryPath(repositoryRoute);
 
   return (
     <main className='min-h-screen bg-background'>
@@ -42,11 +49,17 @@ export function RepositoryShell({
             <Link className='px-3 py-2 text-sm font-medium' href={basePath}>
               Overview
             </Link>
-            <Link className='px-3 py-2 text-sm font-medium' href={`${basePath}/pages`}>
+            <Link
+              className='px-3 py-2 text-sm font-medium'
+              href={repositoryPagesPath(repositoryRoute)}
+            >
               Pages
             </Link>
             {showActivity ? (
-              <Link className='px-3 py-2 text-sm font-medium' href={`${basePath}/activity`}>
+              <Link
+                className='px-3 py-2 text-sm font-medium'
+                href={repositoryActivityPath(repositoryRoute)}
+              >
                 Activity
               </Link>
             ) : null}

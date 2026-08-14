@@ -11,7 +11,7 @@ description: Use whenever adapting, naming, designing, or reviewing ANY GitHub-d
 
 > **Repository = No-Code Collaboration Container**
 
-Repository 是本專案唯一且不可動搖的協作容器原型。Enterprise、Organization、Team、Collaborator、User、社交關係（Follow/Star）、Wiki、Projects、Issues——這些全部不是獨立功能，而是圍繞 Repository 這個唯一容器產生的角色（Role）或投影（Projection）。
+Repository 是本專案唯一且不可動搖的協作容器原型。Enterprise、Organization、Team、Collaborator、User、社交關係（Follow/Star）、Wiki、Projects、Issues 等 GitHub 衍生候選概念，都不得被預設成第二個 Repository-equivalent 協作容器，也不得因 GitHub 提供就自動成為本平台功能。只有通過五步驟的概念才能保留，並依問題本質分類為 Actor / Scope / Principal / Relationship / Artifact / Process / Projection / UI 慣例；分類本身也不自動建立實體、資料表或功能。
 
 **判斷準則：任何概念如果無法回答「這對 Repository 做了什麼」，就不屬於這個產品。**
 
@@ -114,24 +114,24 @@ Repository 是本專案唯一且不可動搖的協作容器原型。Enterprise�
 
 ### User / 社交關係（Follow / Star）
 
-- **原始問題**：User 是身分主體與潛在 Owner；Follow/Star 解決的是「發現有價值的協作空間、建立弱連結」的問題。
-- **五步驟結果**：User 成立（Actor/Principal/Owner 型別之一）；Follow/Star 成立，角色是 **Relationship**（Actor 對 Repository 或對 Owner 的關係），且它必須連回 Repository 的可發現性，不是通用社交功能。
-- **具體設計方向**：Star 一律作用在 Repository 上（表達「我關注這個協作容器」），可用於「我 Star 過的 Repository」列表與熱門排序；Follow 作用在 Owner（User 或 Organization）上（表達「我想追蹤這個人/組織未來擁有的所有 Repository」）。兩者都是輕量 Relationship，不需要審核、不產生 Grant。
-- **明確排除項**：不做通用的「動態消息（feed）」平台，不做私訊、按讚評論等與 Repository 發現/協作無關的社交堆疊；如果某個社交功能無法回答「這如何幫助使用者找到或評估某個 Repository」，直接淘汰。
+- **原始問題**：User 是身分主體與潛在 Owner；Follow/Star 候選語意試圖解決「發現有價值的協作空間、建立弱連結」的問題。
+- **五步驟結果**：User 成立（Actor/Principal/Owner 型別之一）；Follow/Star 目前只保留為 **待驗證的 Relationship benchmark hypothesis**，尚未因 GitHub 存在而成為 accepted Product capability。只有真實 Repository discovery 問題證明其必要性後才可接受。
+- **具體設計方向**：若後續驗證成立，Star 應作用在 Repository 上（表達「我關注這個協作容器」），Follow 可作用在 Owner（User 或 Organization）上並只服務 Repository discovery；兩者都不得產生 Grant 或新的授權來源。
+- **明確排除項**：不做通用的「動態消息（feed）」平台，不做私訊、按讚評論等與 Repository 發現/協作無關的社交堆疊；在需求被驗證前不得建立 Follow/Star persistence、route 或 UI。
 
 ### Wiki
 
 - **原始問題**：團隊需要沉澱、共同編輯「說明性、非結構化」的知識內容。
-- **五步驟結果**：問題成立，不依賴程式碼；角色是 **Repository 內部的 Artifact**（一種內容類型），或直接收斂成「Page 的其中一種用途」，不是獨立資源家族。
+- **五步驟結果**：問題成立，不依賴程式碼；但 `Wiki` 本身目前不是 accepted Resource family。先檢查既有 **Page Artifact** 是否已完整承載這個問題，只有 Page 無法表達的獨立行為或生命周期被證明後才重新分類。
 - **具體設計方向**：在本專案現有語意下，Wiki 想解決的問題與 Page 這個既有 Resource 高度重疊——先檢查「是不是已經可以用 Page 滿足」，只有當「多頁面互相連結、有目錄結構」這種需求是 Page 目前語意無法承載時，才考慮把它變成 Page 的一種呈現模式（例如 Page 之間的連結關係），而不是新增一個叫 Wiki 的頂層資源。
-- **明確排除項**：不做「每次編輯都留一筆可逐行 diff 的歷史」；如果需要歷史，套用前面「資料版本控制」段落的線性快照模型，不做分支/合併式的編輯歷史。
+- **明確排除項**：不因 GitHub 有 Wiki 就建立新的 Resource family；不做「每次編輯都留一筆可逐行 diff 的歷史」；如果需要歷史，套用前面「資料版本控制」段落的線性快照模型，不做分支/合併式的編輯歷史。
 
 ### Projects
 
 - **原始問題**：團隊需要規劃與追蹤一批工作項目的進度（看板、時程）。
-- **五步驟結果**：問題成立，不依賴程式碼；角色是 **Projection**（對既有協作產物的規劃視角），不是新的擁有權/授權 Container。
-- **具體設計方向**：Project 是「對 Repository 內部 Artifact（如 Page，或未來的 Issue）的一種分類與排列視圖」（看板欄位、狀態、排序），本身不擁有內容、不能被單獨授權存取——存取權限完全繼承自它所呈現的 Repository。
-- **明確排除項**：不建立「Project 可以獨立於任何 Repository 存在」的跨 Repository 規劃工具（那等於變成第二容器）；不引入「Project 有自己的一組協作者清單」——一律沿用 Repository 的授權。
+- **五步驟結果**：問題成立，不依賴程式碼；角色是 **Projection**（對既有 Repository-scoped 協作產物的規劃視角），不是新的擁有權/授權 Container。
+- **具體設計方向**：Project-style planning view 可以投影一個或多個 Repository 中已接受的工作 Artifact。跨 Repository 本身不會讓 Projection 變成 Container；每個被投影項目必須保留自己的 source Repository identity，讀寫與可見性都回到該 Repository 的 authorization facts。Planning view 本身不擁有內容、不能被單獨授權，也不能產生新的跨 Repository authority。
+- **明確排除項**：不建立 Project-owned Artifact、不建立 Project 專屬協作者/Grant、不讓 Project 成為獨立寫入或 ownership boundary。禁止的是第二 Collaboration Container，不是單純跨 Repository 的 read/planning Projection。
 
 ### Issues
 
