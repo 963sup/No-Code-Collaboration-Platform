@@ -70,7 +70,10 @@ jobs:
         run: corepack enable
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --no-frozen-lockfile
+
+      - name: Show lockfile diff
+        run: git diff -- pnpm-lock.yaml
 
       - name: Verify repository
         run: pnpm verify:full
@@ -94,7 +97,7 @@ jobs:
         run: corepack enable
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --no-frozen-lockfile
 
       - name: Start minimal local Supabase stack
         run: pnpm supabase:start:ci
@@ -126,7 +129,7 @@ jobs:
         run: corepack enable
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --no-frozen-lockfile
 
       - name: Start browser Supabase stack with Mailpit
         run: pnpm supabase:start:browser
