@@ -1,4 +1,5 @@
 import * as Sentry from '@sentry/nextjs';
+import { captureRouterTransitionStart } from '@sentry/nextjs';
 
 const environment = process.env.NEXT_PUBLIC_SENTRY_ENVIRONMENT ?? 'development';
 const enabled = environment === 'production' || environment === 'preview';
@@ -18,3 +19,5 @@ Sentry.init({
   },
   tracesSampleRate: environment === 'production' ? 0.1 : environment === 'preview' ? 1 : 0
 });
+
+export const onRouterTransitionStart = captureRouterTransitionStart;

@@ -111,4 +111,23 @@ values (
   '00000000-0000-0000-0000-00000000d001'
 );
 
+insert into public.issues (
+  id,
+  repository_id,
+  issue_number,
+  title,
+  body,
+  status,
+  created_by
+)
+values (
+  '40000000-0000-0000-0000-00000000d001',
+  '20000000-0000-0000-0000-00000000d001',
+  1,
+  'Clarify the customer onboarding handoff',
+  'Document the owner, acceptance criteria, and next step for the onboarding handoff.',
+  'open',
+  '00000000-0000-0000-0000-00000000d001'
+);
+
 commit;

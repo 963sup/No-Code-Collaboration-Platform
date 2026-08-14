@@ -12,7 +12,7 @@ This directory owns URL identity, rendering, route composition, and delivery-spe
 - For GitHub-derived surfaces that pass Product admission, sanitized public and read-only authenticated GitHub URL hierarchy, information architecture, navigation, responsive composition, and interaction evidence is the constitutional presentation baseline. Deviations require an explicit target Product reason and a discriminating test.
 - The canonical Repository shell has one owner/Repository header, horizontal primary navigation, and one active child resource surface. Route-specific supporting regions may use `@sidebar`, `@activity`, or `@modal` only when they have independent data/navigation/loading or canonical soft-navigation behavior. They never become Product regions, authority inputs, or URL segments.
 - Every Parallel Route slot must define `default.tsx` and explicit unmatched soft-navigation behavior. Intercepting Routes preserve the same canonical URL as their full-page resource; closing a route modal uses history navigation.
-- Accepted target Repository child surfaces are `/issues`, `/issues/[issueNumber]`, `/projects` (attachment/list Projection), `/discussions`, `/discussions/[discussionNumber]`, `/pages`, `/pages/[pageId]`, `/activity`, `/security`, and `/settings`. Only Pages and Activity are currently executable. Issue and Discussion Product identity is accepted, but their routes still require Domain/Application contracts; target acceptance is not implementation status.
+- Accepted target Repository child surfaces are `/issues`, `/issues/[issueNumber]`, `/projects` (attachment/list Projection), `/discussions`, `/discussions/[discussionNumber]`, `/pages`, `/pages/[pageId]`, `/activity`, `/security`, and `/settings`. Pages and Activity are executable; Issues has an executable read-only list/detail/intercepted-dialog slice. Issue commands/conversation and every Discussion route remain unsupported and fail closed.
 - `Context` is a presentation concept; it does not require a permanent screen region and must never become authorization input.
 - `Activity` is a Repository-scoped projection. A summary may support Repository Overview only when it has independent loading/failure behavior and a privacy-safe projection; the full Activity route remains canonical.
 - The only accepted Repository compatibility namespace is `/app/repositories/[repositoryId]/**`. It must be access-aware and redirect-only; it must not own a second Repository business-flow/UI implementation.
@@ -30,10 +30,19 @@ src/app/(repository)/
    └─ [repositorySlug]/
       ├─ layout.tsx
       ├─ page.tsx
+      ├─ issues/
+      │  ├─ page.tsx
+      │  └─ [issueNumber]/page.tsx
       ├─ pages/
       │  ├─ page.tsx
       │  └─ [pageId]/page.tsx
-      └─ activity/page.tsx
+      ├─ activity/page.tsx
+      ├─ @sidebar/
+      │  ├─ default.tsx
+      │  └─ issues/**
+      └─ @modal/
+         ├─ default.tsx
+         └─ (.)issues/[issueNumber]/page.tsx
 ```
 
 The canonical layout renders:

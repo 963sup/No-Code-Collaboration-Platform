@@ -40,10 +40,11 @@ A gap is not permission to redefine the target model, postpone an invariant sile
 
 #### Direct evidence
 
-- [`.playwright-mcp/github-urls.json`](../.playwright-mcp/github-urls.json) indexes 55 URL-resource inventories, 11 component inventories, and 294 screenshots across Desktop, Laptop, Tablet, and Mobile.
+- [`.playwright-mcp/github-urls.json`](../.playwright-mcp/github-urls.json) indexes the sanitized URL-resource and component inventories plus 444 current screenshots across Desktop, Laptop, Tablet, and Mobile, including the target Issue comparison set.
 - [`.playwright-mcp/github-ui-ux.md`](../.playwright-mcp/github-ui-ux.md) records canonical redirects, Dashboard/account context switching, Repository navigation, Issues, Projects attachment behavior, Discussions availability, Wiki/Page behavior, Activity, Security posture, Settings, Notifications, and governance surfaces.
 - The accepted target URL set now includes Repository Issues, Projects attachment list, Discussions, Pages, Activity, Security posture, and Settings; actor-level Repository/Issue/Project/Discussion discovery, Notifications, Search, Organization governance, and personal Settings are separate resource/projection families rather than Repository children.
-- The executable App Router currently exposes Repository Overview, Pages/Page detail, and Activity only. There are no accepted Issue or Discussion Domain/Application/persistence contracts, no corresponding Web routes, and no verified target Project/Security/Settings slices.
+- The executable App Router now exposes Repository Overview, Pages/Page detail, Activity, and an Issue read-only slice: list, full-page detail, route-specific sidebar/metadata, and an intercepted dialog at the same canonical URL.
+- `docs/domains/issue-resource.md`, Domain/Application queries, a dedicated SELECT-only Issue persistence projection, Repository-aware RLS, and pgTAP tests now define and enforce current Issue identity/read behavior. Issue creation, number allocation, transitions, relationships, conversation, and historical evidence remain unsupported. Discussion has no executable Domain/Application/persistence/Web slice, and Project/Security/Settings target slices remain unverified.
 
 #### Predicted failure
 
@@ -53,7 +54,8 @@ Without containment, documentation or UI work could present target-only surfaces
 
 - Product admission is explicitly separated from implementation status in Product, Architecture, and Web instruction contracts.
 - Unsupported routes are not claimed available and must fail closed rather than use placeholder Domain logic.
-- Issue and Discussion implementation is blocked until each has an accepted Domain identity, lifecycle, authorization, and evidence contract.
+- Issue mutations remain blocked until command, concurrency, relationship/conversation, authorization, and historical-evidence contracts are accepted; table mutation grants/policies and executable controls are absent. The current read slice does not imply mutation support.
+- Discussion implementation remains blocked until its Domain identity, lifecycle, authorization, conversation, and evidence contract is accepted.
 - Project remains a read/planning Projection; Repository `/projects` cannot establish Project ownership or independent authority.
 - Source Code, git refs/merge, code review, Code Search, executable payloads, CI/CD, and Git-backed Wiki history remain excluded even when visible in benchmark screenshots. Commit, Branch, Diff, Pull Request, Actions, and Gist names are conditionally admitted only through the non-executable structured-data boundaries in Product/Ontology; their concrete lifecycles remain unsupported and fail closed until their Candidate Domain contracts are accepted.
 

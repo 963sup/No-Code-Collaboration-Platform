@@ -22,6 +22,14 @@ export function repositoryPagesPath(route: RepositoryRouteAddress) {
   return `${repositoryPath(route)}/pages`;
 }
 
+export function repositoryIssuesPath(route: RepositoryRouteAddress) {
+  return `${repositoryPath(route)}/issues`;
+}
+
+export function repositoryIssuePath(route: RepositoryRouteAddress, issueNumber: number) {
+  return `${repositoryIssuesPath(route)}/${issueNumber}`;
+}
+
 export function repositoryPagePath(route: RepositoryRouteAddress, pageId: string) {
   return `${repositoryPagesPath(route)}/${encodeURIComponent(pageId)}`;
 }

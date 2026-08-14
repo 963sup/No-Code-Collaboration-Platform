@@ -4,6 +4,7 @@ alter table public.organization_memberships enable row level security;
 alter table public.repositories enable row level security;
 alter table public.repository_user_grants enable row level security;
 alter table public.resources enable row level security;
+alter table public.issues enable row level security;
 alter table public.activity_events enable row level security;
 
 revoke all on table public.profiles from anon, authenticated;
@@ -12,6 +13,7 @@ revoke all on table public.organization_memberships from anon, authenticated;
 revoke all on table public.repositories from anon, authenticated;
 revoke all on table public.repository_user_grants from anon, authenticated;
 revoke all on table public.resources from anon, authenticated;
+revoke all on table public.issues from anon, authenticated;
 revoke all on table public.activity_events from anon, authenticated;
 
 grant select on table public.profiles to authenticated;
@@ -33,6 +35,8 @@ grant update (role) on table public.repository_user_grants to authenticated;
 grant select on table public.resources to anon, authenticated;
 grant insert on table public.resources to authenticated;
 grant update (title, content) on table public.resources to authenticated;
+
+grant select on table public.issues to anon, authenticated;
 
 grant select on table public.activity_events to authenticated;
 
@@ -203,6 +207,14 @@ with check (
   (select pg_catalog.current_setting('app.page_command', true)) = 'update'
   and (select private.has_repository_capability(repository_id, 'resource.update'))
 );
+
+-- Issue creation, state change, conversation, and deletion remain unavailable until their
+-- command, concurrency, attribution, and historical-evidence contracts are executable.
+create policy issues_select_visible
+on public.issues
+for select
+to anon, authenticated
+using ((select private.can_view_repository(repository_id)));
 
 -- Activity Event payload is historical Evidence, not part of the anonymous public-read baseline.
 -- A future public Activity projection requires its own privacy/redaction contract instead of

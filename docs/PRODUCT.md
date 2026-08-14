@@ -3,7 +3,7 @@
 - Status: Canonical
 - Contract owner: Repository owner
 - Scope: Product meaning and semantic boundaries
-- Last reviewed: 2026-08-14
+- Last reviewed: 2026-08-15
 
 > 逆向 GitHub 產品語意，從第一性原理重建以 Repository 為無代碼協作容器的企業協作平台。
 
@@ -248,7 +248,7 @@ Actor
 → user-visible result
 ```
 
-Issue and Discussion are also accepted Repository-contained Resource kinds. Issue represents actionable work with assignment/status/completion behavior; Discussion represents category/answer/conversation behavior. Both retain stable Repository-scoped identity and reuse Repository authorization. Their Domain lifecycle, persistence, authorization, historical-evidence, and delivery contracts are not yet executable and remain explicitly registered gaps.
+Issue and Discussion are also accepted Repository-contained Resource kinds. Issue represents actionable work with assignment/status/completion behavior; Discussion represents category/answer/conversation behavior. Both retain stable Repository-scoped identity and reuse Repository authorization. Issue now has an executable read-only identity, persistence, authorization, list/detail, and full-page/dialog delivery slice; its commands, relationships, conversation, and historical evidence remain unsupported and fail closed. Discussion remains entirely non-executable and is an explicitly registered gap.
 
 ## No-code data change and transfer semantics
 
@@ -324,7 +324,7 @@ A projection becomes an Entity only when independent identity, lifecycle ownersh
 15. Collaborator and Outside collaborator are derived classifications, never identity types.
 16. Policy may constrain accepted authority but cannot silently create Repository content authority.
 17. Historical Evidence is append-oriented; presentation projections cannot rewrite its product meaning.
-18. Page, Issue, and Discussion are accepted concrete Repository-contained Resource kinds; only Page is currently executable.
+18. Page, Issue, and Discussion are accepted concrete Repository-contained Resource kinds; Page commands and Issue reads are currently executable, while undefined Issue mutations and all Discussion behavior fail closed.
 19. Canonical Repository URL is Owner namespace + Repository slug; internal delivery prefixes are not product identity.
 20. Domain semantics remain provider-neutral; implementation technologies project rather than define Product truth.
 21. Generated types, migrations, diagrams, CI output, and runtime observations cannot silently replace this contract.
@@ -337,7 +337,8 @@ These remain unaccepted until direct evidence requires them:
 
 - Team persistence and Team Repository Grants.
 - Enterprise persistence and typed cross-Organization policies.
-- Issue and Discussion Domain lifecycle, persistence, authorization, evidence, and delivery implementation; Product identity is accepted, executable contracts are not.
+- Issue creation, number allocation, state transitions, relationships, conversation, historical evidence, and destructive lifecycle; the read slice is executable but mutations are not.
+- Discussion Domain lifecycle, persistence, authorization, evidence, and delivery implementation; Product identity is accepted, executable contracts are not.
 - Project-style planning persistence beyond a derivable Projection.
 - App Principal and Installation lifecycle.
 - Organization-wide Repository base permission for ordinary members.

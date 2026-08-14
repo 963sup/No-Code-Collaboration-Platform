@@ -75,6 +75,56 @@ export type Database = {
           },
         ]
       }
+      issues: {
+        Row: {
+          body: string
+          closed_at: string | null
+          closed_by: string | null
+          created_at: string
+          created_by: string
+          id: string
+          issue_number: number
+          repository_id: string
+          status: Database["public"]["Enums"]["issue_status"]
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          body?: string
+          closed_at?: string | null
+          closed_by?: string | null
+          created_at?: string
+          created_by: string
+          id?: string
+          issue_number: number
+          repository_id: string
+          status?: Database["public"]["Enums"]["issue_status"]
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          body?: string
+          closed_at?: string | null
+          closed_by?: string | null
+          created_at?: string
+          created_by?: string
+          id?: string
+          issue_number?: number
+          repository_id?: string
+          status?: Database["public"]["Enums"]["issue_status"]
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "issues_repository_id_fkey"
+            columns: ["repository_id"]
+            isOneToOne: false
+            referencedRelation: "repositories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       organization_memberships: {
         Row: {
           created_at: string
@@ -363,6 +413,7 @@ export type Database = {
       }
     }
     Enums: {
+      issue_status: "open" | "closed"
       organization_role: "member" | "admin" | "owner"
       repository_role: "viewer" | "contributor" | "manager" | "admin"
       repository_visibility: "private" | "public"
@@ -497,6 +548,7 @@ export const Constants = {
   },
   public: {
     Enums: {
+      issue_status: ["open", "closed"],
       organization_role: ["member", "admin", "owner"],
       repository_role: ["viewer", "contributor", "manager", "admin"],
       repository_visibility: ["private", "public"],

@@ -31,19 +31,20 @@ GitHub supplies mature collaboration, ownership, organization, authorization, UR
 19. Operation Capability and delegation authority are distinct; authority mutation evaluates Actor authority, current Role, proposed Role, and governance invariants.
 20. Selected provider is not proof of a provisioned environment; migration artifact is not proof of applied deployment; local/CI verification is not production validation.
 21. Organization, Repository, and Resource hard deletion remain unavailable to end-user roles until lifecycle contracts define containment fate, retention, restore/redaction, history, and recovery.
-22. Page is the first accepted Resource kind. Page create/update requires Domain Capability decision, independent RLS, exact content semantics, optimistic concurrency, and required same-transaction historical evidence.
-23. Shared Resource persistence remains acceptable only while subtype invariants remain explicit and no second real subtype proves an independent storage lifecycle.
-24. Canonical human Repository routes use the globally unambiguous Owner/Repository namespace; route resolution produces stable Repository UUID for Application authorization/RLS/evidence.
-25. `Resource` is a Domain abstraction, not a required public URL segment. Concrete accepted Resource kinds own product navigation surfaces.
-26. Stable-ID Repository compatibility routes may redirect only after access-aware resolution and must not own a second Repository UI.
-27. Accepted Page writes enter PostgreSQL through command-specific `SECURITY INVOKER` RPCs; raw authenticated table writes are not an alternate Page command API.
-28. Repository authority resolution is owner-neutral: callers supply stable Actor + Repository identity; authority resolves personal ownership, Organization governance, direct Grant, visibility, and future constraints.
-29. Current Repository visibility is `private | public`; no other visibility state is accepted without explicit effective-access semantics.
-30. Current canonical Repository presentation is one Owner/Repository header, primary navigation, one active child resource surface, and only those route-specific supporting regions whose independent recovery, loading, or responsive behavior is proven.
-31. Route Groups, Parallel Routes, Intercepting Routes, and framework layouts are presentation/access composition only. They do not create Product URL, Container, Artifact, or Domain boundaries.
-32. Canonical Repository reads cannot inherit an authenticated-only wrapper because public Repository visibility is an accepted anonymous read baseline.
-33. An obsolete Organization-only Repository UI tree may not coexist with canonical Owner routing.
-34. Commit, Branch, Diff, Pull Request, Actions, and Gist names can enter architecture only through accepted structured-data change or controlled-data-exchange contracts; Source Code, executable transformation, git refs/merge, code review, CI/CD, secret-bearing payloads, and a second Container remain forbidden.
+22. Page is the first accepted Resource kind and owns an executable command lifecycle. Page create/update requires Domain Capability decision, independent RLS, exact content semantics, optimistic concurrency, and required same-transaction historical evidence.
+23. Issue is the second proven Resource persistence lifecycle: its Repository-local number, status, closed attribution, query shape, and future conversation lifecycle justify a dedicated table. The current Issue slice is SELECT-only; undefined commands fail closed.
+24. Shared Resource persistence remains acceptable for Page only while its exact subtype invariants remain explicit; Issue must not weaken the Page envelope into a generic JSON bucket.
+25. Canonical human Repository routes use the globally unambiguous Owner/Repository namespace; route resolution produces stable Repository UUID for Application authorization/RLS/evidence.
+26. `Resource` is a Domain abstraction, not a required public URL segment. Concrete accepted Resource kinds own product navigation surfaces.
+27. Stable-ID Repository compatibility routes may redirect only after access-aware resolution and must not own a second Repository UI.
+28. Accepted Page writes enter PostgreSQL through command-specific `SECURITY INVOKER` RPCs; raw authenticated table writes are not an alternate Page command API.
+29. Repository authority resolution is owner-neutral: callers supply stable Actor + Repository identity; authority resolves personal ownership, Organization governance, direct Grant, visibility, and future constraints.
+30. Current Repository visibility is `private | public`; no other visibility state is accepted without explicit effective-access semantics.
+31. Current canonical Repository presentation is one Owner/Repository header, primary navigation, one active child resource surface, and only those route-specific supporting regions whose independent recovery, loading, or responsive behavior is proven.
+32. Route Groups, Parallel Routes, Intercepting Routes, and framework layouts are presentation/access composition only. They do not create Product URL, Container, Artifact, or Domain boundaries.
+33. Canonical Repository reads cannot inherit an authenticated-only wrapper because public Repository visibility is an accepted anonymous read baseline.
+34. An obsolete Organization-only Repository UI tree may not coexist with canonical Owner routing.
+35. Commit, Branch, Diff, Pull Request, Actions, and Gist names can enter architecture only through accepted structured-data change or controlled-data-exchange contracts; Source Code, executable transformation, git refs/merge, code review, CI/CD, secret-bearing payloads, and a second Container remain forbidden.
 
 ## Dependency direction
 
@@ -185,10 +186,19 @@ apps/web/src/app/
 │     └─ [repositorySlug]/
 │        ├─ layout.tsx                # one Repository shell
 │        ├─ page.tsx                  # Overview
+│        ├─ issues/
+│        │  ├─ page.tsx               # read-only list
+│        │  └─ [issueNumber]/page.tsx # full-page detail
 │        ├─ pages/
 │        │  ├─ page.tsx
 │        │  └─ [pageId]/page.tsx
-│        └─ activity/page.tsx
+│        ├─ activity/page.tsx
+│        ├─ @sidebar/
+│        │  ├─ default.tsx
+│        │  └─ issues/**              # independent navigation/metadata
+│        └─ @modal/
+│           ├─ default.tsx
+│           └─ (.)issues/[issueNumber]/page.tsx
 │
 └─ (auth)/                             # human/protocol identity surfaces
 ```
@@ -213,7 +223,7 @@ Supporting regions are absent when the active route does not prove a separate na
 
 `Context` remains a presentation concept but does not require a permanent pane. Activity is a Repository-scoped projection with a canonical route; a privacy-safe Overview summary may be composed independently only under ADR-011's removal test.
 
-ADR-011 defines the target `@sidebar`, `@activity`, and `@modal` composition for accepted-but-unimplemented Issue and Discussion slices plus route-specific responsive support. The executable tree above deliberately lists only current Pages and Activity delivery; target URL acceptance does not claim those routes already exist. Framework composition mechanisms do not establish new Product responsibilities merely because the framework supports them.
+ADR-011 defines the target `@sidebar`, `@activity`, and `@modal` composition. The Issue read slice now proves `@sidebar` as independent route navigation/metadata and `@modal` as canonical soft-navigation presentation; both define defaults and unmatched-navigation clearing behavior. Discussion and any `@activity` composition remain unimplemented. Framework composition mechanisms do not establish new Product responsibilities merely because the framework supports them.
 
 ## Compatibility routing
 

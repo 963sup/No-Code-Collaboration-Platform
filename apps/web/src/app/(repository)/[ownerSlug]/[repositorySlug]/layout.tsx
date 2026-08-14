@@ -11,10 +11,17 @@ import { requireAccessibleRepositoryRoute } from './_queries/get-accessible-repo
 
 interface RepositoryLayoutProps {
   readonly children: ReactNode;
+  readonly modal?: ReactNode;
   readonly params: Promise<{ ownerSlug: string; repositorySlug: string }>;
+  readonly sidebar?: ReactNode;
 }
 
-export default async function RepositoryLayout({ children, params }: RepositoryLayoutProps) {
+export default async function RepositoryLayout({
+  children,
+  modal,
+  params,
+  sidebar
+}: RepositoryLayoutProps) {
   const { ownerSlug, repositorySlug } = await params;
   const route = await requireAccessibleRepositoryRoute(ownerSlug, repositorySlug);
   const services = await createRequestServices();
@@ -35,7 +42,11 @@ export default async function RepositoryLayout({ children, params }: RepositoryL
       showActivity={showActivity}
       visibility={route.repository.visibility}
     >
-      {children}
+      <div className='repository-route-composition'>
+        <main className='min-w-0'>{children}</main>
+        {sidebar}
+      </div>
+      {modal}
     </RepositoryShell>
   );
 }

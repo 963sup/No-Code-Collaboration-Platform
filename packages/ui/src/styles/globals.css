@@ -105,3 +105,30 @@
     @apply min-h-dvh bg-background text-foreground antialiased;
   }
 }
+
+@layer components {
+  .repository-route-composition {
+    display: grid;
+    gap: 1.5rem;
+  }
+
+  @media (min-width: 48rem) {
+    .repository-route-composition:has(> [data-sidebar-placement='left']) {
+      grid-template-columns: 16rem minmax(0, 1fr);
+    }
+
+    .repository-route-composition:has(> [data-sidebar-placement='left']) > main {
+      grid-column: 2;
+      grid-row: 1;
+    }
+
+    .repository-route-composition:has(> [data-sidebar-placement='right']) {
+      grid-template-columns: minmax(0, 1fr) 16rem;
+    }
+
+    .repository-route-composition:has(> [data-sidebar-placement='right']) > main {
+      grid-column: 1;
+      grid-row: 1;
+    }
+  }
+}

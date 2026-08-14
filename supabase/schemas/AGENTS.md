@@ -27,6 +27,8 @@ This directory owns current PostgreSQL schema truth and the database enforcement
 - A no-op Page update MUST NOT advance `updated_at` or fabricate `resource.updated`.
 - A meaningful Page create or update and its required immutable fact MUST commit in one PostgreSQL transaction. Fact failure MUST abort the Resource transition.
 - `resource.updated` facts MUST attribute the current authenticated actor, MUST NOT duplicate Page body content, and MUST NOT be emitted for no-op updates.
+- Issue is an independent Repository-contained read projection identified by `(repository_id, issue_number)`. Current end-user reachability is SELECT-only through Repository visibility/authority; INSERT, UPDATE, and DELETE privileges and policies MUST remain absent until Issue command, concurrency, and historical-evidence contracts are accepted.
+- Issue constraints MUST preserve positive Repository-local numbering, non-blank bounded title, and complete closed-state attribution. Seed or migration data is not an Issue-number allocation or mutation contract.
 
 ## Projection rule
 

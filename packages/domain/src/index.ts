@@ -16,6 +16,16 @@ export {
 export { effectiveRepositoryRole, type RepositoryAuthoritySources } from './access/authority';
 export type { ActivityEventSummary } from './activity/activity-event';
 export {
+  isIssueNumber,
+  isIssueStatus,
+  isIssueTitle,
+  issueStatuses,
+  issueTitleMaxLength,
+  type IssueDetail,
+  type IssueStatus,
+  type IssueSummary
+} from './resource/issue';
+export {
   createPageDraft,
   createPageUpdate,
   isPageContent,

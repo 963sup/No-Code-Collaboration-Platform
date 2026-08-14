@@ -44,6 +44,7 @@ A Candidate contract may intentionally lead executable behavior, but every obser
 - [`repository-collaboration.md`](./repository-collaboration.md): typed User/Organization Repository ownership, Owner namespace, Resource containment, and collaboration-boundary invariants.
 - [`access-authority.md`](./access-authority.md): Principal Grants, Role bundles, Capabilities, delegation, ownership/governance sources, and authorization explanation.
 - [`page-resource.md`](./page-resource.md): first Page work unit, create/update transitions, optimistic concurrency, and required historical evidence.
+- [`issue-resource.md`](./issue-resource.md): Repository-scoped actionable work identity, read projection, canonical presentation equivalence, and fail-closed mutation boundary.
 - [`structured-data-change.md`](./structured-data-change.md): candidate typed change batching, isolated data state, comparison, and review/apply semantics without Git or code execution.
 - [`data-exchange.md`](./data-exchange.md): candidate allowlisted typed-data delivery and Repository-contained Data Capsule semantics without automation or executable transformation.
 

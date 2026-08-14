@@ -9,5 +9,16 @@
     "viewport": "Desktop, Laptop, Tablet, Mobile",
     "uiState": "public list",
     "screenshotPath": "github/repositories/369sup/support/issues/screenshots/issues-list-desktop-public.png"
+  },
+  {
+    "url": "http://127.0.0.1:3000/demo-organization/demo-repository/issues",
+    "canonicalUrl": "http://127.0.0.1:3000/demo-organization/demo-repository/issues",
+    "title": "No-Code Collaboration Platform",
+    "resourceType": "Target Repository issue collection",
+    "sourcePage": "Target Repository navigation",
+    "triggerAction": "select Issues or directly open canonical URL",
+    "viewport": "Desktop 1440x900, Laptop 1280x800, Tablet 768x1024, Mobile 390x844",
+    "uiState": "authorized default list; creation command disabled",
+    "screenshotPath": "github/repositories/369sup/support/issues/screenshots/target-issues-list-{desktop|laptop|tablet|mobile}-default.png"
   }
 ]

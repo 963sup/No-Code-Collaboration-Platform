@@ -84,7 +84,7 @@ RLS is independent database enforcement; it does not replace Domain/Application 
 - Collaborator/Outside collaborator are derived labels, not identity types.
 - Historical Evidence is distinct from Feed/Notification/Audit/Analytics projections.
 - Team/Enterprise remain Deferred until their Product/Ontology discriminating tests require them.
-- Page, Issue, and Discussion are accepted Repository-contained Resource kinds. Page is the only executable vertical slice today; Issue and Discussion persistence/Domain/Application/Web delivery remain Open gaps and must reuse Repository containment/authorization. Project-style planning remains a Projection, not another Resource owner or Container.
+- Page, Issue, and Discussion are accepted Repository-contained Resource kinds. Page has an executable command lifecycle; Issue currently has an executable read-only Domain/Application/persistence/Web slice whose undefined mutations remain fail closed. Discussion remains an Open delivery gap. All reuse Repository containment/authorization. Project-style planning remains a Projection, not another Resource owner or Container.
 
 ## Working rules
 

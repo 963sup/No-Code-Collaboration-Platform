@@ -1,6 +1,7 @@
 import type {
   ActivityEventReader,
   IdentityProvider,
+  IssueReader,
   PageReader,
   PageWriter,
   RepositoryAccessReader,
@@ -16,6 +17,7 @@ import { SupabaseIdentityProvider } from '../identity/supabase-identity-provider
 import { SupabaseOwnerRepositoryRouteReader } from '../repositories/supabase-owner-repository-route-reader';
 import { SupabaseRepositoryReader } from '../repositories/supabase-repository-reader';
 import { SupabasePageRepository } from '../resources/supabase-page-repository';
+import { SupabaseIssueReader } from '../resources/supabase-issue-reader';
 
 export interface SupabaseServerAdapterOptions {
   readonly cookies: CookieMethodsServer;
@@ -26,6 +28,7 @@ export interface SupabaseServerAdapterOptions {
 export interface SupabaseServerAdapters {
   readonly activityEventReader: ActivityEventReader;
   readonly identityProvider: IdentityProvider;
+  readonly issueReader: IssueReader;
   readonly pageReader: PageReader;
   readonly pageWriter: PageWriter;
   readonly repositoryAccessReader: RepositoryAccessReader;
@@ -48,6 +51,7 @@ export function createSupabaseServerAdapters(
       projectUrl: options.url,
       publishableKey: options.publishableKey
     }),
+    issueReader: new SupabaseIssueReader(client),
     pageReader: pageRepository,
     pageWriter: pageRepository,
     repositoryAccessReader: new SupabaseRepositoryAccessReader(client),

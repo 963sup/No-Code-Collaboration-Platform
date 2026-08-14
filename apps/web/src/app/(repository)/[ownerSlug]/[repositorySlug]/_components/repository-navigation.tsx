@@ -1,11 +1,12 @@
 'use client';
 
-import { Activity, FileText, LayoutDashboard } from 'lucide-react';
+import { Activity, CircleDot, FileText, LayoutDashboard } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
 import {
   repositoryActivityPath,
+  repositoryIssuesPath,
   repositoryPagesPath,
   repositoryPath
 } from '@/routing/repository-routes';
@@ -25,8 +26,15 @@ export function RepositoryNavigation({
   const repositoryRoute = { ownerSlug, repositorySlug };
   const overviewPath = repositoryPath(repositoryRoute);
   const pagesPath = repositoryPagesPath(repositoryRoute);
+  const issuesPath = repositoryIssuesPath(repositoryRoute);
   const activityPath = repositoryActivityPath(repositoryRoute);
   const items = [
+    {
+      active: pathname === issuesPath || pathname.startsWith(`${issuesPath}/`),
+      href: issuesPath,
+      icon: <CircleDot aria-hidden='true' className='size-4' />,
+      label: 'Issues'
+    },
     {
       active: pathname === overviewPath,
       href: overviewPath,
