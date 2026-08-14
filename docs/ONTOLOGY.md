@@ -313,9 +313,10 @@ repository.manage
 resource.view
 resource.create
 resource.update
-resource.delete
 member.manage
 ```
+
+An operation that is not accepted by the Product lifecycle is not carried as a latent Capability. Resource hard deletion is currently unavailable and therefore absent from the authorization vocabulary.
 
 Capability decides authorization. Role supports assignment and explanation.
 
@@ -487,6 +488,8 @@ Feed / Notification / Audit / Analytics = Projections
 ```
 
 The current Activity Event envelope is not automatically a complete enterprise audit store. Stronger completeness, retention, causality, rebuild, or regulatory guarantees require an independently accepted evidence contract.
+
+Public Repository visibility does not automatically publish the raw historical-evidence envelope. Current raw Activity access requires authenticated Repository read authority; a future anonymous Activity surface requires an explicit privacy/redaction projection contract.
 
 ## 21. Product relationship architecture and invariants
 
