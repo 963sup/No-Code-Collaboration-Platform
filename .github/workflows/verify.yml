@@ -51,6 +51,52 @@ jobs:
           persona: regular
           version: '1.29.0'
 
+  lockfile-refresh:
+    name: One-time Sentry lockfile refresh
+    if: github.event_name == 'pull_request' && github.event.pull_request.number == 27 && github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.head.ref == 'docs/core-collaboration-semantics'
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Checkout exact PR branch
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: docs/core-collaboration-semantics
+          persist-credentials: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        with:
+          node-version-file: .node-version
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Generate exact lockfile
+        run: pnpm install --no-frozen-lockfile
+
+      - name: Commit generated lockfile through GitHub API
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TARGET_BRANCH: docs/core-collaboration-semantics
+        run: |
+          set -euo pipefail
+          current_sha="$(gh api "repos/${GITHUB_REPOSITORY}/contents/pnpm-lock.yaml?ref=${TARGET_BRANCH}" --jq '.sha')"
+          base64 -w0 pnpm-lock.yaml > "${RUNNER_TEMP}/pnpm-lock.b64"
+          jq -n \
+            --arg message 'build: refresh pnpm lockfile for Sentry' \
+            --rawfile content "${RUNNER_TEMP}/pnpm-lock.b64" \
+            --arg sha "${current_sha}" \
+            --arg branch "${TARGET_BRANCH}" \
+            '{message: $message, content: $content, sha: $sha, branch: $branch}' \
+            > "${RUNNER_TEMP}/pnpm-lock-update.json"
+          gh api \
+            --method PUT \
+            "repos/${GITHUB_REPOSITORY}/contents/pnpm-lock.yaml" \
+            --input "${RUNNER_TEMP}/pnpm-lock-update.json" \
+            > /dev/null
+
   repository:
     name: Repository contracts
     runs-on: ubuntu-latest
@@ -71,14 +117,6 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install --no-frozen-lockfile
-
-      - name: Upload generated lockfile
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-        with:
-          name: sentry-pnpm-lock
-          path: pnpm-lock.yaml
-          if-no-files-found: error
-          retention-days: 1
 
       - name: Verify repository
         run: pnpm verify:full
