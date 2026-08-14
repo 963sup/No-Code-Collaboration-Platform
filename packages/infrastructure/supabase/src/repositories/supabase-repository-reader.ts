@@ -5,7 +5,8 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '../generated/database.types';
 import { mapSupabaseRepositoryRow } from '../mappers/supabase-repository-mapper';
 
-const repositoryProjection = 'id, organization_id, slug, name, description, visibility';
+const repositoryProjection =
+  'id, owner_user_id, owner_organization_id, slug, name, description, visibility';
 
 export class SupabaseRepositoryReader implements RepositoryReader {
   public constructor(private readonly client: SupabaseClient<Database>) {}
