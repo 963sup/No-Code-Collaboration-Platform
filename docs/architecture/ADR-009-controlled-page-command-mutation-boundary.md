@@ -207,7 +207,7 @@ Reopen this decision if:
 
 - Verified implementation head: [`a6bba75bb08cd0c6742ad6932e103698a9ab0bf2`](https://github.com/963sup/No-Code-Collaboration-Platform/commit/a6bba75bb08cd0c6742ad6932e103698a9ab0bf2)
 - Pull request: [#23](https://github.com/963sup/No-Code-Collaboration-Platform/pull/23)
-- Historical transition at the verified head: `supabase/migrations/20260812073000_enforce_page_command_boundary.sql`; current replay is consolidated into `supabase/migrations/20260813145001_initial_collaboration_baseline.sql` because no persistent environment had applied the earlier local/CI-only chain.
+- Historical transition at the verified head: `supabase/migrations/20260812073000_enforce_page_command_boundary.sql`; current replay is consolidated into `supabase/migrations/20260814190012_local_development_baseline.sql` because no persistent environment has applied the local/CI-only chain.
 - Database regression: all four pgTAP suites passed with 85 total assertions; `page-resource.test.sql` contains 28 Page command and attack-path assertions.
 - Exact implementation-head verification: [GitHub Actions Verify #118](https://github.com/963sup/No-Code-Collaboration-Platform/actions/runs/31577420974)
 - Passed gates: Workflow guardrails, Repository contracts, Supabase contracts, and Browser contracts.

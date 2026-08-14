@@ -126,8 +126,8 @@ const invariantContracts = {
   ],
   'supabase/migrations/AGENTS.md': [
     [
-      /append-only accepted replayable database transition history/i,
-      'accepted replayable migration invariant is missing'
+      /single replaceable local-development baseline.*append-only/is,
+      'local baseline and applied-history lifecycle is missing'
     ],
     [/migration ledger.*provider evidence/is, 'environment applied-state evidence is missing'],
     [/remote Supabase project/i, 'remote mutation boundary is missing']

@@ -6,6 +6,7 @@ const root = process.cwd();
 const failures = [];
 const ROOT_INSTRUCTION_MAX_BYTES = 8192;
 const SESSION_CONTEXT_MAX_BYTES = 4096;
+const COMPACT_PROMPT_MAX_BYTES = 4096;
 
 const read = (path) => {
   try {
@@ -68,6 +69,10 @@ check(configPath, config, [
     'workspace root markers are not pinned'
   ],
   [/^web_search = "indexed"$/m, 'bounded web search is missing'],
+  [
+    /^experimental_compact_prompt_file = "compact-prompt\.md"$/m,
+    'compaction prompt file is not pinned'
+  ],
   [/^hooks = true$/m, 'hooks are not enabled'],
   [/^multi_agent = true$/m, 'multi-agent collaboration is not enabled'],
   [/^max_concurrent_threads_per_session = 4$/m, 'agent concurrency is not bounded'],
@@ -75,6 +80,21 @@ check(configPath, config, [
   [/^ignore_default_excludes = false$/m, 'secret-like environment exclusions are not enabled'],
   [/^network_access = false$/m, 'shell network access is not disabled']
 ]);
+
+const compactPromptPath = '.codex/compact-prompt.md';
+const compactPrompt = read(compactPromptPath);
+const inlineCompactPrompt = config.match(/^compact_prompt = '''\r?\n([\s\S]*?)\r?\n'''$/m)?.[1];
+if (!inlineCompactPrompt) {
+  failures.push(`${configPath}: inline compaction prompt is missing`);
+} else if (inlineCompactPrompt.trim() !== compactPrompt.trim()) {
+  failures.push(`${configPath}: inline compaction prompt differs from ${compactPromptPath}`);
+}
+const compactPromptBytes = Buffer.byteLength(compactPrompt, 'utf8');
+if (compactPromptBytes > COMPACT_PROMPT_MAX_BYTES) {
+  failures.push(
+    `${compactPromptPath}: compaction prompt exceeds ${COMPACT_PROMPT_MAX_BYTES} bytes (${compactPromptBytes})`
+  );
+}
 
 const mcpContracts = [
   ['openaiDeveloperDocs', 'https://developers.openai.com/mcp', []],
@@ -287,7 +307,8 @@ check('supabase/config.toml', read('supabase/config.toml'), [
 ]);
 check('supabase/schemas/README.md', read('supabase/schemas/README.md'), [
   [/source of truth/i, 'schema truth boundary is missing'],
-  [/append-only/i, 'migration history boundary is missing'],
+  [/sole consolidated baseline/is, 'local baseline boundary is missing'],
+  [/append-only/is, 'post-application migration history boundary is missing'],
   [/Generated.*projection/is, 'generated type boundary is missing']
 ]);
 check('.github/workflows/verify.yml', read('.github/workflows/verify.yml'), [

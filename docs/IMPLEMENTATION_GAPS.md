@@ -94,7 +94,7 @@ Current branch now implements the corrected target through these concrete projec
 - `supabase/schemas/91_repository_access_projection.sql` declares owner-neutral authority-source projection.
 - `supabase/schemas/95_repository_routing.sql` resolves one global User/Organization Owner namespace.
 - `supabase/schemas/99_rls.sql` has separate personal-owner and Organization-admin Repository creation policies and no Organization-only owner field.
-- `supabase/migrations/20260814021000_remove_legacy_repository_organization_owner.sql` makes replayed final state drop the historical compatibility column.
+- `supabase/schemas/30_repository.sql` is the current ownership truth, and `supabase/migrations/20260814190012_local_development_baseline.sql` replays it without the historical compatibility column.
 - `apps/web/src/app/(repository)/[ownerSlug]/[repositorySlug]/**` is the only Repository UI tree; the obsolete Organization-only tree has been removed.
 - `apps/web/src/routing/repository-routes.ts` builds canonical `/{owner}/{repository}` URLs; `/app` remains dashboard/discovery.
 - `apps/web/e2e/page-collaboration.spec.ts` now clicks a Repository card from `/app`, lands on the canonical route, follows stable-ID compatibility redirects, and executes Page collaboration through the canonical path.

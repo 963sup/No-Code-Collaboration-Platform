@@ -40,7 +40,7 @@ The only provisioned database runtime is the disposable Supabase CLI local stack
 
 - No Supabase Cloud project is provisioned.
 - `supabase/config.toml` configures local services; its `project_id` distinguishes local containers and is not a Cloud project reference.
-- The checked-in migration files are Accepted replayable transitions, not evidence of a remote deployment. `20260813145001_initial_collaboration_baseline.sql` is the immutable initial cutoff established before any persistent environment existed; future accepted changes append migrations after it.
+- The sole checked-in migration is a reviewed replay candidate, not evidence of remote deployment. `20260814190012_local_development_baseline.sql` remains replaceable while the project is purely local; the first identified persistent application freezes it, after which future accepted changes append migrations.
 - A future persistent environment requires the provisioning gate in [`operations/RUNBOOK.md`](./operations/RUNBOOK.md) and the decision in [`architecture/ADR-005-local-first-supabase-lifecycle.md`](./architecture/ADR-005-local-first-supabase-lifecycle.md).
 
 ## Codex project boundaries
@@ -94,8 +94,11 @@ Supabase CLI is the local database lifecycle tool.
 supabase/schemas
 = current desired database state
 
-supabase/migrations
-= append-only accepted replayable transition history
+supabase/migrations before persistent application
+= one consolidated local-development baseline
+
+supabase/migrations after persistent application
+= frozen baseline plus append-only accepted transitions
 
 local migration ledger
 = transitions applied to the current disposable local database

@@ -25,7 +25,7 @@ ADR-009 established concrete `create_page` and `update_page` RPCs as `SECURITY I
 
 - Verified implementation head: [`a6bba75bb08cd0c6742ad6932e103698a9ab0bf2`](https://github.com/963sup/No-Code-Collaboration-Platform/commit/a6bba75bb08cd0c6742ad6932e103698a9ab0bf2)
 - Pull request: [#23](https://github.com/963sup/No-Code-Collaboration-Platform/pull/23)
-- Historical transition at the verified head: `supabase/migrations/20260812073000_enforce_page_command_boundary.sql`; current enforcement is replayed by `supabase/migrations/20260813145001_initial_collaboration_baseline.sql`.
+- Historical transition at the verified head: `supabase/migrations/20260812073000_enforce_page_command_boundary.sql`; current enforcement is replayed by `supabase/migrations/20260814190012_local_development_baseline.sql`.
 - Page attack-path regression: `supabase/tests/page-resource.test.sql`, 28 assertions covering raw Contributor INSERT/UPDATE denial, command-context restoration, valid create/update, stale evidence, no-op stability, Viewer denial, outsider isolation, and Activity facts
 - Full database regression: all four pgTAP suites passed with 85 total assertions
 - Exact implementation-head verification: [GitHub Actions Verify #118](https://github.com/963sup/No-Code-Collaboration-Platform/actions/runs/31577420974)
@@ -53,7 +53,7 @@ The unsafe executable capability was removed instead of inventing an incomplete 
 
 - Verified implementation head: [`c5ab97474e8c3f538fd5966a70d40450048a1952`](https://github.com/963sup/No-Code-Collaboration-Platform/commit/c5ab97474e8c3f538fd5966a70d40450048a1952)
 - Pull request: [#22](https://github.com/963sup/No-Code-Collaboration-Platform/pull/22)
-- Historical transition at the verified head: `supabase/migrations/20260812050000_disable_destructive_resource_deletion.sql`; current enforcement is replayed by `supabase/migrations/20260813145001_initial_collaboration_baseline.sql`.
+- Historical transition at the verified head: `supabase/migrations/20260812050000_disable_destructive_resource_deletion.sql`; current enforcement is replayed by `supabase/migrations/20260814190012_local_development_baseline.sql`.
 - Database regression: `supabase/tests/destructive-lifecycle.test.sql`, 13 assertions after the final defense-in-depth assertion was added
 - Exact implementation-head verification: [GitHub Actions Verify #108](https://github.com/963sup/No-Code-Collaboration-Platform/actions/runs/31567572157)
 - Passed gates: Workflow guardrails, Repository contracts, Supabase contracts, and Browser contracts
@@ -81,7 +81,7 @@ ADR-006 accepted the minimum fail-closed model: Organization and Repository hard
 
 - Verified implementation head: [`d8af47d0b3c6225c79efbd708106f42176e443ad`](https://github.com/963sup/No-Code-Collaboration-Platform/commit/d8af47d0b3c6225c79efbd708106f42176e443ad)
 - Pull request: [#16](https://github.com/963sup/No-Code-Collaboration-Platform/pull/16)
-- Historical transition at the verified head: `supabase/migrations/20260812000000_disable_destructive_container_deletion.sql`; current enforcement is replayed by `supabase/migrations/20260813145001_initial_collaboration_baseline.sql`.
+- Historical transition at the verified head: `supabase/migrations/20260812000000_disable_destructive_container_deletion.sql`; current enforcement is replayed by `supabase/migrations/20260814190012_local_development_baseline.sql`.
 - Database regression: `supabase/tests/destructive-lifecycle.test.sql`, 8 assertions at the time of closure
 - Delegation regression: `supabase/tests/role-delegation.test.sql`, 19 assertions with end-user DELETE denial and privileged cascade-mechanics separation
 - Exact implementation-head verification: [GitHub Actions Verify #76](https://github.com/963sup/No-Code-Collaboration-Platform/actions/runs/31524256329)
@@ -109,7 +109,7 @@ Domain delegation matrices now evaluate actor Role, current target Role, and pro
 
 - Closing implementation head: [`02f33f4ba75cc250378a6fba38f4b926eb62c355`](https://github.com/963sup/No-Code-Collaboration-Platform/commit/02f33f4ba75cc250378a6fba38f4b926eb62c355)
 - Pull request: [#13](https://github.com/963sup/No-Code-Collaboration-Platform/pull/13)
-- Historical transition at the verified head: `supabase/migrations/20260811123000_prevent_role_escalation.sql`; current enforcement is replayed by `supabase/migrations/20260813145001_initial_collaboration_baseline.sql`.
+- Historical transition at the verified head: `supabase/migrations/20260811123000_prevent_role_escalation.sql`; current enforcement is replayed by `supabase/migrations/20260814190012_local_development_baseline.sql`.
 - Domain regression matrix: `packages/domain/tests/delegation.test.ts`
 - Database attack-path suite: `supabase/tests/role-delegation.test.sql`, including 19 negative and legitimate positive-control assertions
 - Exact-head verification: [GitHub Actions Verify #44](https://github.com/963sup/No-Code-Collaboration-Platform/actions/runs/31505215295)

@@ -13,7 +13,7 @@ This directory owns current PostgreSQL schema truth and the database enforcement
 - Actor attribution fields such as `granted_by` MUST be derived from or equal the authenticated actor and may not be client-forged.
 - Authorization helper functions belong in a non-exposed schema. `SECURITY DEFINER` is permitted only for an explicit RLS boundary, with `search_path = ''`, fully qualified relations, caller-aware logic, and least-privilege `EXECUTE` grants.
 - End-user authorization MUST never depend on service-role bypass, user-editable metadata, presentation context, or hidden UI controls.
-- Declarative schema changes MUST be accompanied by an append-only accepted migration and attack-path regression tests before merge.
+- Declarative schema changes MUST be accompanied by a reviewed replay projection and attack-path regression tests before merge: the one consolidated baseline while `LocalOnly`, or an append-only forward migration after persistent application freezes that baseline.
 - Schema and migration files are local database contracts. Their presence MUST NOT be used as evidence that a Supabase Cloud project exists or that a remote deployment occurred.
 - Organization, Repository, and Resource hard deletion MUST remain unavailable to end-user roles until accepted lifecycle contracts define retention, restore, redaction, containment or subtype fate, historical continuity, and recovery behavior.
 - A missing lifecycle MUST fail closed through both table privileges and RLS policy absence; owner or administrator authority alone cannot make an undefined destructive transition valid.
@@ -46,6 +46,6 @@ When provider discovery returns `projects: []`, continue authoring and verifying
 - Declare the complete final grant set. RLS cannot protect `TRUNCATE`, `TRIGGER`, `REFERENCES`, or maintenance privileges, and grants alone cannot authorize rows.
 - Prefer constraints and transactionally enforced invariants over UI checks. Prefer `SECURITY INVOKER`; justify each `SECURITY DEFINER` boundary with caller-aware logic and executable attack-path tests.
 - Treat `db diff` as a compiler draft. Review unsupported DML, policy alterations, grants, view properties, publications, comments, extension behavior, and destructive normalization.
-- A schema change is complete only with a reviewed append-only migration, narrow pgTAP proof, empty-database replay, lint, generated-type consistency, and no substantive drift back to these files.
+- A schema change is complete only with a reviewed baseline or forward migration, narrow pgTAP proof, empty-database replay, lint, generated-type consistency, and no substantive drift back to these files.
 
 `seed.sql` is not schema truth. Demo identities and rows must never influence policies, defaults, constraints, migrations, or pgTAP expectations.

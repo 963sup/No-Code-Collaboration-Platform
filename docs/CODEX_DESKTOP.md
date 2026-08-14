@@ -81,6 +81,12 @@ The single `SessionStart` hook emits bounded observations and routing instructio
 
 The hook does not inspect secrets, call remote services, recursively load documentation, infer architecture from history, or mutate repository state. When current authorities disagree, the agent must resolve the nearest current contract against executable evidence rather than inventing architecture; a real mismatch belongs in the current gap register.
 
+## History compaction
+
+The [official OpenAI configuration reference](https://learn.chatgpt.com/docs/config-file/config-reference#configtoml) documents both compaction-prompt inputs: the inline `compact_prompt` override and the file-backed `experimental_compact_prompt_file`. The [project configuration guide](https://learn.chatgpt.com/docs/config-file/config-advanced#project-config-files-codexconfigtoml) establishes that the relative file path resolves from `.codex/`. The trusted project layer configures both inputs with the same prompt so the effective state-transfer contract does not diverge between them. `pnpm codex:check` rejects missing configuration, content drift, and an oversized prompt.
+
+The prompt treats compaction as minimum sufficient operational state transfer. It preserves the latest active intent, facts and constraints, decisions and invariants, evidence, authorization boundaries, user-owned dirty work, validation state, and the next action. It excludes secrets, unsupported completion claims, repetitive narrative, and superseded exploration.
+
 ## Local worktree environment
 
 Codex Desktop can create isolated Git worktrees for parallel tasks. The committed `.codex/environments/environment.toml` provides the minimum deterministic setup:

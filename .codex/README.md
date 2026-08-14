@@ -4,7 +4,8 @@ This directory contains the shared repository-scoped Codex configuration. Codex 
 
 ## Ownership
 
-- `config.toml` owns non-secret project defaults, sandboxing, approvals, bounded web search, agent concurrency, environment inheritance, and repository MCP servers.
+- `config.toml` owns non-secret project defaults, sandboxing, approvals, bounded web search, history compaction, agent concurrency, environment inheritance, and repository MCP servers.
+- `compact-prompt.md` owns the readable copy of the first-principles state-transfer prompt. The inline and file-backed settings intentionally contain the same prompt, and `pnpm codex:check` rejects drift between them.
 - `agents/` owns narrow read-only specialists. The primary thread retains decision, edit, and verification responsibility.
 - `hooks.json` and `hooks/` own bounded lifecycle observations. Hook output is never product or architecture truth.
 - `environments/environment.toml` owns deterministic worktree setup and a minimal set of shared terminal actions.

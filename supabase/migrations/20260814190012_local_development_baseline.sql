@@ -1,18 +1,28 @@
--- Initial collaboration baseline compiled from the ordered declarative schema.
--- supabase/schemas remains the canonical desired database state.
+-- Local-development baseline compiled from the ordered declarative schemas.
+-- supabase/schemas is the canonical desired database state.
+-- This file becomes immutable only after an identified persistent environment applies it.
 
 -- Source: supabase/schemas/10_identity.sql
 
 create table public.profiles (
   id uuid primary key references auth.users (id) on delete cascade,
+  username text,
   display_name text,
   avatar_url text,
   created_at timestamptz not null default timezone('utc', now()),
-  updated_at timestamptz not null default timezone('utc', now())
+  updated_at timestamptz not null default timezone('utc', now()),
+  constraint profiles_username_format check (
+    username is null
+    or (
+      char_length(username) between 2 and 64
+      and username ~ '^[a-z0-9]+(-[a-z0-9]+)*$'
+    )
+  ),
+  constraint profiles_username_unique unique (username)
 );
 
 comment on table public.profiles is
-  'Application profile projection for an authenticated actor.';
+  'Application profile projection for an authenticated User; username becomes the personal Repository owner namespace once established.';
 
 -- Source: supabase/schemas/20_organization.sql
 
@@ -49,13 +59,54 @@ comment on table public.organizations is
 comment on table public.organization_memberships is
   'Relationship between an actor and an organization; not an actor type.';
 
+-- Source: supabase/schemas/25_repository_owner_namespace.sql
+
+create schema if not exists private;
+
+create table private.repository_owner_namespaces (
+  slug text primary key,
+  user_id uuid unique references auth.users (id) on delete cascade,
+  organization_id uuid unique references public.organizations (id) on delete cascade,
+  created_at timestamptz not null default timezone('utc', now()),
+  constraint repository_owner_namespaces_slug_format check (
+    char_length(slug) between 2 and 64
+    and slug ~ '^[a-z0-9]+(-[a-z0-9]+)*$'
+  ),
+  constraint repository_owner_namespaces_exactly_one_owner check (
+    (user_id is not null and organization_id is null)
+    or (user_id is null and organization_id is not null)
+  )
+);
+
+comment on table private.repository_owner_namespaces is
+  'Private routing-integrity registry reserving one globally unambiguous Repository owner slug for either a User or Organization.';
+
+-- Source: supabase/schemas/26_repository_owner_namespace_guardrails.sql
+
+alter table private.repository_owner_namespaces
+  add constraint repository_owner_namespaces_reserved_slug check (
+    slug not in (
+      'app',
+      'auth',
+      'forgot-password',
+      'new',
+      'recover-password',
+      'reset-password',
+      'settings',
+      'sign-in',
+      'sign-up',
+      'verify-email'
+    )
+  );
+
 -- Source: supabase/schemas/30_repository.sql
 
-create type public.repository_visibility as enum ('private', 'organization', 'public');
+create type public.repository_visibility as enum ('private', 'public');
 
 create table public.repositories (
   id uuid primary key default gen_random_uuid(),
-  organization_id uuid not null references public.organizations (id) on delete cascade,
+  owner_user_id uuid references auth.users (id) on delete restrict,
+  owner_organization_id uuid references public.organizations (id) on delete restrict,
   slug text not null,
   name text not null,
   description text,
@@ -63,19 +114,35 @@ create table public.repositories (
   created_by uuid not null references auth.users (id),
   created_at timestamptz not null default timezone('utc', now()),
   updated_at timestamptz not null default timezone('utc', now()),
+  constraint repositories_exactly_one_owner check (
+    (owner_user_id is not null and owner_organization_id is null)
+    or (owner_user_id is null and owner_organization_id is not null)
+  ),
   constraint repositories_slug_format check (
     char_length(slug) between 2 and 64
     and slug ~ '^[a-z0-9]+(-[a-z0-9]+)*$'
   ),
-  constraint repositories_name_length check (char_length(name) between 1 and 160),
-  constraint repositories_organization_slug_unique unique (organization_id, slug)
+  constraint repositories_name_length check (char_length(name) between 1 and 160)
 );
 
-create index repositories_organization_id_idx
-  on public.repositories (organization_id, id);
+create unique index repositories_user_owner_slug_unique
+  on public.repositories (owner_user_id, slug)
+  where owner_user_id is not null;
+
+create unique index repositories_organization_owner_slug_unique
+  on public.repositories (owner_organization_id, slug)
+  where owner_organization_id is not null;
+
+create index repositories_owner_user_id_idx
+  on public.repositories (owner_user_id, id)
+  where owner_user_id is not null;
+
+create index repositories_owner_organization_id_idx
+  on public.repositories (owner_organization_id, id)
+  where owner_organization_id is not null;
 
 comment on table public.repositories is
-  'No-code collaboration containers and the primary resource/authorization boundary.';
+  'No-code collaboration containers and the primary Resource/authorization/history boundary; each Repository is owned by exactly one User or Organization.';
 
 -- Source: supabase/schemas/40_access.sql
 
@@ -128,6 +195,40 @@ create index resources_repository_id_idx
 
 comment on table public.resources is
   'Repository-scoped work units. The shared envelope is relational; subtype content remains explicit.';
+
+-- Source: supabase/schemas/55_issue.sql
+
+create type public.issue_status as enum ('open', 'closed');
+
+create table public.issues (
+  id uuid primary key default gen_random_uuid(),
+  repository_id uuid not null references public.repositories (id) on delete cascade,
+  issue_number bigint not null,
+  title text not null,
+  body text not null default '',
+  status public.issue_status not null default 'open',
+  created_by uuid not null references auth.users (id),
+  created_at timestamptz not null default timezone('utc', now()),
+  updated_at timestamptz not null default timezone('utc', now()),
+  closed_by uuid references auth.users (id),
+  closed_at timestamptz,
+  constraint issues_repository_number_unique unique (repository_id, issue_number),
+  constraint issues_number_positive check (issue_number > 0),
+  constraint issues_title_length check (
+    char_length(title) between 1 and 240
+    and title ~ '[^[:space:]]'
+  ),
+  constraint issues_closed_state_consistent check (
+    (status = 'open' and closed_by is null and closed_at is null)
+    or (status = 'closed' and closed_by is not null and closed_at is not null)
+  )
+);
+
+create index issues_repository_status_updated_idx
+  on public.issues (repository_id, status, updated_at desc, issue_number desc);
+
+comment on table public.issues is
+  'Repository-scoped actionable work. This read projection has no accepted end-user mutation path yet.';
 
 -- Source: supabase/schemas/60_activity.sql
 
@@ -342,8 +443,15 @@ as $$
   from (
     select 'admin'::public.repository_role as role
     from public.repositories as repository
+    where repository.id = target_repository_id
+      and repository.owner_user_id = (select auth.uid())
+
+    union all
+
+    select 'admin'::public.repository_role as role
+    from public.repositories as repository
     join public.organization_memberships as membership
-      on membership.organization_id = repository.organization_id
+      on membership.organization_id = repository.owner_organization_id
     where repository.id = target_repository_id
       and membership.user_id = (select auth.uid())
       and membership.role in ('admin', 'owner')
@@ -394,7 +502,6 @@ begin
       'resource.view',
       'resource.create',
       'resource.update',
-      'resource.delete',
       'member.manage'
     )
     when 'admin' then requested_capability in (
@@ -403,7 +510,6 @@ begin
       'resource.view',
       'resource.create',
       'resource.update',
-      'resource.delete',
       'member.manage'
     )
     else false
@@ -463,10 +569,47 @@ language plpgsql
 security definer
 set search_path = ''
 as $$
+declare
+  candidate_username text;
 begin
-  insert into public.profiles (id, display_name)
-  values (new.id, nullif(new.raw_user_meta_data ->> 'name', ''))
-  on conflict (id) do nothing;
+  candidate_username := lower(trim(coalesce(new.raw_user_meta_data ->> 'username', '')));
+
+  if candidate_username !~ '^[a-z0-9]+(-[a-z0-9]+)*$'
+    or char_length(candidate_username) < 2
+    or char_length(candidate_username) > 64 then
+    candidate_username := 'user-' || replace(new.id::text, '-', '');
+  end if;
+
+  insert into public.profiles (id, username, display_name)
+  values (
+    new.id,
+    candidate_username,
+    nullif(new.raw_user_meta_data ->> 'name', '')
+  )
+  on conflict (id) do update
+    set username = excluded.username;
+
+  insert into private.repository_owner_namespaces (slug, user_id)
+  values (candidate_username, new.id)
+  on conflict (user_id) do update
+    set slug = excluded.slug;
+
+  return new;
+end;
+$$;
+
+create function private.sync_user_owner_namespace()
+returns trigger
+language plpgsql
+security definer
+set search_path = ''
+as $$
+begin
+  if new.username is distinct from old.username then
+    update private.repository_owner_namespaces
+    set slug = new.username
+    where user_id = new.id;
+  end if;
   return new;
 end;
 $$;
@@ -478,9 +621,28 @@ security definer
 set search_path = ''
 as $$
 begin
+  insert into private.repository_owner_namespaces (slug, organization_id)
+  values (new.slug, new.id);
+
   insert into public.organization_memberships (organization_id, user_id, role)
   values (new.id, new.created_by, 'owner')
   on conflict (organization_id, user_id) do update set role = 'owner';
+  return new;
+end;
+$$;
+
+create function private.sync_organization_owner_namespace()
+returns trigger
+language plpgsql
+security definer
+set search_path = ''
+as $$
+begin
+  if new.slug is distinct from old.slug then
+    update private.repository_owner_namespaces
+    set slug = new.slug
+    where organization_id = new.id;
+  end if;
   return new;
 end;
 $$;
@@ -591,9 +753,17 @@ create trigger auth_user_created_profile
 after insert on auth.users
 for each row execute function private.create_profile_for_auth_user();
 
+create trigger profile_username_owner_namespace
+before update of username on public.profiles
+for each row execute function private.sync_user_owner_namespace();
+
 create trigger organization_created_owner
 after insert on public.organizations
 for each row execute function private.add_organization_owner();
+
+create trigger organization_owner_namespace_update
+before update of slug on public.organizations
+for each row execute function private.sync_organization_owner_namespace();
 
 create trigger organization_owner_continuity_update
 before update of role on public.organization_memberships
@@ -641,6 +811,68 @@ grant execute on function private.can_manage_repository_grant(
   public.repository_role
 ) to authenticated;
 grant execute on function private.can_view_repository(uuid) to anon, authenticated;
+
+-- Source: supabase/schemas/91_repository_access_projection.sql
+
+create function private.get_current_repository_access_sources(target_repository_id uuid)
+returns table (
+  direct_role public.repository_role,
+  governance_role public.repository_role
+)
+language sql
+stable
+security definer
+set search_path = ''
+as $$
+  select
+    (
+      select direct_grant.role
+      from public.repository_user_grants as direct_grant
+      where direct_grant.repository_id = target_repository_id
+        and direct_grant.user_id = (select auth.uid())
+      limit 1
+    ) as direct_role,
+    case
+      when exists (
+        select 1
+        from public.repositories as repository
+        where repository.id = target_repository_id
+          and repository.owner_user_id = (select auth.uid())
+      ) then 'admin'::public.repository_role
+      when exists (
+        select 1
+        from public.repositories as repository
+        join public.organization_memberships as membership
+          on membership.organization_id = repository.owner_organization_id
+        where repository.id = target_repository_id
+          and membership.user_id = (select auth.uid())
+          and membership.role in ('admin', 'owner')
+      ) then 'admin'::public.repository_role
+      else null
+    end as governance_role
+  where (select auth.uid()) is not null;
+$$;
+
+revoke all on function private.get_current_repository_access_sources(uuid)
+  from public, anon, authenticated;
+grant execute on function private.get_current_repository_access_sources(uuid) to authenticated;
+
+create function public.get_current_repository_access_sources(target_repository_id uuid)
+returns table (
+  direct_role public.repository_role,
+  governance_role public.repository_role
+)
+language sql
+stable
+security invoker
+set search_path = ''
+as $$
+  select * from private.get_current_repository_access_sources(target_repository_id);
+$$;
+
+revoke all on function public.get_current_repository_access_sources(uuid)
+  from public, anon, authenticated;
+grant execute on function public.get_current_repository_access_sources(uuid) to authenticated;
 
 -- Source: supabase/schemas/92_page_commands.sql
 
@@ -790,8 +1022,9 @@ grant execute on function public.update_page(uuid, uuid, text, text, timestamptz
 create function private.get_accessible_repository_route_by_id(target_repository_id uuid)
 returns table (
   id uuid,
-  organization_id uuid,
-  organization_slug text,
+  owner_kind text,
+  owner_id uuid,
+  owner_slug text,
   slug text,
   name text,
   description text,
@@ -804,28 +1037,34 @@ set search_path = ''
 as $$
   select
     repository.id,
-    repository.organization_id,
-    organization.slug as organization_slug,
+    case
+      when repository.owner_user_id is not null then 'user'
+      else 'organization'
+    end as owner_kind,
+    coalesce(repository.owner_user_id, repository.owner_organization_id) as owner_id,
+    owner_namespace.slug as owner_slug,
     repository.slug,
     repository.name,
     repository.description,
     repository.visibility
   from public.repositories as repository
-  join public.organizations as organization
-    on organization.id = repository.organization_id
+  join private.repository_owner_namespaces as owner_namespace
+    on owner_namespace.user_id = repository.owner_user_id
+    or owner_namespace.organization_id = repository.owner_organization_id
   where repository.id = target_repository_id
     and private.can_view_repository(repository.id)
   limit 1;
 $$;
 
 create function private.get_accessible_repository_route_by_key(
-  target_organization_slug text,
+  target_owner_slug text,
   target_repository_slug text
 )
 returns table (
   id uuid,
-  organization_id uuid,
-  organization_slug text,
+  owner_kind text,
+  owner_id uuid,
+  owner_slug text,
   slug text,
   name text,
   description text,
@@ -838,16 +1077,21 @@ set search_path = ''
 as $$
   select
     repository.id,
-    repository.organization_id,
-    organization.slug as organization_slug,
+    case
+      when repository.owner_user_id is not null then 'user'
+      else 'organization'
+    end as owner_kind,
+    coalesce(repository.owner_user_id, repository.owner_organization_id) as owner_id,
+    owner_namespace.slug as owner_slug,
     repository.slug,
     repository.name,
     repository.description,
     repository.visibility
   from public.repositories as repository
-  join public.organizations as organization
-    on organization.id = repository.organization_id
-  where organization.slug = target_organization_slug
+  join private.repository_owner_namespaces as owner_namespace
+    on owner_namespace.user_id = repository.owner_user_id
+    or owner_namespace.organization_id = repository.owner_organization_id
+  where owner_namespace.slug = target_owner_slug
     and repository.slug = target_repository_slug
     and private.can_view_repository(repository.id)
   limit 1;
@@ -856,8 +1100,9 @@ $$;
 create function private.list_accessible_repository_routes()
 returns table (
   id uuid,
-  organization_id uuid,
-  organization_slug text,
+  owner_kind text,
+  owner_id uuid,
+  owner_slug text,
   slug text,
   name text,
   description text,
@@ -870,17 +1115,22 @@ set search_path = ''
 as $$
   select
     repository.id,
-    repository.organization_id,
-    organization.slug as organization_slug,
+    case
+      when repository.owner_user_id is not null then 'user'
+      else 'organization'
+    end as owner_kind,
+    coalesce(repository.owner_user_id, repository.owner_organization_id) as owner_id,
+    owner_namespace.slug as owner_slug,
     repository.slug,
     repository.name,
     repository.description,
     repository.visibility
   from public.repositories as repository
-  join public.organizations as organization
-    on organization.id = repository.organization_id
+  join private.repository_owner_namespaces as owner_namespace
+    on owner_namespace.user_id = repository.owner_user_id
+    or owner_namespace.organization_id = repository.owner_organization_id
   where private.can_view_repository(repository.id)
-  order by organization.slug, repository.slug, repository.id;
+  order by owner_namespace.slug, repository.slug, repository.id;
 $$;
 
 revoke all on function private.get_accessible_repository_route_by_id(uuid)
@@ -890,15 +1140,16 @@ revoke all on function private.get_accessible_repository_route_by_key(text, text
 revoke all on function private.list_accessible_repository_routes()
   from public, anon, authenticated;
 
-grant execute on function private.get_accessible_repository_route_by_id(uuid) to authenticated;
-grant execute on function private.get_accessible_repository_route_by_key(text, text) to authenticated;
+grant execute on function private.get_accessible_repository_route_by_id(uuid) to anon, authenticated;
+grant execute on function private.get_accessible_repository_route_by_key(text, text) to anon, authenticated;
 grant execute on function private.list_accessible_repository_routes() to authenticated;
 
 create function public.get_accessible_repository_route_by_id(target_repository_id uuid)
 returns table (
   id uuid,
-  organization_id uuid,
-  organization_slug text,
+  owner_kind text,
+  owner_id uuid,
+  owner_slug text,
   slug text,
   name text,
   description text,
@@ -914,13 +1165,14 @@ as $$
 $$;
 
 create function public.get_accessible_repository_route_by_key(
-  target_organization_slug text,
+  target_owner_slug text,
   target_repository_slug text
 )
 returns table (
   id uuid,
-  organization_id uuid,
-  organization_slug text,
+  owner_kind text,
+  owner_id uuid,
+  owner_slug text,
   slug text,
   name text,
   description text,
@@ -933,7 +1185,7 @@ set search_path = ''
 as $$
   select *
   from private.get_accessible_repository_route_by_key(
-    target_organization_slug,
+    target_owner_slug,
     target_repository_slug
   );
 $$;
@@ -941,8 +1193,9 @@ $$;
 create function public.list_accessible_repository_routes()
 returns table (
   id uuid,
-  organization_id uuid,
-  organization_slug text,
+  owner_kind text,
+  owner_id uuid,
+  owner_slug text,
   slug text,
   name text,
   description text,
@@ -964,8 +1217,8 @@ revoke all on function public.get_accessible_repository_route_by_key(text, text)
 revoke all on function public.list_accessible_repository_routes()
   from public, anon, authenticated;
 
-grant execute on function public.get_accessible_repository_route_by_id(uuid) to authenticated;
-grant execute on function public.get_accessible_repository_route_by_key(text, text) to authenticated;
+grant execute on function public.get_accessible_repository_route_by_id(uuid) to anon, authenticated;
+grant execute on function public.get_accessible_repository_route_by_key(text, text) to anon, authenticated;
 grant execute on function public.list_accessible_repository_routes() to authenticated;
 
 -- Source: supabase/schemas/99_rls.sql
@@ -976,6 +1229,7 @@ alter table public.organization_memberships enable row level security;
 alter table public.repositories enable row level security;
 alter table public.repository_user_grants enable row level security;
 alter table public.resources enable row level security;
+alter table public.issues enable row level security;
 alter table public.activity_events enable row level security;
 
 revoke all on table public.profiles from anon, authenticated;
@@ -984,6 +1238,7 @@ revoke all on table public.organization_memberships from anon, authenticated;
 revoke all on table public.repositories from anon, authenticated;
 revoke all on table public.repository_user_grants from anon, authenticated;
 revoke all on table public.resources from anon, authenticated;
+revoke all on table public.issues from anon, authenticated;
 revoke all on table public.activity_events from anon, authenticated;
 
 grant select on table public.profiles to authenticated;
@@ -1006,13 +1261,15 @@ grant select on table public.resources to anon, authenticated;
 grant insert on table public.resources to authenticated;
 grant update (title, content) on table public.resources to authenticated;
 
+grant select on table public.issues to anon, authenticated;
+
 grant select on table public.activity_events to authenticated;
 
 -- Organization, Repository, and Resource hard deletion deliberately have no end-user DELETE grant
 -- or RLS policy until an accepted lifecycle defines retention, restore, and historical continuity.
 -- Resource INSERT/UPDATE table privileges support SECURITY INVOKER Page command RPCs. Raw Data API
 -- mutations fail closed because the policies below require transaction-local command context set by
--- those RPCs in addition to the ordinary actor and Capability checks.
+-- those RPCs in addition to the ordinary Actor and Capability checks.
 
 create policy profiles_select_self
 on public.profiles
@@ -1085,13 +1342,25 @@ for select
 to anon, authenticated
 using ((select private.can_view_repository(id)));
 
-create policy repositories_insert_admin
+create policy repositories_insert_personal_owner
 on public.repositories
 for insert
 to authenticated
 with check (
   (select auth.uid()) = created_by
-  and (select private.is_organization_admin(organization_id))
+  and owner_user_id = (select auth.uid())
+  and owner_organization_id is null
+);
+
+create policy repositories_insert_organization_admin
+on public.repositories
+for insert
+to authenticated
+with check (
+  (select auth.uid()) = created_by
+  and owner_user_id is null
+  and owner_organization_id is not null
+  and (select private.is_organization_admin(owner_organization_id))
 );
 
 create policy repositories_update_manager
@@ -1164,7 +1433,18 @@ with check (
   and (select private.has_repository_capability(repository_id, 'resource.update'))
 );
 
-create policy activity_events_select_viewer
+-- Issue creation, state change, conversation, and deletion remain unavailable until their
+-- command, concurrency, attribution, and historical-evidence contracts are executable.
+create policy issues_select_visible
+on public.issues
+for select
+to anon, authenticated
+using ((select private.can_view_repository(repository_id)));
+
+-- Activity Event payload is historical Evidence, not part of the anonymous public-read baseline.
+-- A future public Activity projection requires its own privacy/redaction contract instead of
+-- exposing the raw evidence envelope through public Repository visibility.
+create policy activity_events_select_authorized_viewer
 on public.activity_events
 for select
 to authenticated
