@@ -31,64 +31,73 @@ A gap is not permission to redefine the target model, postpone an invariant sile
 
 ## Open gaps
 
-### GAP-OWNERSHIP-001 — Repository implementation still assumes Organization-only ownership and Organization-prefixed canonical routing
+### GAP-OWNERSHIP-001 — Repository ownership correction is implemented across current contracts, but creation and exact-head projection/verification evidence remain incomplete
 
 - Status: Open
 - Affected contracts: [`PRODUCT.md`](./PRODUCT.md), [`ONTOLOGY.md`](./ONTOLOGY.md), [`domains/repository-collaboration.md`](./domains/repository-collaboration.md), [`domains/access-authority.md`](./domains/access-authority.md), [`architecture/README.md`](./architecture/README.md), [ADR-010](./architecture/ADR-010-repository-owner-namespace.md)
-- Affected invariants: `Repository Owner = User | Organization`, owner-neutral authorization, globally unambiguous owner namespace, canonical `/{owner}/{repository}` routing, visibility vocabulary
-- Risk class: Product-semantic drift, inaccessible personal ownership, authorization coupling, routing/UX mismatch
+- Affected invariants: `Repository Owner = User | Organization`, owner-neutral authorization, globally unambiguous Owner namespace, canonical `/{owner}/{repository}` routing, visibility vocabulary
+- Risk class: incomplete ownership capability and incomplete exact-head evidence
 
 #### Direct evidence
 
-- `supabase/schemas/30_repository.sql` currently requires `organization_id NOT NULL`, so a User cannot own a Repository directly.
-- `packages/domain/src/repository/repository.ts` currently stores `organizationId` in every `RepositorySummary` and exposes `organization` visibility.
-- `packages/application/src/ports/repository-authority-source-reader.ts` currently requires callers to provide `organizationId`, so Application authorization assumes the ownership answer instead of resolving it from Repository facts.
-- `packages/infrastructure/supabase/src/access/supabase-repository-authority-source-reader.ts` currently reads Organization Membership for every Repository before combining a direct User Grant.
-- `private.current_repository_role()` in `supabase/schemas/90_private_functions.sql` currently derives governance authority only through `repositories.organization_id`.
-- `supabase/schemas/95_repository_routing.sql` currently resolves `organization_slug + repository_slug` rather than a User-or-Organization owner namespace.
-- `apps/web/src/routing/repository-routes.ts` and the Repository route tree currently make `/app/{organizationSlug}/{repositorySlug}` the semantic Repository URL.
-- `apps/web/e2e/page-collaboration.spec.ts` previously tested Page collaboration and UUID redirects but did not assert the `/app` Repository-card click journey. A new failing browser contract now requires `/app → click Repository → /{owner}/{repository}`.
-- `repository_visibility` currently contains `organization`, while `private.can_view_repository()` gives special baseline access only to `public`; ordinary Organization Membership does not implement an Organization visibility baseline.
-- GitHub Actions Verify run #189 on RED head `9d12b9b3c33cde89c842e61f064e2de911eb94db` fails `Repository contracts → Verify repository` because the new Domain test requires a missing `RepositoryOwner` type. This is intentional reproduction evidence.
+Current branch now implements the corrected target through these concrete projections:
+
+- `packages/domain/src/repository/ownership.ts` defines typed User/Organization Repository Owner.
+- `packages/domain/src/repository/repository.ts` exposes typed `owner` and `private | public` visibility with no Organization-only compatibility field.
+- `packages/domain/src/access/authority.ts` resolves only `directRole + governanceRole`; the Organization-only authority fallback is removed.
+- `packages/application/src/ports/repository-access-reader.ts` accepts stable `actorId + repositoryId`; the old Organization-specific authority Port is removed.
+- `packages/infrastructure/supabase/src/access/supabase-repository-access-reader.ts` reads owner-neutral direct/governance sources.
+- `supabase/schemas/30_repository.sql` models exactly one `owner_user_id XOR owner_organization_id`; the legacy `organization_id` ownership column is absent from current desired state.
+- `supabase/schemas/91_repository_access_projection.sql` declares owner-neutral authority-source projection.
+- `supabase/schemas/95_repository_routes.sql` resolves one global User/Organization Owner namespace.
+- `supabase/schemas/99_rls.sql` has separate personal-owner and Organization-admin Repository creation policies and no Organization-only owner field.
+- `supabase/migrations/20260814021000_remove_legacy_repository_organization_owner.sql` makes replayed final state drop the historical compatibility column.
+- `apps/web/src/app/(repository)/[ownerSlug]/[repositorySlug]/**` is the only Repository UI tree; the obsolete Organization-only tree has been removed.
+- `apps/web/src/routing/repository-routes.ts` builds canonical `/{owner}/{repository}` URLs; `/app` remains dashboard/discovery.
+- `apps/web/e2e/page-collaboration.spec.ts` now clicks a Repository card from `/app`, lands on the canonical route, follows stable-ID compatibility redirects, and executes Page collaboration through the canonical path.
+- pgTAP ownership contracts assert typed ownership, namespace collision rejection, personal/Organization authority separation, ordinary-Member non-authority, and absence of the legacy `repositories.organization_id` column.
+
+Current incomplete evidence/capability:
+
+- Human-facing Repository creation at `/new` is not implemented. Personal and Organization ownership can be represented/enforced by Domain/database contracts, but the Product does not yet expose one complete creation use case for both Owner kinds.
+- Checked-in `packages/infrastructure/supabase/src/generated/database.types.ts` must be regenerated from the corrected replayed local database; it is a projection and cannot be hand-maintained as target truth.
+- The same latest PR head has not yet produced successful Repository, Supabase, Browser, and deployment evidence after the full correction set.
 
 #### Root cause
 
-An implementation shortcut—Organization-only Repository ownership—was promoted from an early executable assumption into Product/Domain/URL invariants. Downstream schema, authorization, routes, and docs then cited one another, creating circular evidence.
+An early Organization-only executable shortcut was promoted into Product, Domain, authorization, persistence, and URL assumptions. Those assumptions then cited one another as evidence.
 
-The Product, Ontology, Repository Collaboration, Access Authority, current Architecture contract, and ADR index have been corrected first so the executable projection has one unambiguous target.
+The earliest invalid boundaries have now been replaced. This gap remains Open only for missing creation capability and exact-head generated/runtime evidence; it must not continue describing the removed Organization-only implementation as current truth.
 
 #### Predicted failure
 
-Until executable closure:
+Until closure:
 
-- Users cannot create/own personal Repositories;
-- Repository routing cannot resolve a User owner namespace;
-- Page commands remain coupled to a caller-supplied Organization ID;
-- personal-owner authority cannot be expressed without fabricating an Organization or Grant;
-- `/app` dashboard URLs leak an implementation prefix and Organization-only assumption into Repository identity;
-- `organization` visibility may be mistaken for an effective-access rule that does not exist.
+- users cannot create a personal or Organization-owned Repository through the human Product UI;
+- generated TypeScript database projections may lag the corrected desired/replayed schema; and
+- ownership correction cannot be claimed exact-head verified across all CI/browser/deployment boundaries.
 
 #### Temporary containment
 
-- PR #27 remains Draft and must not be represented as a production-ready ownership correction while this gap is Open.
-- Canonical docs explicitly label the current Organization-only executable shape as a mismatch, not target truth.
-- No User-owned Repository capability is claimed as executable until schema/Application/Web/browser evidence is complete.
-- Existing authorization still fails closed for unsupported personal ownership because no such rows can currently exist.
+- PR #27 remains Draft and must not be represented as production-ready while this gap is Open.
+- No `/new` Repository creation capability is claimed as available.
+- Unsupported creation paths fail closed because no incomplete Web/Application creation surface is exposed.
+- Generated database types remain projections; stale checked-in output is treated as a verification failure, never as Product truth.
 
 #### Closure evidence
 
 Close only after the same exact PR head proves all of the following:
 
 1. Domain models typed `RepositoryOwner = User | Organization` and `private | public` visibility.
-2. Application authorization source lookup accepts `actorId + repositoryId` without caller-supplied Organization ownership.
-3. Supabase desired state and reviewed migration implement typed XOR owner FKs plus globally unambiguous User/Organization owner namespace.
-4. Personal owner derives Repository admin without fabricated Grant; Organization admin/owner derives admin only for Organization-owned Repository; ordinary member does not.
-5. Route RPCs and adapters resolve `ownerSlug + repositorySlug` for both owner kinds.
-6. Web canonical Repository URL is `/{ownerSlug}/{repositorySlug}`; `/app` is dashboard only; legacy stable-ID routes redirect safely.
-7. `/new` supports personal ownership and authorized Organization ownership without bypassing Application/RLS rules.
-8. Playwright explicitly clicks a Repository card from `/app`, verifies canonical navigation, and completes Page create/update/activity on that route.
-9. pgTAP proves owner-namespace collision rejection, typed ownership, authorization matrix, and visibility semantics.
-10. Generated DB types match desired schema, repository verification succeeds, Supabase verification succeeds, Browser contracts succeed, and Vercel succeeds for the same latest head.
+2. Application authority lookup accepts `actorId + repositoryId` without caller-supplied Organization ownership.
+3. Supabase desired state and replay history end with typed XOR Owner FKs plus one globally unambiguous User/Organization Owner namespace and no legacy ownership column.
+4. Personal Owner derives Repository admin without fabricated Grant; Organization admin/owner derives admin only for Organization-owned Repository; ordinary member does not.
+5. Route RPCs/adapters resolve `ownerSlug + repositorySlug` for both Owner kinds.
+6. Web canonical Repository URL is `/{ownerSlug}/{repositorySlug}`; `/app` is dashboard only; stable-ID compatibility routes redirect safely; no Organization-only Repository UI tree remains.
+7. `/new` supports personal ownership and authorized Organization ownership through explicit Application/Infrastructure contracts and RLS.
+8. Playwright explicitly clicks a Repository card from `/app`, verifies canonical navigation, and completes accepted Page collaboration through that route.
+9. pgTAP proves namespace collision rejection, typed ownership, creation/authorization matrix, legacy-column absence, and visibility semantics.
+10. Generated DB types match the replayed desired schema, Repository verification succeeds, Supabase verification succeeds, Browser contracts succeed, and deployment status succeeds for the same latest head.
 
 ### GAP-IDENTITY-001 — Identity lifecycle remains incomplete after verified Session and recovery establishment
 
