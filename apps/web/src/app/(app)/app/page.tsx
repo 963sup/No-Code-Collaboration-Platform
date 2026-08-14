@@ -26,8 +26,8 @@ export default async function AppHomePage() {
         <p className='text-sm font-medium text-muted-foreground'>Collaboration containers</p>
         <h1 className='text-3xl font-semibold tracking-tight'>Repositories</h1>
         <p className='max-w-2xl text-muted-foreground'>
-          Choose a Repository you can access. Owner and Repository names resolve to stable Repository
-          identity before authorization-sensitive work begins.
+          Choose a Repository you can access. Owner and Repository names resolve to stable
+          Repository identity before authorization-sensitive work begins.
         </p>
       </div>
 
