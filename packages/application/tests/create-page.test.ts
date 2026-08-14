@@ -4,7 +4,7 @@ import {
   CreatePage,
   type IdentityProvider,
   type PageWriter,
-  type RepositoryAuthoritySourceReader,
+  type RepositoryAccessReader,
   type RepositoryReader
 } from '../src/index';
 
@@ -16,7 +16,6 @@ const repository = {
     kind: 'organization' as const,
     organizationId: 'organization-1'
   },
-  organizationId: 'organization-1',
   slug: 'platform',
   visibility: 'private' as const
 };
@@ -67,12 +66,13 @@ function createRepositoryReader(): RepositoryReader {
 
 describe('CreatePage', () => {
   it('rejects an unauthenticated request before reading Repository authority', async () => {
-    const readRepositoryAuthoritySources = vi.fn();
+    const readRepositoryAccess = vi.fn();
     const createPage = vi.fn();
+    const accessReader: RepositoryAccessReader = { readRepositoryAccess };
     const useCase = new CreatePage(
       createIdentityProvider(null),
       createRepositoryReader(),
-      { readRepositoryAuthoritySources } as unknown as ConstructorParameters<typeof CreatePage>[2],
+      accessReader,
       { createPage, updatePage: vi.fn() }
     );
 
@@ -80,22 +80,22 @@ describe('CreatePage', () => {
       ok: false,
       reason: 'unauthenticated'
     });
-    expect(readRepositoryAuthoritySources).not.toHaveBeenCalled();
+    expect(readRepositoryAccess).not.toHaveBeenCalled();
     expect(createPage).not.toHaveBeenCalled();
   });
 
   it('rejects a Viewer through the Domain capability decision', async () => {
     const createPage = vi.fn();
-    const authoritySourceReader: RepositoryAuthoritySourceReader = {
-      async readRepositoryAuthoritySources() {
-        return { directRole: 'viewer', organizationRole: null };
+    const accessReader: RepositoryAccessReader = {
+      async readRepositoryAccess() {
+        return { directRole: 'viewer', governanceRole: null };
       }
     };
     const pageWriter: PageWriter = { createPage, updatePage: vi.fn() };
     const useCase = new CreatePage(
       createIdentityProvider('user-1'),
       createRepositoryReader(),
-      authoritySourceReader as unknown as ConstructorParameters<typeof CreatePage>[2],
+      accessReader,
       pageWriter
     );
 
