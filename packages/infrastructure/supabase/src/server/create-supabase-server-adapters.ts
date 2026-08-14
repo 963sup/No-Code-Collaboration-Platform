@@ -9,7 +9,7 @@ import type {
 } from '@no-code-collaboration-platform/application';
 import { createServerClient, type CookieMethodsServer } from '@supabase/ssr';
 
-import { SupabaseRepositoryAuthoritySourceReader } from '../access/supabase-repository-authority-source-reader';
+import { SupabaseRepositoryAccessReader } from '../access/supabase-repository-access-reader';
 import { SupabaseActivityEventReader } from '../activity/supabase-activity-event-reader';
 import type { Database } from '../generated/database.types';
 import { SupabaseIdentityProvider } from '../identity/supabase-identity-provider';
@@ -40,7 +40,6 @@ export function createSupabaseServerAdapters(
     cookies: options.cookies
   });
   const pageRepository = new SupabasePageRepository(client);
-  const repositoryAccessReader = new SupabaseRepositoryAuthoritySourceReader(client);
 
   return {
     activityEventReader: new SupabaseActivityEventReader(client),
@@ -51,7 +50,7 @@ export function createSupabaseServerAdapters(
     }),
     pageReader: pageRepository,
     pageWriter: pageRepository,
-    repositoryAccessReader,
+    repositoryAccessReader: new SupabaseRepositoryAccessReader(client),
     repositoryReader: new SupabaseRepositoryReader(client),
     repositoryRouteReader: new SupabaseOwnerRepositoryRouteReader(client)
   };
