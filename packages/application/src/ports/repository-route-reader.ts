@@ -1,16 +1,12 @@
 import type { RepositorySummary } from '@no-code-collaboration-platform/domain';
 
 export interface RepositoryRouteKey {
-  readonly ownerSlug?: string;
-  /** @deprecated Use ownerSlug. */
-  readonly organizationSlug?: string;
+  readonly ownerSlug: string;
   readonly repositorySlug: string;
 }
 
 export interface RepositoryRouteSummary {
   readonly ownerSlug: string;
-  /** @deprecated Use ownerSlug. */
-  readonly organizationSlug?: string;
   readonly repository: RepositorySummary;
 }
 
