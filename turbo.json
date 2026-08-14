@@ -8,6 +8,15 @@
     },
     "build": {
       "dependsOn": ["^build", "^typecheck"],
+      "env": [
+        "NEXT_PUBLIC_SENTRY_DSN",
+        "SENTRY_ENVIRONMENT",
+        "SENTRY_ORG",
+        "SENTRY_PROJECT",
+        "VERCEL",
+        "VERCEL_ENV"
+      ],
+      "passThroughEnv": ["SENTRY_AUTH_TOKEN"],
       "outputs": [".next/**", "!.next/cache/**", "dist/**"]
     },
     "lint": {
