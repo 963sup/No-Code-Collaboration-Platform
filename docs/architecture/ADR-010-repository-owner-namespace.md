@@ -7,68 +7,81 @@
 
 ## Decision
 
-Repository ownership is corrected from Organization-only to exactly one typed Owner, `User | Organization`. Canonical human Repository URLs use `/{ownerSlug}/{repositorySlug}` where the owner segment resolves a globally unambiguous User username or Organization slug. Repository stable UUID remains the authorization/history identity. Ownership is an authority source, not a fabricated direct Grant. Personal owner and Organization owner/admin governance derive Repository admin authority according to the concrete owner relationship.
+Repository ownership is exactly one typed Owner:
 
-## Problem and success condition
+```text
+Repository Owner = User | Organization
+```
 
-The previous executable baseline made `repositories.organization_id` mandatory and ADR-008 made `/app/{organizationSlug}/{repositorySlug}` canonical. That implementation shortcut was later used as Product evidence, creating circular reasoning and incorrectly deferring personal Repository ownership.
+Canonical human Repository URLs use:
 
-Success requires:
+```text
+/{ownerSlug}/{repositorySlug}
+```
 
-- User-owned and Organization-owned Repositories to be first-class;
-- one Repository collaboration/Resource/Capability model across both ownership modes;
-- unambiguous GitHub-style owner/repository URLs;
-- owner-neutral Application authorization inputs;
-- typed persistence integrity rather than a generic polymorphic owner record; and
-- browser evidence that the dashboard can navigate into the canonical Repository workspace.
+The Owner segment resolves one globally unambiguous User username or Organization slug. Repository stable UUID remains the identity used by relationships, authorization, and historical evidence.
+
+Ownership is an authority source; it is not represented by a fabricated direct Grant.
+
+## Why this decision exists
+
+The earlier executable baseline made Organization ownership mandatory and used an authenticated `/app` prefix as Repository human identity. That implementation shortcut was incorrectly promoted into Product meaning.
+
+The Product axiom does not require an Organization parent:
+
+> **Repository = No-Code Collaboration Container**
+
+The mature GitHub owner/Repository mental model demonstrates that personal and Organization ownership can share one Repository interaction grammar. The target therefore models ownership independently from Repository containment and explicit Grants.
+
+## Success condition
+
+- User-owned and Organization-owned Repositories are first-class.
+- Both ownership modes use one Repository collaboration/Resource/Capability model.
+- Owner/Repository URL is unambiguous across User and Organization Owner kinds.
+- Application authorization input is owner-neutral.
+- Persistence preserves strong concrete Owner references.
+- `/app` is dashboard/discovery rather than Repository identity.
+- Canonical Repository presentation is one Owner/Repository header, primary navigation, and one active child content surface.
+- Public Repository reads do not inherit an authenticated-only dashboard wrapper.
 
 ## Evidence ledger
 
 ### Observations
 
-- `Repository = No-Code Collaboration Container` does not imply an Organization parent.
-- User and Organization are both durable owner identities for the target Repository concept.
-- Existing code/schema currently assumes Organization ownership because `organization_id` is mandatory.
-- Existing canonical Web URL includes `/app` and `organizationSlug`, leaking implementation/ownership assumptions into product identity.
-- Existing browser coverage exercises Page collaboration but previously did not assert the dashboard card-click journey.
-- Existing `organization` visibility has no ordinary-member read semantics; database read baseline distinguishes only public versus capability-derived access.
+- Repository containment does not imply an Organization parent.
+- User and Organization are durable Owner identities for the current target.
+- Organization-only persistence leaked into routing and authorization call signatures.
+- Ordinary Organization Membership currently creates no Repository read baseline.
+- Therefore the active visibility vocabulary is `private | public`.
+- Page collaboration can be scoped to stable Repository identity independent from Owner kind.
 
-### Constraints
+### Hard constraints
 
 - Exactly one Owner per Repository.
 - Ownership, Membership, Principal Grant, Context, and effective authorization remain distinct.
-- Repository stable ID remains target identity for authorization/history.
-- Domain/Application remain provider neutral.
-- Current persistence should preserve strong User/Organization FKs.
-- Team/Enterprise candidate semantics remain deferred.
+- Stable Repository identity remains the authorization/evidence target.
+- Domain/Application remain provider-neutral.
+- Current persistence preserves strong User/Organization references.
+- Team and Enterprise remain Deferred until discriminating evidence exists.
 
-### Assumptions
+### Assumptions under validation
 
 - User and Organization are sufficient Owner kinds for the current product horizon.
-- A globally unique owner namespace is preferable to ambiguous route resolution.
-- `private | public` is sufficient visibility vocabulary until a real Organization-wide baseline exists.
+- One global User/Organization Owner namespace is preferable to ambiguous human routing.
+- `private | public` is sufficient until a real Organization-wide access baseline is proven.
 
 ### Unknowns
 
-- Future transfer state machine and namespace reservation timing.
-- Whether future account types justify an owner supertype.
-- Whether Organization-wide visibility/base permission becomes necessary.
-
-### Value choices
-
-- Prefer mature GitHub owner/repository URL grammar over an implementation-specific `/app` prefix.
-- Prefer typed XOR owner FKs over polymorphic owner IDs.
-- Prefer correcting Product truth over preserving backward compatibility with an invalid ownership invariant.
-- Preserve legacy stable-ID URL redirects where they do not create a second Repository UI.
+- Future ownership-transfer lifecycle and namespace reservation timing.
+- Whether another real Owner kind later justifies an Owner supertype.
+- Whether Organization-wide baseline access becomes necessary.
 
 ## Minimum sufficient model
 
 ```text
 User ──────────┐
                ├── owns ──> Repository ── contains ──> Resource
-Organization ──┘                  │
-                                  ├─ authorization target
-                                  └─ historical evidence scope
+Organization ──┘
 ```
 
 Persistence target:
@@ -76,21 +89,21 @@ Persistence target:
 ```text
 repositories.owner_user_id         nullable FK
 repositories.owner_organization_id nullable FK
-CHECK exactly one is non-null
+CHECK exactly one Owner reference is active
 ```
 
 Routing target:
 
 ```text
 User.username ───────┐
-                     ├─ globally unique owner namespace ─> /{owner}/{repository}
+                     ├─ one global Owner namespace → /{owner}/{repository}
 Organization.slug ───┘
 ```
 
 Authority target:
 
 ```text
-Personal owner == Actor
+Personal Owner == Actor
 → Repository admin authority
 
 Organization owns Repository
@@ -104,87 +117,98 @@ Public visibility
 → read baseline
 ```
 
-Application authorization query:
+Application authority query:
 
 ```text
 (actorId, repositoryId)
 ```
 
-not:
+The caller does not supply ownership as an assumption.
+
+## Canonical Web projection
 
 ```text
-(actorId, organizationId, repositoryId)
+apps/web/src/app/(repository)/[ownerSlug]/[repositorySlug]/
+├─ layout.tsx
+├─ page.tsx
+├─ pages/
+└─ activity/
 ```
 
-because the caller must not supply ownership as an assumption.
+Route Group names do not appear in the Product URL.
 
-## Alternatives and counterfactuals
+The Repository layout owns one shared Repository shell:
 
-### Keep Organization-only ownership
+```text
+Owner / Repository      Visibility
+----------------------------------
+Overview   Pages   Activity
+----------------------------------
+active child content
+```
 
-Rejected. It confuses a common enterprise path with a first-principles Repository constraint, prevents personal ownership, forces Organization into authorization and URL contracts, and lets persistence define Product truth.
+`/app` remains authenticated Repository discovery/dashboard only.
 
-### Make `organization_id` nullable and add `user_id` ad hoc
+A stable-ID compatibility namespace may perform access-aware resolution and redirect to canonical URL. It cannot own a second Repository UI.
 
-Rejected as insufficient by itself. Without an explicit owner invariant, global owner namespace, authorization correction, route correction, and tests, it only creates nullable ambiguity.
+## Rejected alternatives
 
-### Generic `owner_type + owner_id`
+### Organization-only ownership
 
-Rejected for the current model because it weakens FK integrity while only two accepted concrete owner types exist.
+Rejected because it confuses one enterprise ownership mode with a Repository constraint and forces Organization into unrelated URL/authorization semantics.
 
-### Keep `/app/{owner}/{repository}` canonical
+### Nullable Organization plus ad hoc User field without an Owner contract
 
-Rejected. `/app` is an authenticated delivery/dashboard concept rather than Repository identity. The owner/repository relation is sufficient and matches the mature benchmark mental model.
+Rejected because it creates nullable ambiguity without a typed ownership invariant, namespace contract, authorization correction, or route correction.
+
+### Generic polymorphic Owner persistence
+
+Rejected while two concrete Owner types provide stronger relational integrity.
+
+### Authenticated dashboard prefix as Repository identity
+
+Rejected because dashboard delivery state is not part of Owner/Repository product identity and would incorrectly constrain public Repository reads.
 
 ## Consequences
 
 Benefits:
 
-- Personal and organizational collaboration become symmetrical around Repository.
-- URL/IA reflects Product ontology rather than Next.js implementation.
-- Authorization becomes owner-neutral and easier to extend.
-- False `organization` visibility semantics are removed.
+- personal and organizational collaboration are symmetrical around Repository;
+- URL/IA reflects Owner/Repository product ontology;
+- authorization no longer requires callers to know Owner type;
+- inactive visibility semantics are removed; and
+- Repository presentation can follow the same interaction grammar across ownership modes.
 
 Costs:
 
-- Database desired state and migration history require ownership conversion.
-- Generated database types and adapters change.
-- Repository route tree and tests move.
-- Sign-up/profile requires a personal owner namespace identifier.
+- database desired state and replay history require ownership conversion;
+- generated database types and adapters change;
+- route trees and browser tests move; and
+- product identity requires a personal Owner namespace identifier.
 
 Risks:
 
-- Namespace migration can collide if User/Organization slugs are not globally coordinated.
-- Route moves can break hard navigation if Parallel Route defaults are not preserved.
-- Authorization can regress if personal owner authority and Organization governance are not tested independently in Domain and RLS.
+- User/Organization namespace migration can collide if not globally coordinated;
+- canonical child routes can fail hard navigation if they cannot independently resolve the Repository target;
+- personal Owner and Organization-governance authority can drift if not tested independently in Domain/RLS; and
+- public Repository delivery can regress if it accidentally inherits an authenticated-only layout.
 
 ## Falsification conditions
 
 Reopen if:
 
-- demonstrated requirements need a third Owner kind with lifecycle semantics that typed XOR no longer models safely;
-- globally unique User/Organization owner namespace proves unacceptable for the product;
+- a demonstrated third Owner kind cannot be represented safely by typed ownership;
+- globally unique User/Organization Owner namespace is unacceptable for the target product;
 - personal and Organization-owned Repositories require contradictory collaboration semantics; or
-- `/{owner}/{repository}` cannot coexist with required top-level product routes without an explicit routing strategy.
+- `/{owner}/{repository}` cannot coexist with required top-level Product routes under explicit namespace reservation.
 
 ## Minimum discriminating test
 
-1. Create a User-owned Repository and an Organization-owned Repository with the same Repository slug under different owner namespaces.
-2. Prove User username/Organization slug collisions are rejected.
-3. Prove personal owner gets Repository admin without a Grant.
-4. Prove Organization admin/owner gets admin only on that Organization's Repository; ordinary member does not.
-5. Click a Repository card from `/app` and land on `/{owner}/{repository}`.
-6. Verify legacy stable-ID route redirects to that same canonical URL.
-7. Verify Page create/update/activity continues to work through the canonical owner-neutral Repository route.
-
-## Follow-up contract changes
-
-- `docs/PRODUCT.md`
-- `docs/ONTOLOGY.md`
-- `docs/domains/repository-collaboration.md`
-- `docs/domains/access-authority.md`
-- `docs/architecture/README.md`
-- `docs/architecture/ADR_INDEX.md`
-- Domain/Application ownership and authority types/ports/tests
-- Supabase declarative schemas, RLS, routing functions, seed, migration, generated types, pgTAP tests
-- Web Repository route tree, route builders, auth-routing ownership cleanup, Repository creation surface, Playwright contracts
+1. User-owned and Organization-owned Repositories can use the same Repository slug under different Owner namespaces.
+2. User username and Organization slug collisions are rejected.
+3. Personal Owner gets Repository admin without a Grant.
+4. Organization admin/owner gets admin only on that Organization-owned Repository; ordinary member does not.
+5. Repository card from `/app` lands on `/{owner}/{repository}`.
+6. Stable-ID compatibility route redirects to that canonical URL.
+7. Overview, Pages, Page detail, and Activity support direct hard navigation through the same Repository shell.
+8. Page create/update/activity continues through the owner-neutral route and authorization boundary.
