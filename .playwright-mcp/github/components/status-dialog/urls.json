@@ -1,0 +1,3 @@
+[
+  {"url":"https://github.com/dashboard","canonicalUrl":null,"title":"Edit status","resourceType":"temporary status-edit UI state","sourcePage":"user menu","triggerAction":"select Set status","viewport":"Desktop, Laptop, Tablet, Mobile","uiState":"dialog open","screenshotPath":"github/components/status-dialog/screenshots/set-status-desktop-dialog.png"}
+]

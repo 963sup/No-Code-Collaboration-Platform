@@ -1,0 +1,3 @@
+[
+  {"url":"https://github.com/account/organizations/new","canonicalUrl":"https://github.com/organizations/plan","title":"Choose a plan","resourceType":"organization creation command entry","sourcePage":"account switcher and create menu","triggerAction":"select Create organization","viewport":"Desktop, Laptop, Tablet, Mobile","uiState":"redirect to plan selection","screenshotPath":"github/organizations/plan/screenshots/new-organization-desktop-default.png"}
+]

@@ -4,9 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="413ecc44-3468-44d6-b3e9-661f13d2c6ff" name="Changes" comment="update codex desktop bootstrap">
-      <change beforePath="$PROJECT_DIR$/apps/web/next.config.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/web/next.config.ts" afterDir="false" />
-    </list>
+    <list default="true" id="413ecc44-3468-44d6-b3e9-661f13d2c6ff" name="Changes" comment="update codex desktop bootstrap" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />

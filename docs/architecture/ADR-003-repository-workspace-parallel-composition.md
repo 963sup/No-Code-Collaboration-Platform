@@ -16,7 +16,7 @@ Repository semantics never required permanent navigation, context, workspace, an
 
 ## Why it was superseded
 
-The corrected Repository interaction model is one Owner/Repository header, primary navigation, and one active content surface. It is derived from the mature GitHub owner/Repository mental model and the current Product Contract:
+The immediate replacement interaction model was one Owner/Repository header, primary navigation, and one active content surface. It removed the unproven four persistent panes:
 
 ```text
 Owner / Repository      Visibility
@@ -34,11 +34,11 @@ This model has stronger alignment with the actual user relationship:
 - Activity remains a Repository-scoped Projection rather than a required side pane; and
 - public Repository reads must not be trapped inside an authenticated dashboard layout.
 
-The previous multi-surface composition added presentation complexity without proving a distinct collaboration requirement.
+The previous multi-surface composition added presentation complexity without proving a distinct collaboration requirement. ADR-011 later refined the blanket single-surface constraint: admitted routes may compose narrowly scoped supporting regions when independent recovery, loading, responsive behavior, or canonical soft-navigation behavior is proven. ADR-003 remains superseded and does not authorize those slots itself.
 
 ## Current architecture
 
-Current canonical route identity is owned by ADR-010 and `docs/architecture/README.md`:
+Current canonical route identity is owned by ADR-010; current route-specific supporting composition is owned by ADR-011 and `docs/architecture/README.md`:
 
 ```text
 /{ownerSlug}/{repositorySlug}

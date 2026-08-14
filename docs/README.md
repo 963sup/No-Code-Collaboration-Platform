@@ -10,6 +10,7 @@ This directory separates current Product/Domain/Architecture truth from historic
 - [`history/CLOSED_GAPS.md`](./history/CLOSED_GAPS.md): historical closure evidence for Closed or Superseded gaps; never current implementation truth by itself.
 - [`architecture/README.md`](./architecture/README.md): current target architecture, ownership/dependency boundaries, owner-neutral authorization, and canonical `/{owner}/{repository}` Web architecture.
 - [`architecture/ADR_INDEX.md`](./architecture/ADR_INDEX.md): decision-history router showing Accepted, Historical, and Superseded architecture decisions.
+- [`benchmarks/GITHUB_PUBLIC_URL_UI_UX.md`](./benchmarks/GITHUB_PUBLIC_URL_UI_UX.md): dated external evidence for the GitHub public URL/IA/UI/UX benchmark; not Product or implementation truth.
 - [`domains/`](./domains/README.md): candidate and accepted business problem contracts. A document here does not create a package, service, or bounded context by itself.
 - [`PLUGIN_DEVELOPMENT_WORKFLOW.md`](./PLUGIN_DEVELOPMENT_WORKFLOW.md): development-agent orchestration contract for Linear, GitHub, Notion, Context7, Codex Security, Vercel, and Supabase. It routes tools by truth class without creating another source of truth.
 - [`operations/RUNBOOK.md`](./operations/RUNBOOK.md): production release, recovery, incident, data-protection, environment-provisioning, and validation procedures.
@@ -78,7 +79,7 @@ Canonical Repository URL = /{ownerSlug}/{repositorySlug}
 /app = authenticated Repository discovery/dashboard
 ```
 
-Canonical Repository presentation is one Owner/Repository header, primary navigation, and one active content surface.
+Canonical Repository presentation is one Owner/Repository header, primary navigation, one active child resource surface, and only proven route-specific supporting regions. See ADR-011 for responsive Parallel/Intercepting Route composition.
 
 A stable-ID compatibility route may resolve and redirect to canonical URL. An Organization-only Repository UI tree is not a valid current or compatibility representation.
 

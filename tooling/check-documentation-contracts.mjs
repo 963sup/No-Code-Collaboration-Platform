@@ -95,7 +95,7 @@ for (const [pattern, message] of [
     'corrected Repository owner relationship is missing'
   ],
   [
-    /Prefer the mature GitHub owner\/Repository URL/i,
+    /After semantic admission, preserve GitHub's mature public owner\/Repository URL/i,
     'owner/Repository URL benchmark rule is missing'
   ],
   [
@@ -103,7 +103,7 @@ for (const [pattern, message] of [
     'ontology exclusion boundary is missing'
   ],
   [
-    /Canonical Repository presentation is owner\/Repository header \+ primary navigation \+ one active content surface/i,
+    /Canonical Repository presentation is owner\/Repository header \+ primary navigation \+ one active child resource surface[\s\S]*supporting/i,
     'canonical Repository interaction model is missing'
   ]
 ]) {
@@ -171,7 +171,7 @@ requireMatch(
 for (const [pattern, message] of [
   [/\/\{ownerSlug\}\/\{repositorySlug\}/, 'canonical Owner/Repository semantic route is missing'],
   [
-    /one Owner\/Repository header, primary navigation, and one active (?:child )?content surface/i,
+    /one Owner\/Repository header, primary navigation, one active child resource surface[\s\S]*route-specific supporting regions/i,
     'canonical Repository presentation contract is missing'
   ],
   [
@@ -196,6 +196,10 @@ for (const [pattern, message] of [
   [
     /ADR-010[\s\S]*Accepted current ownership\/routing identity/i,
     'ADR-010 current ownership/routing status is missing'
+  ],
+  [
+    /ADR-011[\s\S]*Accepted[\s\S]*route-specific `@sidebar`, `@activity`, and `@modal` composition/i,
+    'ADR-011 current supporting-composition status is missing'
   ]
 ]) {
   requireMatch('docs/architecture/ADR_INDEX.md', architectureDecisionIndex, pattern, message);
@@ -204,12 +208,16 @@ for (const [pattern, message] of [
 for (const [pattern, message] of [
   [/\*\*Superseded\.\*\*/m, 'ADR-003 is not explicitly superseded'],
   [
-    /one Owner\/Repository header, primary navigation, and one active content surface/i,
-    'ADR-003 replacement interaction model is missing'
+    /immediate replacement interaction model[\s\S]*one active content surface[\s\S]*four persistent panes/i,
+    'ADR-003 immediate replacement and rejected persistent panes are missing'
   ],
   [
     /current canonical route identity is owned by ADR-010/i,
     'ADR-003 does not defer current route identity to ADR-010'
+  ],
+  [
+    /current route-specific supporting composition is owned by ADR-011/i,
+    'ADR-003 does not defer current supporting composition to ADR-011'
   ]
 ]) {
   requireMatch(

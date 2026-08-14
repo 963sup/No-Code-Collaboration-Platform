@@ -39,8 +39,8 @@ GitHub supplies mature collaboration, ownership, organization, authorization, UR
 27. Accepted Page writes enter PostgreSQL through command-specific `SECURITY INVOKER` RPCs; raw authenticated table writes are not an alternate Page command API.
 28. Repository authority resolution is owner-neutral: callers supply stable Actor + Repository identity; authority resolves personal ownership, Organization governance, direct Grant, visibility, and future constraints.
 29. Current Repository visibility is `private | public`; no other visibility state is accepted without explicit effective-access semantics.
-30. Current canonical Repository presentation is one Owner/Repository header, primary navigation, and one active child content surface.
-31. Route Groups and framework layouts are presentation/access composition only. They do not create Product URL or Domain boundaries.
+30. Current canonical Repository presentation is one Owner/Repository header, primary navigation, one active child resource surface, and only those route-specific supporting regions whose independent recovery, loading, or responsive behavior is proven.
+31. Route Groups, Parallel Routes, Intercepting Routes, and framework layouts are presentation/access composition only. They do not create Product URL, Container, Artifact, or Domain boundaries.
 32. Canonical Repository reads cannot inherit an authenticated-only wrapper because public Repository visibility is an accepted anonymous read baseline.
 33. An obsolete Organization-only Repository UI tree may not coexist with canonical Owner routing.
 
@@ -140,7 +140,7 @@ Product URL:
 /{ownerSlug}/{repositorySlug}/activity
 ```
 
-Next.js delivery projection:
+Current executable Next.js delivery projection:
 
 ```text
 apps/web/src/app/
@@ -174,12 +174,14 @@ Owner / Repository      Visibility
 ----------------------------------
 Overview   Pages   Activity
 ----------------------------------
-active content
+route-specific support | active child resource | route-specific support
 ```
 
-`Context` remains a presentation concept but does not require a permanent pane. Activity is a Repository-scoped projection and may be a normal navigation surface.
+Supporting regions are absent when the active route does not prove a separate navigation, metadata, loading, recovery, or responsive responsibility. They are not persistent workspace panes.
 
-Framework composition mechanisms do not establish new Product responsibilities merely because the framework supports them.
+`Context` remains a presentation concept but does not require a permanent pane. Activity is a Repository-scoped projection with a canonical route; a privacy-safe Overview summary may be composed independently only under ADR-011's removal test.
+
+ADR-011 defines the target `@sidebar`, `@activity`, and `@modal` composition for the future accepted Issue slice. The executable tree above does not claim those routes already exist. Framework composition mechanisms do not establish new Product responsibilities merely because the framework supports them.
 
 ## Compatibility routing
 
@@ -317,9 +319,10 @@ Current Architecture truth is this README plus accepted current Domain/Product c
 
 Read `ADR_INDEX.md` before individual ADRs.
 
-- ADR-003 is superseded; its former multi-surface framework composition is no longer current Repository architecture.
+- ADR-003 is superseded; its former four persistent workspace panes are not current Repository architecture.
 - ADR-008 is historical evidence of the intermediate Organization-only semantic-route decision.
 - ADR-009 remains current for controlled Page write boundaries.
 - ADR-010 owns current Repository ownership and canonical Owner/Repository route identity.
+- ADR-011 owns the admitted GitHub public presentation baseline and route-specific responsive Parallel/Intercepting Route composition.
 
 No final bounded-context map is declared. Domain modules require coherent business ownership/lifecycle evidence rather than symmetry with ontology labels.

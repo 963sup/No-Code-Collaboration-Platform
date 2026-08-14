@@ -571,9 +571,9 @@ Concrete rules:
 - Keep Role/Capability meaning under one Domain owner; SQL and UI project it.
 - Keep Context out of authorization inputs unless the selected value resolves a persisted fact that would be used independently of selection.
 - Keep historical Evidence semantics distinct from presentation Projections.
-- Prefer the mature GitHub owner/Repository URL and navigation mental model when the same target relationship exists.
+- After semantic admission, preserve GitHub's mature public owner/Repository URL, information architecture, navigation, responsive composition, and interaction behavior unless an explicit target Product reason and discriminating test justify a deviation.
 - `/app` is a discovery/dashboard surface; it is not part of Repository identity.
-- Canonical Repository presentation is owner/Repository header + primary navigation + one active content surface.
+- Canonical Repository presentation is owner/Repository header + primary navigation + one active child resource surface. Route-specific supporting navigation, metadata, activity, or modal composition may render beside that surface without becoming a Container, Artifact, authority source, or URL identity.
 - A green browser suite is evidence only for journeys it explicitly covers.
 
 Minimum discriminating tests:

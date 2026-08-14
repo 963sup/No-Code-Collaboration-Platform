@@ -15,10 +15,12 @@
 - The canonical Repository workspace is `/{ownerSlug}/{repositorySlug}`. The Owner segment resolves either a User or Organization Owner namespace and never implies Organization ownership.
 - `/app` is an authenticated discovery/dashboard surface. It is not part of Repository identity.
 - Canonical Repository reads must not inherit an authenticated-only wrapper because public Repository visibility is an accepted anonymous read baseline. Authenticated mutations establish Actor identity and independently evaluate Capability.
-- Canonical Repository presentation is one Owner/Repository header, primary navigation, and one active content surface. Framework composition features do not create permanent product panes by default.
+- For GitHub-derived surfaces that pass Product admission, public GitHub URL/IA, navigation, responsive composition, and interaction are the constitutional presentation baseline; deviations require an explicit Product reason and discriminating test.
+- Canonical Repository presentation is one Owner/Repository header, primary navigation, one active child resource surface, and only proven route-specific supporting regions. Framework composition features never create Product boundaries, permanent panes, or URL identity.
+- Parallel Route slots require `default.tsx` plus explicit unmatched soft-navigation behavior. Intercepting Routes preserve the full-page resource's canonical URL and authorization result.
 - Current accepted Repository child surfaces are `/pages`, `/pages/[pageId]`, and `/activity`.
 - `Context` may change navigation/filtering/presentation but never persisted authorization facts.
-- Activity is a Repository-scoped projection and may be a normal navigation surface rather than a permanently visible region.
+- Activity is a Repository-scoped projection with a canonical navigation surface. An independently loaded Overview summary is allowed only when its privacy-safe projection and removal test are proven.
 - `/app/repositories/[repositoryId]/**` is compatibility-only. It must perform access-aware resolution and redirect to the canonical Owner/Repository URL; it must never own a second Repository UI/business-flow tree.
 - Do not keep an Organization-only Repository route tree as a compatibility UI. It encodes a false ownership invariant and must not coexist with canonical Owner routing.
 - Soft navigation and direct hard navigation to the same canonical URL must resolve the same stable Repository identity and authorization result.
@@ -48,10 +50,10 @@ Owner / Repository      Visibility
 ----------------------------------
 Overview   Pages   Activity
 ----------------------------------
-active child content
+route-specific support | active child resource | route-specific support
 ```
 
-This is one Repository presentation, not a second collaboration hierarchy.
+Supporting regions are absent unless the active route proves independent navigation, metadata, loading, recovery, or responsive behavior. This is one Repository presentation, not a second collaboration hierarchy.
 
 ## Placement test
 

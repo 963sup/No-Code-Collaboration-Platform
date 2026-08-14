@@ -1,0 +1,24 @@
+[
+  {
+    "url": "https://github.com/",
+    "canonicalUrl": "https://github.com/dashboard",
+    "title": "GitHub",
+    "resourceType": "authenticated-dashboard",
+    "sourcePage": "direct authenticated entry",
+    "triggerAction": "open GitHub while signed in",
+    "viewport": "Desktop 1440x900",
+    "uiState": "default personal context",
+    "screenshotPath": "github/dashboard/screenshots/dashboard-desktop-default.png"
+  },
+  {
+    "url": "https://github.com/dashboard",
+    "canonicalUrl": "https://github.com/dashboard",
+    "title": "Dashboard",
+    "resourceType": "authenticated-dashboard",
+    "sourcePage": "global navigation menu",
+    "triggerAction": "select Home",
+    "viewport": "Desktop, Laptop, Tablet, Mobile",
+    "uiState": "personal context",
+    "screenshotPath": "github/dashboard/screenshots/dashboard-mobile-default.png"
+  }
+]

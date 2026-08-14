@@ -33,7 +33,7 @@ For every GitHub concept considered:
 2. verify that the problem still exists when Repository is a no-code collaboration Container;
 3. identify its identity, owner, lifecycle, relationships, authorization role, and user-visible interaction;
 4. reject the candidate when its usefulness depends on software-development-specific mechanics rather than the collaboration problem itself;
-5. prefer GitHub's mature owner/Repository naming, URL hierarchy, navigation, and access mental model when the underlying relationship is the same; and
+5. treat GitHub's public URL hierarchy, information architecture, navigation, responsive composition, and interaction behavior as the constitutional presentation baseline after the concept passes semantic admission; record an explicit Product reason and discriminating test for deviations; and
 6. require a minimum discriminating test before persistence or architecture is added.
 
 The target does not preserve a benchmark feature merely by renaming it. If the feature has no independent no-code collaboration problem, it is out of scope.
@@ -174,7 +174,7 @@ The first path segment resolves either a User or Organization Owner namespace. I
 
 `/app` is an authenticated discovery/dashboard surface. It is not part of Repository identity.
 
-Repository presentation follows one owner/Repository header, primary navigation, and one active content surface. Framework layout mechanisms do not create additional product boundaries.
+Repository presentation follows one owner/Repository header and primary navigation. An active child surface may compose independently recoverable, route-specific supporting regions when public GitHub evidence and target behavior prove their necessity. Framework layout mechanisms never create additional Product boundaries or URL identities.
 
 ## Current collaboration surface
 

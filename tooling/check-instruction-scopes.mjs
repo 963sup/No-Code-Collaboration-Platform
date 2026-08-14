@@ -37,8 +37,8 @@ const invariantContracts = {
       'stable-ID Repository redirect-only compatibility boundary is missing'
     ],
     [
-      /one Owner\/Repository header, primary navigation, and one active content surface/i,
-      'canonical single-content Repository presentation is missing'
+      /one Owner\/Repository header, primary navigation, one active child resource surface, and only proven route-specific supporting regions/i,
+      'canonical Repository primary/supporting presentation is missing'
     ],
     [
       /Canonical Repository reads must not inherit an authenticated-only wrapper[\s\S]*public Repository visibility/is,
@@ -56,12 +56,12 @@ const invariantContracts = {
       'canonical Repository route-group projection is missing'
     ],
     [
-      /one owner\/Repository header, horizontal primary navigation, and one active content surface/i,
-      'canonical Repository presentation invariant is missing'
+      /one owner\/Repository header, horizontal primary navigation, and one active child resource surface[\s\S]*Route-specific supporting regions/i,
+      'canonical Repository primary/supporting presentation invariant is missing'
     ],
     [
-      /Do not require persistent navigation\/context\/activity panes merely because Parallel Routes are available/i,
-      'framework composition must not become a persistent-pane Product invariant'
+      /Route-specific supporting regions may use `@sidebar`, `@activity`, or `@modal` only when they have independent data\/navigation\/loading or canonical soft-navigation behavior/i,
+      'Parallel Route necessity test is missing'
     ],
     [
       /only accepted Repository compatibility namespace is `\/app\/repositories\/\[repositoryId\]\/\*\*`[\s\S]*access-aware[\s\S]*redirect-only/is,
