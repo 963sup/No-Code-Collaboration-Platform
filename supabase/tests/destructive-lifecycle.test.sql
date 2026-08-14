@@ -20,7 +20,7 @@ values (
   '00000000-0000-0000-0000-000000000201'
 );
 
-insert into public.repositories (id, organization_id, slug, name, created_by)
+insert into public.repositories (id, owner_organization_id, slug, name, created_by)
 values (
   '20000000-0000-0000-0000-000000000201',
   '10000000-0000-0000-0000-000000000201',
