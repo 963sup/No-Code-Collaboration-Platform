@@ -1,5 +1,10 @@
-import { ListRepositoryActivity } from '@no-code-collaboration-platform/application';
+import {
+  CanReadRepositoryActivity,
+  GetCurrentIdentity,
+  ListRepositoryActivity
+} from '@no-code-collaboration-platform/application';
 import { Card, CardContent, CardHeader, CardTitle } from '@no-code-collaboration-platform/ui';
+import { notFound } from 'next/navigation';
 
 import { createRequestServices } from '@/composition/create-request-services';
 
@@ -12,8 +17,20 @@ interface RepositoryActivityProps {
 export default async function RepositoryActivity({ params }: RepositoryActivityProps) {
   const { ownerSlug, repositorySlug } = await params;
   const route = await requireAccessibleRepositoryRoute(ownerSlug, repositorySlug);
-  const { activityEventReader } = await createRequestServices();
-  const events = await new ListRepositoryActivity(activityEventReader).execute({
+  const services = await createRequestServices();
+  const identity = await new GetCurrentIdentity(services.identityProvider).execute();
+
+  if (!identity) notFound();
+
+  const canReadActivity = await new CanReadRepositoryActivity(
+    services.repositoryAccessReader
+  ).execute({
+    actorId: identity.id,
+    repositoryId: route.repository.id
+  });
+  if (!canReadActivity) notFound();
+
+  const events = await new ListRepositoryActivity(services.activityEventReader).execute({
     limit: 50,
     repositoryId: route.repository.id
   });
