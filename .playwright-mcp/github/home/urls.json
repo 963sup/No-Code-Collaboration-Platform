@@ -1,3 +1,13 @@
 [
-  {"url":"https://github.com/","canonicalUrl":"https://github.com/","title":"GitHub: Let’s build from here","resourceType":"public landing page","sourcePage":"direct entry","triggerAction":"direct open","viewport":"Desktop, Laptop, Tablet, Mobile","uiState":"anonymous default","screenshotPath":"github/home/screenshots/home-desktop-default.png"}
+  {
+    "url": "https://github.com/",
+    "canonicalUrl": "https://github.com/",
+    "title": "GitHub: Let’s build from here",
+    "resourceType": "public landing page",
+    "sourcePage": "direct entry",
+    "triggerAction": "direct open",
+    "viewport": "Desktop, Laptop, Tablet, Mobile",
+    "uiState": "anonymous default",
+    "screenshotPath": "github/home/screenshots/home-desktop-default.png"
+  }
 ]

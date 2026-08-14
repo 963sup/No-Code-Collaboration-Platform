@@ -1,1 +1,13 @@
-[{"url":"https://github.com/projects","canonicalUrl":"https://github.com/projects","title":"Your projects","resourceType":"project discovery","sourcePage":"global menu","triggerAction":"select Projects","viewport":"Desktop, Laptop, Tablet, Mobile","uiState":"default","screenshotPath":"github/projects/screenshots/projects-desktop-default.png"}]
+[
+  {
+    "url": "https://github.com/projects",
+    "canonicalUrl": "https://github.com/projects",
+    "title": "Your projects",
+    "resourceType": "project discovery",
+    "sourcePage": "global menu",
+    "triggerAction": "select Projects",
+    "viewport": "Desktop, Laptop, Tablet, Mobile",
+    "uiState": "default",
+    "screenshotPath": "github/projects/screenshots/projects-desktop-default.png"
+  }
+]

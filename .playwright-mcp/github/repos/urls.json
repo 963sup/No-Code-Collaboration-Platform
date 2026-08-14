@@ -1,1 +1,13 @@
-[{"url":"https://github.com/repos","canonicalUrl":"https://github.com/repos","title":"Your repositories","resourceType":"repository discovery","sourcePage":"global menu","triggerAction":"select All repositories","viewport":"Desktop, Laptop, Tablet, Mobile","uiState":"default","screenshotPath":"github/repos/screenshots/all-repositories-desktop-default.png"}]
+[
+  {
+    "url": "https://github.com/repos",
+    "canonicalUrl": "https://github.com/repos",
+    "title": "Your repositories",
+    "resourceType": "repository discovery",
+    "sourcePage": "global menu",
+    "triggerAction": "select All repositories",
+    "viewport": "Desktop, Laptop, Tablet, Mobile",
+    "uiState": "default",
+    "screenshotPath": "github/repos/screenshots/all-repositories-desktop-default.png"
+  }
+]

@@ -1,3 +1,13 @@
 [
-  {"url":"https://github.com/369sup/support","canonicalUrl":"https://github.com/369sup/support","title":"369sup/support","resourceType":"Repository no-code collaboration container benchmark","sourcePage":"dashboard Top repositories","triggerAction":"select repository","viewport":"Desktop, Laptop, Tablet, Mobile","uiState":"public overview","screenshotPath":"github/repositories/369sup/support/screenshots/repository-overview-desktop-public.png"}
+  {
+    "url": "https://github.com/369sup/support",
+    "canonicalUrl": "https://github.com/369sup/support",
+    "title": "369sup/support",
+    "resourceType": "Repository no-code collaboration container benchmark",
+    "sourcePage": "dashboard Top repositories",
+    "triggerAction": "select repository",
+    "viewport": "Desktop, Laptop, Tablet, Mobile",
+    "uiState": "public overview",
+    "screenshotPath": "github/repositories/369sup/support/screenshots/repository-overview-desktop-public.png"
+  }
 ]

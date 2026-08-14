@@ -1,1 +1,13 @@
-[{"url":"https://github.com/issues/assigned","canonicalUrl":"https://github.com/issues/assigned","title":"Issues assigned to you","resourceType":"cross-repository assigned issue inbox","sourcePage":"global menu All issues redirect","triggerAction":"open /issues","viewport":"Desktop, Laptop, Tablet, Mobile","uiState":"default","screenshotPath":"github/issues/assigned/screenshots/all-issues-desktop-default.png"}]
+[
+  {
+    "url": "https://github.com/issues/assigned",
+    "canonicalUrl": "https://github.com/issues/assigned",
+    "title": "Issues assigned to you",
+    "resourceType": "cross-repository assigned issue inbox",
+    "sourcePage": "global menu All issues redirect",
+    "triggerAction": "open /issues",
+    "viewport": "Desktop, Laptop, Tablet, Mobile",
+    "uiState": "default",
+    "screenshotPath": "github/issues/assigned/screenshots/all-issues-desktop-default.png"
+  }
+]

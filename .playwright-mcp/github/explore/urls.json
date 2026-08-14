@@ -1,1 +1,13 @@
-[{"url":"https://github.com/explore","canonicalUrl":"https://github.com/explore","title":"Explore GitHub","resourceType":"public discovery","sourcePage":"global menu","triggerAction":"select Explore","viewport":"Desktop, Laptop, Tablet, Mobile","uiState":"default","screenshotPath":"github/explore/screenshots/explore-desktop-default.png"}]
+[
+  {
+    "url": "https://github.com/explore",
+    "canonicalUrl": "https://github.com/explore",
+    "title": "Explore GitHub",
+    "resourceType": "public discovery",
+    "sourcePage": "global menu",
+    "triggerAction": "select Explore",
+    "viewport": "Desktop, Laptop, Tablet, Mobile",
+    "uiState": "default",
+    "screenshotPath": "github/explore/screenshots/explore-desktop-default.png"
+  }
+]

@@ -1,14 +1,134 @@
 [
-  {"url":"https://github.com/369sup","canonicalUrl":"https://github.com/369sup","title":"Profile","resourceType":"user profile","sourcePage":"user menu","triggerAction":"select Profile","viewport":"all","uiState":"menu open","screenshotPath":"github/components/user-menu/screenshots/user-menu-desktop-open.png"},
-  {"url":"https://github.com/369sup?tab=repositories","canonicalUrl":"https://github.com/369sup?tab=repositories","title":"Repositories","resourceType":"user repository projection","sourcePage":"user menu","triggerAction":"select Repositories","viewport":"all","uiState":"menu open","screenshotPath":"github/components/user-menu/screenshots/user-menu-desktop-open.png"},
-  {"url":"https://github.com/369sup?tab=stars","canonicalUrl":null,"title":"Stars","resourceType":"benchmark-only preference projection","sourcePage":"user menu","triggerAction":"observed only","viewport":"all","uiState":"menu open","screenshotPath":"github/components/user-menu/screenshots/user-menu-desktop-open.png"},
-  {"url":"http://gist.github.com/mine","canonicalUrl":null,"title":"Gists","resourceType":"excluded code-domain navigation","sourcePage":"user menu","triggerAction":"observed only","viewport":"all","uiState":"menu open","screenshotPath":"github/components/user-menu/screenshots/user-menu-desktop-open.png"},
-  {"url":"https://github.com/settings/organizations","canonicalUrl":"https://github.com/settings/organizations","title":"Organizations","resourceType":"organization membership settings","sourcePage":"user menu","triggerAction":"select Organizations","viewport":"all","uiState":"menu open","screenshotPath":"github/components/user-menu/screenshots/user-menu-desktop-open.png"},
-  {"url":"https://github.com/settings/enterprises","canonicalUrl":"https://github.com/settings/enterprises","title":"Enterprises","resourceType":"enterprise membership settings","sourcePage":"user menu","triggerAction":"select Enterprises","viewport":"all","uiState":"menu open","screenshotPath":"github/components/user-menu/screenshots/user-menu-desktop-open.png"},
-  {"url":"https://github.com/sponsors/accounts","canonicalUrl":null,"title":"Sponsors","resourceType":"out-of-scope commercial surface","sourcePage":"user menu","triggerAction":"observed only","viewport":"all","uiState":"menu open","screenshotPath":"github/components/user-menu/screenshots/user-menu-desktop-open.png"},
-  {"url":"https://github.com/settings/profile","canonicalUrl":"https://github.com/settings/profile","title":"Settings","resourceType":"personal account settings","sourcePage":"user menu","triggerAction":"select Settings","viewport":"all","uiState":"menu open","screenshotPath":"github/components/user-menu/screenshots/user-menu-desktop-open.png"},
-  {"url":"https://github.com/settings/copilot","canonicalUrl":null,"title":"Copilot settings","resourceType":"excluded code-domain settings","sourcePage":"user menu","triggerAction":"observed only","viewport":"all","uiState":"menu open","screenshotPath":"github/components/user-menu/screenshots/user-menu-desktop-open.png"},
-  {"url":"https://github.com/settings/appearance","canonicalUrl":"https://github.com/settings/appearance","title":"Appearance","resourceType":"presentation preference settings","sourcePage":"user menu","triggerAction":"select Appearance","viewport":"all","uiState":"menu open","screenshotPath":"github/components/user-menu/screenshots/user-menu-desktop-open.png"},
-  {"url":"https://github.com/settings/accessibility","canonicalUrl":"https://github.com/settings/accessibility","title":"Accessibility","resourceType":"accessibility preference settings","sourcePage":"user menu","triggerAction":"select Accessibility","viewport":"all","uiState":"menu open","screenshotPath":"github/components/user-menu/screenshots/user-menu-desktop-open.png"},
-  {"url":"https://github.com/logout","canonicalUrl":null,"title":"Sign out","resourceType":"session command","sourcePage":"user menu","triggerAction":"not executed","viewport":"all","uiState":"menu open","screenshotPath":"github/components/user-menu/screenshots/user-menu-desktop-open.png"}
+  {
+    "url": "https://github.com/369sup",
+    "canonicalUrl": "https://github.com/369sup",
+    "title": "Profile",
+    "resourceType": "user profile",
+    "sourcePage": "user menu",
+    "triggerAction": "select Profile",
+    "viewport": "all",
+    "uiState": "menu open",
+    "screenshotPath": "github/components/user-menu/screenshots/user-menu-desktop-open.png"
+  },
+  {
+    "url": "https://github.com/369sup?tab=repositories",
+    "canonicalUrl": "https://github.com/369sup?tab=repositories",
+    "title": "Repositories",
+    "resourceType": "user repository projection",
+    "sourcePage": "user menu",
+    "triggerAction": "select Repositories",
+    "viewport": "all",
+    "uiState": "menu open",
+    "screenshotPath": "github/components/user-menu/screenshots/user-menu-desktop-open.png"
+  },
+  {
+    "url": "https://github.com/369sup?tab=stars",
+    "canonicalUrl": null,
+    "title": "Stars",
+    "resourceType": "benchmark-only preference projection",
+    "sourcePage": "user menu",
+    "triggerAction": "observed only",
+    "viewport": "all",
+    "uiState": "menu open",
+    "screenshotPath": "github/components/user-menu/screenshots/user-menu-desktop-open.png"
+  },
+  {
+    "url": "http://gist.github.com/mine",
+    "canonicalUrl": null,
+    "title": "Gists",
+    "resourceType": "excluded code-domain navigation",
+    "sourcePage": "user menu",
+    "triggerAction": "observed only",
+    "viewport": "all",
+    "uiState": "menu open",
+    "screenshotPath": "github/components/user-menu/screenshots/user-menu-desktop-open.png"
+  },
+  {
+    "url": "https://github.com/settings/organizations",
+    "canonicalUrl": "https://github.com/settings/organizations",
+    "title": "Organizations",
+    "resourceType": "organization membership settings",
+    "sourcePage": "user menu",
+    "triggerAction": "select Organizations",
+    "viewport": "all",
+    "uiState": "menu open",
+    "screenshotPath": "github/components/user-menu/screenshots/user-menu-desktop-open.png"
+  },
+  {
+    "url": "https://github.com/settings/enterprises",
+    "canonicalUrl": "https://github.com/settings/enterprises",
+    "title": "Enterprises",
+    "resourceType": "enterprise membership settings",
+    "sourcePage": "user menu",
+    "triggerAction": "select Enterprises",
+    "viewport": "all",
+    "uiState": "menu open",
+    "screenshotPath": "github/components/user-menu/screenshots/user-menu-desktop-open.png"
+  },
+  {
+    "url": "https://github.com/sponsors/accounts",
+    "canonicalUrl": null,
+    "title": "Sponsors",
+    "resourceType": "out-of-scope commercial surface",
+    "sourcePage": "user menu",
+    "triggerAction": "observed only",
+    "viewport": "all",
+    "uiState": "menu open",
+    "screenshotPath": "github/components/user-menu/screenshots/user-menu-desktop-open.png"
+  },
+  {
+    "url": "https://github.com/settings/profile",
+    "canonicalUrl": "https://github.com/settings/profile",
+    "title": "Settings",
+    "resourceType": "personal account settings",
+    "sourcePage": "user menu",
+    "triggerAction": "select Settings",
+    "viewport": "all",
+    "uiState": "menu open",
+    "screenshotPath": "github/components/user-menu/screenshots/user-menu-desktop-open.png"
+  },
+  {
+    "url": "https://github.com/settings/copilot",
+    "canonicalUrl": null,
+    "title": "Copilot settings",
+    "resourceType": "excluded code-domain settings",
+    "sourcePage": "user menu",
+    "triggerAction": "observed only",
+    "viewport": "all",
+    "uiState": "menu open",
+    "screenshotPath": "github/components/user-menu/screenshots/user-menu-desktop-open.png"
+  },
+  {
+    "url": "https://github.com/settings/appearance",
+    "canonicalUrl": "https://github.com/settings/appearance",
+    "title": "Appearance",
+    "resourceType": "presentation preference settings",
+    "sourcePage": "user menu",
+    "triggerAction": "select Appearance",
+    "viewport": "all",
+    "uiState": "menu open",
+    "screenshotPath": "github/components/user-menu/screenshots/user-menu-desktop-open.png"
+  },
+  {
+    "url": "https://github.com/settings/accessibility",
+    "canonicalUrl": "https://github.com/settings/accessibility",
+    "title": "Accessibility",
+    "resourceType": "accessibility preference settings",
+    "sourcePage": "user menu",
+    "triggerAction": "select Accessibility",
+    "viewport": "all",
+    "uiState": "menu open",
+    "screenshotPath": "github/components/user-menu/screenshots/user-menu-desktop-open.png"
+  },
+  {
+    "url": "https://github.com/logout",
+    "canonicalUrl": null,
+    "title": "Sign out",
+    "resourceType": "session command",
+    "sourcePage": "user menu",
+    "triggerAction": "not executed",
+    "viewport": "all",
+    "uiState": "menu open",
+    "screenshotPath": "github/components/user-menu/screenshots/user-menu-desktop-open.png"
+  }
 ]

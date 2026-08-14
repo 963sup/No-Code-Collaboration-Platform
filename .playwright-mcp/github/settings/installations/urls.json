@@ -1,1 +1,13 @@
-[{"url":"https://github.com/settings/installations","canonicalUrl":"https://github.com/settings/installations","title":"Installed GitHub Apps","resourceType":"installed integration management","sourcePage":"settings navigation","triggerAction":"direct open","viewport":"Desktop, Laptop, Tablet, Mobile","uiState":"default","screenshotPath":"github/settings/installations/screenshots/installed-github-apps-desktop-default.png"}]
+[
+  {
+    "url": "https://github.com/settings/installations",
+    "canonicalUrl": "https://github.com/settings/installations",
+    "title": "Installed GitHub Apps",
+    "resourceType": "installed integration management",
+    "sourcePage": "settings navigation",
+    "triggerAction": "direct open",
+    "viewport": "Desktop, Laptop, Tablet, Mobile",
+    "uiState": "default",
+    "screenshotPath": "github/settings/installations/screenshots/installed-github-apps-desktop-default.png"
+  }
+]

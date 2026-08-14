@@ -1,3 +1,13 @@
 [
-  {"url":"https://github.com/369sup/support/discussions","canonicalUrl":"https://github.com/369sup/support/discussions","title":"Page not found · GitHub","resourceType":"Repository discussion collection unavailable state","sourcePage":"direct URL capability probe","triggerAction":"read-only GET","viewport":"Desktop, Laptop, Tablet, Mobile","uiState":"404 feature unavailable","screenshotPath":"github/repositories/369sup/support/discussions/screenshots/discussions-desktop-error.png"}
+  {
+    "url": "https://github.com/369sup/support/discussions",
+    "canonicalUrl": "https://github.com/369sup/support/discussions",
+    "title": "Page not found · GitHub",
+    "resourceType": "Repository discussion collection unavailable state",
+    "sourcePage": "direct URL capability probe",
+    "triggerAction": "read-only GET",
+    "viewport": "Desktop, Laptop, Tablet, Mobile",
+    "uiState": "404 feature unavailable",
+    "screenshotPath": "github/repositories/369sup/support/discussions/screenshots/discussions-desktop-error.png"
+  }
 ]

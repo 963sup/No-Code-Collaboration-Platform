@@ -1,3 +1,13 @@
 [
-  {"url":"https://github.com/dashboard","canonicalUrl":null,"title":"Create new issue in 369sup/support","resourceType":"issue creation command UI","sourcePage":"create menu","triggerAction":"select New issue","viewport":"Desktop 1440x900","uiState":"dialog open; repository context selected","screenshotPath":"github/components/issue-create-dialog/screenshots/issue-create-dialog-desktop-default.png"}
+  {
+    "url": "https://github.com/dashboard",
+    "canonicalUrl": null,
+    "title": "Create new issue in 369sup/support",
+    "resourceType": "issue creation command UI",
+    "sourcePage": "create menu",
+    "triggerAction": "select New issue",
+    "viewport": "Desktop 1440x900",
+    "uiState": "dialog open; repository context selected",
+    "screenshotPath": "github/components/issue-create-dialog/screenshots/issue-create-dialog-desktop-default.png"
+  }
 ]

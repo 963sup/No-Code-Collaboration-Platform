@@ -1,1 +1,13 @@
-[{"url":"https://github.com/settings/organizations","canonicalUrl":"https://github.com/settings/organizations","title":"Organizations","resourceType":"organization membership settings","sourcePage":"user menu and account switcher","triggerAction":"select Organizations or Manage organizations","viewport":"Desktop, Laptop, Tablet, Mobile","uiState":"default","screenshotPath":"github/settings/organizations/screenshots/settings-organizations-desktop-default.png"}]
+[
+  {
+    "url": "https://github.com/settings/organizations",
+    "canonicalUrl": "https://github.com/settings/organizations",
+    "title": "Organizations",
+    "resourceType": "organization membership settings",
+    "sourcePage": "user menu and account switcher",
+    "triggerAction": "select Organizations or Manage organizations",
+    "viewport": "Desktop, Laptop, Tablet, Mobile",
+    "uiState": "default",
+    "screenshotPath": "github/settings/organizations/screenshots/settings-organizations-desktop-default.png"
+  }
+]

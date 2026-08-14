@@ -1,1 +1,13 @@
-[{"url":"https://github.com/organizations/ac-sup/settings/audit-log","canonicalUrl":"https://github.com/organizations/ac-sup/settings/audit-log","title":"Audit log","resourceType":"organization audit event projection","sourcePage":"organization settings","triggerAction":"direct open","viewport":"Desktop, Laptop, Tablet, Mobile","uiState":"default","screenshotPath":"github/organizations/ac-sup/settings/audit-log/screenshots/audit-log-desktop-default.png"}]
+[
+  {
+    "url": "https://github.com/organizations/ac-sup/settings/audit-log",
+    "canonicalUrl": "https://github.com/organizations/ac-sup/settings/audit-log",
+    "title": "Audit log",
+    "resourceType": "organization audit event projection",
+    "sourcePage": "organization settings",
+    "triggerAction": "direct open",
+    "viewport": "Desktop, Laptop, Tablet, Mobile",
+    "uiState": "default",
+    "screenshotPath": "github/organizations/ac-sup/settings/audit-log/screenshots/audit-log-desktop-default.png"
+  }
+]

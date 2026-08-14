@@ -1,161 +1,161 @@
 - generic [ref=f7e2]:
-  - generic [ref=f7e3]:
-    - link "Skip to content" [ref=f7e4] [cursor=pointer]:
-      - /url: "#start-of-content"
-    - banner "Global navigation menu" [ref=f7e8]:
-      - generic [ref=f7e9]:
-        - generic [ref=f7e10]:
-          - button "Open menu" [ref=f7e12] [cursor=pointer]
-          - link "Homepage (g then d)" [ref=f7e15] [cursor=pointer]:
-            - /url: /
-        - generic [ref=f7e18]:
-          - navigation "Breadcrumbs" [ref=f7e19]:
-            - list [ref=f7e20]:
-              - listitem [ref=f7e21]:
-                - link "ac-sup" [ref=f7e22] [cursor=pointer]:
-                  - /url: /ac-sup
-          - button "Open quick search dialog, type / to search" [ref=f7e26] [cursor=pointer]:
-            - generic [ref=f7e28]:
-              - generic:
-                - text: Type
-                - generic: /
-                - text: to search
-        - generic [ref=f7e29]:
-          - generic [ref=f7e30]:
-            - generic [ref=f7e33]:
-              - link "Chat with Copilot" [ref=f7e35] [cursor=pointer]:
-                - /url: /copilot
-              - button "Open Copilot…" [ref=f7e40] [cursor=pointer]
-            - button "Create new..." [ref=f7e42] [cursor=pointer]
-            - generic [ref=f7e44]:
-              - link "All issues (g then i)" [ref=f7e45] [cursor=pointer]:
-                - /url: /issues
-              - link "All pull requests (g then p)" [ref=f7e49] [cursor=pointer]:
-                - /url: /pulls
-              - link "All repositories" [ref=f7e52] [cursor=pointer]:
-                - /url: /repos
-          - link "You have no unread notifications (g then n)" [ref=f7e55] [cursor=pointer]:
-            - /url: /notifications
-          - button "Open user navigation menu" [ref=f7e59] [cursor=pointer]:
-            - img "sup" [ref=f7e60]
-      - heading "Organization navigation" [level=2] [ref=f7e61]
-      - navigation "Organization" [ref=f7e62]:
-        - list [ref=f7e63]:
-          - listitem [ref=f7e64]:
-            - link "Overview" [ref=f7e65] [cursor=pointer]:
-              - /url: /ac-sup
-          - listitem [ref=f7e70]:
-            - link "Repositories" [ref=f7e71] [cursor=pointer]:
-              - /url: /orgs/ac-sup/repositories
-          - listitem [ref=f7e76]:
-            - link "Projects" [ref=f7e77] [cursor=pointer]:
-              - /url: /orgs/ac-sup/projects
-          - listitem [ref=f7e82]:
-            - link "Packages" [ref=f7e83] [cursor=pointer]:
-              - /url: /orgs/ac-sup/packages
-          - listitem [ref=f7e88]:
-            - link "Teams" [ref=f7e89] [cursor=pointer]:
-              - /url: /orgs/ac-sup/teams
-          - listitem [ref=f7e94]:
-            - link "People (1)" [ref=f7e95] [cursor=pointer]:
-              - /url: /orgs/ac-sup/people
-              - generic [ref=f7e99]: People
-              - generic [ref=f7e100]:
-                - generic [ref=f7e101]: "1"
-                - generic [ref=f7e102]: (1)
-          - listitem [ref=f7e103]:
-            - link "Insights" [ref=f7e104] [cursor=pointer]:
-              - /url: /orgs/ac-sup/insights
-          - listitem [ref=f7e109]:
-            - link "Settings" [ref=f7e110] [cursor=pointer]:
-              - /url: /organizations/ac-sup/settings/profile
-  - main [ref=f7e117]:
-    - generic [ref=f7e118]:
-      - generic [ref=f7e121]:
-        - link "Change your organization’s avatar" [ref=f7e123] [cursor=pointer]:
-          - /url: /organizations/ac-sup/settings/profile
-          - img "@ac-sup" [ref=f7e124]
-        - generic [ref=f7e125]:
-          - heading "ac-sup" [level=1] [ref=f7e126]
-          - list:
-            - listitem
-        - button "Follow ac-sup" [ref=f7e130] [cursor=pointer]: Follow
-      - generic [ref=f7e132]:
-        - generic [ref=f7e137]:
-          - generic:
-            - generic [ref=f7e138]: Loading
-            - paragraph [ref=f7e143]: Loading tasks...
-        - generic [ref=f7e145]:
-          - generic [ref=f7e147]:
-            - 'button "View as: Public" [ref=f7e150] [cursor=pointer]'
-            - generic [ref=f7e153]: You are viewing the README and pinned repositories as a public user.
-            - generic [ref=f7e154]:
-              - text: You can
-              - button "create a README file" [ref=f7e155] [cursor=pointer]
-              - text: visible to anyone.
-          - generic [ref=f7e158]:
-            - text: You can
-            - button "hide the tasks we've suggested" [ref=f7e160] [cursor=pointer]
-            - text: on this page and bring them back later.
-          - generic [ref=f7e162]:
-            - heading "Discussions" [level=2] [ref=f7e163]
-            - paragraph [ref=f7e164]: Set up discussions to engage with your community!
-            - link "Turn on discussions" [ref=f7e166] [cursor=pointer]:
-              - /url: /organizations/ac-sup/settings/discussions
-          - generic [ref=f7e167]:
-            - heading "Repositories" [level=4] [ref=f7e168]
-            - generic [ref=f7e169]:
-              - link "Create new repository" [ref=f7e170] [cursor=pointer]:
-                - /url: /organizations/ac-sup/repositories/new
-              - link "Import" [ref=f7e173] [cursor=pointer]:
-                - /url: /new/import
-          - generic [ref=f7e175]:
-            - generic [ref=f7e176]:
-              - link [ref=f7e177] [cursor=pointer]:
-                - /url: /orgs/ac-sup/people
-                - heading "People" [level=4] [ref=f7e178]
-              - link [ref=f7e180] [cursor=pointer]:
-                - /url: /orgs/ac-sup/people/369sup
-                - img "@369sup" [ref=f7e181]
-            - button "Invite someone" [ref=f7e183] [cursor=pointer]
-          - generic [ref=f7e188]:
-            - heading "Top languages" [level=4] [ref=f7e189]
-            - paragraph [ref=f7e190]: Loading…
-          - generic [ref=f7e193]:
-            - heading "Most used topics" [level=4] [ref=f7e194]
-            - paragraph [ref=f7e195]: Loading…
-  - contentinfo [ref=f7e196]:
-    - heading "Footer" [level=2] [ref=f7e197]
-    - generic [ref=f7e198]:
-      - generic [ref=f7e199]:
-        - link "GitHub Homepage" [ref=f7e200] [cursor=pointer]:
-          - /url: https://github.com
-        - generic [ref=f7e203]: © 2026 GitHub, Inc.
-      - navigation "Footer" [ref=f7e204]:
-        - heading "Footer navigation" [level=3] [ref=f7e205]
-        - list "Footer navigation" [ref=f7e206]:
-          - listitem [ref=f7e207]:
-            - link "Terms" [ref=f7e208] [cursor=pointer]:
-              - /url: https://docs.github.com/site-policy/github-terms/github-terms-of-service
-          - listitem [ref=f7e209]:
-            - link "Privacy" [ref=f7e210] [cursor=pointer]:
-              - /url: https://docs.github.com/site-policy/privacy-policies/github-privacy-statement
-          - listitem [ref=f7e211]:
-            - link "Security" [ref=f7e212] [cursor=pointer]:
-              - /url: https://github.com/security
-          - listitem [ref=f7e213]:
-            - link "Status" [ref=f7e214] [cursor=pointer]:
-              - /url: https://www.githubstatus.com/
-          - listitem [ref=f7e215]:
-            - link "Community" [ref=f7e216] [cursor=pointer]:
-              - /url: https://github.community/
-          - listitem [ref=f7e217]:
-            - link "Docs" [ref=f7e218] [cursor=pointer]:
-              - /url: https://docs.github.com/
-          - listitem [ref=f7e219]:
-            - link "Contact" [ref=f7e220] [cursor=pointer]:
-              - /url: https://support.github.com?tags=dotcom-footer
-          - listitem [ref=f7e221]:
-            - button "Manage cookies" [ref=f7e223] [cursor=pointer]
-          - listitem [ref=f7e224]:
-            - button "Do not share my personal information" [ref=f7e226] [cursor=pointer]
+    - generic [ref=f7e3]:
+        - link "Skip to content" [ref=f7e4] [cursor=pointer]:
+            - /url: '#start-of-content'
+        - banner "Global navigation menu" [ref=f7e8]:
+            - generic [ref=f7e9]:
+                - generic [ref=f7e10]:
+                    - button "Open menu" [ref=f7e12] [cursor=pointer]
+                    - link "Homepage (g then d)" [ref=f7e15] [cursor=pointer]:
+                        - /url: /
+                - generic [ref=f7e18]:
+                    - navigation "Breadcrumbs" [ref=f7e19]:
+                        - list [ref=f7e20]:
+                            - listitem [ref=f7e21]:
+                                - link "ac-sup" [ref=f7e22] [cursor=pointer]:
+                                    - /url: /ac-sup
+                    - button "Open quick search dialog, type / to search" [ref=f7e26] [cursor=pointer]:
+                        - generic [ref=f7e28]:
+                            - generic:
+                                - text: Type
+                                - generic: /
+                                - text: to search
+                - generic [ref=f7e29]:
+                    - generic [ref=f7e30]:
+                        - generic [ref=f7e33]:
+                            - link "Chat with Copilot" [ref=f7e35] [cursor=pointer]:
+                                - /url: /copilot
+                            - button "Open Copilot…" [ref=f7e40] [cursor=pointer]
+                        - button "Create new..." [ref=f7e42] [cursor=pointer]
+                        - generic [ref=f7e44]:
+                            - link "All issues (g then i)" [ref=f7e45] [cursor=pointer]:
+                                - /url: /issues
+                            - link "All pull requests (g then p)" [ref=f7e49] [cursor=pointer]:
+                                - /url: /pulls
+                            - link "All repositories" [ref=f7e52] [cursor=pointer]:
+                                - /url: /repos
+                    - link "You have no unread notifications (g then n)" [ref=f7e55] [cursor=pointer]:
+                        - /url: /notifications
+                    - button "Open user navigation menu" [ref=f7e59] [cursor=pointer]:
+                        - img "sup" [ref=f7e60]
+            - heading "Organization navigation" [level=2] [ref=f7e61]
+            - navigation "Organization" [ref=f7e62]:
+                - list [ref=f7e63]:
+                    - listitem [ref=f7e64]:
+                        - link "Overview" [ref=f7e65] [cursor=pointer]:
+                            - /url: /ac-sup
+                    - listitem [ref=f7e70]:
+                        - link "Repositories" [ref=f7e71] [cursor=pointer]:
+                            - /url: /orgs/ac-sup/repositories
+                    - listitem [ref=f7e76]:
+                        - link "Projects" [ref=f7e77] [cursor=pointer]:
+                            - /url: /orgs/ac-sup/projects
+                    - listitem [ref=f7e82]:
+                        - link "Packages" [ref=f7e83] [cursor=pointer]:
+                            - /url: /orgs/ac-sup/packages
+                    - listitem [ref=f7e88]:
+                        - link "Teams" [ref=f7e89] [cursor=pointer]:
+                            - /url: /orgs/ac-sup/teams
+                    - listitem [ref=f7e94]:
+                        - link "People (1)" [ref=f7e95] [cursor=pointer]:
+                            - /url: /orgs/ac-sup/people
+                            - generic [ref=f7e99]: People
+                            - generic [ref=f7e100]:
+                                - generic [ref=f7e101]: '1'
+                                - generic [ref=f7e102]: (1)
+                    - listitem [ref=f7e103]:
+                        - link "Insights" [ref=f7e104] [cursor=pointer]:
+                            - /url: /orgs/ac-sup/insights
+                    - listitem [ref=f7e109]:
+                        - link "Settings" [ref=f7e110] [cursor=pointer]:
+                            - /url: /organizations/ac-sup/settings/profile
+    - main [ref=f7e117]:
+        - generic [ref=f7e118]:
+            - generic [ref=f7e121]:
+                - link "Change your organization’s avatar" [ref=f7e123] [cursor=pointer]:
+                    - /url: /organizations/ac-sup/settings/profile
+                    - img "@ac-sup" [ref=f7e124]
+                - generic [ref=f7e125]:
+                    - heading "ac-sup" [level=1] [ref=f7e126]
+                    - list:
+                        - listitem
+                - button "Follow ac-sup" [ref=f7e130] [cursor=pointer]: Follow
+            - generic [ref=f7e132]:
+                - generic [ref=f7e137]:
+                    - generic:
+                        - generic [ref=f7e138]: Loading
+                        - paragraph [ref=f7e143]: Loading tasks...
+                - generic [ref=f7e145]:
+                    - generic [ref=f7e147]:
+                        - 'button "View as: Public" [ref=f7e150] [cursor=pointer]'
+                        - generic [ref=f7e153]: You are viewing the README and pinned repositories as a public user.
+                        - generic [ref=f7e154]:
+                            - text: You can
+                            - button "create a README file" [ref=f7e155] [cursor=pointer]
+                            - text: visible to anyone.
+                    - generic [ref=f7e158]:
+                        - text: You can
+                        - button "hide the tasks we've suggested" [ref=f7e160] [cursor=pointer]
+                        - text: on this page and bring them back later.
+                    - generic [ref=f7e162]:
+                        - heading "Discussions" [level=2] [ref=f7e163]
+                        - paragraph [ref=f7e164]: Set up discussions to engage with your community!
+                        - link "Turn on discussions" [ref=f7e166] [cursor=pointer]:
+                            - /url: /organizations/ac-sup/settings/discussions
+                    - generic [ref=f7e167]:
+                        - heading "Repositories" [level=4] [ref=f7e168]
+                        - generic [ref=f7e169]:
+                            - link "Create new repository" [ref=f7e170] [cursor=pointer]:
+                                - /url: /organizations/ac-sup/repositories/new
+                            - link "Import" [ref=f7e173] [cursor=pointer]:
+                                - /url: /new/import
+                    - generic [ref=f7e175]:
+                        - generic [ref=f7e176]:
+                            - link [ref=f7e177] [cursor=pointer]:
+                                - /url: /orgs/ac-sup/people
+                                - heading "People" [level=4] [ref=f7e178]
+                            - link [ref=f7e180] [cursor=pointer]:
+                                - /url: /orgs/ac-sup/people/369sup
+                                - img "@369sup" [ref=f7e181]
+                        - button "Invite someone" [ref=f7e183] [cursor=pointer]
+                    - generic [ref=f7e188]:
+                        - heading "Top languages" [level=4] [ref=f7e189]
+                        - paragraph [ref=f7e190]: Loading…
+                    - generic [ref=f7e193]:
+                        - heading "Most used topics" [level=4] [ref=f7e194]
+                        - paragraph [ref=f7e195]: Loading…
+    - contentinfo [ref=f7e196]:
+        - heading "Footer" [level=2] [ref=f7e197]
+        - generic [ref=f7e198]:
+            - generic [ref=f7e199]:
+                - link "GitHub Homepage" [ref=f7e200] [cursor=pointer]:
+                    - /url: https://github.com
+                - generic [ref=f7e203]: © 2026 GitHub, Inc.
+            - navigation "Footer" [ref=f7e204]:
+                - heading "Footer navigation" [level=3] [ref=f7e205]
+                - list "Footer navigation" [ref=f7e206]:
+                    - listitem [ref=f7e207]:
+                        - link "Terms" [ref=f7e208] [cursor=pointer]:
+                            - /url: https://docs.github.com/site-policy/github-terms/github-terms-of-service
+                    - listitem [ref=f7e209]:
+                        - link "Privacy" [ref=f7e210] [cursor=pointer]:
+                            - /url: https://docs.github.com/site-policy/privacy-policies/github-privacy-statement
+                    - listitem [ref=f7e211]:
+                        - link "Security" [ref=f7e212] [cursor=pointer]:
+                            - /url: https://github.com/security
+                    - listitem [ref=f7e213]:
+                        - link "Status" [ref=f7e214] [cursor=pointer]:
+                            - /url: https://www.githubstatus.com/
+                    - listitem [ref=f7e215]:
+                        - link "Community" [ref=f7e216] [cursor=pointer]:
+                            - /url: https://github.community/
+                    - listitem [ref=f7e217]:
+                        - link "Docs" [ref=f7e218] [cursor=pointer]:
+                            - /url: https://docs.github.com/
+                    - listitem [ref=f7e219]:
+                        - link "Contact" [ref=f7e220] [cursor=pointer]:
+                            - /url: https://support.github.com?tags=dotcom-footer
+                    - listitem [ref=f7e221]:
+                        - button "Manage cookies" [ref=f7e223] [cursor=pointer]
+                    - listitem [ref=f7e224]:
+                        - button "Do not share my personal information" [ref=f7e226] [cursor=pointer]

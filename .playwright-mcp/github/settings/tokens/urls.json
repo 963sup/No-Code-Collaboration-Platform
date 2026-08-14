@@ -1,1 +1,13 @@
-[{"url":"https://github.com/settings/tokens","canonicalUrl":"https://github.com/settings/tokens","title":"Personal Access Tokens (Classic)","resourceType":"programmatic access management","sourcePage":"settings navigation","triggerAction":"direct open","viewport":"Desktop, Laptop, Tablet, Mobile","uiState":"list only","screenshotPath":"github/settings/tokens/screenshots/programmatic-access-desktop-default.png"}]
+[
+  {
+    "url": "https://github.com/settings/tokens",
+    "canonicalUrl": "https://github.com/settings/tokens",
+    "title": "Personal Access Tokens (Classic)",
+    "resourceType": "programmatic access management",
+    "sourcePage": "settings navigation",
+    "triggerAction": "direct open",
+    "viewport": "Desktop, Laptop, Tablet, Mobile",
+    "uiState": "list only",
+    "screenshotPath": "github/settings/tokens/screenshots/programmatic-access-desktop-default.png"
+  }
+]

@@ -1,9 +1,79 @@
 [
-  {"url":"https://github.com/dashboard","canonicalUrl":null,"title":"New issue","resourceType":"issue creation command","sourcePage":"create menu","triggerAction":"open issue-create dialog without URL change","viewport":"all","uiState":"menu open","screenshotPath":"github/components/create-menu/screenshots/create-menu-desktop-open.png"},
-  {"url":"https://github.com/new","canonicalUrl":null,"title":"New repository","resourceType":"repository creation command","sourcePage":"create menu","triggerAction":"observed only","viewport":"all","uiState":"menu open","screenshotPath":"github/components/create-menu/screenshots/create-menu-desktop-open.png"},
-  {"url":"https://github.com/new/import","canonicalUrl":null,"title":"Import repository","resourceType":"repository import process","sourcePage":"create menu","triggerAction":"observed only","viewport":"all","uiState":"menu open","screenshotPath":"github/components/create-menu/screenshots/create-menu-desktop-open.png"},
-  {"url":"https://github.com/codespaces/new","canonicalUrl":null,"title":"New codespace","resourceType":"excluded code-domain command","sourcePage":"create menu","triggerAction":"observed only","viewport":"all","uiState":"menu open","screenshotPath":"github/components/create-menu/screenshots/create-menu-desktop-open.png"},
-  {"url":"https://github.com/gist","canonicalUrl":null,"title":"New gist","resourceType":"excluded code-domain command","sourcePage":"create menu","triggerAction":"observed only","viewport":"all","uiState":"menu open","screenshotPath":"github/components/create-menu/screenshots/create-menu-desktop-open.png"},
-  {"url":"https://github.com/account/organizations/new","canonicalUrl":null,"title":"New organization","resourceType":"organization creation command","sourcePage":"create menu","triggerAction":"observed only","viewport":"all","uiState":"menu open","screenshotPath":"github/components/create-menu/screenshots/create-menu-desktop-open.png"},
-  {"url":"https://github.com/369sup?tab=projects","canonicalUrl":"https://github.com/369sup?tab=projects","title":"New project","resourceType":"user project projection with create affordance","sourcePage":"create menu","triggerAction":"observed only","viewport":"all","uiState":"menu open","screenshotPath":"github/components/create-menu/screenshots/create-menu-desktop-open.png"}
+  {
+    "url": "https://github.com/dashboard",
+    "canonicalUrl": null,
+    "title": "New issue",
+    "resourceType": "issue creation command",
+    "sourcePage": "create menu",
+    "triggerAction": "open issue-create dialog without URL change",
+    "viewport": "all",
+    "uiState": "menu open",
+    "screenshotPath": "github/components/create-menu/screenshots/create-menu-desktop-open.png"
+  },
+  {
+    "url": "https://github.com/new",
+    "canonicalUrl": null,
+    "title": "New repository",
+    "resourceType": "repository creation command",
+    "sourcePage": "create menu",
+    "triggerAction": "observed only",
+    "viewport": "all",
+    "uiState": "menu open",
+    "screenshotPath": "github/components/create-menu/screenshots/create-menu-desktop-open.png"
+  },
+  {
+    "url": "https://github.com/new/import",
+    "canonicalUrl": null,
+    "title": "Import repository",
+    "resourceType": "repository import process",
+    "sourcePage": "create menu",
+    "triggerAction": "observed only",
+    "viewport": "all",
+    "uiState": "menu open",
+    "screenshotPath": "github/components/create-menu/screenshots/create-menu-desktop-open.png"
+  },
+  {
+    "url": "https://github.com/codespaces/new",
+    "canonicalUrl": null,
+    "title": "New codespace",
+    "resourceType": "excluded code-domain command",
+    "sourcePage": "create menu",
+    "triggerAction": "observed only",
+    "viewport": "all",
+    "uiState": "menu open",
+    "screenshotPath": "github/components/create-menu/screenshots/create-menu-desktop-open.png"
+  },
+  {
+    "url": "https://github.com/gist",
+    "canonicalUrl": null,
+    "title": "New gist",
+    "resourceType": "excluded code-domain command",
+    "sourcePage": "create menu",
+    "triggerAction": "observed only",
+    "viewport": "all",
+    "uiState": "menu open",
+    "screenshotPath": "github/components/create-menu/screenshots/create-menu-desktop-open.png"
+  },
+  {
+    "url": "https://github.com/account/organizations/new",
+    "canonicalUrl": null,
+    "title": "New organization",
+    "resourceType": "organization creation command",
+    "sourcePage": "create menu",
+    "triggerAction": "observed only",
+    "viewport": "all",
+    "uiState": "menu open",
+    "screenshotPath": "github/components/create-menu/screenshots/create-menu-desktop-open.png"
+  },
+  {
+    "url": "https://github.com/369sup?tab=projects",
+    "canonicalUrl": "https://github.com/369sup?tab=projects",
+    "title": "New project",
+    "resourceType": "user project projection with create affordance",
+    "sourcePage": "create menu",
+    "triggerAction": "observed only",
+    "viewport": "all",
+    "uiState": "menu open",
+    "screenshotPath": "github/components/create-menu/screenshots/create-menu-desktop-open.png"
+  }
 ]

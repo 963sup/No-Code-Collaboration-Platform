@@ -1,3 +1,13 @@
 [
-  {"url":"https://github.com/gollum/gollum/wiki","canonicalUrl":"https://github.com/gollum/gollum/wiki","title":"Home · gollum/gollum Wiki","resourceType":"wiki page collection/default page","sourcePage":"repository navigation","triggerAction":"select Wiki","viewport":"Desktop, Laptop, Tablet, Mobile","uiState":"authenticated and anonymous","screenshotPath":"github/repositories/gollum/gollum/wiki/screenshots/wiki-page-desktop-anonymous.png"}
+  {
+    "url": "https://github.com/gollum/gollum/wiki",
+    "canonicalUrl": "https://github.com/gollum/gollum/wiki",
+    "title": "Home · gollum/gollum Wiki",
+    "resourceType": "wiki page collection/default page",
+    "sourcePage": "repository navigation",
+    "triggerAction": "select Wiki",
+    "viewport": "Desktop, Laptop, Tablet, Mobile",
+    "uiState": "authenticated and anonymous",
+    "screenshotPath": "github/repositories/gollum/gollum/wiki/screenshots/wiki-page-desktop-anonymous.png"
+  }
 ]

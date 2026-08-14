@@ -1,1 +1,13 @@
-[{"url":"https://github.com/mcp","canonicalUrl":"https://github.com/mcp","title":"MCP Registry","resourceType":"integration registry","sourcePage":"global menu","triggerAction":"select MCP registry","viewport":"Desktop, Laptop, Tablet, Mobile","uiState":"default","screenshotPath":"github/mcp/screenshots/mcp-registry-desktop-default.png"}]
+[
+  {
+    "url": "https://github.com/mcp",
+    "canonicalUrl": "https://github.com/mcp",
+    "title": "MCP Registry",
+    "resourceType": "integration registry",
+    "sourcePage": "global menu",
+    "triggerAction": "select MCP registry",
+    "viewport": "Desktop, Laptop, Tablet, Mobile",
+    "uiState": "default",
+    "screenshotPath": "github/mcp/screenshots/mcp-registry-desktop-default.png"
+  }
+]

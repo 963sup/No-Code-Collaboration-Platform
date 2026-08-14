@@ -1,1 +1,13 @@
-[{"url":"https://github.com/organizations/ac-sup/settings/custom-properties","canonicalUrl":"https://github.com/organizations/ac-sup/settings/custom-properties","title":"Settings · Custom properties · ac-sup","resourceType":"organization custom property definitions","sourcePage":"organization settings","triggerAction":"direct open","viewport":"Desktop, Laptop, Tablet, Mobile","uiState":"default","screenshotPath":"github/organizations/ac-sup/settings/custom-properties/screenshots/custom-properties-desktop-default.png"}]
+[
+  {
+    "url": "https://github.com/organizations/ac-sup/settings/custom-properties",
+    "canonicalUrl": "https://github.com/organizations/ac-sup/settings/custom-properties",
+    "title": "Settings · Custom properties · ac-sup",
+    "resourceType": "organization custom property definitions",
+    "sourcePage": "organization settings",
+    "triggerAction": "direct open",
+    "viewport": "Desktop, Laptop, Tablet, Mobile",
+    "uiState": "default",
+    "screenshotPath": "github/organizations/ac-sup/settings/custom-properties/screenshots/custom-properties-desktop-default.png"
+  }
+]

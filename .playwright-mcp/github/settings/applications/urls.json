@@ -1,1 +1,13 @@
-[{"url":"https://github.com/settings/applications","canonicalUrl":"https://github.com/settings/applications","title":"Authorized OAuth Apps","resourceType":"OAuth authorization management","sourcePage":"settings navigation","triggerAction":"direct open","viewport":"Desktop, Laptop, Tablet, Mobile","uiState":"default","screenshotPath":"github/settings/applications/screenshots/authorized-oauth-apps-desktop-default.png"}]
+[
+  {
+    "url": "https://github.com/settings/applications",
+    "canonicalUrl": "https://github.com/settings/applications",
+    "title": "Authorized OAuth Apps",
+    "resourceType": "OAuth authorization management",
+    "sourcePage": "settings navigation",
+    "triggerAction": "direct open",
+    "viewport": "Desktop, Laptop, Tablet, Mobile",
+    "uiState": "default",
+    "screenshotPath": "github/settings/applications/screenshots/authorized-oauth-apps-desktop-default.png"
+  }
+]

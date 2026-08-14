@@ -1,3 +1,13 @@
 [
-  {"url":"https://github.com/orgs/ac-sup/dashboard","canonicalUrl":"https://github.com/orgs/ac-sup/dashboard","title":"Dashboard","resourceType":"organization dashboard","sourcePage":"account switcher","triggerAction":"switch context from 369sup to ac-sup","viewport":"Desktop, Laptop, Tablet, Mobile","uiState":"organization owner context","screenshotPath":"github/organizations/ac-sup/dashboard/screenshots/dashboard-desktop-default.png"}
+  {
+    "url": "https://github.com/orgs/ac-sup/dashboard",
+    "canonicalUrl": "https://github.com/orgs/ac-sup/dashboard",
+    "title": "Dashboard",
+    "resourceType": "organization dashboard",
+    "sourcePage": "account switcher",
+    "triggerAction": "switch context from 369sup to ac-sup",
+    "viewport": "Desktop, Laptop, Tablet, Mobile",
+    "uiState": "organization owner context",
+    "screenshotPath": "github/organizations/ac-sup/dashboard/screenshots/dashboard-desktop-default.png"
+  }
 ]

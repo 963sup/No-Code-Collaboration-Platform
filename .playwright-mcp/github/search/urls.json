@@ -1,3 +1,13 @@
 [
-  {"url":"https://github.com/search?q=github&type=users","canonicalUrl":"https://github.com/search?q=github&type=users","title":"Search · github","resourceType":"user search projection","sourcePage":"global search","triggerAction":"search for github; choose Users","viewport":"Desktop, Laptop, Tablet, Mobile","uiState":"results","screenshotPath":"github/search/screenshots/search-users-desktop-default.png"}
+  {
+    "url": "https://github.com/search?q=github&type=users",
+    "canonicalUrl": "https://github.com/search?q=github&type=users",
+    "title": "Search · github",
+    "resourceType": "user search projection",
+    "sourcePage": "global search",
+    "triggerAction": "search for github; choose Users",
+    "viewport": "Desktop, Laptop, Tablet, Mobile",
+    "uiState": "results",
+    "screenshotPath": "github/search/screenshots/search-users-desktop-default.png"
+  }
 ]

@@ -1,3 +1,13 @@
 [
-  {"url":"https://github.com/gist","canonicalUrl":"https://gist.github.com/","title":"Create a new Gist","resourceType":"excluded code-snippet creation command","sourcePage":"create menu","triggerAction":"observed read-only redirect","viewport":"Desktop, Laptop, Tablet, Mobile","uiState":"excluded domain","screenshotPath":"github/components/create-menu/screenshots/create-menu-desktop-open.png"}
+  {
+    "url": "https://github.com/gist",
+    "canonicalUrl": "https://gist.github.com/",
+    "title": "Create a new Gist",
+    "resourceType": "excluded code-snippet creation command",
+    "sourcePage": "create menu",
+    "triggerAction": "observed read-only redirect",
+    "viewport": "Desktop, Laptop, Tablet, Mobile",
+    "uiState": "excluded domain",
+    "screenshotPath": "github/components/create-menu/screenshots/create-menu-desktop-open.png"
+  }
 ]

@@ -1,1 +1,13 @@
-[{"url":"https://github.com/account/enterprises/new","canonicalUrl":null,"title":"Create an enterprise","resourceType":"enterprise creation command","sourcePage":"Try Enterprise","triggerAction":"open /organizations/enterprise_plan redirect","viewport":"Desktop, Laptop, Tablet, Mobile","uiState":"form untouched","screenshotPath":"github/account/enterprises/new/screenshots/enterprise-plan-desktop-default.png"}]
+[
+  {
+    "url": "https://github.com/account/enterprises/new",
+    "canonicalUrl": null,
+    "title": "Create an enterprise",
+    "resourceType": "enterprise creation command",
+    "sourcePage": "Try Enterprise",
+    "triggerAction": "open /organizations/enterprise_plan redirect",
+    "viewport": "Desktop, Laptop, Tablet, Mobile",
+    "uiState": "form untouched",
+    "screenshotPath": "github/account/enterprises/new/screenshots/enterprise-plan-desktop-default.png"
+  }
+]

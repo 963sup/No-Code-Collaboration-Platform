@@ -1,5 +1,35 @@
 [
-  {"url":"https://github.com/dashboard","canonicalUrl":"https://github.com/dashboard","title":"GitHub Dashboard","resourceType":"dashboard Repository discovery projection","sourcePage":"dashboard Account region","triggerAction":"view Top repositories","viewport":"Desktop, Laptop, Tablet, Mobile","uiState":"default; Mobile keeps search and links but omits the inline New action","screenshotPath":"github/components/top-repositories/screenshots/top-repositories-desktop-default.png"},
-  {"url":"https://github.com/new","canonicalUrl":"https://github.com/new","title":"New repository","resourceType":"Repository creation command","sourcePage":"Top repositories","triggerAction":"select New","viewport":"Desktop, Laptop, Tablet, Mobile","uiState":"command entry","screenshotPath":"github/components/top-repositories/screenshots/top-repositories-desktop-default.png"},
-  {"url":"https://github.com/369sup/support","canonicalUrl":"https://github.com/369sup/support","title":"369sup/support","resourceType":"Repository collaboration container","sourcePage":"Top repositories","triggerAction":"select Repository","viewport":"Desktop, Laptop, Tablet, Mobile","uiState":"recent/frequent Repository entry","screenshotPath":"github/components/top-repositories/screenshots/top-repositories-desktop-default.png"}
+  {
+    "url": "https://github.com/dashboard",
+    "canonicalUrl": "https://github.com/dashboard",
+    "title": "GitHub Dashboard",
+    "resourceType": "dashboard Repository discovery projection",
+    "sourcePage": "dashboard Account region",
+    "triggerAction": "view Top repositories",
+    "viewport": "Desktop, Laptop, Tablet, Mobile",
+    "uiState": "default; Mobile keeps search and links but omits the inline New action",
+    "screenshotPath": "github/components/top-repositories/screenshots/top-repositories-desktop-default.png"
+  },
+  {
+    "url": "https://github.com/new",
+    "canonicalUrl": "https://github.com/new",
+    "title": "New repository",
+    "resourceType": "Repository creation command",
+    "sourcePage": "Top repositories",
+    "triggerAction": "select New",
+    "viewport": "Desktop, Laptop, Tablet, Mobile",
+    "uiState": "command entry",
+    "screenshotPath": "github/components/top-repositories/screenshots/top-repositories-desktop-default.png"
+  },
+  {
+    "url": "https://github.com/369sup/support",
+    "canonicalUrl": "https://github.com/369sup/support",
+    "title": "369sup/support",
+    "resourceType": "Repository collaboration container",
+    "sourcePage": "Top repositories",
+    "triggerAction": "select Repository",
+    "viewport": "Desktop, Laptop, Tablet, Mobile",
+    "uiState": "recent/frequent Repository entry",
+    "screenshotPath": "github/components/top-repositories/screenshots/top-repositories-desktop-default.png"
+  }
 ]

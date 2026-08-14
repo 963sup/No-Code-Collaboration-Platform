@@ -1,3 +1,13 @@
 [
-  {"url":"https://github.com/logout","canonicalUrl":null,"title":"Sign out","resourceType":"session termination command","sourcePage":"user menu","triggerAction":"not executed","viewport":"Desktop, Laptop, Tablet, Mobile","uiState":"menu entry only","screenshotPath":"github/components/user-menu/screenshots/user-menu-desktop-open.png"}
+  {
+    "url": "https://github.com/logout",
+    "canonicalUrl": null,
+    "title": "Sign out",
+    "resourceType": "session termination command",
+    "sourcePage": "user menu",
+    "triggerAction": "not executed",
+    "viewport": "Desktop, Laptop, Tablet, Mobile",
+    "uiState": "menu entry only",
+    "screenshotPath": "github/components/user-menu/screenshots/user-menu-desktop-open.png"
+  }
 ]

@@ -1,1 +1,13 @@
-[{"url":"https://github.com/organizations/ac-sup/settings/profile","canonicalUrl":"https://github.com/organizations/ac-sup/settings/profile","title":"General Organization Settings","resourceType":"organization settings","sourcePage":"organization administration","triggerAction":"direct open","viewport":"Desktop, Laptop, Tablet, Mobile","uiState":"default","screenshotPath":"github/organizations/ac-sup/settings/profile/screenshots/organization-settings-desktop-default.png"}]
+[
+  {
+    "url": "https://github.com/organizations/ac-sup/settings/profile",
+    "canonicalUrl": "https://github.com/organizations/ac-sup/settings/profile",
+    "title": "General Organization Settings",
+    "resourceType": "organization settings",
+    "sourcePage": "organization administration",
+    "triggerAction": "direct open",
+    "viewport": "Desktop, Laptop, Tablet, Mobile",
+    "uiState": "default",
+    "screenshotPath": "github/organizations/ac-sup/settings/profile/screenshots/organization-settings-desktop-default.png"
+  }
+]

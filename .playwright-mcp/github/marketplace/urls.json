@@ -1,1 +1,13 @@
-[{"url":"https://github.com/marketplace","canonicalUrl":"https://github.com/marketplace","title":"GitHub Marketplace","resourceType":"integration marketplace","sourcePage":"global menu","triggerAction":"select Marketplace","viewport":"Desktop, Laptop, Tablet, Mobile","uiState":"default","screenshotPath":"github/marketplace/screenshots/marketplace-desktop-default.png"}]
+[
+  {
+    "url": "https://github.com/marketplace",
+    "canonicalUrl": "https://github.com/marketplace",
+    "title": "GitHub Marketplace",
+    "resourceType": "integration marketplace",
+    "sourcePage": "global menu",
+    "triggerAction": "select Marketplace",
+    "viewport": "Desktop, Laptop, Tablet, Mobile",
+    "uiState": "default",
+    "screenshotPath": "github/marketplace/screenshots/marketplace-desktop-default.png"
+  }
+]

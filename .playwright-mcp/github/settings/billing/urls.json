@@ -1,1 +1,13 @@
-[{"url":"https://github.com/settings/billing","canonicalUrl":"https://github.com/settings/billing","title":"Billing Overview","resourceType":"personal billing overview","sourcePage":"settings navigation","triggerAction":"direct open","viewport":"Desktop, Laptop, Tablet, Mobile","uiState":"default","screenshotPath":"github/settings/billing/screenshots/billing-overview-desktop-default.png"}]
+[
+  {
+    "url": "https://github.com/settings/billing",
+    "canonicalUrl": "https://github.com/settings/billing",
+    "title": "Billing Overview",
+    "resourceType": "personal billing overview",
+    "sourcePage": "settings navigation",
+    "triggerAction": "direct open",
+    "viewport": "Desktop, Laptop, Tablet, Mobile",
+    "uiState": "default",
+    "screenshotPath": "github/settings/billing/screenshots/billing-overview-desktop-default.png"
+  }
+]

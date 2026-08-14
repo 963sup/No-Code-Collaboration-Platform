@@ -1,1 +1,13 @@
-[{"url":"https://github.com/organizations/plan","canonicalUrl":null,"title":"Pick a plan for your new organization","resourceType":"organization creation plan command","sourcePage":"Create organization","triggerAction":"open /account/organizations/new redirect","viewport":"Desktop, Laptop, Tablet, Mobile","uiState":"plan selection","screenshotPath":"github/organizations/plan/screenshots/new-organization-desktop-default.png"}]
+[
+  {
+    "url": "https://github.com/organizations/plan",
+    "canonicalUrl": null,
+    "title": "Pick a plan for your new organization",
+    "resourceType": "organization creation plan command",
+    "sourcePage": "Create organization",
+    "triggerAction": "open /account/organizations/new redirect",
+    "viewport": "Desktop, Laptop, Tablet, Mobile",
+    "uiState": "plan selection",
+    "screenshotPath": "github/organizations/plan/screenshots/new-organization-desktop-default.png"
+  }
+]

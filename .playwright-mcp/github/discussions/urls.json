@@ -1,1 +1,13 @@
-[{"url":"https://github.com/discussions","canonicalUrl":"https://github.com/discussions","title":"Your discussions","resourceType":"discussion discovery","sourcePage":"global menu","triggerAction":"select Discussions","viewport":"Desktop, Laptop, Tablet, Mobile","uiState":"default","screenshotPath":"github/discussions/screenshots/discussions-desktop-default.png"}]
+[
+  {
+    "url": "https://github.com/discussions",
+    "canonicalUrl": "https://github.com/discussions",
+    "title": "Your discussions",
+    "resourceType": "discussion discovery",
+    "sourcePage": "global menu",
+    "triggerAction": "select Discussions",
+    "viewport": "Desktop, Laptop, Tablet, Mobile",
+    "uiState": "default",
+    "screenshotPath": "github/discussions/screenshots/discussions-desktop-default.png"
+  }
+]

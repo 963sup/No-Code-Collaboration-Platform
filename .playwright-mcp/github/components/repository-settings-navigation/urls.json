@@ -1,3 +1,13 @@
 [
-  {"url":"https://github.com/369sup/support/settings","canonicalUrl":"https://github.com/369sup/support/settings","title":"General","resourceType":"Repository governance settings","sourcePage":"Repository settings navigation","triggerAction":"select Settings","viewport":"Desktop, Laptop, Tablet, Mobile","uiState":"authenticated selected item","screenshotPath":"github/components/repository-settings-navigation/screenshots/repository-settings-navigation-desktop-authenticated.png"}
+  {
+    "url": "https://github.com/369sup/support/settings",
+    "canonicalUrl": "https://github.com/369sup/support/settings",
+    "title": "General",
+    "resourceType": "Repository governance settings",
+    "sourcePage": "Repository settings navigation",
+    "triggerAction": "select Settings",
+    "viewport": "Desktop, Laptop, Tablet, Mobile",
+    "uiState": "authenticated selected item",
+    "screenshotPath": "github/components/repository-settings-navigation/screenshots/repository-settings-navigation-desktop-authenticated.png"
+  }
 ]

@@ -1,3 +1,13 @@
 [
-  {"url":"https://github.com/369sup/support/security","canonicalUrl":"https://github.com/369sup/support/security","title":"Overview · 369sup/support","resourceType":"Repository security posture projection","sourcePage":"Repository navigation","triggerAction":"select Security","viewport":"Desktop, Laptop, Tablet, Mobile","uiState":"public overview","screenshotPath":"github/repositories/369sup/support/security/screenshots/security-overview-desktop-public.png"}
+  {
+    "url": "https://github.com/369sup/support/security",
+    "canonicalUrl": "https://github.com/369sup/support/security",
+    "title": "Overview · 369sup/support",
+    "resourceType": "Repository security posture projection",
+    "sourcePage": "Repository navigation",
+    "triggerAction": "select Security",
+    "viewport": "Desktop, Laptop, Tablet, Mobile",
+    "uiState": "public overview",
+    "screenshotPath": "github/repositories/369sup/support/security/screenshots/security-overview-desktop-public.png"
+  }
 ]
