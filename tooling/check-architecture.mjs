@@ -112,6 +112,7 @@ const repositoryPagesRoute = `${repositoryRoute}/pages`;
 const requiredRepositoryFiles = [
   `${repositoryRoute}/layout.tsx`,
   `${repositoryRoute}/page.tsx`,
+  `${repositoryRoute}/_components/repository-navigation.tsx`,
   `${repositoryRoute}/_components/repository-shell.tsx`,
   `${repositoryRoute}/_queries/get-accessible-repository-route.ts`,
   `${repositoryPagesRoute}/page.tsx`,
@@ -139,15 +140,35 @@ if (existsSync(resolve(root, repositoryLayoutPath))) {
 const repositoryShellPath = `${repositoryRoute}/_components/repository-shell.tsx`;
 if (existsSync(resolve(root, repositoryShellPath))) {
   const content = readFileSync(resolve(root, repositoryShellPath), 'utf8');
-  for (const label of ['Overview', 'Pages', 'Activity']) {
-    if (!content.includes(label)) {
-      failures.push(`${repositoryShellPath}: ${label} Repository navigation is missing`);
+  for (const symbol of ['RepositoryNavigation', 'SiteHeader', 'repositoryPath']) {
+    if (!content.includes(symbol)) {
+      failures.push(`${repositoryShellPath}: ${symbol} shell composition is missing`);
     }
   }
   if (content.includes("href='/app'")) {
     failures.push(
       `${repositoryShellPath}: Owner label must not pretend /app is the Owner destination`
     );
+  }
+}
+
+const repositoryNavigationPath = `${repositoryRoute}/_components/repository-navigation.tsx`;
+if (existsSync(resolve(root, repositoryNavigationPath))) {
+  const content = readFileSync(resolve(root, repositoryNavigationPath), 'utf8');
+  for (const label of ['Overview', 'Pages', 'Activity']) {
+    if (!content.includes(label)) {
+      failures.push(`${repositoryNavigationPath}: ${label} Repository navigation is missing`);
+    }
+  }
+  for (const symbol of [
+    'repositoryPath',
+    'repositoryPagesPath',
+    'repositoryActivityPath',
+    'usePathname'
+  ]) {
+    if (!content.includes(symbol)) {
+      failures.push(`${repositoryNavigationPath}: ${symbol} navigation boundary is missing`);
+    }
   }
 }
 

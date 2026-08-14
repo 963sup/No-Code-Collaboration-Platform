@@ -28,6 +28,7 @@ export default async function RepositoryLayout({ children, params }: RepositoryL
 
   return (
     <RepositoryShell
+      isAuthenticated={Boolean(identity)}
       ownerSlug={route.ownerSlug}
       repositoryName={route.repository.name}
       repositorySlug={route.repository.slug}

@@ -6,6 +6,7 @@ import { redirect } from 'next/navigation';
 import type { ReactNode } from 'react';
 
 import { createRequestServices } from '@/composition/create-request-services';
+import { SiteHeader } from '@/components/site-header';
 
 import { signOut } from './actions';
 
@@ -21,23 +22,28 @@ export default async function AppLayout({ children }: Readonly<{ children: React
 
   return (
     <div className='min-h-dvh bg-muted/25'>
-      <header className='border-b bg-background'>
-        <div className='flex h-16 items-center justify-between px-6'>
-          <Link className='font-semibold tracking-tight' href='/app'>
-            No-Code Collaboration Platform
-          </Link>
-          <div className='flex items-center gap-3'>
-            <span className='hidden text-sm text-muted-foreground sm:inline'>{email}</span>
+      <SiteHeader
+        actions={
+          <>
+            <span className='hidden max-w-64 truncate text-sm text-shell-muted sm:inline'>
+              {email}
+            </span>
             <form action={signOut}>
-              <Button size='sm' type='submit' variant='ghost'>
+              <Button
+                className='border-shell-border text-shell-foreground hover:bg-shell-accent hover:text-shell-foreground'
+                size='sm'
+                type='submit'
+                variant='ghost'
+              >
                 Sign out
               </Button>
             </form>
-          </div>
-        </div>
-      </header>
+          </>
+        }
+        homeHref='/app'
+      />
       <div className='grid min-h-[calc(100dvh-4rem)] md:grid-cols-[15rem_1fr]'>
-        <aside className='border-r bg-background p-4'>
+        <aside className='hidden border-r bg-background p-4 md:block'>
           <nav aria-label='Application navigation' className='space-y-1'>
             <Link
               className='flex items-center gap-3 rounded-md bg-accent px-3 py-2 text-sm font-medium'
@@ -52,7 +58,7 @@ export default async function AppLayout({ children }: Readonly<{ children: React
             </span>
           </nav>
         </aside>
-        <main className='min-w-0 p-6 lg:p-10'>{children}</main>
+        <main className='min-w-0 p-4 sm:p-6 lg:p-10'>{children}</main>
       </div>
     </div>
   );

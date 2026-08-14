@@ -1,4 +1,5 @@
 import { randomUUID } from 'node:crypto';
+import { resolve } from 'node:path';
 
 import { expect, test, type APIRequestContext, type Page } from '@playwright/test';
 
@@ -58,8 +59,8 @@ async function readVerificationCode(request: APIRequestContext, email: string) {
       }
     }
 
-    await new Promise((resolve) => {
-      setTimeout(resolve, 250);
+    await new Promise((finish) => {
+      setTimeout(finish, 250);
     });
   }
 
@@ -177,8 +178,40 @@ test('Page collaboration uses canonical Owner/Repository routes while stable IDs
   await page.goto('/app');
   await page.getByRole('link', { name: /E2E Repository/u }).click();
   await expect(page).toHaveURL(repositoryPath);
+  await expect(
+    page.getByRole('link', { name: 'No-Code Collaboration Platform home' })
+  ).toBeVisible();
   await expect(page.getByText(ownerSlug, { exact: true })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'E2E Repository', exact: true })).toBeVisible();
+  await expect(page.getByText('Canonical Repository identity', { exact: true })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Overview', exact: true })).toHaveAttribute(
+    'aria-current',
+    'page'
+  );
   await expect(page.getByRole('link', { name: 'Pages', exact: true })).toBeVisible();
+
+  for (const viewport of [
+    { height: 900, name: 'desktop', width: 1440 },
+    { height: 800, name: 'laptop', width: 1280 },
+    { height: 1024, name: 'tablet', width: 768 },
+    { height: 844, name: 'mobile', width: 390 }
+  ]) {
+    await page.setViewportSize(viewport);
+    await expect(page.getByRole('navigation', { name: 'Repository' })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Pages', exact: true })).toBeVisible();
+    await expect(page.getByRole('complementary', { name: 'Repository details' })).toBeVisible();
+
+    if (process.env.CAPTURE_PLAYWRIGHT_MCP === '1') {
+      await page.screenshot({
+        fullPage: true,
+        path: resolve(
+          process.cwd(),
+          '.playwright-mcp/github/repositories/369sup/support/screenshots',
+          `target-repository-overview-${viewport.name}.png`
+        )
+      });
+    }
+  }
 
   await page.goto(`/app/repositories/${repositoryId}`);
   await expect(page).toHaveURL(repositoryPath);
