@@ -5,7 +5,6 @@ import Link from 'next/link';
 import { createRequestServices } from '@/composition/create-request-services';
 import { repositoryPagePath } from '@/routing/repository-routes';
 
-import { RepositoryShell } from '../_components/repository-shell';
 import { requireAccessibleRepositoryRoute } from '../_queries/get-accessible-repository-route';
 import { createPage } from './actions';
 
@@ -31,59 +30,52 @@ export default async function RepositoryPages({ params, searchParams }: Reposito
   const { error } = await searchParams;
 
   return (
-    <RepositoryShell
-      ownerSlug={route.ownerSlug}
-      repositoryName={route.repository.name}
-      repositorySlug={route.repository.slug}
-      visibility={route.repository.visibility}
-    >
-      <section className='space-y-6'>
-        <div>
-          <h1 className='text-2xl font-semibold tracking-tight'>Pages</h1>
-          <p className='text-sm text-muted-foreground'>Repository-scoped collaboration artifacts.</p>
-        </div>
+    <section className='space-y-6'>
+      <div>
+        <h1 className='text-2xl font-semibold tracking-tight'>Pages</h1>
+        <p className='text-sm text-muted-foreground'>Pages in this Repository.</p>
+      </div>
 
-        {error && errorMessages[error] ? (
-          <p className='rounded-md border border-destructive/40 bg-destructive/10 p-3 text-sm text-destructive'>
-            {errorMessages[error]}
-          </p>
-        ) : null}
+      {error && errorMessages[error] ? (
+        <p className='rounded-md border border-destructive/40 bg-destructive/10 p-3 text-sm text-destructive'>
+          {errorMessages[error]}
+        </p>
+      ) : null}
 
-        <Card>
-          <CardHeader>
-            <CardTitle className='text-base'>Create a Page</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <form action={createPage} className='flex flex-col gap-3 sm:flex-row'>
-              <input name='ownerSlug' type='hidden' value={route.ownerSlug} />
-              <input name='repositoryId' type='hidden' value={route.repository.id} />
-              <input name='repositorySlug' type='hidden' value={route.repository.slug} />
-              <Input aria-label='Page title' name='title' placeholder='Page title' required />
-              <Button type='submit'>Create Page</Button>
-            </form>
+      <Card>
+        <CardHeader>
+          <CardTitle className='text-base'>Create a Page</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <form action={createPage} className='flex flex-col gap-3 sm:flex-row'>
+            <input name='ownerSlug' type='hidden' value={route.ownerSlug} />
+            <input name='repositoryId' type='hidden' value={route.repository.id} />
+            <input name='repositorySlug' type='hidden' value={route.repository.slug} />
+            <Input aria-label='Page title' name='title' placeholder='Page title' required />
+            <Button type='submit'>Create Page</Button>
+          </form>
+        </CardContent>
+      </Card>
+
+      {pages.length === 0 ? (
+        <Card className='border-dashed'>
+          <CardContent className='py-8 text-sm text-muted-foreground'>
+            No Pages are visible in this Repository yet.
           </CardContent>
         </Card>
-
-        {pages.length === 0 ? (
-          <Card className='border-dashed'>
-            <CardContent className='py-8 text-sm text-muted-foreground'>
-              No Pages are visible in this Repository yet.
-            </CardContent>
-          </Card>
-        ) : (
-          <div className='grid gap-3'>
-            {pages.map((page) => (
-              <Link key={page.id} href={repositoryPagePath(route, page.id)}>
-                <Card className='transition-colors hover:bg-accent/30'>
-                  <CardHeader>
-                    <CardTitle className='text-base'>{page.title}</CardTitle>
-                  </CardHeader>
-                </Card>
-              </Link>
-            ))}
-          </div>
-        )}
-      </section>
-    </RepositoryShell>
+      ) : (
+        <div className='grid gap-3'>
+          {pages.map((page) => (
+            <Link key={page.id} href={repositoryPagePath(route, page.id)}>
+              <Card className='transition-colors hover:bg-accent/30'>
+                <CardHeader>
+                  <CardTitle className='text-base'>{page.title}</CardTitle>
+                </CardHeader>
+              </Card>
+            </Link>
+          ))}
+        </div>
+      )}
+    </section>
   );
 }
