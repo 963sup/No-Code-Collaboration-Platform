@@ -23,10 +23,7 @@ export const getAccessibleRepositoryRoute = cache(
   }
 );
 
-export async function requireAccessibleRepositoryRoute(
-  ownerSlug: string,
-  repositorySlug: string
-) {
+export async function requireAccessibleRepositoryRoute(ownerSlug: string, repositorySlug: string) {
   const route = await getAccessibleRepositoryRoute(ownerSlug, repositorySlug);
   if (!route) notFound();
   return route;
