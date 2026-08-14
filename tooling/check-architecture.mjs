@@ -107,60 +107,46 @@ for (const [scope, rules] of Object.entries(packageRules)) {
   }
 }
 
-const repositoryWorkspaceRoute = 'apps/web/src/app/(app)/app/[organizationSlug]/[repositorySlug]';
-const repositoryPagesRoute = `${repositoryWorkspaceRoute}/@workspace/pages`;
-const persistentParallelRouteDefaults = [
-  `${repositoryWorkspaceRoute}/default.tsx`,
-  `${repositoryWorkspaceRoute}/@navigation/default.tsx`,
-  `${repositoryWorkspaceRoute}/@workspace/default.tsx`,
-  `${repositoryWorkspaceRoute}/@context/default.tsx`,
-  `${repositoryWorkspaceRoute}/@activity/default.tsx`
-];
-const requiredParallelRouteFiles = [
-  `${repositoryWorkspaceRoute}/layout.tsx`,
+const repositoryRoute = 'apps/web/src/app/(repository)/[ownerSlug]/[repositorySlug]';
+const repositoryPagesRoute = `${repositoryRoute}/pages`;
+const requiredRepositoryFiles = [
+  `${repositoryRoute}/layout.tsx`,
+  `${repositoryRoute}/page.tsx`,
+  `${repositoryRoute}/_components/repository-shell.tsx`,
+  `${repositoryRoute}/_queries/get-accessible-repository-route.ts`,
   `${repositoryPagesRoute}/page.tsx`,
   `${repositoryPagesRoute}/[pageId]/page.tsx`,
   `${repositoryPagesRoute}/actions.ts`,
-  `${repositoryWorkspaceRoute}/@workspace/activity/page.tsx`,
-  ...persistentParallelRouteDefaults
+  `${repositoryRoute}/activity/page.tsx`
 ];
 
-for (const path of requiredParallelRouteFiles) {
+for (const path of requiredRepositoryFiles) {
   if (!existsSync(resolve(root, path))) {
-    failures.push(`${path}: required Repository Parallel Route contract is missing`);
+    failures.push(`${path}: canonical Owner/Repository delivery contract is missing`);
   }
 }
 
-const repositoryLayoutPath = `${repositoryWorkspaceRoute}/layout.tsx`;
+const repositoryLayoutPath = `${repositoryRoute}/layout.tsx`;
 if (existsSync(resolve(root, repositoryLayoutPath))) {
   const content = readFileSync(resolve(root, repositoryLayoutPath), 'utf8');
-  for (const slot of ['children', 'navigation', 'workspace', 'context', 'activity']) {
-    if (!new RegExp(`\\b${slot}\\b`, 'u').test(content)) {
-      failures.push(`${repositoryLayoutPath}: layout does not render the ${slot} slot`);
-    }
-  }
-}
-
-for (const path of persistentParallelRouteDefaults) {
-  if (!existsSync(resolve(root, path))) continue;
-  const content = readFileSync(resolve(root, path), 'utf8');
-  if (!content.trim()) failures.push(`${path}: persistent slot default is empty`);
-  if (/return\s+null/u.test(content)) {
-    failures.push(`${path}: persistent slot default may not silently return null`);
-  }
-}
-
-const repositoryNavigationPath = `${repositoryWorkspaceRoute}/@navigation/page.tsx`;
-if (existsSync(resolve(root, repositoryNavigationPath))) {
-  const content = readFileSync(resolve(root, repositoryNavigationPath), 'utf8');
-  for (const symbol of ['repositoryPagesPath', 'repositoryActivityPath']) {
+  for (const symbol of ['RepositoryShell', 'requireAccessibleRepositoryRoute']) {
     if (!content.includes(symbol)) {
-      failures.push(`${repositoryNavigationPath}: ${symbol} semantic route link is missing`);
+      failures.push(`${repositoryLayoutPath}: ${symbol} canonical boundary is missing`);
     }
   }
-  if (content.includes('/resources')) {
+}
+
+const repositoryShellPath = `${repositoryRoute}/_components/repository-shell.tsx`;
+if (existsSync(resolve(root, repositoryShellPath))) {
+  const content = readFileSync(resolve(root, repositoryShellPath), 'utf8');
+  for (const label of ['Overview', 'Pages', 'Activity']) {
+    if (!content.includes(label)) {
+      failures.push(`${repositoryShellPath}: ${label} Repository navigation is missing`);
+    }
+  }
+  if (content.includes("href='/app'")) {
     failures.push(
-      `${repositoryNavigationPath}: Resource abstraction must not leak into navigation URLs`
+      `${repositoryShellPath}: Owner label must not pretend /app is the Owner destination`
     );
   }
 }
@@ -168,73 +154,84 @@ if (existsSync(resolve(root, repositoryNavigationPath))) {
 const repositoryPagesPath = `${repositoryPagesRoute}/page.tsx`;
 if (existsSync(resolve(root, repositoryPagesPath))) {
   const content = readFileSync(resolve(root, repositoryPagesPath), 'utf8');
-  if (!content.includes('requireAccessibleRepositoryRoute')) {
-    failures.push(
-      `${repositoryPagesPath}: nested workspace route must use the access-aware Repository route projection`
-    );
+  for (const symbol of ['requireAccessibleRepositoryRoute', 'ListAccessiblePages', 'createPage']) {
+    if (!content.includes(symbol)) {
+      failures.push(`${repositoryPagesPath}: ${symbol} Page boundary is missing`);
+    }
   }
-  if (!content.includes('ListAccessiblePages')) {
-    failures.push(`${repositoryPagesPath}: Page Resource read model is missing`);
+  if (content.includes('RepositoryShell')) {
+    failures.push(`${repositoryPagesPath}: shared Repository shell belongs in layout.tsx`);
   }
   if (content.includes('/resources')) {
-    failures.push(`${repositoryPagesPath}: concrete Page surface must not emit Resource URLs`);
+    failures.push(`${repositoryPagesPath}: Resource abstraction must not leak into product URLs`);
   }
 }
 
 const pageDetailPath = `${repositoryPagesRoute}/[pageId]/page.tsx`;
 if (existsSync(resolve(root, pageDetailPath))) {
   const content = readFileSync(resolve(root, pageDetailPath), 'utf8');
-  if (!content.includes('requireAccessibleRepositoryRoute')) {
-    failures.push(`${pageDetailPath}: Page route must resolve its Repository namespace`);
+  for (const symbol of ['requireAccessibleRepositoryRoute', 'GetAccessiblePage', 'updatePage']) {
+    if (!content.includes(symbol)) {
+      failures.push(`${pageDetailPath}: ${symbol} Page boundary is missing`);
+    }
   }
-  if (!content.includes('GetAccessiblePage')) {
-    failures.push(`${pageDetailPath}: Page route must use the authorization-aware Page query`);
-  }
-  if (!content.includes('updatePage')) {
-    failures.push(`${pageDetailPath}: Page route must submit through the Page update action`);
+  if (content.includes('RepositoryShell')) {
+    failures.push(`${pageDetailPath}: shared Repository shell belongs in layout.tsx`);
   }
 }
 
 const pageActionsPath = `${repositoryPagesRoute}/actions.ts`;
 if (existsSync(resolve(root, pageActionsPath))) {
   const content = readFileSync(resolve(root, pageActionsPath), 'utf8');
-  for (const symbol of ['CreatePage', 'UpdatePage', 'revalidatePath']) {
+  for (const symbol of ['CreatePage', 'UpdatePage', 'repositoryAccessReader', 'ownerSlug']) {
     if (!content.includes(symbol)) {
-      failures.push(`${pageActionsPath}: ${symbol} boundary is missing`);
+      failures.push(`${pageActionsPath}: ${symbol} owner-neutral command boundary is missing`);
     }
+  }
+  if (content.includes('organizationSlug')) {
+    failures.push(`${pageActionsPath}: Organization-only Repository route input must be removed`);
   }
 }
 
-for (const activityPath of [
-  `${repositoryWorkspaceRoute}/@activity/page.tsx`,
-  `${repositoryWorkspaceRoute}/@workspace/activity/page.tsx`
-]) {
-  if (!existsSync(resolve(root, activityPath))) continue;
-  const content = readFileSync(resolve(root, activityPath), 'utf8');
+const repositoryActivityPath = `${repositoryRoute}/activity/page.tsx`;
+if (existsSync(resolve(root, repositoryActivityPath))) {
+  const content = readFileSync(resolve(root, repositoryActivityPath), 'utf8');
   if (!content.includes('ListRepositoryActivity')) {
-    failures.push(`${activityPath}: Activity must project immutable Repository facts`);
+    failures.push(`${repositoryActivityPath}: Activity projection query is missing`);
+  }
+  if (content.includes('RepositoryShell')) {
+    failures.push(`${repositoryActivityPath}: shared Repository shell belongs in layout.tsx`);
   }
 }
 
 const appHomePath = 'apps/web/src/app/(app)/app/page.tsx';
 if (existsSync(resolve(root, appHomePath))) {
   const content = readFileSync(resolve(root, appHomePath), 'utf8');
-  if (!content.includes('ListAccessibleRepositoryRoutes')) {
-    failures.push(`${appHomePath}: Repository list must project canonical semantic routes`);
+  for (const symbol of ['ListAccessibleRepositoryRoutes', 'repositoryPath']) {
+    if (!content.includes(symbol)) {
+      failures.push(`${appHomePath}: ${symbol} canonical Repository navigation is missing`);
+    }
   }
   if (content.includes('/app/repositories/${repository.id}')) {
-    failures.push(`${appHomePath}: Repository UUID must not remain the primary navigation URL`);
+    failures.push(`${appHomePath}: stable ID must not remain primary human navigation URL`);
   }
 }
 
-const legacyRepositoryRoute = 'apps/web/src/app/(app)/app/repositories/[repositoryId]';
-const legacyCompatibilityPath = `${legacyRepositoryRoute}/[[...legacyPath]]/page.tsx`;
-if (!existsSync(resolve(root, legacyCompatibilityPath))) {
+const organizationOnlyRepositoryRoute = 'apps/web/src/app/(app)/app/[organizationSlug]/[repositorySlug]';
+if (existsSync(resolve(root, organizationOnlyRepositoryRoute))) {
   failures.push(
-    `${legacyCompatibilityPath}: legacy Repository namespace must be one access-aware compatibility redirect`
+    `${organizationOnlyRepositoryRoute}: obsolete Organization-only Repository UI must not coexist with canonical Owner routing`
+  );
+}
+
+const stableIdCompatibilityRoute = 'apps/web/src/app/(app)/app/repositories/[repositoryId]';
+const stableIdCompatibilityPath = `${stableIdCompatibilityRoute}/[[...legacyPath]]/page.tsx`;
+if (!existsSync(resolve(root, stableIdCompatibilityPath))) {
+  failures.push(
+    `${stableIdCompatibilityPath}: stable-ID Repository compatibility redirect is missing`
   );
 } else {
-  const content = readFileSync(resolve(root, legacyCompatibilityPath), 'utf8');
+  const content = readFileSync(resolve(root, stableIdCompatibilityPath), 'utf8');
   for (const symbol of [
     'GetAccessibleRepositoryRouteById',
     'repositoryPath',
@@ -244,39 +241,40 @@ if (!existsSync(resolve(root, legacyCompatibilityPath))) {
     'notFound'
   ]) {
     if (!content.includes(symbol)) {
-      failures.push(`${legacyCompatibilityPath}: ${symbol} compatibility boundary is missing`);
+      failures.push(`${stableIdCompatibilityPath}: ${symbol} compatibility boundary is missing`);
     }
   }
 }
 
-const legacySourceFiles = collectSourceFiles(legacyRepositoryRoute);
-if (legacySourceFiles.length !== 1 || legacySourceFiles[0] !== legacyCompatibilityPath) {
+const compatibilitySourceFiles = collectSourceFiles(stableIdCompatibilityRoute);
+if (
+  compatibilitySourceFiles.length !== 1 ||
+  compatibilitySourceFiles[0] !== stableIdCompatibilityPath
+) {
   failures.push(
-    `${legacyRepositoryRoute}: legacy Repository namespace must contain only the compatibility route`
+    `${stableIdCompatibilityRoute}: compatibility namespace must contain only the access-aware redirect route`
   );
 }
 
-for (const forbidden of [
-  'AGENTS.md',
-  'layout.tsx',
-  'default.tsx',
-  'not-found.tsx',
-  '_queries',
-  '@activity',
-  '@context',
-  '@navigation',
-  '@workspace'
-]) {
-  if (existsSync(resolve(root, legacyRepositoryRoute, forbidden))) {
-    failures.push(
-      `${legacyRepositoryRoute}/${forbidden}: legacy Repository namespace is redirect-only and must not own presentation or query state`
-    );
-  }
+const duplicateAuthConfirmPath = 'apps/web/src/app/auth/confirm/route.ts';
+if (existsSync(resolve(root, duplicateAuthConfirmPath))) {
+  failures.push(`${duplicateAuthConfirmPath}: duplicate auth confirmation handler must be removed`);
 }
 
-const speculativeResourceGridPath = `${repositoryWorkspaceRoute}/_components/repository-resource-kind-grid.tsx`;
-if (existsSync(resolve(root, speculativeResourceGridPath))) {
-  failures.push(`${speculativeResourceGridPath}: speculative Resource kind grid must be removed`);
+const canonicalAuthConfirmPath = 'apps/web/src/app/(auth)/auth/confirm/route.ts';
+if (!existsSync(resolve(root, canonicalAuthConfirmPath))) {
+  failures.push(`${canonicalAuthConfirmPath}: canonical auth confirmation handler is missing`);
+}
+
+const obsoleteAuthAliasPath = 'apps/web/src/auth/auth-navigation.ts';
+if (existsSync(resolve(root, obsoleteAuthAliasPath))) {
+  failures.push(`${obsoleteAuthAliasPath}: obsolete auth routing alias must be removed`);
+}
+
+const obsoleteRepositoryRouteReader =
+  'packages/infrastructure/supabase/src/repositories/supabase-repository-route-reader.ts';
+if (existsSync(resolve(root, obsoleteRepositoryRouteReader))) {
+  failures.push(`${obsoleteRepositoryRouteReader}: obsolete Repository route reader alias must be removed`);
 }
 
 const result = {
