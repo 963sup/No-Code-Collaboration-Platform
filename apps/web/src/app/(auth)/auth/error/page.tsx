@@ -10,7 +10,7 @@ import {
 import type { Metadata } from 'next';
 import Link from 'next/link';
 
-import { buildPath, resolvePostAuthDestination } from '@/auth/auth-navigation';
+import { buildPath, resolvePostAuthDestination } from '@/routing/auth-routes';
 
 export const metadata: Metadata = {
   title: 'Authentication error'
