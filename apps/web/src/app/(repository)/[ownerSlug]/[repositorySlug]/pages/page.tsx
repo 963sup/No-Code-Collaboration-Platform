@@ -1,5 +1,12 @@
 import { ListAccessiblePages } from '@no-code-collaboration-platform/application';
-import { Button, Card, CardContent, CardHeader, CardTitle, Input } from '@no-code-collaboration-platform/ui';
+import {
+  Button,
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  Input
+} from '@no-code-collaboration-platform/ui';
 import Link from 'next/link';
 
 import { createRequestServices } from '@/composition/create-request-services';
