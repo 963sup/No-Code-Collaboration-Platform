@@ -6,13 +6,7 @@ type RepositoryRow = Database['public']['Tables']['repositories']['Row'];
 
 type AccessibleRepositoryRow = Pick<
   RepositoryRow,
-  | 'description'
-  | 'id'
-  | 'name'
-  | 'owner_organization_id'
-  | 'owner_user_id'
-  | 'slug'
-  | 'visibility'
+  'description' | 'id' | 'name' | 'owner_organization_id' | 'owner_user_id' | 'slug' | 'visibility'
 >;
 
 export function mapSupabaseRepositoryRow(row: AccessibleRepositoryRow): RepositorySummary {
