@@ -3,12 +3,26 @@ begin;
 create extension if not exists pgtap with schema extensions;
 set local search_path = extensions, public, pg_catalog;
 
-select plan(2);
+select plan(4);
 
 select has_table(
   'private',
   'repository_owner_namespaces',
   'User and Organization Repository owners share one private globally unique URL namespace registry'
+);
+
+select hasnt_column(
+  'public',
+  'repositories',
+  'organization_id',
+  'Repository ownership has no legacy Organization-only compatibility column'
+);
+
+select has_check(
+  'public',
+  'repositories',
+  'repositories_exactly_one_owner',
+  'Repository persistence enforces exactly one typed User-or-Organization Owner'
 );
 
 select is(
