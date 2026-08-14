@@ -52,6 +52,8 @@ export type {
   RepositoryRouteSummary
 } from './ports/repository-route-reader';
 export type { RepositoryReader } from './ports/repository-reader';
+export { CanReadRepositoryActivity } from './queries/can-read-repository-activity';
+export type { CanReadRepositoryActivityInput } from './queries/can-read-repository-activity';
 export { GetAccessiblePage } from './queries/get-accessible-page';
 export { GetAccessibleRepository } from './queries/get-accessible-repository';
 export { GetAccessibleRepositoryRoute } from './queries/get-accessible-repository-route';
