@@ -194,7 +194,6 @@ begin
       'resource.view',
       'resource.create',
       'resource.update',
-      'resource.delete',
       'member.manage'
     )
     when 'admin' then requested_capability in (
@@ -203,7 +202,6 @@ begin
       'resource.view',
       'resource.create',
       'resource.update',
-      'resource.delete',
       'member.manage'
     )
     else false
