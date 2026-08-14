@@ -30,11 +30,11 @@ The reconciled inventory contains 55 URL-resource inventories, 11 component inve
 
 Chrome DevTools MCP supplied DOM, computed-style, token, responsive, console, and request-URL/status evidence. Playwright MCP supplied navigation, search/filter, history, accessibility-tree, menu/dialog state, context switching, canonical redirects, and four-viewport evidence. Authenticated test-account pages were captured read-only; no Cookie, session, token, authorization/CSRF header, secret value, or private Repository content was stored.
 
-Saved Playwright evidence mirrors sanitized host/path resource identity. Query projections remain in their owner directory, and component-only states remain under `github/components/`:
+Saved Playwright evidence uses a semantic resource taxonomy while each `urls.json` preserves the observed and canonical GitHub URL. User identity, Organization Scope, and Repository Container evidence are separated because GitHub's `/{slug}` pathname cannot identify owner type by itself. Query projections remain with their owning resource, and component-only states remain under `github/components/`:
 
 ```text
 .playwright-mcp/github/dashboard/{urls.json,ui-ux.md,screenshots/}
-.playwright-mcp/github/users/369sup/{urls.json,ui-ux.md,screenshots/}
+.playwright-mcp/github/account/users/369sup/{urls.json,ui-ux.md,screenshots/}
 .playwright-mcp/github/repositories/369sup/support/issues/{urls.json,ui-ux.md,screenshots/}
 .playwright-mcp/github/repositories/github/docs/issues/45464/{urls.json,ui-ux.md,screenshots/}
 .playwright-mcp/github/repositories/vercel/next.js/discussions/{urls.json,ui-ux.md,screenshots/}
@@ -54,7 +54,7 @@ Mobile    390x844
 
 ## 2. Product model
 
-| GitHub surface | Publicly observed problem | Stable identity | Supporting UI |
+| GitHub surface | Observed problem | Stable identity | Supporting UI |
 | --- | --- | --- | --- |
 | Owner / Repository shell | Preserve owner and Repository context while changing collaboration surfaces | `/{owner}/{repository}` | Global header, owner/Repository header, horizontal Repository navigation |
 | Dashboard / Top repositories | Discover recent/frequent Repositories in the current account context | `/dashboard` on GitHub; target keeps `/app` by explicit Product decision | Account context switcher, local Repository filter, New command, Repository links |
@@ -185,11 +185,17 @@ Public documentation describes supported mechanisms and permissions but is not a
 
 | GitHub observation | Target mapping | Reason |
 | --- | --- | --- |
+| `/dashboard` | `/app` | The target's existing authenticated discovery contract is stable; GitHub's noun does not redefine Repository identity |
+| `/repos` | `/repositories` | Use the target Domain name rather than a provider abbreviation |
+| `/issues/assigned` | `/issues?scope=assigned` | Assignment selects an actor-specific inbox Projection; it is query state, not child-resource identity |
+| `/orgs/{org}/...` plus `/organizations/{org}/settings/...` | `/organizations/{organizationSlug}/...` | One Organization governance Scope must not inherit GitHub's split historical namespaces |
+| `/settings/installations`, `/settings/applications`, `/settings/tokens` | `/settings/integrations`, `/settings/applications`, `/settings/programmatic-access` | Preserve management semantics while removing GitHub-specific App/token vocabulary and never exposing secrets |
+| `/new`, `/new/import`, `/account/organizations/new`, `/logout` | Process/Command entry points, not canonical resources | No stable created resource exists before success; sign-out is an action, not a bookmarkable resource |
 | `/{owner}/{repository}` shell | Preserve | Same ownership and collaboration-container problem |
 | Desktop Issues sidebar | Preserve responsively | Independent navigation/filter region observed across desktop/tablet widths |
 | Issue metadata rail | Preserve responsively | Independent data and layout responsibility |
-| Repository project detail candidate | Correct to owner-scoped identity | Live Repository Projects links prove attachment is not ownership |
-| Wiki as separate Git-backed system | Do not copy | Git storage/history mechanics are excluded; Page must first prove insufficient |
+| Repository project detail candidate | Reject Repository-owned detail; defer target detail URL | Live links prove attachment is not ownership, but observation alone does not prove the target Project identity/lifecycle or exact canonical path |
+| Wiki as separate Git-backed system | Map to Page; reject a second `/wiki` canonical family | Git storage/history mechanics are excluded and Page already owns the admitted no-code knowledge problem |
 | Organization or Team conversation space | Reject | Would create a second collaboration Container |
 | Code, Commit, Branch, Diff, Actions | Reject completely | Value depends on software-development mechanics |
 

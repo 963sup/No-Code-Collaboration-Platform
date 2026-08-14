@@ -33,7 +33,7 @@ For every GitHub concept considered:
 2. verify that the problem still exists when Repository is a no-code collaboration Container;
 3. identify its identity, owner, lifecycle, relationships, authorization role, and user-visible interaction;
 4. reject the candidate when its usefulness depends on software-development-specific mechanics rather than the collaboration problem itself;
-5. treat GitHub's public URL hierarchy, information architecture, navigation, responsive composition, and interaction behavior as the constitutional presentation baseline after the concept passes semantic admission; record an explicit Product reason and discriminating test for deviations; and
+5. treat the sanitized public and read-only authenticated URL hierarchy, information architecture, navigation, responsive composition, and interaction behavior recorded in `.playwright-mcp/github/` as the constitutional presentation baseline after the concept passes semantic admission; record an explicit Product reason and discriminating test for deviations; and
 6. require a minimum discriminating test before persistence or architecture is added.
 
 The target does not preserve a benchmark feature merely by renaming it. If the feature has no independent no-code collaboration problem, it is out of scope.
@@ -49,7 +49,7 @@ Before a concept becomes an Entity, Domain contract, package, table, or surface,
 | Principal | Which subject may receive explicit authority? | User; future Team or App only when proven |
 | Container | Where does collaboration have one stable boundary? | Repository |
 | Relationship | How are identities, owners, principals, scopes, and containers connected? | Membership, Repository ownership, Grant |
-| Artifact | What collaborative work exists inside a Container? | Resource/Page; future independently proven work/conversation artifacts |
+| Artifact | What collaborative work exists inside a Container? | Page, Issue, Discussion |
 | Process | How may an Artifact or Relationship validly change? | Page commands, Grant changes, identity lifecycle transitions |
 
 These are reasoning roles, not generic architecture supertypes.
@@ -72,6 +72,9 @@ Cross-cutting semantics remain separate:
 | Repository | No-code collaboration Container and primary Resource, authorization, and history boundary | Organization, Project-style view, folder |
 | Resource | Repository-scoped unit of collaborative work | Repository itself or an opaque generic bucket |
 | Page | First accepted concrete Resource kind | Generic placeholder for every future work type |
+| Issue | Repository-scoped actionable Resource with assignment, classification, status, and conversation semantics | Developer ticket or cross-Repository inbox Projection |
+| Discussion | Repository-scoped conversation Resource organized for shared understanding | Forum Container or Issue alias |
+| Project-style planning view | Owner-scoped Projection over accepted work and Repository attachments | Repository child owner, collaboration Container, or authority boundary |
 | Membership | User ↔ Organization belonging relationship | Repository access |
 | Grant | Principal ↔ Repository authority relationship carrying a Role | Ownership relationship or effective-access cache |
 | Role | Named Capability bundle for assignment and explanation | Authorization decision primitive |
@@ -154,9 +157,15 @@ Capability is decision truth. Role is assignment and explanation vocabulary.
 
 ## Canonical URL and information architecture
 
-Repository human identity follows the Owner namespace:
+URL design follows resource identity, not GitHub's historical route vocabulary. The path owns stable identity and hierarchy; query parameters own search, filter, sort, pagination, and temporary projections; fragments own in-page location.
+
+The target resource hierarchy is:
 
 ```text
+/
+/app
+/{ownerSlug}
+/{ownerSlug}?tab=repositories|projects
 /{ownerSlug}/{repositorySlug}
 /{ownerSlug}/{repositorySlug}/issues
 /{ownerSlug}/{repositorySlug}/issues/{issueNumber}
@@ -168,6 +177,29 @@ Repository human identity follows the Owner namespace:
 /{ownerSlug}/{repositorySlug}/activity
 /{ownerSlug}/{repositorySlug}/security
 /{ownerSlug}/{repositorySlug}/settings
+
+/repositories
+/issues?scope=assigned&q=&status=&sort=&page=
+/projects
+/discussions
+/notifications
+/search?q=&type=&sort=&page=
+
+/organizations/{organizationSlug}/members
+/organizations/{organizationSlug}/teams
+/organizations/{organizationSlug}/settings
+/organizations/{organizationSlug}/audit-log
+/organizations/{organizationSlug}/custom-properties
+
+/settings/profile
+/settings/organizations
+/settings/enterprises
+/settings/appearance
+/settings/accessibility
+/settings/billing
+/settings/integrations
+/settings/applications
+/settings/programmatic-access
 ```
 
 Examples:
@@ -177,9 +209,13 @@ Examples:
 /acme/customer-success
 ```
 
-The first path segment resolves either a User or Organization Owner namespace. It does not imply Organization ownership and it is not authorization input by itself.
+The first path segment resolves either a User or Organization Owner namespace. It does not imply Organization ownership and it is not authorization input by itself. `/{ownerSlug}` is the one canonical human identity projection; `/organizations/{organizationSlug}/...` is the Organization governance hierarchy, not a second Organization profile identity.
 
 `/app` is an authenticated discovery/dashboard surface. It is not part of Repository identity.
+
+GitHub `/dashboard`, `/repos`, `/issues/assigned`, `/orgs/{slug}/...`, and `/organizations/{slug}/settings/...` are observed external routes, not target canonical names. Their admitted meanings map respectively to `/app`, `/repositories`, `/issues?scope=assigned`, and the single `/organizations/{organizationSlug}/...` governance hierarchy. This removes provider history from the target resource model.
+
+Creation, import, and session termination are Processes or Commands rather than canonical resources. Target command entry routes may use `/repositories/new`, `/repositories/import`, and `/organizations/new`; a new Issue opened in a dialog has no Issue URL until creation assigns stable identity. Sign-out is an authenticated command, not a bookmarkable `GET /logout` resource.
 
 Repository presentation follows one owner/Repository header and primary navigation. An active child surface may compose independently recoverable, route-specific supporting regions when sanitized public or read-only authenticated GitHub benchmark evidence and target behavior prove their necessity. Framework layout mechanisms never create additional Product boundaries or URL identities.
 

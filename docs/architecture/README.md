@@ -131,6 +131,30 @@ Capability remains decision truth; a highest Role can only be an explanation pro
 
 ## Canonical Repository Web architecture
 
+The target Web hierarchy normalizes GitHub's observed aliases before composing Repository routes:
+
+```text
+/app                                      # authenticated discovery; GitHub `/dashboard` is not copied
+/repositories                             # Repository discovery; not GitHub `/repos`
+/issues?scope=assigned                    # actor inbox Projection; `assigned` is query state
+/projects                                 # planning discovery Projection
+/discussions                              # discussion discovery Projection
+/notifications                            # actor delivery Projection
+/search?q=&type=&sort=&page=              # admitted-resource search; Code Search excluded
+/organizations/{organizationSlug}/...     # one governance hierarchy; no split `/orgs` namespace
+/settings/profile                         # actor profile management
+/settings/organizations                   # Organization membership management
+/settings/enterprises                     # Enterprise relationship projection; not Enterprise identity
+/settings/appearance                      # presentation preferences
+/settings/accessibility                   # accessibility preferences
+/settings/billing                         # billing/subscription management
+/settings/integrations                    # installed integration management
+/settings/applications                    # delegated application authorization management
+/settings/programmatic-access             # credential metadata/revocation only; never secret content
+```
+
+Repository creation/import and Organization creation are Process entry routes, not stable resource identities. Sign-out is a command, not a bookmarkable resource. Project detail, Team detail, and Enterprise identity routes are not accepted until their independent stable identity and lifecycle are proven.
+
 Product URL:
 
 ```text

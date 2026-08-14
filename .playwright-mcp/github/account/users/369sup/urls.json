@@ -1,0 +1,57 @@
+[
+  {
+    "url": "https://github.com/369sup",
+    "canonicalUrl": "https://github.com/369sup",
+    "title": "369sup",
+    "resourceType": "user profile",
+    "sourcePage": "user menu",
+    "triggerAction": "select Profile",
+    "viewport": "Desktop, Laptop, Tablet, Mobile",
+    "uiState": "overview",
+    "screenshotPath": "github/users/369sup/screenshots/profile-desktop-default.png"
+  },
+  {
+    "url": "https://github.com/369sup?tab=repositories",
+    "canonicalUrl": "https://github.com/369sup?tab=repositories",
+    "title": "Repositories",
+    "resourceType": "profile repository projection",
+    "sourcePage": "user menu",
+    "triggerAction": "select Repositories",
+    "viewport": "Desktop, Laptop, Tablet, Mobile",
+    "uiState": "tab query",
+    "screenshotPath": "github/users/369sup/screenshots/profile-repositories-desktop-default.png"
+  },
+  {
+    "url": "https://github.com/369sup?tab=stars",
+    "canonicalUrl": "https://github.com/369sup?tab=stars",
+    "title": "Stars",
+    "resourceType": "profile preference projection",
+    "sourcePage": "user menu",
+    "triggerAction": "select Stars",
+    "viewport": "Desktop, Laptop, Tablet, Mobile",
+    "uiState": "tab query",
+    "screenshotPath": "github/users/369sup/screenshots/profile-stars-desktop-default.png"
+  },
+  {
+    "url": "https://github.com/369sup?tab=projects",
+    "canonicalUrl": "https://github.com/369sup?tab=projects",
+    "title": "Your projects",
+    "resourceType": "profile project projection",
+    "sourcePage": "create menu",
+    "triggerAction": "select New project",
+    "viewport": "Desktop, Laptop, Tablet, Mobile",
+    "uiState": "tab query",
+    "screenshotPath": "github/users/369sup/screenshots/profile-projects-desktop-default.png"
+  },
+  {
+    "url": "https://github.com/369sup?tab=achievements",
+    "canonicalUrl": "https://github.com/369sup?tab=achievements",
+    "title": "Your Achievements",
+    "resourceType": "profile achievement projection",
+    "sourcePage": "profile navigation",
+    "triggerAction": "select Achievements",
+    "viewport": "Desktop, Laptop, Tablet, Mobile",
+    "uiState": "tab query",
+    "screenshotPath": "github/users/369sup/screenshots/profile-achievements-desktop-public.png"
+  }
+]

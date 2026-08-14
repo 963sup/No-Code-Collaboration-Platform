@@ -505,12 +505,12 @@ User identity ───────────┼──────────
 Repository Owner ─────> Repository <──────────┘ authority
 (User or Organization)   Container
                              │
-             ┌───────────────┼────────────────┐
-             ▼               ▼                ▼
-           Page          Processes         Evidence
-                        accepted commands  Activity Event
-                                               │
-                                          Projections
+             ┌───────────────┼───────────────────────┐
+             ▼               ▼                       ▼
+          Resource        Processes                Evidence
+       ┌─────┼─────┐      accepted commands       Activity Event
+       ▼     ▼     ▼                                    │
+     Page  Issue Discussion                         Projections
 ```
 
 The system is not one containment tree. Governance, membership, ownership, group authority, Artifact containment, and presentation are different relationships.
@@ -556,6 +556,9 @@ Concrete rules:
 
 - Model Repository ownership with typed User/Organization references.
 - Maintain one globally unambiguous User/Organization owner namespace for `/{owner}/{repository}`.
+- Use `/{ownerSlug}` as the canonical User-or-Organization identity projection and `/organizations/{organizationSlug}/...` only for Organization governance resources; do not copy GitHub's split `/orgs/...` and `/organizations/.../settings/...` histories into the target.
+- Model cross-Repository assigned Issues as `/issues?scope=assigned`, because assignment is a projection/filter rather than a child resource.
+- Keep command/process entry routes such as Repository creation, import, and Organization creation outside the canonical resource hierarchy; sign-out is a command rather than a bookmarkable resource.
 - Keep authorization targets on stable IDs rather than URL names or UI selections.
 - Derive Collaborator and Member classifications rather than creating identity subtypes.
 - Keep User Grant persistence typed while User is the only accepted persisted Principal.
@@ -569,7 +572,7 @@ Concrete rules:
 - Keep Role/Capability meaning under one Domain owner; SQL and UI project it.
 - Keep Context out of authorization inputs unless the selected value resolves a persisted fact that would be used independently of selection.
 - Keep historical Evidence semantics distinct from presentation Projections.
-- After semantic admission, preserve GitHub's mature public owner/Repository URL, information architecture, navigation, responsive composition, and interaction behavior unless an explicit target Product reason and discriminating test justify a deviation.
+- After semantic admission, preserve the sanitized public and read-only authenticated owner/Repository information architecture, navigation, responsive composition, and interaction behavior in `.playwright-mcp/github/` unless an explicit target Product reason and discriminating test justify a deviation. Preserve resource relationships, not GitHub's historical route aliases.
 - `/app` is a discovery/dashboard surface; it is not part of Repository identity.
 - Canonical Repository presentation is owner/Repository header + primary navigation + one active child resource surface. Route-specific supporting navigation, metadata, activity, or modal composition may render beside that surface without becoming a Container, Artifact, authority source, or URL identity.
 - A green browser suite is evidence only for journeys it explicitly covers.

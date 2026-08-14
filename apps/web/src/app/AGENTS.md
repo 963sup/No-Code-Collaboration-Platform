@@ -22,7 +22,7 @@ This directory owns URL identity, rendering, route composition, and delivery-spe
 - `page.tsx`, `layout.tsx`, `loading.tsx`, `not-found.tsx`, Server Actions, and Route Handlers remain thin and must not import Supabase adapters outside the composition boundary.
 - Public Repository reads must not be converted into authenticated-only behavior by delivery wrappers. Authenticated mutations still establish Actor identity and evaluate Application/Domain Capability independently.
 
-## Canonical Repository route shape
+## Current executable Repository route shape
 
 ```text
 src/app/(repository)/

@@ -18,11 +18,11 @@ Evidence labels used below:
 
 ## Storage convention and screenshot index
 
-Resource screenshots mirror the sanitized GitHub URL path. For example, `/dashboard` is stored at `github/dashboard/`, `/github/docs/issues/45464` at `github/repositories/github/docs/issues/45464/`, and `/orgs/ac-sup/dashboard` at `github/organizations/ac-sup/dashboard/`. UI-only state never creates a fake URL directory; it lives at `github/components/{component}/`.
+Resource evidence is grouped by target product semantics rather than by GitHub's overloaded first pathname segment. Personal-account User identity lives under `github/account/users/{username}/`, Organization identity and administration under `github/organizations/{organizationSlug}/`, and Repository collaboration evidence under `github/repositories/{ownerSlug}/{repositorySlug}/`. Every `urls.json` retains the observed and canonical GitHub URLs, so semantic grouping does not lose external URL traceability. Host-level resources such as `/dashboard` keep their stable resource directory, while UI-only state lives under `github/components/{component}/` and never creates a fake URL resource.
 
 There are **294 screenshots** across 55 URL resource inventories and 11 component groups. Authenticated and anonymous views of the same URL are distinguished by filenames, not by extra path hierarchy.
 
-The owner-looking directories `github/organizations/github/`, `github/vercel/`, `github/users/369sup/`, `github/organizations/ac-sup/`, and `github/gollum/` are not arbitrary categories. They mirror the first stable path segment of observed URLs: GitHub and ac-sup are Organization owners; 369sup is the test User owner; vercel/next.js and gollum/gollum are benchmark Repository identities. Redirect-only command/alias paths retain their requested path inventory and point to the canonical screenshot rather than duplicating files.
+This separation is intentional: `github/organizations/github/` and `github/organizations/ac-sup/` are Organization Scope evidence, `github/account/users/369sup/` is Personal Account/User identity evidence, and `github/repositories/{github/docs|vercel/next.js|369sup/support|gollum/gollum}/` is Repository Container evidence. Owner type is established from the observed resource, not guessed from the ambiguous `/{slug}` URL shape. Redirect-only command/alias paths retain their requested URL inventory and point to the canonical screenshot rather than duplicating files.
 
 ## Visual system
 
@@ -123,25 +123,46 @@ For every target URL:
 6. Keep modal/sidebar/tab/drawer/component names out of the URL.
 7. Keep one canonical URL for the same Issue or Discussion whether rendered as a full page or intercepted dialog.
 
-Target candidates:
+Derived target resource URLs after no-code admission and alias normalization:
 
 ```text
 /app
 /{ownerSlug}
+/{ownerSlug}?tab=repositories|projects
 /{ownerSlug}/{repositorySlug}
 /{ownerSlug}/{repositorySlug}/issues
 /{ownerSlug}/{repositorySlug}/issues/{issueNumber}
+/{ownerSlug}/{repositorySlug}/projects
 /{ownerSlug}/{repositorySlug}/discussions
 /{ownerSlug}/{repositorySlug}/discussions/{discussionNumber}
+/{ownerSlug}/{repositorySlug}/pages
 /{ownerSlug}/{repositorySlug}/pages/{pageId}
 /{ownerSlug}/{repositorySlug}/activity
-/organizations/{organizationSlug}/members
-/organizations/{organizationSlug}/teams/{teamSlug}
-/organizations/{organizationSlug}/settings
-/enterprises/{enterpriseSlug}/settings
+/{ownerSlug}/{repositorySlug}/security
+/{ownerSlug}/{repositorySlug}/settings
+/repositories
+/issues?scope=assigned&q=&status=&sort=&page=
+/projects
+/discussions
 /notifications
 /search?q=&type=&sort=&page=
+/organizations/{organizationSlug}/members
+/organizations/{organizationSlug}/teams
+/organizations/{organizationSlug}/settings
+/organizations/{organizationSlug}/audit-log
+/organizations/{organizationSlug}/custom-properties
+/settings/profile
+/settings/organizations
+/settings/enterprises
+/settings/appearance
+/settings/accessibility
+/settings/billing
+/settings/integrations
+/settings/applications
+/settings/programmatic-access
 ```
+
+Creation/import entry points are Processes or Commands (`/repositories/new`, `/repositories/import`, `/organizations/new`), not canonical resource identities. Sign-out is an authenticated command rather than a bookmarkable `/logout` resource. Project detail, Team detail, and Enterprise identity routes remain unaccepted until their stable identity and lifecycle are proven.
 
 `/app` remains the project's authenticated Repository discovery/dashboard entry under the current canonical contract. GitHub's `/dashboard` is mirrored in benchmark storage but is not copied automatically into the target URL model.
 
@@ -153,6 +174,13 @@ app/
 │  └─ page.tsx
 ├─ (app)/
 │  └─ app/page.tsx
+├─ (global)/
+│  ├─ repositories/page.tsx
+│  ├─ issues/page.tsx
+│  ├─ projects/page.tsx
+│  ├─ discussions/page.tsx
+│  ├─ notifications/page.tsx
+│  └─ search/page.tsx
 ├─ (owners)/
 │  └─ [ownerSlug]/page.tsx
 ├─ (repository)/
@@ -161,18 +189,22 @@ app/
 │     ├─ page.tsx
 │     ├─ issues/page.tsx
 │     ├─ issues/[issueNumber]/page.tsx
+│     ├─ projects/page.tsx
 │     ├─ discussions/page.tsx
 │     ├─ discussions/[discussionNumber]/page.tsx
+│     ├─ pages/page.tsx
 │     ├─ pages/[pageId]/page.tsx
 │     ├─ activity/page.tsx
+│     ├─ security/page.tsx
+│     ├─ settings/page.tsx
 │     ├─ @sidebar/default.tsx
 │     ├─ @activity/default.tsx
 │     └─ @modal/
 │        ├─ default.tsx
 │        ├─ (.)issues/[issueNumber]/page.tsx
 │        └─ (.)discussions/[discussionNumber]/page.tsx
-├─ (organizations)/organizations/[organizationSlug]/...
-├─ (enterprises)/enterprises/[enterpriseSlug]/...
+├─ (governance)/organizations/[organizationSlug]/...
+├─ (commands)/...
 └─ (settings)/...
 ```
 
@@ -191,7 +223,7 @@ Parallel Routes are a delivery requirement only where the region has independent
 Next DevTools reported current routes for `/app`, `/{owner}/{repository}`, `/activity`, `/pages`, and `/pages/{pageId}`. No Parallel Route slots currently exist.
 
 - Correct and preserved: `/{ownerSlug}/{repositorySlug}` matches stable owner/Container identity; `/app` matches the current Product contract; `/activity` and Page identity are admitted.
-- Missing, not yet implemented: Issue collection/detail, Discussion collection/detail, Project projections, Organization/Enterprise governance surfaces, notifications, search, and settings route families.
+- Missing, not yet implemented: Issue collection/detail, Discussion collection/detail, Project projections, admitted Organization governance surfaces, notifications, search, and settings route families. Enterprise identity remains deferred rather than appearing as a target route.
 - The legacy `/app/repositories/{repositoryId}/...` route is a compatibility redirect/projection and must not become a second canonical Repository identity.
 - There is no current URL collision that requires an immediate destructive rewrite. The conflict is incomplete information architecture, so the next correct change is to add the admitted canonical resources and justified slots after model approval.
 

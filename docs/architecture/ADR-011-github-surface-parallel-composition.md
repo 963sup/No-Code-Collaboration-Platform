@@ -84,24 +84,32 @@ Canonical URL decisions:
 | Public home | `/` | Public product entry point; not a Domain resource |
 | Repository discovery | `/app` | Authenticated actor dashboard; not Repository identity |
 | Owner profile | `/{ownerSlug}` | User or Organization human identity projection |
+| Owner profile projections | `/{ownerSlug}?tab=repositories\|projects` | Query-selected views of the same Owner identity; benchmark Stars/Achievements are not admitted automatically |
+| Repository discovery collection | `/repositories` | Cross-Repository discovery Projection; GitHub `/repos` is not copied |
+| Assigned Issue inbox | `/issues?scope=assigned` | Cross-Repository Issue Projection; assignment is query state rather than `/issues/assigned` identity |
+| Project discovery | `/projects` | Owner-visible planning Projection |
+| Discussion discovery | `/discussions` | Cross-Repository Discussion Projection |
+| Notifications | `/notifications` | Actor-specific delivery Projection |
+| Global search | `/search?q=&type=&sort=&page=` | Query Projection over admitted resources; Code Search is excluded |
 | Repository | `/{ownerSlug}/{repositorySlug}` | Stable collaboration Container identity |
 | Issues list | `/{ownerSlug}/{repositorySlug}/issues` | Repository Artifact collection |
 | Issue detail | `/{ownerSlug}/{repositorySlug}/issues/{issueNumber}` | Stable Repository-scoped Artifact |
 | Discussions list/detail | `/{ownerSlug}/{repositorySlug}/discussions[/{discussionNumber}]` | Accepted Repository Artifact collection/detail; not yet executable |
 | Repository Projects | `/{ownerSlug}/{repositorySlug}/projects` | Attachment/list Projection only |
-| Organization Project detail | `/organizations/{organizationSlug}/projects/{projectNumber}` | Deferred owner-scoped planning Projection |
-| User Project detail | `/users/{username}/projects/{projectNumber}` | Deferred owner-scoped planning Projection |
+| Project detail | Deferred | Evidence proves owner scope, but Project identity, lifecycle, and canonical detail ownership are not accepted; do not invent a path |
 | Existing Page | `/{ownerSlug}/{repositorySlug}/pages/{pageId}` | Accepted Artifact; remains Wiki-admission baseline |
 | Repository Activity | `/{ownerSlug}/{repositorySlug}/activity` | Repository evidence Projection |
 | Repository Security | `/{ownerSlug}/{repositorySlug}/security` | Admitted governance/access-posture/security-evidence Projection only |
 | Repository Settings | `/{ownerSlug}/{repositorySlug}/settings` | Repository management surface |
-| Organization Team | `/organizations/{organizationSlug}/teams/{teamSlug}` | Deferred Organization-scoped Principal |
 | Organization Memberships | `/organizations/{organizationSlug}/members` | Membership collection Projection |
+| Organization Teams | `/organizations/{organizationSlug}/teams` | Group/authority Projection; Team detail identity remains deferred |
 | Organization Audit | `/organizations/{organizationSlug}/audit-log` | Governance Evidence Projection |
-| Notifications | `/notifications` | Actor-specific Projection |
-| Global search | `/search` | Cross-resource Projection |
+| Organization Settings | `/organizations/{organizationSlug}/settings` | Governance management surface under one Organization hierarchy |
+| Personal settings | `/settings/profile`, `/settings/organizations`, `/settings/enterprises`, `/settings/appearance`, `/settings/accessibility`, `/settings/billing`, `/settings/integrations`, `/settings/applications`, `/settings/programmatic-access` | Explicit Actor-account preference/management resources; no open-ended dynamic settings identity |
 
-The candidate `/{owner}/{repository}/projects/{projectNumber}` is rejected because live GitHub behavior and the target ontology both show that a Project-style planning view is not owned by one Repository. The candidate `/wiki/{slug}` remains deferred because Page is the only accepted knowledge Artifact and two canonical URLs for one Page would violate stable resource identity.
+The candidate `/{owner}/{repository}/projects/{projectNumber}` is rejected because live GitHub behavior and the target ontology both show that a Project-style planning view is not owned by one Repository. No replacement Project-detail path is accepted until Project identity, lifecycle, and owner are proven. The candidate `/wiki/{slug}` is rejected as a second canonical knowledge identity because Page already owns the admitted no-code knowledge problem; Git-backed history is excluded.
+
+GitHub route aliases are normalized by meaning: `/dashboard` maps to target `/app`, `/repos` maps to `/repositories`, `/issues/assigned` maps to `/issues?scope=assigned`, and the split `/orgs/{slug}/...` plus `/organizations/{slug}/settings/...` families map to one `/organizations/{organizationSlug}/...` governance hierarchy. `/logout`, creation, and import entries are Processes/Commands rather than canonical resource identities.
 
 Query state:
 
@@ -123,8 +131,27 @@ apps/web/src/app/
 │  └─ page.tsx                    # `/` public entry point
 ├─ (app)/
 │  └─ app/page.tsx
+├─ (global)/
+│  ├─ repositories/page.tsx
+│  ├─ issues/page.tsx
+│  ├─ projects/page.tsx
+│  ├─ discussions/page.tsx
+│  ├─ notifications/page.tsx
+│  └─ search/page.tsx
 ├─ (owner)/
 │  └─ [ownerSlug]/page.tsx
+├─ (governance)/
+│  └─ organizations/[organizationSlug]/
+│     ├─ members/page.tsx
+│     ├─ teams/page.tsx
+│     ├─ settings/page.tsx
+│     ├─ audit-log/page.tsx
+│     └─ custom-properties/page.tsx
+├─ (commands)/
+│  ├─ repositories/
+│  │  ├─ new/page.tsx
+│  │  └─ import/page.tsx
+│  └─ organizations/new/page.tsx
 ├─ (repository)/
 │  └─ [ownerSlug]/
 │     └─ [repositorySlug]/
@@ -160,12 +187,19 @@ apps/web/src/app/
 │           ├─ [...catchAll]/page.tsx
 │           ├─ (.)issues/[issueNumber]/page.tsx
 │           └─ (.)discussions/[discussionNumber]/page.tsx
-└─ (settings)/
-   ├─ settings/page.tsx
-   └─ organizations/[organizationSlug]/settings/page.tsx
+└─ (settings)/settings/
+   ├─ profile/page.tsx
+   ├─ organizations/page.tsx
+   ├─ enterprises/page.tsx
+   ├─ appearance/page.tsx
+   ├─ accessibility/page.tsx
+   ├─ billing/page.tsx
+   ├─ integrations/page.tsx
+   ├─ applications/page.tsx
+   └─ programmatic-access/page.tsx
 ```
 
-The tree above is the accepted target projection, not a claim that those routes exist. Issue, Discussion, Projects, Security, and Settings execution remains registered in `IMPLEMENTATION_GAPS.md`. Owner-scoped Project detail and a distinct Wiki route remain deferred; Page continues to own target knowledge identity.
+The tree above is the accepted target projection, not a claim that those routes exist. Issue, Discussion, Projects, governance, notification, search, Security, and Settings execution remains registered in `IMPLEMENTATION_GAPS.md`. Project detail remains deferred and a distinct Wiki route is rejected; Page continues to own target knowledge identity. Route Groups, slots, modal state, and command classification never appear as false resource segments.
 
 ## Parallel Route necessity
 
@@ -183,13 +217,13 @@ The tree above is the accepted target projection, not a claim that those routes 
 | --- | --- | --- | --- |
 | Account as one generic entity | User and Organization are distinct owner-capable identities | They have different lifecycle and governance; a shared route segment does not erase type | `/{ownerSlug}` resolves a typed Owner; no generic Account aggregate |
 | Organization as mandatory Repository parent | Organization is Membership/admin Scope and optional Owner | User-owned Repository solves the same Container problem without Organization | Canonical Repository URL remains owner-neutral |
-| Team as workspace | Team is deferred Organization-scoped Principal | Its retained value is shared authority assignment, not content containment | Future `/organizations/{org}/teams/{team}`; no Team collaboration Container |
+| Team as workspace | Team remains a deferred Organization-scoped Principal; the observed Teams collection is a governance Projection | Its retained value is group authority/mentioning, not content containment | `/organizations/{org}/teams` may project groups; no Team collaboration Container or invented detail URL |
 | Membership implies Repository access | Membership records belonging only | Authority must remain an explicit Role/Capability relationship | Domain authorization and UI explanations remain separate from membership lists |
 | Repository as code store | Repository is the only No-Code Collaboration Container | Ownership, containment, authority, navigation, and collaboration remain useful without code | Preserve shell and `/{owner}/{repository}`; reject code mechanics |
-| Issue as developer ticket | Issue is an accepted actionable Repository Artifact | Actionable work has independent lifecycle and conversation in arbitrary collaboration | Canonical `/issues/{issueNumber}`; execution awaits its Domain contract |
-| Project under one Repository | Project-style view is an owner-scoped planning Projection attached to Repositories | One planning view can span work; attachment does not establish ownership | Repository `/projects` is a list; detail uses owner-scoped URL |
+| Issue as developer ticket | Issue is an accepted actionable Repository Artifact | Actionable work has independent lifecycle and conversation in arbitrary collaboration | Canonical `/{owner}/{repository}/issues/{issueNumber}`; execution awaits its Domain contract |
+| Project under one Repository | Project-style view is an owner-scoped planning Projection attached to Repositories | One planning view can span work; attachment does not establish ownership | Repository `/projects` is a list; detail URL remains unaccepted until identity/lifecycle are proven |
 | Discussion as forum Container | Discussion is an accepted Repository-contained shared-understanding Artifact | Conversation remains useful, but cannot create another primary Container | Canonical Repository discussion URLs; execution awaits its Domain contract |
-| Wiki as Git-backed knowledge system | Existing Page is the admission baseline | Git storage/history is excluded and duplicate canonical identity is invalid | Keep `/pages/{pageId}` until distinct Wiki behavior is proven |
+| Wiki as Git-backed knowledge system | Existing Page owns the admitted no-code knowledge problem | Git storage/history is excluded and duplicate canonical identity is invalid | Use `/pages/{pageId}`; reject a second `/wiki` canonical family |
 | Notification/Activity/Audit as source truth | They are actor/repository/governance Projections over facts and Evidence | Delivery, summaries, and audit views have different consumers and retention from source facts | Stable projection URLs; no authority or Artifact ownership |
 | Parallel Route as Product region | Parallel Route is a delivery mechanism for independently recoverable supporting UI | Framework composition has no Domain identity | `@sidebar`, `@activity`, `@modal` stay out of public URLs |
 | Modal URL | Modal and full page share one canonical resource URL | Presentation mode cannot create a second resource identity | Intercepting Route only; direct load renders the full page |

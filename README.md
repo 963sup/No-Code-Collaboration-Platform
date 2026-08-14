@@ -86,7 +86,7 @@ The web app uses one root layout and four delivery groups:
 
 Route Group names do not appear in URLs and do not become Domain boundaries.
 
-Canonical Repository presentation is one Owner/Repository header, primary navigation, and one active content surface.
+Canonical Repository presentation is one Owner/Repository header, primary navigation, one active canonical child-resource surface, and only route-specific supporting regions that independently justify their data, navigation, loading, recovery, or modal behavior.
 
 ## Technology baseline
 

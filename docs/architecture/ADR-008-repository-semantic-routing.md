@@ -53,7 +53,7 @@ This leaks the shared Domain envelope into user navigation. Concrete Resource ki
 
 ### Move immediately to `/{organization}/{repository}`
 
-At the time of this decision, this would have copied the mature public GitHub URL shape before anonymous/public Repository delivery had been accepted and verified in this product. Later sanitized public and read-only authenticated benchmark evidence is governed by ADR-011 and does not retroactively change this historical rationale.
+At the time of this decision, anonymous/public Repository delivery had not been accepted or verified, so copying GitHub's public URL shape was not justified by the then-current Product contract.
 
 ## Consequences
 

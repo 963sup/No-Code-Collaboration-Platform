@@ -251,7 +251,7 @@ Canonical Repository namespace:
 
 A stable-ID compatibility route may resolve access and redirect to canonical URL. It must not host a second Repository UI/business-flow tree.
 
-The canonical Repository screen presents one Owner/Repository header, horizontal primary navigation, and one active child surface. Route-specific navigation, metadata, activity, or modal regions may compose independently only when their data/loading/recovery/responsive behavior is proven; they never become permanent Containers or URL identity. Project detail is owner-scoped rather than Repository-owned, and Wiki knowledge maps to Page canonical identity.
+The canonical Repository screen presents one Owner/Repository header, horizontal primary navigation, and one active child surface. Route-specific navigation, metadata, activity, or modal regions may compose independently only when their data/loading/recovery/responsive behavior is proven; they never become permanent Containers or URL identity. Repository `/projects` is an attachment Projection and cannot own Project detail; target Project-detail identity remains deferred. Wiki knowledge maps to Page canonical identity.
 
 ## Historical evidence
 

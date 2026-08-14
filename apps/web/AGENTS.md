@@ -27,7 +27,7 @@
 - Route-local UI may be colocated under private folders. Promote logic only when ownership is clear; do not create a generic shared layer to hide uncertainty.
 - Do not use import aliases or compatibility facades indefinitely to mask obsolete ownership/routing contracts. Once consumers are migrated, remove the obsolete seam.
 
-## Canonical route shape
+## Current executable Repository route shape
 
 ```text
 src/app/(repository)/

@@ -42,12 +42,12 @@ A gap is not permission to redefine the target model, postpone an invariant sile
 
 - [`.playwright-mcp/github-urls.json`](../.playwright-mcp/github-urls.json) indexes 55 URL-resource inventories, 11 component inventories, and 294 screenshots across Desktop, Laptop, Tablet, and Mobile.
 - [`.playwright-mcp/github-ui-ux.md`](../.playwright-mcp/github-ui-ux.md) records canonical redirects, Dashboard/account context switching, Repository navigation, Issues, Projects attachment behavior, Discussions availability, Wiki/Page behavior, Activity, Security posture, Settings, Notifications, and governance surfaces.
-- The accepted target URL set now includes Repository Issues, Projects attachment list, Discussions, Pages, Activity, Security posture, and Settings.
+- The accepted target URL set now includes Repository Issues, Projects attachment list, Discussions, Pages, Activity, Security posture, and Settings; actor-level Repository/Issue/Project/Discussion discovery, Notifications, Search, Organization governance, and personal Settings are separate resource/projection families rather than Repository children.
 - The executable App Router currently exposes Repository Overview, Pages/Page detail, and Activity only. There are no accepted Issue or Discussion Domain/Application/persistence contracts, no corresponding Web routes, and no verified target Project/Security/Settings slices.
 
 #### Predicted failure
 
-Without containment, documentation or UI work could present target-only surfaces as available, invent Issue/Discussion state in React components, create Repository-owned Project detail identity, duplicate Page through `/wiki`, or add Parallel slots without independent loading/recovery value.
+Without containment, documentation or UI work could present target-only surfaces as available, copy GitHub aliases as canonical target resources, invent Issue/Discussion state in React components, create Repository-owned Project detail identity, duplicate Page through `/wiki`, or add Parallel slots without independent loading/recovery value.
 
 #### Temporary containment
 
@@ -68,8 +68,9 @@ Close only after the same exact change set proves:
 5. Issue and Discussion modal/full-page modes share canonical URL and authorization; refresh, Back, and Forward behave identically for stable resource identity.
 6. Projects stays an attachment/list Projection and owner-scoped Project detail does not appear under a Repository-owned detail path.
 7. Wiki/Page knowledge has one canonical target identity and no Git-backed history semantics.
-8. Next DevTools reports no build, type, runtime, hydration, browser-log, or server-log errors for each implemented slice.
-9. Playwright compares GitHub and local behavior at `1440x900`, `1280x800`, `768x1024`, and `390x844`, then updates the sanitized inventory without credentials or private request material.
+8. GitHub `/dashboard`, `/repos`, `/issues/assigned`, split Organization namespaces, and command paths are mapped to the target resource/query/process model without provider aliases becoming canonical Domain identity.
+9. Next DevTools reports no build, type, runtime, hydration, browser-log, or server-log errors for each implemented slice.
+10. Playwright compares GitHub and local behavior at `1440x900`, `1280x800`, `768x1024`, and `390x844`, then updates the sanitized inventory without credentials or private request material.
 
 ### GAP-OWNERSHIP-001 — Repository ownership correction is implemented across current contracts, but creation and exact-head verification evidence remain incomplete
 

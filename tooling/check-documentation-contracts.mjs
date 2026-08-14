@@ -95,8 +95,8 @@ for (const [pattern, message] of [
     'corrected Repository owner relationship is missing'
   ],
   [
-    /After semantic admission, preserve GitHub's mature public owner\/Repository URL/i,
-    'owner/Repository URL benchmark rule is missing'
+    /After semantic admission, preserve the sanitized public and read-only authenticated owner\/Repository information architecture[\s\S]*Preserve resource relationships, not GitHub's historical route aliases/i,
+    'sanitized owner/Repository benchmark and alias-normalization rule is missing'
   ],
   [
     /A benchmark feature whose usefulness depends[\s\S]*not translated, renamed, or retained/i,
