@@ -17,7 +17,6 @@ const route = {
       kind: 'organization' as const,
       organizationId: 'organization-1'
     },
-    organizationId: 'organization-1',
     slug: 'platform',
     visibility: 'private' as const
   }
@@ -50,7 +49,7 @@ describe('Repository semantic route queries', () => {
     });
   });
 
-  it('resolves a legacy stable Repository identity to its canonical owner route', async () => {
+  it('resolves a stable Repository compatibility identity to its canonical owner route', async () => {
     const findAccessibleRepositoryRouteById = vi.fn().mockResolvedValue(route);
     const reader: RepositoryRouteReader = {
       findAccessibleRepositoryRouteById,
