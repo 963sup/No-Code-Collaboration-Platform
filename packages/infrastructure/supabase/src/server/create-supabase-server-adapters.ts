@@ -3,7 +3,7 @@ import type {
   IdentityProvider,
   PageReader,
   PageWriter,
-  RepositoryAuthoritySourceReader,
+  RepositoryAccessReader,
   RepositoryReader,
   RepositoryRouteReader
 } from '@no-code-collaboration-platform/application';
@@ -28,7 +28,7 @@ export interface SupabaseServerAdapters {
   readonly identityProvider: IdentityProvider;
   readonly pageReader: PageReader;
   readonly pageWriter: PageWriter;
-  readonly repositoryAuthoritySourceReader: RepositoryAuthoritySourceReader;
+  readonly repositoryAccessReader: RepositoryAccessReader;
   readonly repositoryReader: RepositoryReader;
   readonly repositoryRouteReader: RepositoryRouteReader;
 }
@@ -40,6 +40,7 @@ export function createSupabaseServerAdapters(
     cookies: options.cookies
   });
   const pageRepository = new SupabasePageRepository(client);
+  const repositoryAccessReader = new SupabaseRepositoryAuthoritySourceReader(client);
 
   return {
     activityEventReader: new SupabaseActivityEventReader(client),
@@ -50,7 +51,7 @@ export function createSupabaseServerAdapters(
     }),
     pageReader: pageRepository,
     pageWriter: pageRepository,
-    repositoryAuthoritySourceReader: new SupabaseRepositoryAuthoritySourceReader(client),
+    repositoryAccessReader,
     repositoryReader: new SupabaseRepositoryReader(client),
     repositoryRouteReader: new SupabaseOwnerRepositoryRouteReader(client)
   };
