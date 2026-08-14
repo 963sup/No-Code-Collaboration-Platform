@@ -47,10 +47,6 @@ export type {
   RepositoryAccessReader
 } from './ports/repository-access-reader';
 export type {
-  RepositoryAuthoritySourceQuery,
-  RepositoryAuthoritySourceReader
-} from './ports/repository-authority-source-reader';
-export type {
   RepositoryRouteKey,
   RepositoryRouteReader,
   RepositoryRouteSummary
