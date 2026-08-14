@@ -217,7 +217,8 @@ if (existsSync(resolve(root, appHomePath))) {
   }
 }
 
-const organizationOnlyRepositoryRoute = 'apps/web/src/app/(app)/app/[organizationSlug]/[repositorySlug]';
+const organizationOnlyRepositoryRoute =
+  'apps/web/src/app/(app)/app/[organizationSlug]/[repositorySlug]';
 if (existsSync(resolve(root, organizationOnlyRepositoryRoute))) {
   failures.push(
     `${organizationOnlyRepositoryRoute}: obsolete Organization-only Repository UI must not coexist with canonical Owner routing`
@@ -274,7 +275,9 @@ if (existsSync(resolve(root, obsoleteAuthAliasPath))) {
 const obsoleteRepositoryRouteReader =
   'packages/infrastructure/supabase/src/repositories/supabase-repository-route-reader.ts';
 if (existsSync(resolve(root, obsoleteRepositoryRouteReader))) {
-  failures.push(`${obsoleteRepositoryRouteReader}: obsolete Repository route reader alias must be removed`);
+  failures.push(
+    `${obsoleteRepositoryRouteReader}: obsolete Repository route reader alias must be removed`
+  );
 }
 
 const result = {
