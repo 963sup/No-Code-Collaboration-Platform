@@ -1,4 +1,7 @@
-import { CanReadRepositoryActivity, GetCurrentIdentity } from '@no-code-collaboration-platform/application';
+import {
+  CanReadRepositoryActivity,
+  GetCurrentIdentity
+} from '@no-code-collaboration-platform/application';
 import type { ReactNode } from 'react';
 
 import { createRequestServices } from '@/composition/create-request-services';
