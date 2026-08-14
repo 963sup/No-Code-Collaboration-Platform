@@ -10,7 +10,10 @@ Sentry.init({
   dataCollection: {
     userInfo: false,
     httpBodies: [],
-    httpHeaders: false,
+    httpHeaders: {
+      request: false,
+      response: false
+    },
     urlQueryParams: false
   },
   tracesSampleRate: environment === 'production' ? 0.1 : environment === 'preview' ? 1 : 0
