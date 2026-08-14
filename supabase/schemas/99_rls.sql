@@ -40,7 +40,7 @@ grant select on table public.activity_events to authenticated;
 -- or RLS policy until an accepted lifecycle defines retention, restore, and historical continuity.
 -- Resource INSERT/UPDATE table privileges support SECURITY INVOKER Page command RPCs. Raw Data API
 -- mutations fail closed because the policies below require transaction-local command context set by
--- those RPCs in addition to the ordinary actor and Capability checks.
+-- those RPCs in addition to the ordinary Actor and Capability checks.
 
 create policy profiles_select_self
 on public.profiles
@@ -113,13 +113,25 @@ for select
 to anon, authenticated
 using ((select private.can_view_repository(id)));
 
-create policy repositories_insert_admin
+create policy repositories_insert_personal_owner
 on public.repositories
 for insert
 to authenticated
 with check (
   (select auth.uid()) = created_by
-  and (select private.is_organization_admin(organization_id))
+  and owner_user_id = (select auth.uid())
+  and owner_organization_id is null
+);
+
+create policy repositories_insert_organization_admin
+on public.repositories
+for insert
+to authenticated
+with check (
+  (select auth.uid()) = created_by
+  and owner_user_id is null
+  and owner_organization_id is not null
+  and (select private.is_organization_admin(owner_organization_id))
 );
 
 create policy repositories_update_manager
@@ -192,7 +204,10 @@ with check (
   and (select private.has_repository_capability(repository_id, 'resource.update'))
 );
 
-create policy activity_events_select_viewer
+-- Activity Event payload is historical Evidence, not part of the anonymous public-read baseline.
+-- A future public Activity projection requires its own privacy/redaction contract instead of
+-- exposing the raw evidence envelope through public Repository visibility.
+create policy activity_events_select_authorized_viewer
 on public.activity_events
 for select
 to authenticated
