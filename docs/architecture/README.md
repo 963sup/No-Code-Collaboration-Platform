@@ -43,6 +43,7 @@ GitHub supplies mature collaboration, ownership, organization, authorization, UR
 31. Route Groups, Parallel Routes, Intercepting Routes, and framework layouts are presentation/access composition only. They do not create Product URL, Container, Artifact, or Domain boundaries.
 32. Canonical Repository reads cannot inherit an authenticated-only wrapper because public Repository visibility is an accepted anonymous read baseline.
 33. An obsolete Organization-only Repository UI tree may not coexist with canonical Owner routing.
+34. Commit, Branch, Diff, Pull Request, Actions, and Gist names can enter architecture only through accepted structured-data change or controlled-data-exchange contracts; Source Code, executable transformation, git refs/merge, code review, CI/CD, secret-bearing payloads, and a second Container remain forbidden.
 
 ## Dependency direction
 

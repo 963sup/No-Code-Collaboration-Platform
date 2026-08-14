@@ -55,7 +55,7 @@ Without containment, documentation or UI work could present target-only surfaces
 - Unsupported routes are not claimed available and must fail closed rather than use placeholder Domain logic.
 - Issue and Discussion implementation is blocked until each has an accepted Domain identity, lifecycle, authorization, and evidence contract.
 - Project remains a read/planning Projection; Repository `/projects` cannot establish Project ownership or independent authority.
-- Code, Commit, Branch, Diff, Pull Request, Actions, Gist, and Git-backed Wiki semantics remain excluded even when visible in benchmark screenshots.
+- Source Code, git refs/merge, code review, Code Search, executable payloads, CI/CD, and Git-backed Wiki history remain excluded even when visible in benchmark screenshots. Commit, Branch, Diff, Pull Request, Actions, and Gist names are conditionally admitted only through the non-executable structured-data boundaries in Product/Ontology; their concrete lifecycles remain unsupported and fail closed until their Candidate Domain contracts are accepted.
 
 #### Closure evidence
 

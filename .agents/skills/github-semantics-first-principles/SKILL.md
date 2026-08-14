@@ -20,9 +20,10 @@ Repository 是本專案唯一且不可動搖的協作容器原型。Enterprise�
 拿到任何一個 GitHub 概念（Organization、Team、Issue、Wiki、Project、任何 URL/UI 模式……）時：
 
 1. **識別原始問題**：這個概念在 GitHub 裡解決的是使用者遇到的什麼協作/組織困境？（不是「GitHub 怎麼做」，而是「使用者卡在哪裡」）
-2. **剝離程式碼前提**：拿掉「程式碼」「版本控制」「軟體開發」這些前提後，這個原始問題還存在嗎？
+2. **剝離程式碼前提**：拿掉「Source Code」「任意程式執行」「CI/CD」「軟體開發」這些前提後，這個原始問題還存在嗎？
    - 存在 → 進入第 3 步
-   - 不存在（問題本身就是因為內容可被逐行比對、可分支、可合併才成立）→ **整個概念直接淘汰。禁止用比喻、重新命名、或「更通用的包裝」保留它。**
+   - 不存在（問題只能靠程式碼解析、任意運算、建置、測試或部署成立）→ **整個概念直接淘汰。禁止用比喻、重新命名、或「更通用的包裝」保留它。**
+   - 若問題可被重新表述為「結構化資料的狀態、比較、提案、核准或傳遞」→ 繼續，但必須套用下方嚴格無代碼資料邊界。
 3. **套用唯一前提重新表述**：把這個問題套進「Repository = 無程式碼協作容器」這個唯一前提，它會長什麼樣子？
 4. **分類語意角色**：這個概念在新語意下，是：
    - **Actor**（誰在行動）
@@ -36,49 +37,36 @@ Repository 是本專案唯一且不可動搖的協作容器原型。Enterprise�
 5. **收斂回 Repository**：這個概念存在的唯一理由，是不是因為它服務於 Repository 這個容器？
    - 如果答案是「它自己也想成為一個容器」，或「它需要獨立於 Repository 存在的協作空間」→ **直接拒絕**。
 
-## 強制排除邊界（在五步驟的任何一步都適用，優先權最高）
+## 強制無代碼資料邊界（在五步驟的任何一步都適用，優先權最高）
 
-以下概念，無論在推導過程中看起來多麼「順理成章」或「看似必要」，一律判定為不適用，必須被排除，不得以無代碼化包裝的方式保留：
+以下能力絕對排除：
 
-- commit（提交）、branch（分支）、diff（差異比對）、merge（合併）
-- 任何建立在「內容是可逐行比對文字」前提上的版本追蹤機制
-- 任何試圖成為 Repository 之外第二個「協作容器」的實體（例如讓 Organization 或 Team 可以獨立擁有協作空間、獨立於 Repository 存在）
+- Source Code、可執行程式、shell、script、任意 expression/runtime；
+- Code Search、code review、程式碼逐行解析，以及以程式語言語法為前提的比較或合併；
+- CI/CD、build、test runner、deployment、Package/Release source capability；
+- 未經 schema 驗證的任意 payload、credential/secret 內容，以及未經授權的外部端點；
+- 任何試圖成為 Repository 之外第二個協作 Container 的實體。
 
-**判斷準則：如果某個 GitHub 語意元素的成立前提是 git 版本控制邏輯，該元素本身即判定為不適用。**
+`Commit`、`Branch`、`Diff`、`Pull Request`、`Actions`、`Gist` 不因名稱自動排除，也不因 GitHub 存在而自動接受。只有下列無代碼語意可以進入候選模型：
 
-### 重要範圍澄清（避免誤判）
+| GitHub 名稱 | 允許的無代碼語意 | 語意角色 | 絕對禁止 |
+| --- | --- | --- | --- |
+| Commit | 一次不可變、可歸因的結構化資料變更批次 | Process result + Evidence | Source Code commit、任意檔案樹、程式碼作者/行號語意 |
+| Branch | Repository 內隔離的具名資料狀態線 | Context/Process state | 成為第二 Container、獨立授權、git ref/checkout 心智模型 |
+| Diff | 兩個已授權結構化資料狀態的欄位/記錄比較 | Projection | 程式碼逐行 diff、語法解析、跨權限洩漏 |
+| Pull Request | 請求審核並套用一組資料變更的提案流程 | Process | code review、git merge、用提案繞過目標 Resource 授權 |
+| Actions | 白名單端點間的宣告式資料傳遞 | Process | script、shell、任意運算、CI/CD、build/test/deploy |
+| Gist | Repository 內可分享的型別化 Data Capsule/Transfer Artifact | Artifact | 可執行 snippet、獨立協作空間、繞過 Repository visibility |
 
-上述排除邊界管轄的是**本產品對外呈現的網域語意**（使用者在無程式碼協作平台上會看到、操作、理解的概念）。它**不**管轄開發本專案時使用的工程流程本身（例如用 git/GitHub PR 管理原始碼、code review 使用 diff、資料庫用 migration 做 schema 版本演進）。這兩者是不同層次：
+共同不變條件：
 
-- 產品網域裡出現「commit」「branch」「diff」語意 → 違反，必須排除
-- 開發團隊用 GitHub PR + git commit 來管理這個專案的原始碼本身 → 不在此公理管轄範圍內，屬於必要的工程實務
-
-審查時若不確定某個詞屬於哪一層，優先問：「使用者在產品 UI 上會不會看到這個詞或這個心智模型？」會看到 → 產品網域，套用排除邊界；不會看到，只存在於開發者的終端機/CI/PR 流程裡 → 不套用。
-
-## 版本控制的兩種語意：程式碼版控（禁止）vs 資料版本控制（未來可能需要，適用不同規則）
-
-「版本控制」這個詞在本專案裡必須拆成兩個完全不同的概念，不得混為一談：
-
-### A. 程式碼版本控制（.git／commit／branch／diff／merge）—— 絕對排除，永久不需要
-
-本專案不依賴 `.git`、不引入 commit/branch/diff/merge 語意，原因不是「目前還沒做」，而是**這個問題本身在無程式碼協作容器裡不成立**：
-
-- 程式碼版控解決的原始問題是「多人平行修改同一份可執行原始碼，需要合併衝突、需要保留每一行程式碼的作者與時間」。這個問題的成立前提是「內容＝可逐行比對、可執行的文字」。
-- Repository 裡的協作產物（Page 等）不是「可逐行比對的原始碼文字」，因此這個問題**永久不會在產品網域裡重新出現**，不是「暫緩」而是「五步驟第 2 步就淘汰」。
-- 任何未來需求如果聽起來像「我們需要 branch 來做草稿」「需要 merge 兩個人的編輯」「需要 diff 顯示改了什麼」，第一反應必須是回到五步驟重新拆解原始問題，而不是直接引入 git 語意的包裝版本（例如把「草稿」做成「branch 的另一個名字」）。
-
-### B. 資料版本控制（Data Versioning）—— 未來可能需要，是完全不同的問題，適用不同判準
-
-資料版本控制解決的原始問題是「使用者需要知道一筆資料（例如一個 Page 的內容、一筆記錄）過去長什麼樣子、是誰在什麼時候改的、可不可以回復到之前的狀態」。這個問題**不依賴程式碼假設**，在無程式碼協作容器裡完全合理存在，因此**不受第三部分排除邊界管轄**。
-
-判斷「這是資料版控、不是程式碼版控」的準則：
-
-1. 它處理的是**單一 Artifact（如一筆 Page）的狀態快照序列**，不是「多人平行分支後合併」的問題。
-2. 它不需要 branch（平行分支）、不需要 merge（合併衝突解決）——資料版本控制通常是線性的「快照 → 快照 → 快照」或「目前版本 + 歷史快照列表」，不是分支圖。
-3. 對使用者呈現的心智模型是「歷史紀錄／復原到某個時間點」（像文件編輯軟體的版本歷史），不是「diff 比對兩個分支」。
-4. 若未來要設計這個功能，五步驟拆解結果應該落在 **Process**（Artifact 狀態如何合法變化並保留歷程）或 **Evidence/歷史 Projection**，而不是新的 Container 或 Repository 之外的協作單位。
-
-**結論**：看到「版本控制」四個字時，第一件事是先分類它屬於 A 還是 B。屬於 A → 直接依第三部分排除邊界拒絕，不必跑五步驟。屬於 B → 正常跑五步驟拆解程序，用 Process/Evidence/Projection 語意設計，且設計時仍要避免不小心把它做成「靠 branch/merge 心智模型運作的東西」。
+1. 只讀寫已接受的 Repository Resource schema；文字即使看起來像程式碼也只被當作不透明資料，不提供程式碼能力。
+2. 每次讀取、比較、提案、套用或傳遞都重新評估 Actor、Repository、Capability 與目標 Resource 狀態。
+3. Branch、Proposal、Gist、Action 不擁有 Repository、Grant、Membership 或獨立 visibility。
+4. Diff 是衍生 Projection；Commit/Evidence 不可被 Projection 回寫。
+5. Action 只能在明確型別、白名單 connector/endpoint、固定資料映射與大小/保留限制內傳遞；不得接受使用者程式碼。
+6. Secret/credential 只能由受控基礎設施引用，永遠不能成為可檢視或傳遞的 payload。
+7. Git 工程流程與本產品資料語意仍是不同層次；相同名詞不得讓 `.git`、GitHub source-control API 或 code-specific invariants 洩漏進 Product/Domain。
 
 ## 已知概念的預設拆解結果（作為起點，實作前仍須重跑五步驟驗證，不得直接照抄）
 
@@ -124,7 +112,7 @@ Repository 是本專案唯一且不可動搖的協作容器原型。Enterprise�
 - **原始問題**：團隊需要沉澱、共同編輯「說明性、非結構化」的知識內容。
 - **五步驟結果**：問題成立，不依賴程式碼；但 `Wiki` 本身目前不是 accepted Resource family。先檢查既有 **Page Artifact** 是否已完整承載這個問題，只有 Page 無法表達的獨立行為或生命周期被證明後才重新分類。
 - **具體設計方向**：在本專案現有語意下，Wiki 想解決的問題與 Page 這個既有 Resource 高度重疊——先檢查「是不是已經可以用 Page 滿足」，只有當「多頁面互相連結、有目錄結構」這種需求是 Page 目前語意無法承載時，才考慮把它變成 Page 的一種呈現模式（例如 Page 之間的連結關係），而不是新增一個叫 Wiki 的頂層資源。
-- **明確排除項**：不因 GitHub 有 Wiki 就建立新的 Resource family；不做「每次編輯都留一筆可逐行 diff 的歷史」；如果需要歷史，套用前面「資料版本控制」段落的線性快照模型，不做分支/合併式的編輯歷史。
+- **明確排除項**：不因 GitHub 有 Wiki 就建立新的 Resource family；歷史與比較只能使用受控的結構化資料 Commit/Diff 語意，不得變成程式碼逐行 diff、Git-backed 儲存或 Source Code 合併能力。
 
 ### Projects
 
@@ -137,8 +125,8 @@ Repository 是本專案唯一且不可動搖的協作容器原型。Enterprise�
 
 - **原始問題**：需要追蹤一個個獨立的「待辦/問題/討論項目」，並記錄狀態變化（開啟/處理中/關閉）與討論串。
 - **五步驟結果**：問題成立，不依賴程式碼；角色是 **Repository 內部的 Artifact**（與 Page 平行的另一種 Resource 型態）+ 附帶的 **Process**（狀態合法變化：開啟→關閉等）。
-- **具體設計方向**：若要導入，Issue 應該和 Page 一樣是 Repository 底下的 Resource，擁有自己的狀態欄位與留言（討論）子資源，存取權限完全繼承 Repository 的授權模型，不另建一套。狀態變化用簡單的 Process（有限狀態機：開啟/關閉，可加中間狀態）建模，不需要、也不應該用「commit 訊息」或「activity diff」的方式記錄每次留言變化。
-- **明確排除項**：不做「Issue 連結到某次 commit/PR 才能關閉」這種依賴 git 語意的機制；在被正式列為已接受的 Resource 之前，先在 `docs/domains` 標記為 Deferred/Candidate，不得直接建表。
+- **具體設計方向**：若要導入，Issue 應該和 Page 一樣是 Repository 底下的 Resource，擁有自己的狀態欄位與留言（討論）子資源，存取權限完全繼承 Repository 的授權模型，不另建一套。Issue 狀態變化由自己的有限狀態機與 Evidence 擁有；資料 Commit/Diff/Proposal 可以引用 Issue，但不能取代 Issue transition。
+- **明確排除項**：Issue 不得依賴 Source Code commit、code PR 或 git merge 才能關閉；若引用無代碼 Data Commit/Change Proposal，兩者必須位於相同 Repository 授權邊界且不改寫 Issue 的狀態規則。
 
 ## URL / UI / UX 逆向工程原則
 
@@ -157,8 +145,8 @@ Repository 是本專案唯一且不可動搖的協作容器原型。Enterprise�
 
 ## 結尾自我檢查（每次審查/設計完成後強制執行）
 
-1. 是否有任何 commit / branch / diff / merge 或版本控制式比喻，殘留在**產品網域語意**中（不含開發流程本身的 git 使用）？
+1. 是否有任何 Source Code、任意執行、git ref/merge、code review、CI/CD 或 code-specific invariant 洩漏進產品網域？Commit/Branch/Diff/PR/Actions/Gist 若存在，是否完整符合無代碼資料邊界？
 2. 是否有任何概念被建模成「Repository 之外的第二個協作容器」？
 3. 每個保留下來的概念，是否都能明確標註屬於 Actor / Scope / Principal / Relationship / Artifact / Process / Projection 中的哪一種？
-4. 若本次涉及「歷史/版本/回復」相關需求，是否已明確分類為「A. 程式碼版控（應排除）」或「B. 資料版本控制（線性快照，可設計）」？是否誤把 B 做成需要 branch/merge 的機制？
-5. 若以上任一題答案為「是」（第 1、2、4 題後半）或「否/不確定」（第 3、4 題前半），視為本次校正失敗，回到五步驟拆解程序或排除邊界重新執行，不得帶著矛盾繼續往下游擴散。
+4. 若本次涉及資料歷史、Branch、Diff、Proposal 或 Transfer，是否證明其只處理已接受 schema、重新授權、沒有任意程式碼/運算，且不建立第二 Container？
+5. 若以上任一題答案為「是」（第 1、2 題）或「否/不確定」（第 3、4 題），視為本次校正失敗，回到五步驟拆解程序或無代碼資料邊界重新執行，不得帶著矛盾繼續往下游擴散。

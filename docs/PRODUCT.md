@@ -75,6 +75,12 @@ Cross-cutting semantics remain separate:
 | Issue | Repository-scoped actionable Resource with assignment, classification, status, and conversation semantics | Developer ticket or cross-Repository inbox Projection |
 | Discussion | Repository-scoped conversation Resource organized for shared understanding | Forum Container or Issue alias |
 | Project-style planning view | Owner-scoped Projection over accepted work and Repository attachments | Repository child owner, collaboration Container, or authority boundary |
+| Commit / Data Commit | Immutable, actor-attributed batch of accepted structured-data changes inside one Repository | Source Code commit, arbitrary file tree, or authorization decision |
+| Branch / Data Branch | Named isolated data-state line inside one Repository | Repository, independent visibility/Grant boundary, or git ref |
+| Diff / Data Diff | Derived comparison of two authorized structured-data states | Source-code line diff, syntax analysis, or source Evidence |
+| Pull Request / Change Proposal | Review-and-apply Process for an authorized structured-data change set | Code review, git merge, or a second collaboration Container |
+| Actions / Data Transfer | Allowlisted declarative transfer of typed Repository data between approved endpoints | Script, shell, arbitrary runtime, CI/CD, build, test, or deploy |
+| Gist / Data Capsule | Typed Repository-contained Artifact for sharing or transferring a bounded data payload | Executable snippet, independent workspace, or visibility bypass |
 | Membership | User ↔ Organization belonging relationship | Repository access |
 | Grant | Principal ↔ Repository authority relationship carrying a Role | Ownership relationship or effective-access cache |
 | Role | Named Capability bundle for assignment and explanation | Authorization decision primitive |
@@ -244,6 +250,33 @@ Actor
 
 Issue and Discussion are also accepted Repository-contained Resource kinds. Issue represents actionable work with assignment/status/completion behavior; Discussion represents category/answer/conversation behavior. Both retain stable Repository-scoped identity and reuse Repository authorization. Their Domain lifecycle, persistence, authorization, historical-evidence, and delivery contracts are not yet executable and remain explicitly registered gaps.
 
+## No-code data change and transfer semantics
+
+`Commit`, `Branch`, `Diff`, `Pull Request`, `Actions`, and `Gist` are not prohibited names. They are admitted only when their complete Product meaning is structured-data collaboration inside Repository:
+
+```text
+accepted Repository Resource state
+→ optional isolated Data Branch
+→ immutable Data Commit
+→ derived Data Diff
+→ optional Change Proposal review
+→ authorized apply
+→ optional allowlisted Data Transfer or Repository-contained Data Capsule
+```
+
+This flow never introduces Source Code, a file tree, executable content, arbitrary expressions, git refs, code review, CI/CD, build, test, deployment, Package, or Release source behavior.
+
+Mandatory boundaries:
+
+1. Payloads conform to accepted Repository Resource schemas; opaque text is never parsed or executed as code.
+2. Every snapshot, comparison, proposal, apply, capsule read, and transfer re-evaluates Actor, Repository, Capability, and target Resource state.
+3. Data Branch, Change Proposal, Data Transfer, and Gist/Data Capsule never own Repository, Membership, Grant, Role, visibility, or a second collaboration space.
+4. Data Diff is a Projection and cannot rewrite Commit/Evidence.
+5. Data Transfer is limited to typed payloads, allowlisted connectors/endpoints, fixed mappings, bounded size/retention, and explicit delivery evidence. User-provided scripts or general-purpose transforms are impossible by contract.
+6. Credentials and secrets are referenced only through controlled Infrastructure; their values never enter Product payloads, Diff, Gist, logs, or user-visible Evidence.
+
+The semantic envelope is accepted. Concrete identity, lifecycle, concurrency, conflict, retention, authorization Capabilities, URL, persistence, and Application contracts remain Deferred until a dedicated Domain contract passes discriminating tests.
+
 ## GitHub-derived admissions and remaining candidates
 
 Accepted Product semantics:
@@ -251,6 +284,7 @@ Accepted Product semantics:
 - **Issue**: Repository-scoped actionable work Artifact with stable Repository + issue-number identity.
 - **Discussion**: Repository-scoped shared-understanding Artifact with stable Repository + discussion-number identity.
 - **Project-style planning view**: Projection over Repository-scoped work; never ownership or authorization boundary. Repository `/projects` lists attachments; detail identity is owner-scoped.
+- **No-code data change/transfer envelope**: Commit, Branch, Diff, Pull Request, Actions, and Gist may represent structured-data Evidence, Process state, Projection, Proposal, transfer, and Data Capsule semantics under the mandatory no-code boundaries above.
 
 The following remain candidates until a real use case proves lifecycle and reuse:
 
@@ -294,7 +328,8 @@ A projection becomes an Entity only when independent identity, lifecycle ownersh
 19. Canonical Repository URL is Owner namespace + Repository slug; internal delivery prefixes are not product identity.
 20. Domain semantics remain provider-neutral; implementation technologies project rather than define Product truth.
 21. Generated types, migrations, diagrams, CI output, and runtime observations cannot silently replace this contract.
-22. A benchmark concept is rejected when its value does not survive removal of software-development-specific assumptions.
+22. A benchmark concept is rejected when its value does not survive removal of Source Code, arbitrary execution, CI/CD, and software-development-specific assumptions.
+23. Commit/Branch/Diff/Pull Request/Actions/Gist semantics, when present, operate only on accepted structured Repository data and never create code capability, independent authority, or a second collaboration Container.
 
 ## Deferred product decisions
 
@@ -309,7 +344,8 @@ These remain unaccepted until direct evidence requires them:
 - Custom Roles, explicit deny precedence, nested groups, or generic policy engines.
 - Repository transfer, archive, restore, and destructive lifecycle semantics.
 - Any new Resource family beyond Page, Issue, and Discussion.
-- Any automation capability whose problem has not been independently demonstrated by this no-code collaboration product.
+- Concrete Data Commit, Data Branch, Data Diff, Change Proposal, Data Transfer, and Gist/Data Capsule Domain lifecycle, identity, persistence, URL, Capability, conflict, retention, and delivery contracts.
+- Any automation or transfer capability beyond typed, allowlisted, fixed-mapping data delivery with no arbitrary execution.
 
 ## Success model
 
@@ -321,6 +357,7 @@ The Product Contract is working when:
 - `/app` navigates to canonical `/{owner}/{repository}` Repository identity;
 - Page collaboration works through the same authorization and evidence boundary for both ownership modes;
 - accepted Issue and Discussion identities remain Repository-scoped, canonical, and authorization-equivalent across full-page/modal presentation;
+- any admitted data Commit/Branch/Diff/Proposal/Action/Gist flow remains Repository-scoped, schema-validated, authorization-equivalent, secret-free, and incapable of executing code;
 - ownership, Membership, Grants, Roles, Capabilities, Context, and projections are not conflated;
 - new GitHub benchmark concepts are classified and tested before persistence or architecture is introduced; and
 - production/provider observations may correct the earliest invalid contract without turning undocumented runtime behavior into Product truth.
@@ -343,7 +380,7 @@ Reopen this contract only when evidence shows that:
 2. Identify the earliest truth boundary that is wrong.
 3. Apply the Repository axiom before any benchmark convention.
 4. Classify the candidate by semantic roles plus authorization/presentation/evidence semantics.
-5. Reject any benchmark candidate whose collaboration value disappears outside its software-development-specific implementation assumptions.
+5. Reject any benchmark candidate whose collaboration value disappears after Source Code, arbitrary execution, CI/CD, build/test/deploy, and software-development-specific assumptions are removed; retain only independently proven structured-data semantics under the no-code transfer boundary.
 6. Update Product and affected Domain/Architecture contracts before or atomically with executable projections.
 7. Update schema, migrations, generated projections, code, policies, UI copy, and tests as downstream evidence.
 8. Verify a minimum discriminating user journey, not merely document presence or green unit tests.

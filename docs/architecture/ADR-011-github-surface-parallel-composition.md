@@ -7,7 +7,7 @@
 
 ## Decision
 
-For a GitHub-derived surface that passes the no-code semantic admission test, GitHub's observed public and read-only authenticated test-account URL hierarchy, information architecture, navigation, responsive composition, and interaction behavior are the constitutional presentation baseline. A deviation requires an explicit target Product reason and a discriminating test. This authority never admits Code, Commit, Branch, Diff, Actions, Git-backed history, a second collaboration Container, or a weakened authorization boundary.
+For a GitHub-derived surface that passes the no-code semantic admission test, GitHub's observed public and read-only authenticated test-account URL hierarchy, information architecture, navigation, responsive composition, and interaction behavior are the constitutional presentation baseline. A deviation requires an explicit target Product reason and a discriminating test. This authority never admits Source Code, arbitrary execution, git refs/merge, code review, CI/CD, Git-backed history, a second collaboration Container, or a weakened authorization boundary. Commit, Branch, Diff, Pull Request, Actions, and Gist names survive only through independently proven structured-data Product/Domain contracts.
 
 The Repository shell will support responsive, route-specific supporting regions through `@sidebar`, `@activity`, and `@modal` Parallel Route slots. Slots never appear in the URL and never own Domain or authorization semantics. Page remains the current executable vertical slice. Issue and Discussion are accepted Product Resources, but their routes enter implementation only after their Domain lifecycle, authorization, and evidence contracts are accepted.
 
@@ -224,6 +224,8 @@ The tree above is the accepted target projection, not a claim that those routes 
 | Project under one Repository | Project-style view is an owner-scoped planning Projection attached to Repositories | One planning view can span work; attachment does not establish ownership | Repository `/projects` is a list; detail URL remains unaccepted until identity/lifecycle are proven |
 | Discussion as forum Container | Discussion is an accepted Repository-contained shared-understanding Artifact | Conversation remains useful, but cannot create another primary Container | Canonical Repository discussion URLs; execution awaits its Domain contract |
 | Wiki as Git-backed knowledge system | Existing Page owns the admitted no-code knowledge problem | Git storage/history is excluded and duplicate canonical identity is invalid | Use `/pages/{pageId}`; reject a second `/wiki` canonical family |
+| Commit/Branch/Diff/Pull Request as Git mechanics | Data Commit/Data Branch/Data Diff/Change Proposal candidates | Grouping, isolated state, comparison, and review remain useful for typed no-code data, while Git refs/merge and code review do not | No route or implementation until the Structured Data Change Candidate contract proves identity, lifecycle, authority, and canonical URL |
+| Actions/Gist as executable workflow or code snippet | Data Transfer/Data Capsule candidates | Controlled schema-validated exchange remains useful; arbitrary execution and standalone paste workspaces do not | Allowlisted endpoints and Repository containment only; no execution, secret values, or independent visibility |
 | Notification/Activity/Audit as source truth | They are actor/repository/governance Projections over facts and Evidence | Delivery, summaries, and audit views have different consumers and retention from source facts | Stable projection URLs; no authority or Artifact ownership |
 | Parallel Route as Product region | Parallel Route is a delivery mechanism for independently recoverable supporting UI | Framework composition has no Domain identity | `@sidebar`, `@activity`, `@modal` stay out of public URLs |
 | Modal URL | Modal and full page share one canonical resource URL | Presentation mode cannot create a second resource identity | Intercepting Route only; direct load renders the full page |
@@ -284,7 +286,7 @@ Stop and reopen the earliest invalid model layer on the first failed invariant.
 
 ## Semantic self-check
 
-1. No retained concept depends on Source Code, Commit, Branch, Diff, Actions, or Git-backed version control.
+1. No retained concept depends on Source Code, executable payloads, git refs/merge, code review, CI/CD, or Git-backed version control; conditionally retained Data Commit/Branch/Diff/Proposal/Transfer/Capsule semantics satisfy the explicit no-code contracts.
 2. Organization, Team, Project, Discussion, Wiki, and Parallel slots do not become a second collaboration Container.
 3. Every retained name above has an explicit semantic role or is marked deferred.
 4. Historical Evidence remains business evidence; it is not reinterpreted as code-version history.

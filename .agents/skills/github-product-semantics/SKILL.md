@@ -46,12 +46,13 @@ Currently accepted/durable:
 - Enterprise is a future cross-Organization governance Scope pending a real governance constraint.
 - Issue-style work tracking and Discussion-style conversation are accepted Repository Artifacts because actionable work and shared-understanding conversation remain distinct no-code collaboration problems with stable Repository-scoped identity. Their executable Domain/persistence contracts remain separate Open work.
 - Project-style planning is an accepted Projection over Repository-scoped work, not an ownership/authorization Container; Repository `/projects` is an attachment/list projection and detail identity is owner-scoped.
+- Commit/Branch/Diff/Pull Request/Actions/Gist names may survive only as Repository-scoped structured-data semantics: immutable data-change evidence, isolated data state, comparison projection, change proposal, allowlisted data transfer, and typed Data Capsule respectively. Their Candidate Domain contracts remain unaccepted and non-executable.
 - App/Installation remains a future machine identity/authority Relationship candidate.
 
 Not accepted merely because GitHub exposes them:
 
-- any benchmark capability whose product value disappears when software-development-specific implementation assumptions are removed;
-- any generic automation, policy, integration, or plugin engine without an independently demonstrated no-code collaboration problem; and
+- any benchmark capability whose product value disappears when Source Code, arbitrary execution, CI/CD, build/test/deploy, or software-development-specific assumptions are removed;
+- any arbitrary automation, policy, integration, or plugin engine beyond typed, allowlisted data-transfer semantics; and
 - any second Repository-equivalent Container.
 
 ## Persistence and architecture guardrails
@@ -70,6 +71,8 @@ principals(type,id)
 
 Do not create a Collaborator aggregate or identity subtype.
 
-Do not promote Team, Enterprise, Project persistence, App/Installation, or another Resource family from Deferred/Candidate solely because of taxonomy completeness. Do not infer Issue/Discussion persistence or implementation from Product admission; require their Domain identity, lifecycle, authorization, and evidence contracts first.
+Do not promote Team, Enterprise, Project persistence, App/Installation, or another Resource family from Deferred/Candidate solely because of taxonomy completeness. Do not infer Issue/Discussion or Data Change/Transfer persistence from Product admission; require their Domain identity, lifecycle, authorization, evidence, schema, endpoint, and no-arbitrary-execution contracts first.
+
+Source Code, executable payloads, shell/script/expression runtimes, code review, Code Search, CI/CD, build, test, deployment, Package, and Release source capability remain excluded. A text field is opaque data; the Product must never parse or execute it as code. Data Branch/Proposal/Gist cannot become a second Container or independent authorization boundary.
 
 Use `docs/PRODUCT.md` as the root Product Contract and `docs/ONTOLOGY.md` as its canonical semantic expansion.

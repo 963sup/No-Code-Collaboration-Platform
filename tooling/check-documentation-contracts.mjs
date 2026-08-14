@@ -37,7 +37,9 @@ const requiredDocuments = [
   'docs/architecture/ADR-010-repository-owner-namespace.md',
   'docs/domains/DOMAIN_TEMPLATE.md',
   'docs/domains/access-authority.md',
+  'docs/domains/data-exchange.md',
   'docs/domains/identity-lifecycle.md',
+  'docs/domains/structured-data-change.md',
   'docs/domains/repository-collaboration.md',
   'docs/operations/AGENTS.md',
   'docs/operations/RUNBOOK.md'
@@ -47,6 +49,8 @@ const documents = Object.fromEntries(requiredDocuments.map((path) => [path, read
 const product = documents['docs/PRODUCT.md'];
 const ontology = documents['docs/ONTOLOGY.md'];
 const repositoryDomain = documents['docs/domains/repository-collaboration.md'];
+const structuredDataChangeDomain = documents['docs/domains/structured-data-change.md'];
+const dataExchangeDomain = documents['docs/domains/data-exchange.md'];
 const gapRegister = documents['docs/IMPLEMENTATION_GAPS.md'];
 const closedGapArchive = documents['docs/history/CLOSED_GAPS.md'];
 const architectureReadme = documents['docs/architecture/README.md'];
@@ -77,17 +81,14 @@ for (const [pattern, message] of [
   [
     /reject the candidate[\s\S]*software-development-specific/i,
     'benchmark exclusion rule is missing'
+  ],
+  [
+    /^## No-code data change and transfer semantics$[\s\S]*opaque text is never parsed or executed as code[\s\S]*allowlisted connectors\/endpoints/ims,
+    'no-code structured-data change and transfer boundary is missing'
   ]
 ]) {
   requireMatch('docs/PRODUCT.md', product, pattern, message);
 }
-
-forbidMatch(
-  'docs/PRODUCT.md',
-  product,
-  /Change Request|Pull Request →|GitHub Actions/i,
-  'excluded benchmark mechanism must not survive as target Product vocabulary'
-);
 
 for (const [pattern, message] of [
   [
@@ -105,24 +106,14 @@ for (const [pattern, message] of [
   [
     /Canonical Repository presentation is owner\/Repository header \+ primary navigation \+ one active child resource surface[\s\S]*supporting/i,
     'canonical Repository interaction model is missing'
+  ],
+  [
+    /^## 18\. No-code Data Change and Transfer[\s\S]*shared envelope does not prove one generic `version_control` or `automation` aggregate/ims,
+    'conditional no-code data-change and data-transfer ontology is missing'
   ]
 ]) {
   requireMatch('docs/ONTOLOGY.md', ontology, pattern, message);
 }
-
-forbidMatch(
-  'docs/ONTOLOGY.md',
-  ontology,
-  /Change Request|Pull Request →|GitHub Actions/i,
-  'excluded benchmark mechanism must not survive in canonical ontology'
-);
-
-forbidMatch(
-  'docs/domains/repository-collaboration.md',
-  repositoryDomain,
-  /Change Request|Pull Request →|GitHub Actions/i,
-  'excluded benchmark mechanism must not survive in Repository Domain contract'
-);
 
 requireMatch(
   'docs/domains/repository-collaboration.md',
@@ -349,6 +340,51 @@ requireMatch(
   /Registration never creates Organization membership, Team membership, Repository Grant, or Resource authority/,
   'registration authority invariant is missing'
 );
+
+for (const [path, content, requiredPatterns] of [
+  [
+    'docs/domains/structured-data-change.md',
+    structuredDataChangeDomain,
+    [
+      [/^- Status: Candidate$/m, 'candidate status is missing'],
+      [
+        /Every Data Commit, Data Branch, and Change Proposal belongs to exactly one Repository/i,
+        'single-Repository change boundary is missing'
+      ],
+      [
+        /no generic script, expression, executable payload, or unbounded patch language/i,
+        'non-executable change-operation boundary is missing'
+      ],
+      [
+        /Applying through a Change Proposal yields the same authorization and validation result as issuing the equivalent direct commands/i,
+        'authorization-equivalence invariant is missing'
+      ]
+    ]
+  ],
+  [
+    'docs/domains/data-exchange.md',
+    dataExchangeDomain,
+    [
+      [/^- Status: Candidate$/m, 'candidate status is missing'],
+      [
+        /Every Data Transfer and Data Capsule belongs to exactly one Repository/i,
+        'single-Repository exchange boundary is missing'
+      ],
+      [
+        /No payload field is interpreted as source code, shell, script, executable expression, or workflow instruction/i,
+        'non-executable transfer boundary is missing'
+      ],
+      [
+        /Connector credentials are represented only by secret reference/i,
+        'secret-reference boundary is missing'
+      ]
+    ]
+  ]
+]) {
+  for (const [pattern, message] of requiredPatterns) {
+    requireMatch(path, content, pattern, message);
+  }
+}
 
 requireMatch(
   'docs/operations/AGENTS.md',

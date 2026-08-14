@@ -14,7 +14,7 @@ Evidence labels used below:
 - **Observed**: directly supported by GitHub DOM, URL, screenshots, or official documentation.
 - **Derived**: first-principles target decision based on observed behavior and the Repository axiom.
 - **Deferred**: meaningful candidate whose discriminating Product/Ontology tests are not yet satisfied.
-- **Rejected**: value depends on a Code/Commit/Branch/Diff/Actions domain.
+- **Rejected**: value depends on Source Code, git refs/merge, code review, arbitrary execution, or CI/CD. Commit/Branch/Diff/Pull Request/Actions/Gist names remain only as conditional target structured-data candidates; observed GitHub mechanics do not admit them.
 
 ## Storage convention and screenshot index
 
@@ -70,10 +70,10 @@ Chrome lab observation for `/github/docs/issues` at 1440x900, without throttling
 | Requested URL | Observed result | Classification |
 | --- | --- | --- |
 | `/issues` | `/issues/assigned` | authenticated inbox entry alias to a user-scoped Issue projection |
-| `/pulls` | `/pulls/inbox` | excluded Pull Request domain; shell navigation evidence only |
+| `/pulls` | `/pulls/inbox` | observed GitHub Pull Request inbox; source-code meaning excluded, while any target Change Proposal requires its independent structured-data contract |
 | `/account/organizations/new` | `/organizations/plan` | creation command entry to plan-selection process |
 | `/gist` | `gist.github.com/` | excluded code-snippet creation surface |
-| `gist.github.com/mine` | `gist.github.com/369sup` | authenticated alias to excluded user Gist collection |
+| `gist.github.com/mine` | `gist.github.com/369sup` | authenticated alias to GitHub's code-snippet Gist collection; not a target URL, while a future Repository-contained Data Capsule remains a separate candidate |
 | `/logout` | not executed | destructive session command, not a bookmarkable resource |
 | `/369sup/support/discussions` | HTTP 404 | structurally valid Repository child unavailable for this Repository |
 
@@ -109,7 +109,9 @@ The non-negotiable target invariant is **Repository = No-Code Collaboration Cont
 | Import, Export, Migration, Archive | bounded lifecycle Processes and Container state | Admit if provider-neutral and no Code domain is imported |
 | Search | query projection over admitted resources | Admit; Code Search rejected |
 | Insight, Metric | analytical projection and measured definition/value | Admit; never become Domain truth by themselves |
-| Source Code, Commit, Branch, Tag, Diff, code review, Actions, CI/CD, Package, Release source capability, Code Search | software-development-specific domains | Reject entirely, including renamed analogies |
+| Source Code, Tag/git refs, git merge, code review, executable Actions, CI/CD, Package, Release source capability, Code Search | software-development-specific mechanics | Reject entirely, including renamed analogies |
+| Commit, Branch, Diff, Pull Request | structured-data change candidates | Admit only as Repository-scoped typed change Evidence/Context/Projection/Proposal under the Candidate contract; no Git or code mechanics |
+| Actions, Gist | controlled data-exchange candidates | Admit only as allowlisted typed Data Transfer and Repository-contained Data Capsule; no execution, secrets, or standalone visibility |
 
 ## URL first-principles model
 

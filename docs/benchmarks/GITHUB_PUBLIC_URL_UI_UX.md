@@ -69,7 +69,7 @@ Mobile    390x844
 | Organization governance | Manage Membership, Team, profile, custom-property, and audit projections | `/orgs/{org}/…` and `/organizations/{org}/settings/…` | Account-context navigation plus permission-gated management surfaces |
 | Notifications | Triage actor-specific deliveries | `/notifications` | Unread indicator, filters, grouped inbox state |
 
-GitHub's public Repository surface also contains Code, Pull requests, Actions, branches, commits, diffs, and other software-development mechanisms. Those observations are explicitly inadmissible for the target Product.
+GitHub's public Repository surface also contains Source Code, Pull requests, Actions, branches, commits, diffs, and other software-development mechanisms. Source-code, Git, executable workflow, and CI/CD meanings are explicitly inadmissible for the target Product. Their names do not prove target capability; Product conditionally admits only independently modeled structured-data change and controlled-transfer semantics.
 
 The public home screenshot establishes the outer navigation and entry-point hierarchy only. Its developer/code marketing content is not an admitted Product model.
 
@@ -197,7 +197,9 @@ Public documentation describes supported mechanisms and permissions but is not a
 | Repository project detail candidate | Reject Repository-owned detail; defer target detail URL | Live links prove attachment is not ownership, but observation alone does not prove the target Project identity/lifecycle or exact canonical path |
 | Wiki as separate Git-backed system | Map to Page; reject a second `/wiki` canonical family | Git storage/history mechanics are excluded and Page already owns the admitted no-code knowledge problem |
 | Organization or Team conversation space | Reject | Would create a second collaboration Container |
-| Code, Commit, Branch, Diff, Actions | Reject completely | Value depends on software-development mechanics |
+| Source Code, Code Search, git refs/merge, code review, executable Actions, CI/CD | Reject completely | Value depends on software-development mechanics or arbitrary execution |
+| Commit, Branch, Diff, Pull Request | Conditionally map to Data Commit, Data Branch, Data Diff, and Change Proposal | Grouping, isolated state, comparison, and review may solve no-code structured-data problems, but the benchmark does not prove target lifecycle or URLs |
+| Actions, Gist | Conditionally map to Data Transfer and Data Capsule | Only allowlisted typed-data delivery and Repository-contained payload sharing survive; no scripts, expressions, secrets, or standalone workspace |
 
 The ordered journey matters: it proves that Owner and Repository identity are established before a collaboration surface is selected. A feature-first screenshot cannot by itself establish that hierarchy.
 
