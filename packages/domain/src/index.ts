@@ -16,6 +16,14 @@ export {
 export { effectiveRepositoryRole, type RepositoryAuthoritySources } from './access/authority';
 export type { ActivityEventSummary } from './activity/activity-event';
 export {
+  createOrganizationDraft,
+  isOrganizationName,
+  isOrganizationSlug,
+  type CreateOrganizationDraftInput,
+  type OrganizationDraft,
+  type OrganizationSummary
+} from './organization/organization';
+export {
   isIssueNumber,
   isIssueStatus,
   isIssueTitle,
@@ -38,10 +46,19 @@ export {
   type PageSummary,
   type PageUpdate
 } from './resource/page';
-export type { RepositoryOwner } from './repository/ownership';
 export {
+  isRepositoryOwnerSlug,
+  repositoryOwnerReservedSlugs,
+  type RepositoryOwner
+} from './repository/ownership';
+export {
+  createRepositoryDraft,
+  isRepositoryName,
   isRepositorySlug,
+  isRepositoryVisibility,
   repositoryVisibilities,
+  type CreateRepositoryDraftInput,
+  type RepositoryDraft,
   type RepositorySummary,
   type RepositoryVisibility
 } from './repository/repository';

@@ -28,7 +28,14 @@ export function classifyRouteAccess(pathname: string): RouteAccess {
   if (pathname === '/reset-password') return 'password-recovery';
   if (pathname === '/auth/error') return 'public';
   if (pathname.startsWith('/auth/')) return 'auth-protocol';
-  if (pathname === '/app' || pathname.startsWith('/app/')) return 'authenticated';
+  if (
+    pathname === '/new' ||
+    pathname === '/organizations/new' ||
+    pathname === '/app' ||
+    pathname.startsWith('/app/')
+  ) {
+    return 'authenticated';
+  }
   return 'public';
 }
 

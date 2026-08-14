@@ -1,11 +1,13 @@
 import { ListAccessibleRepositoryRoutes } from '@no-code-collaboration-platform/application';
 import {
+  buttonVariants,
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle
 } from '@no-code-collaboration-platform/ui';
+import { Building2, Plus } from 'lucide-react';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 
@@ -22,13 +24,25 @@ export default async function AppHomePage() {
 
   return (
     <div className='mx-auto max-w-6xl space-y-8'>
-      <div className='space-y-2'>
-        <p className='text-sm font-medium text-muted-foreground'>Collaboration containers</p>
-        <h1 className='text-3xl font-semibold tracking-tight'>Repositories</h1>
-        <p className='max-w-2xl text-muted-foreground'>
-          Choose a Repository you can access. Owner and Repository names resolve to stable
-          Repository identity before authorization-sensitive work begins.
-        </p>
+      <div className='flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between'>
+        <div className='space-y-2'>
+          <p className='text-sm font-medium text-muted-foreground'>Collaboration containers</p>
+          <h1 className='text-3xl font-semibold tracking-tight'>Repositories</h1>
+          <p className='max-w-2xl text-muted-foreground'>
+            Choose a Repository you can access. Owner and Repository names resolve to stable
+            Repository identity before authorization-sensitive work begins.
+          </p>
+        </div>
+        <div className='flex flex-col gap-2 sm:flex-row'>
+          <Link className={buttonVariants({ variant: 'outline' })} href='/organizations/new'>
+            <Building2 aria-hidden='true' className='size-4' />
+            New Organization
+          </Link>
+          <Link className={buttonVariants()} href='/new'>
+            <Plus aria-hidden='true' className='size-4' />
+            New Repository
+          </Link>
+        </div>
       </div>
 
       {routes.length === 0 ? (

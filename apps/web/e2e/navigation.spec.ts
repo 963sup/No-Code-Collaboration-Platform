@@ -32,6 +32,18 @@ test('dashboard remains authenticated-only', async ({ page }) => {
   await expectSignInRedirect(page, '/app');
 });
 
+test('Repository creation preserves its authenticated destination', async ({ page }) => {
+  await page.goto('/new');
+
+  await expectSignInRedirect(page, '/new');
+});
+
+test('Organization creation preserves its authenticated destination', async ({ page }) => {
+  await page.goto('/organizations/new');
+
+  await expectSignInRedirect(page, '/organizations/new');
+});
+
 test('canonical Repository route is not forced through dashboard authentication', async ({
   page
 }) => {

@@ -1,6 +1,11 @@
 import { describe, expect, it } from 'vitest';
 
-import { repositoryVisibilities, type RepositoryOwner } from '../src/index';
+import {
+  createRepositoryDraft,
+  repositoryOwnerReservedSlugs,
+  repositoryVisibilities,
+  type RepositoryOwner
+} from '../src/index';
 
 const personalOwner = {
   kind: 'user',
@@ -23,5 +28,46 @@ describe('Repository ownership', () => {
 
   it('exposes only visibility states with accepted authorization semantics', () => {
     expect(repositoryVisibilities).toEqual(['private', 'public']);
+  });
+
+  it('reserves command-route segments from the canonical Owner namespace', () => {
+    expect(repositoryOwnerReservedSlugs).toContain('organizations');
+    expect(repositoryOwnerReservedSlugs).toContain('new');
+  });
+
+  it('creates a normalized Repository draft without fabricating a Grant', () => {
+    expect(
+      createRepositoryDraft({
+        createdBy: 'user-1',
+        description: '  Shared planning space  ',
+        name: '  Customer workspace  ',
+        owner: personalOwner,
+        slug: 'customer-workspace',
+        visibility: 'private'
+      })
+    ).toEqual({
+      createdBy: 'user-1',
+      description: 'Shared planning space',
+      name: 'Customer workspace',
+      owner: personalOwner,
+      slug: 'customer-workspace',
+      visibility: 'private'
+    });
+  });
+
+  it.each([
+    { name: '   ', slug: 'valid-slug', visibility: 'private' },
+    { name: 'Repository', slug: 'Not-Canonical', visibility: 'private' },
+    { name: 'Repository', slug: 'valid-slug', visibility: 'internal' }
+  ])('rejects an invalid Repository draft %#', ({ name, slug, visibility }) => {
+    expect(
+      createRepositoryDraft({
+        createdBy: 'user-1',
+        name,
+        owner: personalOwner,
+        slug,
+        visibility
+      })
+    ).toBeNull();
   });
 });

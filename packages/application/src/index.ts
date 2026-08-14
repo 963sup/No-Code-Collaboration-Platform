@@ -4,6 +4,18 @@ export type {
   CreatePageInput,
   CreatePageResult
 } from './commands/create-page';
+export { CreateOrganization } from './commands/create-organization';
+export type {
+  CreateOrganizationFailureReason,
+  CreateOrganizationInput,
+  CreateOrganizationResult
+} from './commands/create-organization';
+export { CreateRepository } from './commands/create-repository';
+export type {
+  CreateRepositoryFailureReason,
+  CreateRepositoryInput,
+  CreateRepositoryResult
+} from './commands/create-repository';
 export { RegisterWithPassword } from './commands/register-with-password';
 export { RequestPasswordRecovery } from './commands/request-password-recovery';
 export { ResendEmailVerification } from './commands/resend-email-verification';
@@ -55,6 +67,10 @@ export type {
 } from './ports/identity-provider';
 export type { AccessiblePageQuery, PageReader, PageWriter } from './ports/page-repository';
 export type {
+  OrganizationPersistenceResult,
+  OrganizationWriter
+} from './ports/organization-creation';
+export type {
   RepositoryAccessQuery,
   RepositoryAccessReader
 } from './ports/repository-access-reader';
@@ -64,6 +80,12 @@ export type {
   RepositoryRouteSummary
 } from './ports/repository-route-reader';
 export type { RepositoryReader } from './ports/repository-reader';
+export type {
+  RepositoryCreationOwner,
+  RepositoryCreationOwnerReader,
+  RepositoryPersistenceResult,
+  RepositoryWriter
+} from './ports/repository-creation';
 export { CanReadRepositoryActivity } from './queries/can-read-repository-activity';
 export type { CanReadRepositoryActivityInput } from './queries/can-read-repository-activity';
 export { GetAccessiblePage } from './queries/get-accessible-page';
@@ -78,5 +100,6 @@ export { ListAccessibleIssues } from './queries/list-accessible-issues';
 export type { ListAccessibleIssuesInput } from './queries/list-accessible-issues';
 export { ListAccessibleRepositories } from './queries/list-accessible-repositories';
 export { ListAccessibleRepositoryRoutes } from './queries/list-accessible-repository-routes';
+export { ListRepositoryCreationOwners } from './queries/list-repository-creation-owners';
 export { ListRepositoryActivity } from './queries/list-repository-activity';
 export type { ListRepositoryActivityInput } from './queries/list-repository-activity';

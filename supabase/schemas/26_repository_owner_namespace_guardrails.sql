@@ -5,6 +5,7 @@ alter table private.repository_owner_namespaces
       'auth',
       'forgot-password',
       'new',
+      'organizations',
       'recover-password',
       'reset-password',
       'settings',

@@ -67,6 +67,8 @@ update public.profiles
 set display_name = 'Sup Demo'
 where id = '00000000-0000-0000-0000-00000000d001';
 
+-- Demo data relies on the same organization_created_owner trigger as an authenticated Product
+-- insert; no Demo-only Membership or Owner bootstrap is permitted.
 insert into public.organizations (id, slug, name, created_by)
 values (
   '10000000-0000-0000-0000-00000000d001',
