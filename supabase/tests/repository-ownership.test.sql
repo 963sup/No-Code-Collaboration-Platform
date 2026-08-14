@@ -18,10 +18,15 @@ select hasnt_column(
   'Repository ownership has no legacy Organization-only compatibility column'
 );
 
-select has_check(
-  'public',
-  'repositories',
-  'repositories_exactly_one_owner',
+select is(
+  (
+    select constraint_type
+    from information_schema.table_constraints
+    where table_schema = 'public'
+      and table_name = 'repositories'
+      and constraint_name = 'repositories_exactly_one_owner'
+  ),
+  'CHECK',
   'Repository persistence enforces exactly one typed User-or-Organization Owner'
 );
 
