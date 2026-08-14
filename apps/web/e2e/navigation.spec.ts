@@ -19,44 +19,45 @@ test('public route presents the product model', async ({ page }) => {
   );
 });
 
-test('auth route is grouped without changing its URL', async ({ page }) => {
+test('auth route group does not change the human URL', async ({ page }) => {
   await page.goto('/sign-in');
 
   await expect(page).toHaveURL(/\/sign-in$/u);
   await expect(page.getByRole('heading', { name: 'Sign in' })).toBeVisible();
 });
 
-test('protected app route redirects an unauthenticated actor', async ({ page }) => {
+test('dashboard remains authenticated-only', async ({ page }) => {
   await page.goto('/app');
 
   await expectSignInRedirect(page, '/app');
 });
 
-test('semantic Repository namespace preserves the requested URL through authentication', async ({
-  page
-}) => {
-  const repositoryPath = '/app/example-organization/example-repository';
+test('canonical Repository route is not forced through dashboard authentication', async ({ page }) => {
+  const repositoryPath = '/example-owner/example-repository';
+  const response = await page.goto(repositoryPath);
 
-  await page.goto(repositoryPath);
-
-  await expectSignInRedirect(page, repositoryPath);
+  expect(response?.status()).toBe(404);
+  await expect(page).toHaveURL(repositoryPath);
+  await expect(page).not.toHaveURL(/\/sign-in/u);
 });
 
-test('hard navigation preserves a concrete Page collection route through authentication', async ({
+test('canonical Page collection hard navigation remains outside the authenticated dashboard wrapper', async ({
   page
 }) => {
-  const pagesPath = '/app/example-organization/example-repository/pages';
+  const pagesPath = '/example-owner/example-repository/pages';
+  const response = await page.goto(pagesPath);
 
-  await page.goto(pagesPath);
-
-  await expectSignInRedirect(page, pagesPath);
+  expect(response?.status()).toBe(404);
+  await expect(page).toHaveURL(pagesPath);
+  await expect(page).not.toHaveURL(/\/sign-in/u);
 });
 
-test('Page workspace identity survives authentication redirect', async ({ page }) => {
+test('canonical Page detail hard navigation preserves Owner and Repository identity', async ({ page }) => {
   const pagePath =
-    '/app/example-organization/example-repository/pages/00000000-0000-4000-8000-000000000002';
+    '/example-owner/example-repository/pages/00000000-0000-4000-8000-000000000002';
+  const response = await page.goto(pagePath);
 
-  await page.goto(pagePath);
-
-  await expectSignInRedirect(page, pagePath);
+  expect(response?.status()).toBe(404);
+  await expect(page).toHaveURL(pagePath);
+  await expect(page).not.toHaveURL(/\/sign-in/u);
 });
