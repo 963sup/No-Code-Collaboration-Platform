@@ -3,7 +3,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@no-code-collaboration
 
 import { createRequestServices } from '@/composition/create-request-services';
 
-import { RepositoryShell } from '../_components/repository-shell';
 import { requireAccessibleRepositoryRoute } from '../_queries/get-accessible-repository-route';
 
 interface RepositoryActivityProps {
@@ -20,42 +19,35 @@ export default async function RepositoryActivity({ params }: RepositoryActivityP
   });
 
   return (
-    <RepositoryShell
-      ownerSlug={route.ownerSlug}
-      repositoryName={route.repository.name}
-      repositorySlug={route.repository.slug}
-      visibility={route.repository.visibility}
-    >
-      <section className='space-y-6'>
-        <div>
-          <h1 className='text-2xl font-semibold tracking-tight'>Activity</h1>
-          <p className='text-sm text-muted-foreground'>Immutable Repository-scoped collaboration facts.</p>
-        </div>
+    <section className='space-y-6'>
+      <div>
+        <h1 className='text-2xl font-semibold tracking-tight'>Activity</h1>
+        <p className='text-sm text-muted-foreground'>Recent activity in this Repository.</p>
+      </div>
 
-        {events.length === 0 ? (
-          <Card className='border-dashed'>
-            <CardContent className='py-8 text-sm text-muted-foreground'>
-              No activity facts are visible yet.
-            </CardContent>
-          </Card>
-        ) : (
-          <div className='space-y-3'>
-            {events.map((event) => (
-              <Card key={event.id}>
-                <CardHeader className='pb-2'>
-                  <CardTitle className='text-sm font-medium'>{event.eventType}</CardTitle>
-                </CardHeader>
-                <CardContent className='text-sm text-muted-foreground'>
-                  <p>{event.occurredAt}</p>
-                  <p>
-                    {event.subjectType} · {event.subjectId}
-                  </p>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        )}
-      </section>
-    </RepositoryShell>
+      {events.length === 0 ? (
+        <Card className='border-dashed'>
+          <CardContent className='py-8 text-sm text-muted-foreground'>
+            No activity is visible yet.
+          </CardContent>
+        </Card>
+      ) : (
+        <div className='space-y-3'>
+          {events.map((event) => (
+            <Card key={event.id}>
+              <CardHeader className='pb-2'>
+                <CardTitle className='text-sm font-medium'>{event.eventType}</CardTitle>
+              </CardHeader>
+              <CardContent className='text-sm text-muted-foreground'>
+                <p>{event.occurredAt}</p>
+                <p>
+                  {event.subjectType} · {event.subjectId}
+                </p>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
+    </section>
   );
 }
