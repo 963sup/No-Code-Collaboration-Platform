@@ -62,7 +62,7 @@ values
     'member'
   );
 
-insert into public.repositories (id, organization_id, slug, name, created_by)
+insert into public.repositories (id, owner_organization_id, slug, name, created_by)
 values (
   '20000000-0000-0000-0000-000000000101',
   '10000000-0000-0000-0000-000000000101',
