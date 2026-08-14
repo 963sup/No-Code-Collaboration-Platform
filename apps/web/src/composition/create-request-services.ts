@@ -1,4 +1,3 @@
-import type { RepositoryAccessReader } from '@no-code-collaboration-platform/application';
 import { createSupabaseServerAdapters } from '@no-code-collaboration-platform/supabase';
 import { cookies } from 'next/headers';
 
@@ -8,7 +7,7 @@ export async function createRequestServices() {
   const cookieStore = await cookies();
   const { publishableKey, url } = getSupabasePublicConfig();
 
-  const adapters = createSupabaseServerAdapters({
+  return createSupabaseServerAdapters({
     cookies: {
       getAll() {
         return cookieStore.getAll();
@@ -26,10 +25,4 @@ export async function createRequestServices() {
     publishableKey,
     url
   });
-
-  return {
-    ...adapters,
-    repositoryAccessReader:
-      adapters.repositoryAuthoritySourceReader as unknown as RepositoryAccessReader
-  };
 }
