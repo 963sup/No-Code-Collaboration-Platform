@@ -1,5 +1,13 @@
 import { GetAccessiblePage } from '@no-code-collaboration-platform/application';
-import { Button, Card, CardContent, CardHeader, CardTitle, Input, Textarea } from '@no-code-collaboration-platform/ui';
+import {
+  Button,
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  Input,
+  Textarea
+} from '@no-code-collaboration-platform/ui';
 import { notFound } from 'next/navigation';
 
 import { createRequestServices } from '@/composition/create-request-services';
@@ -38,7 +46,9 @@ export default async function RepositoryPageDetail({
     <section className='space-y-6'>
       <div>
         <h1 className='text-2xl font-semibold tracking-tight'>Edit Page</h1>
-        <p className='text-sm text-muted-foreground'>Edit this Page inside the current Repository.</p>
+        <p className='text-sm text-muted-foreground'>
+          Edit this Page inside the current Repository.
+        </p>
       </div>
 
       {saved === '1' ? (
@@ -64,11 +74,15 @@ export default async function RepositoryPageDetail({
             <input name='repositoryId' type='hidden' value={route.repository.id} />
             <input name='repositorySlug' type='hidden' value={route.repository.slug} />
             <div className='space-y-2'>
-              <label className='text-sm font-medium' htmlFor='page-title'>Title</label>
+              <label className='text-sm font-medium' htmlFor='page-title'>
+                Title
+              </label>
               <Input id='page-title' name='title' defaultValue={page.title} required />
             </div>
             <div className='space-y-2'>
-              <label className='text-sm font-medium' htmlFor='page-body'>Content</label>
+              <label className='text-sm font-medium' htmlFor='page-body'>
+                Content
+              </label>
               <Textarea id='page-body' name='body' defaultValue={page.content.body} rows={14} />
             </div>
             <Button type='submit'>Save Page</Button>
