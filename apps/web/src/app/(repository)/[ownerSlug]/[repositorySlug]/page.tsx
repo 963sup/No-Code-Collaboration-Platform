@@ -26,8 +26,7 @@ export default async function RepositoryPage({ params }: RepositoryPageProps) {
     <section className='space-y-3'>
       <h1 className='text-2xl font-semibold tracking-tight'>Overview</h1>
       <p className='max-w-3xl text-sm text-muted-foreground'>
-        {route.repository.description ??
-          'A no-code collaboration Repository for shared Resources, processes, authority, and history.'}
+        {route.repository.description ?? 'A shared no-code collaboration space.'}
       </p>
     </section>
   );
