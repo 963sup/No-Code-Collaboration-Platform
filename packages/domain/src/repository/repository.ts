@@ -7,8 +7,6 @@ export type RepositoryVisibility = (typeof repositoryVisibilities)[number];
 export interface RepositorySummary {
   readonly id: string;
   readonly owner: RepositoryOwner;
-  /** @deprecated Use owner. Removed after executable ownership migration completes. */
-  readonly organizationId: string | null;
   readonly slug: string;
   readonly name: string;
   readonly description: string | null;
