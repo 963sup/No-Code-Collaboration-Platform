@@ -51,6 +51,8 @@ A fresh agent starts from the current task, applicable `AGENTS.md` chain, `docs/
 
 Do not recursively reconstruct current state from broad history. When required current context is missing or authorities disagree, do not invent the missing architecture; resolve the nearest current contract and executable evidence or register the mismatch.
 
+For non-trivial product, implementation, review, release, or provider-validation work, use `.agents/skills/plugin-development-workflow/SKILL.md` to route connected Linear, GitHub, Notion, Context7, Codex Security, Vercel, and Supabase tools by truth class. Never invoke all seven ceremonially or let an external tool redefine repository truth.
+
 ## Architecture boundaries
 
 - `packages/domain`: business truth, invariants, transitions, Capability semantics; no framework/provider dependency.

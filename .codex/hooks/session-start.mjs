@@ -53,6 +53,7 @@ const context = [
   'Historical evidence is opt-in. Use ADRs, Closed gaps, PRs, commits, Git history, and migration history only for why, regression analysis, or provenance.',
   'Do not recursively load documentation or reconstruct current architecture from history. If current authorities disagree, do not invent architecture; resolve the nearest current contract against executable evidence and register a real mismatch as a current gap.',
   'Read the applicable AGENTS.md chain before editing; nearer scoped instructions override broader guidance.',
+  'For non-trivial product, implementation, review, release, or provider-validation work, use the plugin-development-workflow skill to route connected Linear, GitHub, Notion, Context7, Codex Security, Vercel, and Supabase tools by truth class; never invoke them ceremonially.',
   'The project root is anchored by pnpm-workspace.yaml, turbo.json, and .git, including when Codex starts inside a package.',
   `Workspace packages (${workspacePackages.length}): ${packageSummary}.`,
   hasTurbo

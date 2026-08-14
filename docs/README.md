@@ -11,6 +11,7 @@ This directory separates current Product/Domain/Architecture truth from historic
 - [`architecture/README.md`](./architecture/README.md): current target architecture, ownership/dependency boundaries, owner-neutral authorization, and canonical `/{owner}/{repository}` Web architecture.
 - [`architecture/ADR_INDEX.md`](./architecture/ADR_INDEX.md): decision-history router showing Accepted, Historical, and Superseded architecture decisions.
 - [`domains/`](./domains/README.md): candidate and accepted business problem contracts. A document here does not create a package, service, or bounded context by itself.
+- [`PLUGIN_DEVELOPMENT_WORKFLOW.md`](./PLUGIN_DEVELOPMENT_WORKFLOW.md): development-agent orchestration contract for Linear, GitHub, Notion, Context7, Codex Security, Vercel, and Supabase. It routes tools by truth class without creating another source of truth.
 - [`operations/RUNBOOK.md`](./operations/RUNBOOK.md): production release, recovery, incident, data-protection, environment-provisioning, and validation procedures.
 - [`DEVELOPMENT_ENVIRONMENT.md`](./DEVELOPMENT_ENVIRONMENT.md): workstation bootstrap and deterministic local verification entry points.
 - [`CODEX_DESKTOP.md`](./CODEX_DESKTOP.md): Codex Desktop project configuration, MCP context routing, trust boundaries, and verification.
@@ -55,6 +56,7 @@ The diagram is a projection of the written contracts, not an independent source 
 | What are current ownership, dependency, authorization, URL, and Repository presentation boundaries? | `docs/architecture/README.md` and executable route/checker contracts |
 | Why was an architecture decision made, and is it still current? | `docs/architecture/ADR_INDEX.md`, then only the relevant ADR |
 | Where does current executable behavior differ from target? | `docs/IMPLEMENTATION_GAPS.md`, backed by exact executable/provider evidence |
+| How should development agents route Linear/GitHub/Notion/Context7/Codex Security/Vercel/Supabase? | `docs/PLUGIN_DEVELOPMENT_WORKFLOW.md` and `.agents/skills/plugin-development-workflow/SKILL.md` |
 | What is current desired database structure? | `supabase/schemas/*.sql` |
 | How can an empty database be rebuilt? | Reviewed replayable migrations plus deterministic seed data |
 | Which migrations are applied in a persistent environment? | That environment's migration ledger and direct provider evidence |
