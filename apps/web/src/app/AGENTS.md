@@ -13,7 +13,8 @@ This directory owns URL identity, rendering, route composition, and delivery-spe
 - Current accepted Repository child surfaces are `/pages`, `/pages/[pageId]`, and `/activity`. Future GitHub-inspired surfaces enter the same namespace only after Product/Domain acceptance.
 - `Context` is a presentation concept; it does not require a permanent screen region and must never become authorization input.
 - `Activity` is a Repository-scoped projection and may be a normal navigation surface rather than a permanently visible side panel.
-- Legacy `/app/[organizationSlug]/[repositorySlug]/**` and `/app/repositories/[repositoryId]/**` routes are compatibility concerns only. They must not own a second Repository business-flow/UI implementation.
+- The only accepted Repository compatibility namespace is `/app/repositories/[repositoryId]/**`. It must be access-aware and redirect-only; it must not own a second Repository business-flow/UI implementation.
+- Organization-only `/app/[organizationSlug]/[repositorySlug]/**` Repository routing must not exist as canonical or compatibility UI because it encodes a false mandatory-owner assumption.
 - Soft navigation and direct hard navigation to the same canonical URL must resolve the same Repository stable identity and authorization result.
 - URL state may select a presentation surface, but it must never alter authenticated identity, ownership, Membership, Principal resolution, or server-side authorization facts.
 - `page.tsx`, `layout.tsx`, `loading.tsx`, `not-found.tsx`, Server Actions, and Route Handlers remain thin and must not import Supabase adapters outside the composition boundary.
@@ -40,7 +41,7 @@ Owner / Repository      Visibility
 ----------------------------------
 Overview   Pages   Activity
 ----------------------------------
-active child content
+active content
 ```
 
 This is a presentation projection of one Repository, not a new Domain hierarchy.
