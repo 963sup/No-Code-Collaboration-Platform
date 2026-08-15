@@ -14,7 +14,7 @@ import {
   mapSupabaseDiscussionRow,
   mapSupabaseDiscussionSummaryRow,
   type DiscussionDetailProjectionRow
-} from '../mappers/supabase-discussion-mapper';
+} from './supabase-discussion-mapper';
 
 const detailProjection =
   'id, repository_id, discussion_number, category, title, body, status, is_locked, answer_comment_id, version, created_by, created_at, updated_at, closed_at';

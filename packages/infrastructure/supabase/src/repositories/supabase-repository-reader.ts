@@ -3,7 +3,7 @@ import type { RepositorySummary } from '@no-code-collaboration-platform/domain';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
 import type { Database } from '../generated/database.types';
-import { mapSupabaseRepositoryRow } from '../mappers/supabase-repository-mapper';
+import { mapSupabaseRepositoryRow } from './supabase-repository-mapper';
 
 const repositoryProjection =
   'id, owner_user_id, owner_organization_id, slug, name, description, visibility';

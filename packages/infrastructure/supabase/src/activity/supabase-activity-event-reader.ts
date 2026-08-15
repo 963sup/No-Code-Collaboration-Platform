@@ -3,7 +3,7 @@ import type { ActivityEventSummary } from '@no-code-collaboration-platform/domai
 import type { SupabaseClient } from '@supabase/supabase-js';
 
 import type { Database } from '../generated/database.types';
-import { mapSupabaseActivityEventRow } from '../mappers/supabase-activity-event-mapper';
+import { mapSupabaseActivityEventRow } from './supabase-activity-event-mapper';
 
 const activityProjection =
   'id, actor_id, event_type, subject_type, subject_id, payload, created_at';

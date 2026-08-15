@@ -14,7 +14,7 @@ import {
   mapSupabaseIssueRow,
   mapSupabaseIssueSummaryRow,
   type IssueDetailProjectionRow
-} from '../mappers/supabase-issue-mapper';
+} from './supabase-issue-mapper';
 
 const issueDetailProjection =
   'id, repository_id, issue_number, title, body, status, close_reason, version, created_by, created_at, updated_at, closed_at';
