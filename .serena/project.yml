@@ -67,17 +67,6 @@ ignore_all_files_in_gitignore: true
 ls_workspace_folders:
 - "."
 
-# list of additional workspace folder paths for cross-package reference support.
-# Paths can be absolute or relative to the project root.
-# Each folder is registered as an LSP workspace folder, enabling language servers to discover
-# symbols and references across package boundaries, but these folders are not indexed by Serena,
-# i.e. the respective symbols will not be found using Serena's symbol search tools.
-# Example:
-#   additional_workspace_folders:
-#     - ../sibling-package
-#     - ../shared-lib
-ls_additional_workspace_folders: []
-
 # list of additional paths to ignore in this project.
 # Same syntax as gitignore, so you can use * and **.
 # Important: quote patterns that start with `*`, otherwise YAML treats them as aliases.
@@ -89,10 +78,53 @@ ls_additional_workspace_folders: []
 #     - "**/obj/**"
 # Note: global ignored_paths from serena_config.yml are also applied additively.
 ignored_paths:
-- ".idea/**"
+  # --------------------------------------------------
+  # Version control internals
+  # --------------------------------------------------
 - ".git/**"
+- ".idea/**"
+- ".vscode/.ropeproject/**"
+- ".codex/**"
+- ".serena/**"
+- ".playwright-mcp/**"
 - "**/node_modules/**"
-- ".next/**"
+- "**/.next/**"
+- "**/next-env.d.ts"
+- "**/.turbo/**"
+- "**/tsconfig.tsbuildinfo"
+- "**/*.tsbuildinfo"
+- "**/dist/**"
+- "**/build/**"
+- "**/out/**"
+- "**/test-results/**"
+- "**/playwright-report/**"
+- "**/blob-report/**"
+- "**/coverage/**"
+- "**/.nyc_output/**"
+- ".tmp/**"
+- "**/.tmp/**"
+- "**/tmp/**"
+- "**/temp/**"
+- "output/**"
+- "**/*.log"
+- "**/logs/**"
+- "**/npm-debug.log*"
+- "**/yarn-debug.log*"
+- "**/yarn-error.log*"
+- "**/pnpm-debug.log*"
+- "**/.env.local"
+- "**/.env.*.local"
+- "pnpm-lock.yaml"
+- "**/.cache/**"
+- "**/.eslintcache"
+- "**/.stylelintcache"
+- "**/.parcel-cache/**"
+- "**/.vercel/**"
+- "**/.swc/**"
+- "**/.DS_Store"
+- "**/Thumbs.db"
+- "**/desktop.ini"
+- "LICENSE"
 
 # whether the project is in read-only mode
 # If set to true, all editing tools will be disabled and attempts to use them will result in an error
@@ -181,3 +213,14 @@ activation_command:
 # maximum time in seconds to wait for activation_command to complete before killing it (default 180s).
 # must be a positive number.
 activation_command_timeout: 180.0
+
+# list of additional workspace folder paths for cross-package reference support.
+# Paths can be absolute or relative to the project root.
+# Each folder is registered as an LSP workspace folder, enabling language servers to discover
+# symbols and references across package boundaries, but these folders are not indexed by Serena,
+# i.e. the respective symbols will not be found using Serena's symbol search tools.
+# Example:
+#   additional_workspace_folders:
+#     - ../sibling-package
+#     - ../shared-lib
+ls_additional_workspace_folders: []

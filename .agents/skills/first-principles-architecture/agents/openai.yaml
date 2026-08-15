@@ -1,6 +1,6 @@
 interface:
   display_name: "First-Principles Architecture"
   short_description: "Rebuild product and architecture models from necessary facts."
-  default_prompt: "Apply the first-principles architecture workflow to this decision and produce a falsifiable minimum sufficient model."
+  default_prompt: "Use $first-principles-architecture to analyze this decision and produce a falsifiable minimum sufficient model."
 policy:
   allow_implicit_invocation: true

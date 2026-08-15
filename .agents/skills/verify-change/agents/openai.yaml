@@ -1,6 +1,6 @@
 interface:
   display_name: "Verify Change"
   short_description: "Run the narrowest sufficient deterministic verification."
-  default_prompt: "Verify the current change with bounded output and report only evidence-backed results and unavailable checks."
+  default_prompt: "Use $verify-change to verify the current change with bounded output and report only evidence-backed results and unavailable checks."
 policy:
   allow_implicit_invocation: true

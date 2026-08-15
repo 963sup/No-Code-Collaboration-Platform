@@ -1,0 +1,11 @@
+interface:
+  display_name: "Serena JetBrains"
+  short_description: "Navigate and refactor code with Serena and JetBrains."
+  default_prompt: "Use $serena-jetbrains to trace this behavior by symbols and references, then make the smallest safe change."
+dependencies:
+  tools:
+    - type: "mcp"
+      value: "serena"
+      description: "Local Serena MCP server backed by the open JetBrains project."
+policy:
+  allow_implicit_invocation: true

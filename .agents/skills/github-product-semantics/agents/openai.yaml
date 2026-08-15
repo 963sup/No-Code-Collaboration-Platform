@@ -1,6 +1,6 @@
 interface:
   display_name: "GitHub Product Semantics"
-  short_description: "Extract durable GitHub mechanisms without copying surface design."
-  default_prompt: "Research this GitHub concept as benchmark evidence, then derive the smallest no-code platform model that independently requires it."
+  short_description: "Extract durable GitHub mechanisms without surface copying."
+  default_prompt: "Use $github-product-semantics to research this GitHub concept as benchmark evidence and derive the smallest independently required no-code model."
 policy:
   allow_implicit_invocation: true

@@ -1,0 +1,620 @@
+.playwright-mcp\github\account\enterprises\new\screenshots\enterprise-plan-desktop-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\account\enterprises\new\screenshots\enterprise-plan-laptop-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\account\enterprises\new\screenshots\enterprise-plan-mobile-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\account\enterprises\new\screenshots\enterprise-plan-tablet-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\account\users\369sup\screenshots\profile-achievements-desktop-public.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\account\users\369sup\screenshots\profile-achievements-laptop-public.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\account\users\369sup\screenshots\profile-achievements-mobile-public.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\account\users\369sup\screenshots\profile-achievements-tablet-public.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\account\users\369sup\screenshots\profile-desktop-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\account\users\369sup\screenshots\profile-laptop-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\account\users\369sup\screenshots\profile-mobile-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\account\users\369sup\screenshots\profile-projects-desktop-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\account\users\369sup\screenshots\profile-projects-laptop-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\account\users\369sup\screenshots\profile-projects-mobile-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\account\users\369sup\screenshots\profile-projects-tablet-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\account\users\369sup\screenshots\profile-repositories-desktop-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\account\users\369sup\screenshots\profile-repositories-laptop-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\account\users\369sup\screenshots\profile-repositories-mobile-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\account\users\369sup\screenshots\profile-repositories-tablet-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\account\users\369sup\screenshots\profile-stars-desktop-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\account\users\369sup\screenshots\profile-stars-laptop-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\account\users\369sup\screenshots\profile-stars-mobile-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\account\users\369sup\screenshots\profile-stars-tablet-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\account\users\369sup\screenshots\profile-tablet-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\components\account-switcher\screenshots\account-switcher-desktop-open.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\components\account-switcher\screenshots\account-switcher-laptop-open.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\components\account-switcher\screenshots\account-switcher-mobile-open.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\components\account-switcher\screenshots\account-switcher-tablet-open.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\components\create-menu\screenshots\create-menu-desktop-open.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\components\create-menu\screenshots\create-menu-laptop-open.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\components\create-menu\screenshots\create-menu-mobile-open.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\components\create-menu\screenshots\create-menu-tablet-open.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\components\global-menu\screenshots\global-menu-desktop-open.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\components\global-menu\screenshots\global-menu-laptop-open.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\components\global-menu\screenshots\global-menu-mobile-open.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\components\global-menu\screenshots\global-menu-tablet-open.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\components\issue-create-dialog\screenshots\issue-create-dialog-desktop-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\components\notification-indicator\screenshots\notifications-entry-desktop-hover.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\components\notification-indicator\screenshots\notifications-entry-laptop-hover.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\components\notification-indicator\screenshots\notifications-entry-mobile-hover.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\components\notification-indicator\screenshots\notifications-entry-tablet-hover.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\components\profile-tabs\screenshots\profile-tabs-desktop-achievements.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\components\profile-tabs\screenshots\profile-tabs-laptop-achievements.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\components\profile-tabs\screenshots\profile-tabs-mobile-achievements.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\components\profile-tabs\screenshots\profile-tabs-tablet-achievements.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\components\repository-navigation\screenshots\repository-navigation-desktop-public.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\components\repository-navigation\screenshots\repository-navigation-laptop-public.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\components\repository-navigation\screenshots\repository-navigation-mobile-public.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\components\repository-navigation\screenshots\repository-navigation-tablet-public.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\components\repository-settings-navigation\screenshots\repository-settings-navigation-desktop-authenticated.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\components\repository-settings-navigation\screenshots\repository-settings-navigation-laptop-authenticated.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\components\repository-settings-navigation\screenshots\repository-settings-navigation-mobile-authenticated.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\components\repository-settings-navigation\screenshots\repository-settings-navigation-tablet-authenticated.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\components\status-dialog\screenshots\set-status-desktop-dialog.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\components\status-dialog\screenshots\set-status-laptop-dialog.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\components\status-dialog\screenshots\set-status-mobile-dialog.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\components\status-dialog\screenshots\set-status-tablet-dialog.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\components\top-repositories\screenshots\top-repositories-desktop-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\components\top-repositories\screenshots\top-repositories-laptop-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\components\top-repositories\screenshots\top-repositories-mobile-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\components\top-repositories\screenshots\top-repositories-tablet-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\components\user-menu\screenshots\user-menu-desktop-open.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\components\user-menu\screenshots\user-menu-laptop-open.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\components\user-menu\screenshots\user-menu-mobile-open.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\components\user-menu\screenshots\user-menu-tablet-open.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\dashboard\screenshots\dashboard-desktop-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\dashboard\screenshots\dashboard-laptop-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\dashboard\screenshots\dashboard-mobile-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\dashboard\screenshots\dashboard-tablet-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\discussions\screenshots\discussions-desktop-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\discussions\screenshots\discussions-laptop-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\discussions\screenshots\discussions-mobile-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\discussions\screenshots\discussions-tablet-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\explore\screenshots\explore-desktop-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\explore\screenshots\explore-laptop-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\explore\screenshots\explore-mobile-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\explore\screenshots\explore-tablet-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\home\screenshots\home-desktop-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\home\screenshots\home-laptop-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\home\screenshots\home-mobile-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\home\screenshots\home-tablet-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\issues\assigned\screenshots\all-issues-desktop-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\issues\assigned\screenshots\all-issues-laptop-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\issues\assigned\screenshots\all-issues-mobile-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\issues\assigned\screenshots\all-issues-tablet-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\marketplace\screenshots\marketplace-desktop-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\marketplace\screenshots\marketplace-laptop-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\marketplace\screenshots\marketplace-mobile-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\marketplace\screenshots\marketplace-tablet-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\mcp\screenshots\mcp-registry-desktop-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\mcp\screenshots\mcp-registry-laptop-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\mcp\screenshots\mcp-registry-mobile-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\mcp\screenshots\mcp-registry-tablet-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\new\import\screenshots\import-repository-desktop-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\new\import\screenshots\import-repository-laptop-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\new\import\screenshots\import-repository-mobile-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\new\import\screenshots\import-repository-tablet-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\new\screenshots\new-repository-desktop-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\new\screenshots\new-repository-laptop-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\new\screenshots\new-repository-mobile-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\new\screenshots\new-repository-tablet-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\notifications\screenshots\notifications-desktop-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\notifications\screenshots\notifications-laptop-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\notifications\screenshots\notifications-mobile-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\notifications\screenshots\notifications-tablet-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\organizations\ac-sup\dashboard\screenshots\dashboard-desktop-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\organizations\ac-sup\dashboard\screenshots\dashboard-laptop-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\organizations\ac-sup\dashboard\screenshots\dashboard-mobile-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\organizations\ac-sup\dashboard\screenshots\dashboard-tablet-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\organizations\ac-sup\people\screenshots\members-desktop-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\organizations\ac-sup\people\screenshots\members-laptop-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\organizations\ac-sup\people\screenshots\members-mobile-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\organizations\ac-sup\people\screenshots\members-tablet-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\organizations\ac-sup\screenshots\organization-profile-desktop-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\organizations\ac-sup\screenshots\organization-profile-laptop-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\organizations\ac-sup\screenshots\organization-profile-mobile-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\organizations\ac-sup\screenshots\organization-profile-tablet-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\organizations\ac-sup\settings\audit-log\screenshots\audit-log-desktop-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\organizations\ac-sup\settings\audit-log\screenshots\audit-log-laptop-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\organizations\ac-sup\settings\audit-log\screenshots\audit-log-mobile-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\organizations\ac-sup\settings\audit-log\screenshots\audit-log-tablet-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\organizations\ac-sup\settings\custom-properties\screenshots\custom-properties-desktop-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\organizations\ac-sup\settings\custom-properties\screenshots\custom-properties-laptop-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\organizations\ac-sup\settings\custom-properties\screenshots\custom-properties-mobile-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\organizations\ac-sup\settings\custom-properties\screenshots\custom-properties-tablet-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\organizations\ac-sup\settings\profile\screenshots\organization-settings-desktop-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\organizations\ac-sup\settings\profile\screenshots\organization-settings-laptop-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\organizations\ac-sup\settings\profile\screenshots\organization-settings-mobile-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\organizations\ac-sup\settings\profile\screenshots\organization-settings-tablet-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\organizations\ac-sup\teams\screenshots\teams-desktop-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\organizations\ac-sup\teams\screenshots\teams-laptop-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\organizations\ac-sup\teams\screenshots\teams-mobile-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\organizations\ac-sup\teams\screenshots\teams-tablet-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\organizations\github\screenshots\organization-profile-desktop-anonymous.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\organizations\github\screenshots\organization-profile-desktop-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\organizations\github\screenshots\organization-profile-laptop-anonymous.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\organizations\github\screenshots\organization-profile-laptop-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\organizations\github\screenshots\organization-profile-mobile-anonymous.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\organizations\github\screenshots\organization-profile-mobile-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\organizations\github\screenshots\organization-profile-tablet-anonymous.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\organizations\github\screenshots\organization-profile-tablet-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\organizations\plan\screenshots\new-organization-desktop-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\organizations\plan\screenshots\new-organization-laptop-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\organizations\plan\screenshots\new-organization-mobile-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\organizations\plan\screenshots\new-organization-tablet-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\projects\screenshots\projects-desktop-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\projects\screenshots\projects-laptop-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\projects\screenshots\projects-mobile-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\projects\screenshots\projects-tablet-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\repos\screenshots\all-repositories-desktop-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\repos\screenshots\all-repositories-laptop-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\repos\screenshots\all-repositories-mobile-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\repos\screenshots\all-repositories-tablet-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\repositories\369sup\support\discussions\screenshots\discussions-desktop-error.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\repositories\369sup\support\discussions\screenshots\discussions-laptop-error.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\repositories\369sup\support\discussions\screenshots\discussions-mobile-error.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\repositories\369sup\support\discussions\screenshots\discussions-tablet-error.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\repositories\369sup\support\issues\1\screenshots\target-issue-detail-desktop-dialog.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\repositories\369sup\support\issues\1\screenshots\target-issue-detail-desktop-full-page.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\repositories\369sup\support\issues\1\screenshots\target-issue-detail-laptop-dialog.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\repositories\369sup\support\issues\1\screenshots\target-issue-detail-laptop-full-page.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\repositories\369sup\support\issues\1\screenshots\target-issue-detail-mobile-dialog.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\repositories\369sup\support\issues\1\screenshots\target-issue-detail-mobile-full-page.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\repositories\369sup\support\issues\1\screenshots\target-issue-detail-tablet-dialog.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\repositories\369sup\support\issues\1\screenshots\target-issue-detail-tablet-full-page.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\repositories\369sup\support\issues\screenshots\issues-list-desktop-public.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\repositories\369sup\support\issues\screenshots\issues-list-laptop-public.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\repositories\369sup\support\issues\screenshots\issues-list-mobile-public.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\repositories\369sup\support\issues\screenshots\issues-list-tablet-public.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\repositories\369sup\support\issues\screenshots\target-issues-list-desktop-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\repositories\369sup\support\issues\screenshots\target-issues-list-laptop-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\repositories\369sup\support\issues\screenshots\target-issues-list-mobile-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\repositories\369sup\support\issues\screenshots\target-issues-list-tablet-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\repositories\369sup\support\projects\screenshots\projects-list-desktop-public.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\repositories\369sup\support\projects\screenshots\projects-list-laptop-public.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\repositories\369sup\support\projects\screenshots\projects-list-mobile-public.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\repositories\369sup\support\projects\screenshots\projects-list-tablet-public.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\repositories\369sup\support\pulse\screenshots\pulse-overview-desktop-public.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\repositories\369sup\support\pulse\screenshots\pulse-overview-laptop-public.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\repositories\369sup\support\pulse\screenshots\pulse-overview-mobile-public.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\repositories\369sup\support\pulse\screenshots\pulse-overview-tablet-public.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\repositories\369sup\support\screenshots\repository-overview-desktop-public.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\repositories\369sup\support\screenshots\repository-overview-laptop-public.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\repositories\369sup\support\screenshots\repository-overview-mobile-public.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\repositories\369sup\support\screenshots\repository-overview-tablet-public.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\repositories\369sup\support\screenshots\target-repository-overview-desktop.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\repositories\369sup\support\screenshots\target-repository-overview-laptop.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\repositories\369sup\support\screenshots\target-repository-overview-mobile.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\repositories\369sup\support\screenshots\target-repository-overview-tablet.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\repositories\369sup\support\security\screenshots\security-overview-desktop-public.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\repositories\369sup\support\security\screenshots\security-overview-laptop-public.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\repositories\369sup\support\security\screenshots\security-overview-mobile-public.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\repositories\369sup\support\security\screenshots\security-overview-tablet-public.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\repositories\369sup\support\settings\screenshots\repository-settings-navigation-desktop-authenticated.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\repositories\369sup\support\settings\screenshots\repository-settings-navigation-laptop-authenticated.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\repositories\369sup\support\settings\screenshots\repository-settings-navigation-mobile-authenticated.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\repositories\369sup\support\settings\screenshots\repository-settings-navigation-tablet-authenticated.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\repositories\369sup\support\wiki\screenshots\wiki-home-desktop-authenticated-empty.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\repositories\369sup\support\wiki\screenshots\wiki-home-desktop-public.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\repositories\369sup\support\wiki\screenshots\wiki-home-laptop-authenticated-empty.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\repositories\369sup\support\wiki\screenshots\wiki-home-laptop-public.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\repositories\369sup\support\wiki\screenshots\wiki-home-mobile-authenticated-empty.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\repositories\369sup\support\wiki\screenshots\wiki-home-mobile-public.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\repositories\369sup\support\wiki\screenshots\wiki-home-tablet-authenticated-empty.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\repositories\369sup\support\wiki\screenshots\wiki-home-tablet-public.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\repositories\github\docs\activity\screenshots\repository-activity-desktop-anonymous.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\repositories\github\docs\activity\screenshots\repository-activity-desktop-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\repositories\github\docs\activity\screenshots\repository-activity-laptop-anonymous.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\repositories\github\docs\activity\screenshots\repository-activity-laptop-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\repositories\github\docs\activity\screenshots\repository-activity-mobile-anonymous.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\repositories\github\docs\activity\screenshots\repository-activity-mobile-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\repositories\github\docs\activity\screenshots\repository-activity-tablet-anonymous.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\repositories\github\docs\activity\screenshots\repository-activity-tablet-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\repositories\github\docs\issues\45464\screenshots\issue-detail-desktop-anonymous.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\repositories\github\docs\issues\45464\screenshots\issue-detail-desktop-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\repositories\github\docs\issues\45464\screenshots\issue-detail-laptop-anonymous.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\repositories\github\docs\issues\45464\screenshots\issue-detail-laptop-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\repositories\github\docs\issues\45464\screenshots\issue-detail-mobile-anonymous.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\repositories\github\docs\issues\45464\screenshots\issue-detail-mobile-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\repositories\github\docs\issues\45464\screenshots\issue-detail-tablet-anonymous.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\repositories\github\docs\issues\45464\screenshots\issue-detail-tablet-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\repositories\github\docs\issues\999999999\screenshots\issue-detail-desktop-error.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\repositories\github\docs\issues\screenshots\issues-list-desktop-anonymous.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\repositories\github\docs\issues\screenshots\issues-list-desktop-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\repositories\github\docs\issues\screenshots\issues-list-desktop-empty.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\repositories\github\docs\issues\screenshots\issues-list-desktop-filter-dialog.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\repositories\github\docs\issues\screenshots\issues-list-desktop-filter-popover.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\repositories\github\docs\issues\screenshots\issues-list-desktop-focus.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\repositories\github\docs\issues\screenshots\issues-list-desktop-hover.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\repositories\github\docs\issues\screenshots\issues-list-desktop-loading.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\repositories\github\docs\issues\screenshots\issues-list-desktop-page-2.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\repositories\github\docs\issues\screenshots\issues-list-desktop-sort-menu.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\repositories\github\docs\issues\screenshots\issues-list-laptop-anonymous.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\repositories\github\docs\issues\screenshots\issues-list-laptop-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\repositories\github\docs\issues\screenshots\issues-list-mobile-anonymous.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\repositories\github\docs\issues\screenshots\issues-list-mobile-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\repositories\github\docs\issues\screenshots\issues-list-tablet-anonymous.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\repositories\github\docs\issues\screenshots\issues-list-tablet-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\repositories\github\docs\projects\screenshots\projects-list-desktop-anonymous.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\repositories\github\docs\projects\screenshots\projects-list-desktop-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\repositories\github\docs\projects\screenshots\projects-list-laptop-anonymous.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\repositories\github\docs\projects\screenshots\projects-list-laptop-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\repositories\github\docs\projects\screenshots\projects-list-mobile-anonymous.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\repositories\github\docs\projects\screenshots\projects-list-mobile-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\repositories\github\docs\projects\screenshots\projects-list-tablet-anonymous.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\repositories\github\docs\projects\screenshots\projects-list-tablet-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\repositories\github\docs\screenshots\repository-overview-desktop-anonymous.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\repositories\github\docs\screenshots\repository-overview-desktop-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\repositories\github\docs\screenshots\repository-overview-laptop-anonymous.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\repositories\github\docs\screenshots\repository-overview-laptop-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\repositories\github\docs\screenshots\repository-overview-mobile-anonymous.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\repositories\github\docs\screenshots\repository-overview-mobile-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\repositories\github\docs\screenshots\repository-overview-tablet-anonymous.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\repositories\github\docs\screenshots\repository-overview-tablet-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\repositories\gollum\gollum\wiki\screenshots\wiki-page-desktop-anonymous.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\repositories\gollum\gollum\wiki\screenshots\wiki-page-desktop-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\repositories\gollum\gollum\wiki\screenshots\wiki-page-laptop-anonymous.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\repositories\gollum\gollum\wiki\screenshots\wiki-page-laptop-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\repositories\gollum\gollum\wiki\screenshots\wiki-page-mobile-anonymous.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\repositories\gollum\gollum\wiki\screenshots\wiki-page-mobile-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\repositories\gollum\gollum\wiki\screenshots\wiki-page-tablet-anonymous.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\repositories\gollum\gollum\wiki\screenshots\wiki-page-tablet-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\repositories\vercel\next.js\discussions\screenshots\discussions-list-desktop-anonymous.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\repositories\vercel\next.js\discussions\screenshots\discussions-list-desktop-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\repositories\vercel\next.js\discussions\screenshots\discussions-list-laptop-anonymous.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\repositories\vercel\next.js\discussions\screenshots\discussions-list-laptop-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\repositories\vercel\next.js\discussions\screenshots\discussions-list-mobile-anonymous.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\repositories\vercel\next.js\discussions\screenshots\discussions-list-mobile-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\repositories\vercel\next.js\discussions\screenshots\discussions-list-tablet-anonymous.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\repositories\vercel\next.js\discussions\screenshots\discussions-list-tablet-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\search\screenshots\search-users-desktop-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\search\screenshots\search-users-laptop-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\search\screenshots\search-users-mobile-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\search\screenshots\search-users-tablet-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\settings\accessibility\screenshots\settings-accessibility-desktop-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\settings\accessibility\screenshots\settings-accessibility-laptop-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\settings\accessibility\screenshots\settings-accessibility-mobile-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\settings\accessibility\screenshots\settings-accessibility-tablet-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\settings\appearance\screenshots\settings-appearance-desktop-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\settings\appearance\screenshots\settings-appearance-laptop-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\settings\appearance\screenshots\settings-appearance-mobile-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\settings\appearance\screenshots\settings-appearance-tablet-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\settings\applications\screenshots\authorized-oauth-apps-desktop-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\settings\applications\screenshots\authorized-oauth-apps-laptop-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\settings\applications\screenshots\authorized-oauth-apps-mobile-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\settings\applications\screenshots\authorized-oauth-apps-tablet-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\settings\billing\screenshots\billing-overview-desktop-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\settings\billing\screenshots\billing-overview-laptop-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\settings\billing\screenshots\billing-overview-mobile-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\settings\billing\screenshots\billing-overview-tablet-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\settings\enterprises\screenshots\settings-enterprises-desktop-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\settings\enterprises\screenshots\settings-enterprises-laptop-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\settings\enterprises\screenshots\settings-enterprises-mobile-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\settings\enterprises\screenshots\settings-enterprises-tablet-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\settings\installations\screenshots\installed-github-apps-desktop-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\settings\installations\screenshots\installed-github-apps-laptop-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\settings\installations\screenshots\installed-github-apps-mobile-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\settings\installations\screenshots\installed-github-apps-tablet-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\settings\organizations\screenshots\settings-organizations-desktop-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\settings\organizations\screenshots\settings-organizations-laptop-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\settings\organizations\screenshots\settings-organizations-mobile-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\settings\organizations\screenshots\settings-organizations-tablet-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\settings\profile\screenshots\settings-profile-desktop-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\settings\profile\screenshots\settings-profile-laptop-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\settings\profile\screenshots\settings-profile-mobile-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\settings\profile\screenshots\settings-profile-tablet-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\settings\tokens\screenshots\programmatic-access-desktop-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\settings\tokens\screenshots\programmatic-access-laptop-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\settings\tokens\screenshots\programmatic-access-mobile-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+.playwright-mcp\github\settings\tokens\screenshots\programmatic-access-tablet-default.png
+'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte

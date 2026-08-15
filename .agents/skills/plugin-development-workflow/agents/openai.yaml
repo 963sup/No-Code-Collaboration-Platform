@@ -1,6 +1,6 @@
 interface:
   display_name: "Plugin Development Workflow"
-  short_description: "Route development plugins by truth class, execution role, and evidence boundary."
-  default_prompt: "Run this development task through the repository's plugin orchestration contract, using only the connected tools that are necessary and preserving repository truth boundaries from implementation through production learning."
+  short_description: "Route development plugins by truth class and evidence boundary."
+  default_prompt: "Use $plugin-development-workflow to route this task through only the necessary connected tools while preserving repository truth boundaries."
 policy:
   allow_implicit_invocation: true
