@@ -8,7 +8,7 @@
     "codex:check": "node tooling/check-codex-contract.mjs && node tooling/check-operational-contract.mjs && node tooling/check-documentation-contracts.mjs && node tooling/check-instruction-scopes.mjs",
     "codex:session-context": "node .codex/hooks/session-start.mjs",
     "env:check": "node tooling/check-environment.mjs",
-    "architecture:check": "node tooling/check-architecture.mjs",
+    "architecture:check": "node tooling/check-architecture.mjs && node tooling/check-supabase-adapter-topology.mjs",
     "format": "oxfmt --write .",
     "format:staged": "oxfmt --write --no-error-on-unmatched-pattern",
     "format:check": "oxfmt --check .",
