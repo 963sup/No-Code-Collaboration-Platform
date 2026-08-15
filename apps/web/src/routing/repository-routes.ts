@@ -57,3 +57,7 @@ export function repositorySecurityPath(route: RepositoryRouteAddress) {
 export function repositorySettingsPath(route: RepositoryRouteAddress) {
   return `${repositoryPath(route)}/settings`;
 }
+
+export function repositorySettingsAccessPath(route: RepositoryRouteAddress) {
+  return `${repositorySettingsPath(route)}/access`;
+}
