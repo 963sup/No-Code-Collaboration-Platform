@@ -22,7 +22,7 @@ GitHub supplies mature collaboration, ownership, organization, authorization, UR
 10. No bounded context, service, datastore, integration, or generic abstraction exists until necessity and lifecycle ownership are demonstrated.
 11. Turbo projects coarse workspace architecture from actual pnpm package dependencies; ontology labels do not create packages.
 12. `packages/domain` owns business truth and pure decision logic.
-13. `packages/dashboardlication` owns use cases and provider-neutral Ports.
+13. `packages/application` owns use cases and provider-neutral Ports.
 14. `packages/infrastructure/supabase` implements Ports and owns provider clients, DTO mapping, SQL-facing projections, and generated database types.
 15. `apps/web` owns delivery/composition only; provider wiring is limited to `apps/web/src/composition`.
 16. `packages/ui` owns presentation primitives and cannot define Product semantics.
@@ -56,7 +56,7 @@ apps/web
    ├──────────────> packages/ui
    │
    ▼
-packages/dashboardlication
+packages/application
    │
    ▼
 packages/domain
@@ -187,7 +187,7 @@ The URL shape never determines Owner kind. The safe projection exposes only publ
 Delivery ownership:
 
 ```text
-apps/web/src/dashboard/
+apps/web/src/app/
 ├─ (public)/         # public static/discovery surfaces
 ├─ (auth)/           # identity/protocol surfaces
 ├─ (authenticated)/  # authenticated-only global GitHub-aligned surfaces
@@ -246,7 +246,7 @@ Delivery responsibilities:
 src/routing/auth-routes.ts
 = identity URL classification and safe post-auth destination policy
 
-src/dashboard/(auth)/**
+src/app/(auth)/**
 = human/protocol identity delivery surfaces
 
 src/composition/**
@@ -321,10 +321,10 @@ Minimum Repository browser journey:
 
 ```text
 verified Actor
-→ /dashboard dashboard
+→ /dashboard
 → click Repository card
 → /{owner}/{repository}
-→ Pages
+→ Wiki
 → Page create/open/update
 → Activity
 ```

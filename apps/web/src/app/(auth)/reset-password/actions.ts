@@ -42,7 +42,7 @@ export async function resetPassword(formData: FormData) {
     await new SignOut(identityProvider).execute('current-session');
   } catch {
     // Recovery sessions never count as ordinary product identity, so a stale recovery cookie
-    // cannot authorize /app. A fresh password sign-in replaces it on the next successful login.
+    // cannot authorize /dashboard. A fresh password sign-in replaces it on the next successful login.
   }
 
   redirect(buildPath('/sign-in', { notice: 'password-reset' }));

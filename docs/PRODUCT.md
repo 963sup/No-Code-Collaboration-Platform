@@ -3,7 +3,7 @@
 - Status: Canonical
 - Contract owner: Repository owner
 - Scope: Product meaning and semantic boundaries
-- Last reviewed: 2026-08-15
+- Last reviewed: 2026-08-16
 
 > 逆向 GitHub 產品語意，從第一性原理重建以 Repository 為無代碼協作容器的企業協作平台。
 
@@ -211,11 +211,11 @@ The current accepted URL model is:
 /settings/profile
 /settings/organizations
 /settings/enterprises
-/settings/dashboardearance
+/settings/appearance
 /settings/accessibility
 /settings/billing
 /settings/installations
-/settings/dashboardlications
+/settings/applications
 /settings/tokens
 ```
 

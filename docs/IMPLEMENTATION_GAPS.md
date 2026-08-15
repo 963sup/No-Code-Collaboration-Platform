@@ -2,7 +2,7 @@
 
 - Status: Active current-gap register
 - Register owner: Project maintainer until an explicit governance owner is assigned
-- Last reviewed: 2026-08-15
+- Last reviewed: 2026-08-16
 
 ## Purpose
 
@@ -36,21 +36,21 @@ A gap is not permission to redefine the target model, postpone an invariant sile
 
 - Status: Contained
 - Affected contracts: [`PRODUCT.md`](./PRODUCT.md), [`ONTOLOGY.md`](./ONTOLOGY.md), [`domains/repository-collaboration.md`](./domains/repository-collaboration.md), [`architecture/README.md`](./architecture/README.md), [ADR-011](./architecture/ADR-011-github-surface-parallel-composition.md)
-- Affected invariants: Repository remains the only collaboration Container; Issue/Discussion stable identity and lifecycle are Repository-scoped; Project/Notification/Search/Explore/Integrations are non-owning Projections; availability is honest; code-product surfaces are absent
+- Affected invariants: Repository remains the only collaboration Container; Issue/Discussion stable identity and lifecycle are Repository-scoped; Project/Notification/Search/Explore/Marketplace are non-owning Projections; availability is honest; code-product surfaces are absent
 - Risk class: target/executable mismatch and misleading feature-readiness claims
 
 #### Direct evidence
 
-- [`.playwright-mcp/github-urls.json`](../.playwright-mcp/github-urls.json) indexes the sanitized URL-resource and component inventories plus 444 current screenshots across Desktop, Laptop, Tablet, and Mobile, including the target Issue comparison set.
+- [`.playwright-mcp/github-urls.json`](../.playwright-mcp/github-urls.json) indexes the sanitized URL-resource and component inventories plus retained responsive screenshots, including the target Issue comparison set.
 - [`.playwright-mcp/github-ui-ux.md`](../.playwright-mcp/github-ui-ux.md) records canonical redirects, Dashboard/account context switching, Repository navigation, Issues, Projects attachment behavior, Discussions availability, Wiki/Page behavior, Activity, Security posture, Settings, Notifications, and governance surfaces.
-- The accepted target URL set now includes Repository Issues, Projects attachment list, Discussions, Pages, Activity, Security posture, and Settings; actor-level Repository/Issue/Project/Discussion discovery, Notifications, Search, Organization governance, and personal Settings are separate resource/projection families rather than Repository children.
-- The executable App Router now exposes the manifest-driven App shell and every admitted global, Repository, account, Organization-governance, settings, and integration-catalog route with explicit `live | preview | deferred` availability. Source Code, Git, Pull Request, Gist, Actions, and arbitrary execution surfaces are absent.
-- Issue and Discussion now have executable Domain/Application/schema/adapter/Web command lifecycles with Repository-local numbering, optimistic concurrency, flat comments, Activity Evidence, question-only Answer selection, and independent Discussion moderation state. Notifications, Search, Explore, and Repository Projects are authorized read projections; Notification preference and inbox-state commands are live.
-- The remaining delivery mismatch is explicit rather than product-semantic uncertainty: actor-wide `/issues` and `/discussions`, selected account/Organization/settings surfaces, and the provider-neutral integration catalog remain Preview; Team, Enterprise, and connector installation/connection remain Deferred by Product decision.
+- The accepted target URL set includes Repository Issues, Projects attachment list, Discussions, Wiki/Page knowledge, Activity, Security posture, and Settings; actor-level Repository/Issue/Project/Discussion discovery, Notifications, Search, Organization governance, and personal Settings are separate resource/projection families rather than Repository children.
+- The executable App Router exposes GitHub-aligned `/dashboard`, `/repos`, `/issues/assigned`, shared `/{ownerSlug}` identity, canonical `/{ownerSlug}/{repositorySlug}` Repository routes, `/wiki`, split Organization operational/settings URL families, and explicit `live | preview | deferred` availability. Source Code, Git, Pull Request, Gist, Actions, and arbitrary execution surfaces are absent.
+- Issue and Discussion have executable Domain/Application/schema/adapter/Web command lifecycles with Repository-local numbering, optimistic concurrency, flat comments, Activity Evidence, question-only Answer selection, and independent Discussion moderation state. Notifications, Search, Explore, and Repository Projects are authorized read projections; Notification preference and inbox-state commands are live.
+- The remaining delivery mismatch is explicit rather than product-semantic uncertainty: `/issues/assigned`, `/discussions`, selected account/Organization/settings surfaces, and the provider-neutral Marketplace catalog remain Preview; Team, Enterprise, and connector installation/connection remain Deferred by Product decision.
 
 #### Predicted failure
 
-Without containment, documentation or UI work could present target-only surfaces as available, copy GitHub aliases as canonical target resources, invent Issue/Discussion state in React components, create Repository-owned Project detail identity, duplicate Page through `/wiki`, or add Parallel slots without independent loading/recovery value.
+Without containment, documentation or UI work could present target-only surfaces as available, normalize admitted GitHub URLs into invented target aliases, invent Issue/Discussion state in React components, create Repository-owned Project detail identity, duplicate Page/Knowledge identity, or add Parallel slots without independent loading/recovery value.
 
 #### Temporary containment
 
@@ -67,14 +67,14 @@ Close only after the same exact change set proves:
 1. Issue and Discussion executable Domain/Application/schema/adapters prove the already accepted stable Repository-scoped lifecycle, authorization, comments/relationships, optimistic concurrency, and Activity Evidence without code-domain dependencies.
 2. Application use cases and provider adapters preserve Repository authorization and do not place Domain decisions in React components.
 3. The App Router implements accepted target routes with Server Components by default and only minimal interaction islands.
-4. Every `@sidebar`, `@activity`, and `@modal` slot has `default.tsx`, explicit unmatched soft-navigation behavior, and a removal test proving independent responsibility.
-5. Issue and Discussion modal/full-page modes share canonical URL and authorization; refresh, Back, and Forward behave identically for stable resource identity.
+4. Every retained `@sidebar`, `@activity`, and `@modal` slot has explicit unmatched soft-navigation behavior and a removal test proving independent responsibility.
+5. Issue and Discussion modal/full-page modes, where retained, share canonical URL and authorization; refresh, Back, and Forward behave identically for stable resource identity.
 6. Projects stays an attachment/list Projection and owner-scoped Project detail does not appear under a Repository-owned detail path.
-7. Wiki/Page knowledge has one canonical target identity and no Git-backed history semantics.
-8. GitHub `/dashboard`, `/repos`, `/issues/assigned`, split Organization namespaces, and command paths are mapped to the target resource/query/process model without provider aliases becoming canonical Domain identity.
+7. `/wiki` remains one presentation identity over Page/Knowledge with no Git-backed history semantics.
+8. GitHub `/dashboard`, `/repos`, `/issues/assigned`, split Organization namespaces, and command paths remain the admitted presentation baseline without Domain vocabulary being used to rename them.
 9. Notification access revocation leaks no title/snippet/count/URL; Search authorization precedes ranking/count/snippet; Project filters do not mutate Artifacts; Discussion Answer is question-only; Context switching does not change effective authorization.
-10. Next DevTools reports no build, type, runtime, hydration, browser-log, or server-log errors for each implemented slice.
-11. Playwright validates GitHub-aligned local behavior at `1440x900`, `1280x800`, `768x1024`, and `390x844` without credentials or private request material.
+10. Production build and browser logs report no build, type, runtime, or hydration regression for each implemented slice.
+11. Playwright validates GitHub-aligned local behavior at the accepted responsive viewports without credentials or private request material.
 
 ### GAP-IDENTITY-001 — Identity lifecycle remains incomplete after verified Session and recovery establishment
 
@@ -89,7 +89,7 @@ Close only after the same exact change set proves:
 - Recovery is intentionally single-purpose: `GetCurrentIdentity` excludes signed Sessions whose `amr` contains `recovery`; `/reset-password` requires recovery evidence; an ordinary password Session cannot use recovery reset; recovery creates no Membership, Grant, Capability, or Activity facts.
 - `apps/web/e2e/auth.spec.ts` carries a local Mailpit path from registration/verification through recovery proof, recovery-only routing, reset, fresh ordinary sign-in, and rejection of ordinary Sessions from recovery page.
 - No Application use case or human-facing route currently implements Organization invitation acceptance, email change, MFA, Session listing, selective revocation UI, or enterprise identity policy.
-- Direct provider discovery on 2026-08-15 found a healthy hosted Supabase project, but no repository application schema or migration ledger is established there and it is not accepted as Preview, Staging, or Production. Hosted Auth redirect, SMTP, CAPTCHA/abuse protection, notification, and Session settings remain unverified.
+- Direct provider discovery on 2026-08-15 found a hosted Supabase project, but no repository application schema or migration ledger is established there and it is not accepted as Preview, Staging, or Production. Hosted Auth redirect, SMTP, CAPTCHA/abuse protection, notification, and Session settings remain unverified.
 - Open registration intentionally creates no Organization Membership or Repository Grant.
 
 #### Predicted failure
@@ -98,7 +98,7 @@ A User can establish/recover the current local email/password credential flow, b
 
 #### Temporary containment
 
-- Recovery is exposed only through the accepted single-purpose Recovery Session path; a recovery-authenticated request is not accepted as ordinary `/app` identity.
+- Recovery is exposed only through the accepted single-purpose Recovery Session path; a recovery-authenticated request is not accepted as ordinary `/dashboard` identity.
 - Unsupported invitation, MFA, OAuth, SSO, Session-management, and broader account-security behavior is not described as available.
 - Registration/recovery do not create collaboration authority; authenticated Users without persisted authority remain unauthorized by RLS.
 - A hosted provider project is not treated as an accepted identity environment merely because it exists. Production identity readiness remains blocked until hosted configuration/delivery are directly verified.

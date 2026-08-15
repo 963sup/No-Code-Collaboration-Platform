@@ -2,7 +2,7 @@
 
 - Status: Accepted
 - Contract owner: Product and Domain
-- Last reviewed: 2026-08-15
+- Last reviewed: 2026-08-16
 
 ## Problem owned and success condition
 
@@ -19,7 +19,7 @@ Repository Collaboration is Accepted because all nine Domain acceptance gates ar
 3. **Semantic roles do not substitute for ownership evidence.** Repository has explicit ownership, containment, authorization, URL, lifecycle, and evidence responsibilities rather than being accepted merely because it is classified as a Container.
 4. **Relationships, states, invariants, and failure behavior are explicit.** Typed User/Organization ownership, visibility, containment, canonical identity, creation rules, undefined destructive lifecycle, and fail-closed behavior are defined below.
 5. **Dependencies remain one-way.** Domain owns semantics; Application orchestrates use cases; Supabase translates/persists/enforces; Web resolves and presents human routes. Provider/framework representations do not redefine Repository.
-6. **Known gaps are registered and contained.** [`../IMPLEMENTATION_GAPS.md`](../IMPLEMENTATION_GAPS.md) tracks remaining delivery, identity, and exact-head evidence gaps without reintroducing obsolete Organization-only semantics or claiming production validation.
+6. **Known gaps are registered and contained.** [`../IMPLEMENTATION_GAPS.md`](../IMPLEMENTATION_GAPS.md) tracks remaining delivery and identity gaps without reintroducing obsolete Organization-only semantics or claiming production validation.
 7. **Authorization-sensitive vertical slice exists.** Page create/read/update proves stable Repository identity, Capability authorization, independent RLS enforcement, optimistic concurrency, canonical routing, and required historical Evidence.
 8. **Additional real use cases reuse the boundary.** Issue and Discussion independently reuse the same Repository containment, Capability vocabulary, canonical Owner/Repository shell, authorization boundary, and Activity Evidence without circular ownership or a second Container.
 9. **Major architecture decisions are recorded.** ADR-001 owns truth boundaries; ADR-010 owns current User/Organization Repository ownership and routing identity; ADR-011 owns Repository presentation composition; ADR-012 owns Issue/Discussion lifecycle and Projection boundaries.
@@ -53,19 +53,25 @@ Acceptance means this Repository collaboration boundary is reusable current Doma
 
 ### Current executable alignment
 
-The executable ownership and delivery model now matches the accepted target:
+The executable ownership and delivery model matches the accepted target:
 
 ```text
 Repository Owner = User | Organization
 
-canonical human route
+Owner identity
+= /{ownerSlug}
+
+canonical human Repository route
 = /{ownerSlug}/{repositorySlug}
 
 stable authorization/evidence target
 = Repository ID
+
+knowledge presentation
+= /{ownerSlug}/{repositorySlug}/wiki
 ```
 
-The remaining `GAP-OWNERSHIP-001` concern is exact-head integration evidence, not a known semantic mismatch. An Open evidence gap cannot be used to restore obsolete Organization-only Product/Domain assumptions.
+`GAP-OWNERSHIP-001` is closed and historical. It cannot be used to restore obsolete Organization-only, `/app`-prefixed, or stable-ID public routing assumptions.
 
 ### Assumptions under validation
 
@@ -169,17 +175,20 @@ Ownership does not fabricate an explicit Principal Grant.
 User username and Organization slug participate in one globally unambiguous Owner namespace:
 
 ```text
+/{ownerSlug}
 /{ownerSlug}/{repositorySlug}
 ```
 
 Examples:
 
 ```text
+/alice
 /alice/personal-crm
+/acme
 /acme/customer-success
 ```
 
-The Owner slug is human routing identity. Repository relationships and authorization continue to target stable IDs.
+The Owner slug is human routing identity. Repository relationships and authorization continue to target stable IDs. The URL shape does not distinguish User from Organization.
 
 Reserved root product routes cannot be claimed as Owner namespaces.
 
@@ -245,7 +254,7 @@ Archive, transfer, templates, restore, ownership transfer, and destructive lifec
 11. Artifact subtype content/state cannot redefine Repository ownership/authority.
 12. Repository-scoped Activity Events reference stable Repository ID.
 13. Provider IDs or framework routes cannot become the canonical Repository model.
-14. Internal delivery prefixes such as `/app` are not Repository identity.
+14. Framework Route Group names such as `(authenticated)` or `(owner)` are not Repository identity.
 15. Semantic-role classification cannot by itself create a new Domain, table, package, or persistence supertype.
 16. A benchmark feature is not admitted merely because GitHub exposes it.
 17. Repository creation mechanics cannot decide authority, and Access Policy cannot construct or persist a Repository.
@@ -268,25 +277,25 @@ Canonical Repository namespace:
 
 ```text
 /{ownerSlug}/{repositorySlug}
-/{owner}/{repository}/issues
-/{owner}/{repository}/issues/{issueNumber}
-/{owner}/{repository}/projects
-/{owner}/{repository}/discussions
-/{owner}/{repository}/discussions/{discussionNumber}
-/{owner}/{repository}/pages
-/{owner}/{repository}/pages/{pageId}
-/{owner}/{repository}/activity
-/{owner}/{repository}/security
-/{owner}/{repository}/settings
+/{ownerSlug}/{repositorySlug}/issues
+/{ownerSlug}/{repositorySlug}/issues/{issueNumber}
+/{ownerSlug}/{repositorySlug}/projects
+/{ownerSlug}/{repositorySlug}/discussions
+/{ownerSlug}/{repositorySlug}/discussions/{discussionNumber}
+/{ownerSlug}/{repositorySlug}/wiki
+/{ownerSlug}/{repositorySlug}/wiki/{pageId}
+/{ownerSlug}/{repositorySlug}/activity
+/{ownerSlug}/{repositorySlug}/security
+/{ownerSlug}/{repositorySlug}/settings
 ```
 
-`/app` is an authenticated dashboard and discovery surface. A Repository card navigates to the canonical Owner/Repository URL.
+`/dashboard` is authenticated personal discovery. `/repos` is Repository discovery. Neither is Repository identity. A Repository card navigates to the canonical Owner/Repository URL.
 
-A stable-ID compatibility route may resolve access and redirect to canonical URL. It must not host a second Repository UI/business-flow tree.
+There is no public stable-ID compatibility namespace. If a future backward-compatibility obligation is proven, any compatibility route must resolve access before redirecting and must never host a second Repository UI/business-flow tree.
 
 The canonical Repository screen presents one Owner/Repository header, horizontal primary navigation, and one active child surface. Route-specific navigation, metadata, activity, or modal regions may compose independently only when their data/loading/recovery/responsive behavior is proven; they never become permanent Containers or URL identity.
 
-Repository `/projects` is an attachment/planning Projection and cannot establish independent Project ownership or authorization. Wiki/knowledge semantics map to the accepted Page/knowledge model rather than Git-backed history.
+Repository `/projects` is an attachment/planning Projection and cannot establish independent Project ownership or authorization. `/wiki` is the GitHub-aligned presentation URL for the accepted Page/knowledge model and does not create Git-backed history or a second Domain identity.
 
 ## Historical evidence
 
@@ -350,8 +359,8 @@ Reopen this boundary when:
 2. A User username and Organization slug cannot collide in canonical Owner namespace.
 3. Personal Owner derives Repository admin authority without fabricated direct Grant.
 4. Organization owner/admin derives admin only for Repositories owned by that Organization; ordinary member does not.
-5. `/app` dashboard Repository card navigates to `/{owner}/{repository}`.
-6. Stable-ID compatibility route redirects to the same canonical URL after access-aware resolution.
+5. `/dashboard` Repository card navigates to `/{owner}/{repository}`.
+6. No public stable-ID Repository route exists unless a backward-compatibility obligation is explicitly accepted and tested.
 7. Create Page/Issue/Discussion without a valid Repository boundary → fail.
 8. Access a collaborative Artifact through the wrong Repository identity → fail.
 9. Change UI Context while Actor/Repository/persisted relationships remain fixed → authorization unchanged.

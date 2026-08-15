@@ -41,7 +41,7 @@ export async function createOrganization(formData: FormData) {
     redirect(`/organizations/new?error=${result.reason}`);
   }
 
-  revalidatePath('/app');
+  revalidatePath('/dashboard');
   redirect(
     buildPath('/new', {
       notice: 'organization-created',

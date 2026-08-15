@@ -57,10 +57,10 @@ Provider-resource existence is not environment acceptance. A migration file, a b
 
 The web app uses one root layout and four delivery groups:
 
-- `(public)` — public product surfaces, including `/`.
+- `(public)` — public product/discovery surfaces such as `/`, `/search`, `/explore`, and `/marketplace`.
 - `(auth)` — identity pages and protocol handling.
-- `(app)` — authenticated Repository discovery/dashboard under `/app`.
-- `(repository)` — canonical `/{ownerSlug}/{repositorySlug}` Repository presentation; read access is resolved by Repository visibility/authority rather than inherited from the authenticated dashboard layout.
+- `(authenticated)` — authenticated global surfaces such as `/dashboard`, `/repos`, and `/issues/assigned`.
+- `(owner)` — shared public `/{ownerSlug}` User/Organization identity and nested `/{ownerSlug}/{repositorySlug}` Repository delivery. Public Repository reads are resolved by Repository visibility/authority rather than inherited from an authenticated layout.
 
 Route Group names do not appear in URLs and do not become Domain boundaries.
 

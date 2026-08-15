@@ -3,7 +3,7 @@
 - Status: Canonical semantic expansion
 - Contract owner: `docs/PRODUCT.md`
 - Scope: GitHub-derived collaboration semantics that survive the Product axiom
-- Last reviewed: 2026-08-14
+- Last reviewed: 2026-08-16
 
 > This document expands `docs/PRODUCT.md`. It does not preserve superseded target semantics.
 
@@ -193,7 +193,9 @@ Current executable Artifact family:
 
 ```text
 Repository
-└─ Page
+├─ Page
+├─ Issue
+└─ Discussion
 ```
 
 A future capability must live inside Repository, project Repository-scoped facts, or first prove why Repository is insufficient. It cannot become a competing collaboration Container merely because GitHub exposes a separate surface for a similar concern.
@@ -393,7 +395,7 @@ same-transaction historical evidence
 user-visible projection
 ```
 
-Issue and Discussion are admitted because their no-code problems, stable identities, and lifecycles are distinct from Page. Their v1 lifecycle, authorization, concurrency, relationship, and Evidence semantics are decision-complete in their Domain contracts; executable status remains a separate gap/code/test fact. No additional Resource family is accepted from benchmark vocabulary alone.
+Issue and Discussion are admitted because their no-code problems, stable identities, and lifecycles are distinct from Page. Their v1 lifecycle, authorization, concurrency, relationship, and Evidence semantics are decision-complete and executable through the same Repository boundary; current surface readiness still belongs to the gap/code/test evidence rather than this ontology. No additional Resource family is accepted from benchmark vocabulary alone.
 
 GitHub Knowledge and Wiki semantics map to Page as the Repository knowledge surface. They do not create a Git-backed history model, second Artifact family, or separate collaboration Container.
 
@@ -606,10 +608,10 @@ principals(type,id)
 Concrete rules:
 
 - Model Repository ownership with typed User/Organization references.
-- Maintain one globally unambiguous User/Organization owner namespace for `/{owner}/{repository}`.
-- Use `/{ownerSlug}` as the canonical User-or-Organization identity projection and `/organizations/{organizationSlug}/...` only for Organization governance resources; do not copy GitHub's split `/orgs/...` and `/organizations/.../settings/...` histories into the target.
-- Model cross-Repository assigned Issues as `/issues?scope=assigned`, because assignment is a projection/filter rather than a child resource.
-- Keep command/process entry routes such as Repository creation, import, and Organization creation outside the canonical resource hierarchy; sign-out is a command rather than a bookmarkable resource.
+- Maintain one globally unambiguous User/Organization owner namespace for `/{ownerSlug}` and `/{ownerSlug}/{repositorySlug}`.
+- Use `/{ownerSlug}` as the canonical User-or-Organization identity projection. Preserve `/orgs/{organizationSlug}/...` for Organization operational presentation and `/organizations/{organizationSlug}/settings/...` for Organization administration/governance; URL shape never determines Owner kind or authority.
+- Model cross-Repository assigned Issues at `/issues/assigned`; `/issues` is an entry alias. Assignment is a projection of responsibility, never an authority source.
+- Keep command/process entry routes such as `/new` and `/organizations/new` outside canonical resource identity; sign-out is a command rather than a bookmarkable resource.
 - Keep authorization targets on stable IDs rather than URL names or UI selections.
 - Derive Collaborator and Member classifications rather than creating identity subtypes.
 - Keep User Grant persistence typed while User is the only accepted persisted Principal.
@@ -623,9 +625,11 @@ Concrete rules:
 - Keep Role/Capability meaning under one Domain owner; SQL and UI project it.
 - Keep Context out of authorization inputs unless the selected value resolves a persisted fact that would be used independently of selection.
 - Keep historical Evidence semantics distinct from presentation Projections.
-- After semantic admission, preserve the sanitized public and read-only authenticated owner/Repository information architecture, navigation, responsive composition, and interaction behavior in `.playwright-mcp/github/` unless an explicit target Product reason and discriminating test justify a deviation. Preserve resource relationships, not GitHub's historical route aliases.
-- `/app` is a discovery/dashboard surface; it is not part of Repository identity.
+- After semantic admission, preserve the sanitized public and read-only authenticated GitHub URL/IA, navigation, responsive composition, and interaction behavior in `.playwright-mcp/github/` unless an explicit target Product reason and discriminating test justify a deviation. Domain renaming is not a reason to rewrite an admitted URL.
+- `/dashboard` is authenticated discovery; `/repos` is Repository discovery. Neither is part of Repository identity.
+- GitHub Wiki presentation remains `/wiki` while the Domain concept remains Page/Knowledge; URL terminology and Domain terminology are independent.
 - Canonical Repository presentation is owner/Repository header + primary navigation + one active child resource surface. Route-specific supporting navigation, metadata, activity, or modal composition may render beside that surface without becoming a Container, Artifact, authority source, or URL identity.
+- There is no public stable-ID Repository compatibility namespace without a demonstrated backward-compatibility obligation.
 - A green browser suite is evidence only for journeys it explicitly covers.
 
 Minimum discriminating tests:
@@ -633,7 +637,7 @@ Minimum discriminating tests:
 1. User-owned and Organization-owned Repositories use the same collaboration semantics.
 2. User and Organization owner slugs cannot collide.
 3. The same Repository slug may exist under different Owner namespaces.
-4. `/app` Repository card lands on `/{owner}/{repository}`.
+4. `/dashboard` Repository card lands on `/{owner}/{repository}`.
 5. Personal Owner gets Repository admin without a fabricated Grant.
 6. Organization owner/admin authority applies only to Repositories owned by that Organization; ordinary members gain no Repository Role.
 7. Changing UI Context does not change authorization for identical Actor/Repository/persisted relationships.

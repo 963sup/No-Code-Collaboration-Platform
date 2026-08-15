@@ -78,13 +78,17 @@ A selected provider is not proof of a provisioned environment. A migration file 
 ```text
 Repository = No-Code Collaboration Container
 Repository Owner = User | Organization
+Owner identity URL = /{ownerSlug}
 Canonical Repository URL = /{ownerSlug}/{repositorySlug}
-/app = authenticated Repository discovery/dashboard
+Authenticated discovery = /dashboard
+Repository discovery = /repos
+Assigned Issue inbox = /issues/assigned
+Repository knowledge = /{ownerSlug}/{repositorySlug}/wiki
 ```
 
 Canonical Repository presentation is one Owner/Repository header, primary navigation, one active child resource surface, and only proven route-specific supporting regions. See ADR-011 for responsive Parallel/Intercepting Route composition.
 
-A stable-ID compatibility route may resolve and redirect to canonical URL. An Organization-only Repository UI tree is not a valid current or compatibility representation.
+There is currently no public stable-ID Repository compatibility namespace. Stable Repository UUIDs remain internal authorization/data identities. A future compatibility obligation must be proven before adding any redirect namespace, and an Organization-only Repository UI tree is never a valid compatibility representation.
 
 ## Repository work instruction order
 

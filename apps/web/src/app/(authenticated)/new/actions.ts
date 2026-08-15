@@ -64,6 +64,6 @@ export async function createRepository(formData: FormData) {
     redirect(`/new?error=${result.reason}`);
   }
 
-  revalidatePath('/app');
+  revalidatePath('/dashboard');
   redirect(repositoryPath({ ownerSlug: result.ownerSlug, repository: result.repository }));
 }

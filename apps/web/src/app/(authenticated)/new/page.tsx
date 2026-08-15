@@ -93,7 +93,7 @@ export default async function NewRepositoryPage({ searchParams }: NewRepositoryP
           {!defaultOwner ? (
             <div className='space-y-4 text-sm text-muted-foreground'>
               <p>No eligible owner namespace is available for Repository creation.</p>
-              <Link className='font-medium text-foreground hover:underline' href='/app'>
+              <Link className='font-medium text-foreground hover:underline' href='/dashboard'>
                 Return to repositories
               </Link>
             </div>
@@ -186,7 +186,7 @@ export default async function NewRepositoryPage({ searchParams }: NewRepositoryP
               <div className='flex flex-col-reverse gap-3 sm:flex-row sm:justify-end'>
                 <Link
                   className='inline-flex h-9 items-center justify-center rounded-md border border-input bg-background px-4 text-sm font-medium hover:bg-accent'
-                  href='/app'
+                  href='/dashboard'
                 >
                   Cancel
                 </Link>

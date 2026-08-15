@@ -2,6 +2,7 @@
 
 - Status: Accepted
 - Date: 2026-08-14
+- Last reviewed: 2026-08-16
 - Decision owner: Product and Architecture
 - Affected scopes: Product ontology, Repository ownership, authorization, PostgreSQL schema/RLS, Application ports, Next.js routing, browser contracts
 
@@ -13,13 +14,14 @@ Repository ownership is exactly one typed Owner:
 Repository Owner = User | Organization
 ```
 
-Canonical human Repository URLs use:
+User and Organization share one globally unambiguous human Owner namespace:
 
 ```text
+/{ownerSlug}
 /{ownerSlug}/{repositorySlug}
 ```
 
-The Owner segment resolves one globally unambiguous User username or Organization slug. Repository stable UUID remains the identity used by relationships, authorization, and historical evidence.
+`/{ownerSlug}` resolves exactly one User or Organization identity. URL shape never determines kind. `/{ownerSlug}/{repositorySlug}` is the canonical human Repository identity. Stable Owner and Repository UUIDs remain the identities used by relationships, authorization, persistence, and historical evidence.
 
 Ownership is an authority source; it is not represented by a fabricated direct Grant.
 
@@ -37,12 +39,13 @@ The mature GitHub owner/Repository mental model demonstrates that personal and O
 
 - User-owned and Organization-owned Repositories are first-class.
 - Both ownership modes use one Repository collaboration/Resource/Capability model.
-- Owner/Repository URL is unambiguous across User and Organization Owner kinds.
+- User and Organization share one unambiguous top-level Owner namespace.
 - Application authorization input is owner-neutral.
 - Persistence preserves strong concrete Owner references.
-- `/app` is dashboard/discovery rather than Repository identity.
+- `/dashboard` is authenticated personal discovery and `/repos` is Repository discovery; neither is Repository identity.
 - Canonical Repository presentation is one Owner/Repository header, primary navigation, and one active child content surface.
-- Public Repository reads do not inherit an authenticated-only dashboard wrapper.
+- Public Owner/Repository reads do not inherit an authenticated-only wrapper.
+- No public stable-ID compatibility namespace exists without a demonstrated backward-compatibility obligation.
 
 ## Evidence ledger
 
@@ -50,10 +53,11 @@ The mature GitHub owner/Repository mental model demonstrates that personal and O
 
 - Repository containment does not imply an Organization parent.
 - User and Organization are durable Owner identities for the current target.
-- Organization-only persistence leaked into routing and authorization call signatures.
+- Organization-only persistence previously leaked into routing and authorization call signatures.
 - Ordinary Organization Membership currently creates no Repository read baseline.
-- Therefore the active visibility vocabulary is `private | public`.
-- Page collaboration can be scoped to stable Repository identity independent from Owner kind.
+- Current visibility vocabulary is therefore `private | public`.
+- Page, Issue, and Discussion collaboration can be scoped to stable Repository identity independent from Owner kind.
+- GitHub public User and Organization identity use the same top-level owner/login grammar while operational and governance Organization surfaces use separate URL families.
 
 ### Hard constraints
 
@@ -96,8 +100,10 @@ Routing target:
 
 ```text
 User.username ───────┐
-                     ├─ one global Owner namespace → /{owner}/{repository}
+                     ├─ one global Owner namespace → /{ownerSlug}
 Organization.slug ───┘
+                                           │
+                                           └─ /{ownerSlug}/{repositorySlug}
 ```
 
 Authority target:
@@ -128,28 +134,35 @@ The caller does not supply ownership as an assumption.
 ## Canonical Web projection
 
 ```text
-apps/web/src/app/(repository)/[ownerSlug]/[repositorySlug]/
-├─ layout.tsx
-├─ page.tsx
-├─ pages/
-└─ activity/
+apps/web/src/app/
+├─ (authenticated)/
+│  ├─ dashboard/page.tsx          # /dashboard
+│  └─ repos/page.tsx              # /repos
+└─ (owner)/
+   └─ [ownerSlug]/
+      ├─ page.tsx                 # /{ownerSlug}
+      └─ [repositorySlug]/
+         ├─ layout.tsx
+         ├─ page.tsx
+         ├─ wiki/
+         └─ activity/
 ```
 
-Route Group names do not appear in the Product URL.
+Route Group names do not appear in the Product URL. `(owner)` contains both the shared Owner identity projection and nested Repository identity because the first path segment is one persisted Owner namespace.
 
 The Repository layout owns one shared Repository shell:
 
 ```text
 Owner / Repository      Visibility
 ----------------------------------
-Overview   Issues   Projects   Discussions   Pages   Activity   Security   Settings
+Overview   Issues   Projects   Discussions   Wiki   Activity   Security   Settings
 ----------------------------------
 active child content
 ```
 
-`/app` remains authenticated Repository discovery/dashboard only.
+`/dashboard` and `/repos` are discovery surfaces, not Repository identity.
 
-A stable-ID compatibility namespace may perform access-aware resolution and redirect to canonical URL. It cannot own a second Repository UI.
+There is no public stable-ID compatibility namespace. If a future compatibility obligation appears, it must be access-aware, redirect-only, and must never own a second Repository UI.
 
 ## Rejected alternatives
 
@@ -169,6 +182,10 @@ Rejected while two concrete Owner types provide stronger relational integrity.
 
 Rejected because dashboard delivery state is not part of Owner/Repository product identity and would incorrectly constrain public Repository reads.
 
+### URL prefix as Owner-kind discriminator
+
+Rejected because User and Organization share one Owner identity grammar. Kind is a persisted resolution result, not a URL convention.
+
 ## Consequences
 
 Benefits:
@@ -181,17 +198,17 @@ Benefits:
 
 Costs:
 
-- database desired state and replay history require ownership conversion;
-- generated database types and adapters change;
-- route trees and browser tests move; and
+- database desired state and replay history require one shared namespace registry;
+- generated database types and adapters project that registry;
+- route trees and browser tests must preserve root-route reservations; and
 - product identity requires a personal Owner namespace identifier.
 
 Risks:
 
 - User/Organization namespace migration can collide if not globally coordinated;
-- canonical child routes can fail hard navigation if they cannot independently resolve the Repository target;
+- root Product routes can collide with Owner slugs if reservations drift;
 - personal Owner and Organization-governance authority can drift if not tested independently in Domain/RLS; and
-- public Repository delivery can regress if it accidentally inherits an authenticated-only layout.
+- public Owner/Repository delivery can regress if it accidentally inherits an authenticated-only layout.
 
 ## Falsification conditions
 
@@ -206,9 +223,9 @@ Reopen if:
 
 1. User-owned and Organization-owned Repositories can use the same Repository slug under different Owner namespaces.
 2. User username and Organization slug collisions are rejected.
-3. Personal Owner gets Repository admin without a Grant.
-4. Organization admin/owner gets admin only on that Organization-owned Repository; ordinary member does not.
-5. Repository card from `/app` lands on `/{owner}/{repository}`.
-6. Stable-ID compatibility route redirects to that canonical URL.
-7. Every implemented child route supports direct hard navigation through the same Repository shell; the accepted target set is Overview, Issues, Projects attachment list, Discussions, Pages, Activity, Security posture, and Settings.
-8. Page create/update/activity continues through the owner-neutral route and authorization boundary.
+3. `/{ownerSlug}` resolves persisted `kind: user | organization`; URL shape does not decide kind.
+4. Personal Owner gets Repository admin without a Grant.
+5. Organization admin/owner gets admin only on that Organization-owned Repository; ordinary member does not.
+6. Repository card from `/dashboard` lands on `/{owner}/{repository}`.
+7. No public stable-ID Repository route exists without an explicitly accepted compatibility obligation.
+8. Every implemented child route supports direct hard navigation through the same Repository shell; current knowledge presentation is `/wiki` while Domain semantics remain Page/Knowledge.
