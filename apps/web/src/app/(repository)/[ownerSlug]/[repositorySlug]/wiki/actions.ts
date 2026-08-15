@@ -7,9 +7,9 @@ import { z } from 'zod';
 
 import { createRequestServices } from '@/composition/create-request-services';
 import {
-  repositoryPagePath,
-  repositoryPagesPath,
-  repositoryPath
+  repositoryPath,
+  repositoryWikiPagePath,
+  repositoryWikiPath
 } from '@/routing/repository-routes';
 
 const slugSchema = z
@@ -42,10 +42,10 @@ export async function createPage(formData: FormData) {
     repositorySlug: String(formData.get('repositorySlug') ?? ''),
     title: String(formData.get('title') ?? '')
   });
-  if (!parsed.success) redirect('/app?error=invalid-page-input');
+  if (!parsed.success) redirect('/dashboard?error=invalid-page-input');
 
   const route = parsed.data;
-  const destination = repositoryPagesPath(route);
+  const destination = repositoryWikiPath(route);
   const services = await createRequestServices();
   const result = await new CreatePage(
     services.identityProvider,
@@ -61,13 +61,13 @@ export async function createPage(formData: FormData) {
     if (result.reason === 'unauthenticated') {
       redirect(`/sign-in?next=${encodeURIComponent(destination)}`);
     }
-    if (result.reason === 'repository-unavailable') redirect('/app');
+    if (result.reason === 'repository-unavailable') redirect('/dashboard');
     redirect(`${destination}?error=${result.reason}`);
   }
 
   revalidatePath(repositoryPath(route));
   revalidatePath(destination);
-  redirect(repositoryPagePath(route, result.page.id));
+  redirect(repositoryWikiPagePath(route, result.page.id));
 }
 
 export async function updatePage(formData: FormData) {
@@ -80,10 +80,10 @@ export async function updatePage(formData: FormData) {
     repositorySlug: String(formData.get('repositorySlug') ?? ''),
     title: String(formData.get('title') ?? '')
   });
-  if (!parsed.success) redirect('/app?error=invalid-page-input');
+  if (!parsed.success) redirect('/dashboard?error=invalid-page-input');
 
   const route = parsed.data;
-  const destination = repositoryPagePath(route, route.pageId);
+  const destination = repositoryWikiPagePath(route, route.pageId);
   const services = await createRequestServices();
   const result = await new UpdatePage(
     services.identityProvider,
@@ -105,12 +105,12 @@ export async function updatePage(formData: FormData) {
     if (result.reason === 'unauthenticated') {
       redirect(`/sign-in?next=${encodeURIComponent(destination)}`);
     }
-    if (result.reason === 'repository-unavailable') redirect('/app');
+    if (result.reason === 'repository-unavailable') redirect('/dashboard');
     redirect(`${destination}?error=${result.reason}`);
   }
 
   revalidatePath(repositoryPath(route));
-  revalidatePath(repositoryPagesPath(route));
+  revalidatePath(repositoryWikiPath(route));
   revalidatePath(destination);
   redirect(`${destination}?saved=1`);
 }

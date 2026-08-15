@@ -10,12 +10,12 @@ import {
 import Link from 'next/link';
 
 import { createRequestServices } from '@/composition/create-request-services';
-import { repositoryPagePath } from '@/routing/repository-routes';
+import { repositoryWikiPagePath } from '@/routing/repository-routes';
 
 import { requireAccessibleRepositoryRoute } from '../_queries/get-accessible-repository-route';
 import { createPage } from './actions';
 
-interface RepositoryPagesProps {
+interface RepositoryWikiProps {
   readonly params: Promise<{ ownerSlug: string; repositorySlug: string }>;
   readonly searchParams: Promise<{ error?: string }>;
 }
@@ -27,7 +27,7 @@ const errorMessages: Readonly<Record<string, string>> = {
   'provider-unavailable': 'Page storage is temporarily unavailable.'
 };
 
-export default async function RepositoryPages({ params, searchParams }: RepositoryPagesProps) {
+export default async function RepositoryWiki({ params, searchParams }: RepositoryWikiProps) {
   const { ownerSlug, repositorySlug } = await params;
   const route = await requireAccessibleRepositoryRoute(ownerSlug, repositorySlug);
   const services = await createRequestServices();
@@ -37,8 +37,8 @@ export default async function RepositoryPages({ params, searchParams }: Reposito
   return (
     <section className='space-y-6'>
       <div>
-        <h1 className='text-2xl font-semibold tracking-tight'>Pages</h1>
-        <p className='text-sm text-muted-foreground'>Pages in this Repository.</p>
+        <h1 className='text-2xl font-semibold tracking-tight'>Wiki</h1>
+        <p className='text-sm text-muted-foreground'>Repository knowledge backed by Page resources.</p>
       </div>
 
       {error && errorMessages[error] ? (
@@ -71,7 +71,7 @@ export default async function RepositoryPages({ params, searchParams }: Reposito
       ) : (
         <div className='grid gap-3'>
           {pages.map((page) => (
-            <Link key={page.id} href={repositoryPagePath(route, page.id)}>
+            <Link key={page.id} href={repositoryWikiPagePath(route, page.id)}>
               <Card className='transition-colors hover:bg-accent/30'>
                 <CardHeader>
                   <CardTitle className='text-base'>{page.title}</CardTitle>

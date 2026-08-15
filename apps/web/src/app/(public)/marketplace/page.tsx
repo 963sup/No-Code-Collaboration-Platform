@@ -9,9 +9,9 @@ import {
   type SurfaceSearchParams
 } from '@/routing/normalize-surface-query';
 
-export const metadata: Metadata = { title: 'Integrations' };
+export const metadata: Metadata = { title: 'Marketplace' };
 
-export default async function IntegrationsPage({
+export default async function MarketplacePage({
   searchParams
 }: {
   readonly searchParams: Promise<SurfaceSearchParams>;
@@ -20,13 +20,13 @@ export default async function IntegrationsPage({
     category: { kind: 'enum', values: ['all', 'mcp', 'data', 'delivery'], defaultValue: 'all' },
     page: { kind: 'page' }
   });
-  if (normalized.changed) redirect(canonicalSurfaceHref('/integrations', normalized));
+  if (normalized.changed) redirect(canonicalSurfaceHref('/marketplace', normalized));
   return (
     <main className='px-4 py-8 sm:px-6 lg:px-8'>
       <SurfaceFrame
         availability='preview'
-        description='A provider-neutral catalog of reviewed metadata, purpose, data direction, and required scope. There is no Install, Connect, OAuth, credential, App Principal, Repository binding, arbitrary endpoint, package download, server startup, or script execution.'
-        title='Integrations'
+        description='A provider-neutral catalog projected onto the observed GitHub Marketplace URL. There is no Install, Connect, OAuth, credential, App Principal, Repository binding, arbitrary endpoint, package download, server startup, or script execution.'
+        title='Marketplace'
       >
         <Tabs defaultValue={normalized.values.category ?? 'all'}>
           <TabsList className='max-w-full overflow-x-auto'>

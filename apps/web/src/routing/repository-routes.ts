@@ -18,8 +18,8 @@ export function repositoryPath(route: RepositoryRouteAddress) {
   return `/${encodeURIComponent(route.ownerSlug)}/${encodeURIComponent(repositorySlug(route))}`;
 }
 
-export function repositoryPagesPath(route: RepositoryRouteAddress) {
-  return `${repositoryPath(route)}/pages`;
+export function repositoryWikiPath(route: RepositoryRouteAddress) {
+  return `${repositoryPath(route)}/wiki`;
 }
 
 export function repositoryIssuesPath(route: RepositoryRouteAddress) {
@@ -30,8 +30,8 @@ export function repositoryIssuePath(route: RepositoryRouteAddress, issueNumber: 
   return `${repositoryIssuesPath(route)}/${issueNumber}`;
 }
 
-export function repositoryPagePath(route: RepositoryRouteAddress, pageId: string) {
-  return `${repositoryPagesPath(route)}/${encodeURIComponent(pageId)}`;
+export function repositoryWikiPagePath(route: RepositoryRouteAddress, pageId: string) {
+  return `${repositoryWikiPath(route)}/${encodeURIComponent(pageId)}`;
 }
 
 export function repositoryActivityPath(route: RepositoryRouteAddress) {

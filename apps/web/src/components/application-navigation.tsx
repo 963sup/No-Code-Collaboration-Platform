@@ -35,7 +35,7 @@ const icons = {
   notifications: Bell,
   search: Search,
   explore: Compass,
-  integrations: Plug
+  marketplace: Plug
 } as const;
 
 function navigationItems() {

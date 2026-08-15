@@ -29,7 +29,7 @@ export function RepositoryNavigation({ ownerSlug, repositorySlug }: RepositoryNa
     issues: CircleDot,
     projects: FolderKanban,
     discussions: MessagesSquare,
-    pages: FileText,
+    wiki: FileText,
     activity: Activity,
     security: ShieldCheck,
     settings: Settings
