@@ -3,7 +3,7 @@ begin;
 create extension if not exists pgtap with schema extensions;
 set local search_path = extensions, public, pg_catalog;
 
-select plan(38);
+select plan(55);
 
 insert into auth.users (id, email, raw_user_meta_data)
 values
@@ -47,6 +47,21 @@ values (
   'contributor',
   '00000000-0000-0000-0000-000000000501'
 );
+
+insert into public.repository_labels (id, repository_id, name, color)
+values
+  (
+    '30000000-0000-0000-0000-000000000501',
+    '20000000-0000-0000-0000-000000000501',
+    'security-reviewed',
+    '1f883d'
+  ),
+  (
+    '30000000-0000-0000-0000-000000000502',
+    '20000000-0000-0000-0000-000000000501',
+    'not-applied',
+    '8250df'
+  );
 
 set local role authenticated;
 select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-000000000501', true);
@@ -133,6 +148,38 @@ select is(
   'a stale Issue command creates no partial comment'
 );
 
+select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-000000000503', true);
+
+select lives_ok(
+  $$
+    select * from public.set_issue_assignee(
+      '20000000-0000-0000-0000-000000000501',
+      (select id from public.issues where repository_id = '20000000-0000-0000-0000-000000000501' and issue_number = 1),
+      '00000000-0000-0000-0000-000000000503',
+      true,
+      2
+    )
+  $$,
+  'an outsider receives no assignee-access oracle for an inaccessible Repository'
+);
+
+select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-000000000501', true);
+
+select throws_ok(
+  $$
+    select * from public.set_issue_assignee(
+      '20000000-0000-0000-0000-000000000501',
+      (select id from public.issues where repository_id = '20000000-0000-0000-0000-000000000501' and issue_number = 1),
+      '00000000-0000-0000-0000-000000000503',
+      true,
+      2
+    )
+  $$,
+  'P0002',
+  'Assignee cannot access the Repository',
+  'an authorized Actor still rejects an ineligible assignee'
+);
+
 select results_eq(
   $$
     select discussion_number from public.create_discussion(
@@ -158,13 +205,37 @@ select lives_ok(
   'an open unlocked Discussion accepts a flat comment'
 );
 
+select is(
+  (select count(*) from public.edit_discussion(
+    '20000000-0000-0000-0000-000000000501',
+    (select id from public.discussions where repository_id = '20000000-0000-0000-0000-000000000501' and discussion_number = 1),
+    'Question Discussion',
+    'What is the accepted answer?',
+    2
+  )),
+  0::bigint,
+  'an identical Discussion edit returns no mutation result'
+);
+
+select is(
+  (select version from public.discussions where repository_id = '20000000-0000-0000-0000-000000000501' and discussion_number = 1),
+  2::bigint,
+  'an identical Discussion edit does not advance version'
+);
+
+select is(
+  (select count(*) from public.activity_events where event_type = 'discussion.edited' and subject_id = (select id from public.discussions where repository_id = '20000000-0000-0000-0000-000000000501' and discussion_number = 1)),
+  0::bigint,
+  'an identical Discussion edit fabricates no Activity Evidence'
+);
+
 select lives_ok(
   $$
     select * from public.set_discussion_answer(
       '20000000-0000-0000-0000-000000000501',
       (select id from public.discussions where repository_id = '20000000-0000-0000-0000-000000000501' and discussion_number = 1),
       (select id from public.discussion_comments where discussion_id = (select id from public.discussions where repository_id = '20000000-0000-0000-0000-000000000501' and discussion_number = 1)),
-      2
+      (select version from public.discussions where repository_id = '20000000-0000-0000-0000-000000000501' and discussion_number = 1)
     )
   $$,
   'a question Discussion can select one of its own comments as Answer'
@@ -222,7 +293,7 @@ select lives_ok(
       '20000000-0000-0000-0000-000000000501',
       (select id from public.discussions where repository_id = '20000000-0000-0000-0000-000000000501' and discussion_number = 1),
       'closed',
-      3
+      (select version from public.discussions where repository_id = '20000000-0000-0000-0000-000000000501' and discussion_number = 1)
     )
   $$,
   'a question Discussion can close with expected version'
@@ -304,6 +375,30 @@ select lives_ok(
   'Issue edit emits a new notification-producing Evidence event'
 );
 
+select is(
+  (select count(*) from public.edit_issue(
+    '20000000-0000-0000-0000-000000000501',
+    (select id from public.issues where repository_id = '20000000-0000-0000-0000-000000000501' and issue_number = 1),
+    'Shared private phrase updated',
+    'Private body updated',
+    (select version from public.issues where repository_id = '20000000-0000-0000-0000-000000000501' and issue_number = 1)
+  )),
+  0::bigint,
+  'an identical Issue edit returns no mutation result'
+);
+
+select is(
+  (select version from public.issues where repository_id = '20000000-0000-0000-0000-000000000501' and issue_number = 1),
+  3::bigint,
+  'an identical Issue edit does not advance version'
+);
+
+select is(
+  (select count(*) from public.activity_events where event_type = 'issue.edited' and subject_id = (select id from public.issues where repository_id = '20000000-0000-0000-0000-000000000501' and issue_number = 1)),
+  1::bigint,
+  'an identical Issue edit fabricates no additional Activity Evidence'
+);
+
 select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-000000000502', true);
 
 select is(
@@ -327,10 +422,34 @@ select lives_ok(
       (select id from public.issues where repository_id = '20000000-0000-0000-0000-000000000501' and issue_number = 1),
       '00000000-0000-0000-0000-000000000502',
       true,
-      3
+      (select version from public.issues where repository_id = '20000000-0000-0000-0000-000000000501' and issue_number = 1)
     )
   $$,
   'an accessible User can be assigned without receiving authority from assignment'
+);
+
+select is(
+  (select count(*) from public.set_issue_assignee(
+    '20000000-0000-0000-0000-000000000501',
+    (select id from public.issues where repository_id = '20000000-0000-0000-0000-000000000501' and issue_number = 1),
+    '00000000-0000-0000-0000-000000000502',
+    true,
+    (select version from public.issues where repository_id = '20000000-0000-0000-0000-000000000501' and issue_number = 1)
+  )),
+  0::bigint,
+  'assigning an existing assignee returns no mutation result'
+);
+
+select is(
+  (select version from public.issues where repository_id = '20000000-0000-0000-0000-000000000501' and issue_number = 1),
+  4::bigint,
+  'assigning an existing assignee does not advance version'
+);
+
+select is(
+  (select count(*) from public.activity_events where event_type = 'issue.assigned' and subject_id = (select id from public.issues where repository_id = '20000000-0000-0000-0000-000000000501' and issue_number = 1)),
+  1::bigint,
+  'assigning an existing assignee fabricates no additional Activity Evidence'
 );
 
 select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-000000000502', true);
@@ -339,6 +458,63 @@ select results_eq(
   $$ select reason::text, event_count from public.list_notifications('all', 1) $$,
   $$ values ('assigned'::text, 2::bigint) $$,
   'new Evidence updates the same recipient-Repository-Artifact thread and marks assignment reason'
+);
+
+select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-000000000501', true);
+
+select lives_ok(
+  $$
+    select * from public.set_issue_label(
+      '20000000-0000-0000-0000-000000000501',
+      (select id from public.issues where repository_id = '20000000-0000-0000-0000-000000000501' and issue_number = 1),
+      '30000000-0000-0000-0000-000000000501',
+      true,
+      (select version from public.issues where repository_id = '20000000-0000-0000-0000-000000000501' and issue_number = 1)
+    )
+  $$,
+  'applying a new Repository label remains a meaningful Issue mutation'
+);
+
+select is(
+  (select count(*) from public.set_issue_label(
+    '20000000-0000-0000-0000-000000000501',
+    (select id from public.issues where repository_id = '20000000-0000-0000-0000-000000000501' and issue_number = 1),
+    '30000000-0000-0000-0000-000000000501',
+    true,
+    (select version from public.issues where repository_id = '20000000-0000-0000-0000-000000000501' and issue_number = 1)
+  )),
+  0::bigint,
+  'applying an existing label returns no mutation result'
+);
+
+select is(
+  (select count(*) from public.set_issue_label(
+    '20000000-0000-0000-0000-000000000501',
+    (select id from public.issues where repository_id = '20000000-0000-0000-0000-000000000501' and issue_number = 1),
+    '30000000-0000-0000-0000-000000000502',
+    false,
+    (select version from public.issues where repository_id = '20000000-0000-0000-0000-000000000501' and issue_number = 1)
+  )),
+  0::bigint,
+  'removing an absent label returns no mutation result'
+);
+
+select is(
+  (select version from public.issues where repository_id = '20000000-0000-0000-0000-000000000501' and issue_number = 1),
+  5::bigint,
+  'label no-ops do not advance Issue version'
+);
+
+select is(
+  (select count(*) from public.activity_events where event_type = 'issue.labeled' and subject_id = (select id from public.issues where repository_id = '20000000-0000-0000-0000-000000000501' and issue_number = 1)),
+  1::bigint,
+  'applying an existing label fabricates no additional Activity Evidence'
+);
+
+select is(
+  (select count(*) from public.activity_events where event_type = 'issue.unlabeled' and subject_id = (select id from public.issues where repository_id = '20000000-0000-0000-0000-000000000501' and issue_number = 1)),
+  0::bigint,
+  'removing an absent label fabricates no Activity Evidence'
 );
 
 reset role;
@@ -415,7 +591,7 @@ select is(
 
 select is(
   (select version from public.issues where repository_id = '20000000-0000-0000-0000-000000000501' and issue_number = 1),
-  4::bigint,
+  5::bigint,
   'reading or filtering the planning Projection does not mutate its underlying Issue'
 );
 

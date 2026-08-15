@@ -1653,6 +1653,10 @@ begin
   where issue.id = issue_id
     and issue.repository_id = target_repository_id
     and issue.version = expected_version
+    and (
+      issue.title is distinct from pg_catalog.btrim(issue_title)
+      or issue.body is distinct from coalesce(issue_body, '')
+    )
   returning issue.* into changed_issue;
   if not found then
     perform pg_catalog.set_config('app.issue_command', coalesce(previous_command, ''), true);
@@ -1751,6 +1755,16 @@ begin
   if actor_id is null then
     raise exception 'Issue assignment requires an authenticated Actor' using errcode = '42501';
   end if;
+  if not private.has_repository_capability(target_repository_id, 'resource.update')
+    or not exists (
+      select 1
+      from public.issues as issue
+      where issue.id = target_issue_id
+        and issue.repository_id = target_repository_id
+        and issue.version = expected_version
+    ) then
+    return;
+  end if;
   if should_assign and not private.user_can_view_repository(assignee_id, target_repository_id) then
     raise exception 'Assignee cannot access the Repository' using errcode = 'P0002';
   end if;
@@ -1762,6 +1776,20 @@ begin
   where issue.id = target_issue_id
     and issue.repository_id = target_repository_id
     and issue.version = expected_version
+    and (
+      (should_assign and not exists (
+        select 1
+        from public.issue_assignees as assignment
+        where assignment.issue_id = target_issue_id
+          and assignment.user_id = assignee_id
+      ))
+      or (not should_assign and exists (
+        select 1
+        from public.issue_assignees as assignment
+        where assignment.issue_id = target_issue_id
+          and assignment.user_id = assignee_id
+      ))
+    )
   returning issue.* into changed_issue;
   if not found then
     perform pg_catalog.set_config('app.issue_command', coalesce(previous_command, ''), true);
@@ -1826,6 +1854,20 @@ begin
   where issue.id = set_issue_label.issue_id
     and issue.repository_id = target_repository_id
     and issue.version = expected_version
+    and (
+      (should_apply and not exists (
+        select 1
+        from public.issue_labels as applied
+        where applied.issue_id = set_issue_label.issue_id
+          and applied.label_id = set_issue_label.label_id
+      ))
+      or (not should_apply and exists (
+        select 1
+        from public.issue_labels as applied
+        where applied.issue_id = set_issue_label.issue_id
+          and applied.label_id = set_issue_label.label_id
+      ))
+    )
   returning issue.* into changed_issue;
   if not found then
     perform pg_catalog.set_config('app.issue_command', coalesce(previous_command, ''), true);
@@ -2007,6 +2049,10 @@ begin
   where discussion.id = discussion_id
     and discussion.repository_id = target_repository_id
     and discussion.version = expected_version
+    and (
+      discussion.title is distinct from pg_catalog.btrim(discussion_title)
+      or discussion.body is distinct from coalesce(discussion_body, '')
+    )
   returning discussion.* into changed_discussion;
   if not found then
     perform pg_catalog.set_config('app.discussion_command', coalesce(previous_command, ''), true);
