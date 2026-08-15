@@ -6,10 +6,7 @@ import type {
   IssueReader,
   IssueWriter
 } from '@no-code-collaboration-platform/application';
-import type {
-  IssueCommand,
-  IssueDetail
-} from '@no-code-collaboration-platform/domain/resource';
+import type { IssueCommand, IssueDetail } from '@no-code-collaboration-platform/domain/resource';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
 import type { Database } from '../generated/database.types';
