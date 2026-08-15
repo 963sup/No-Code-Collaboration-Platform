@@ -1,0 +1,8 @@
+# fd can execute arbitrary commands through trailing --exec/--exec-batch flags.
+
+prefix_rule(
+    pattern = [["fd", "fd.exe"]],
+    decision = "prompt",
+    justification = "fd is normally read-only but can execute arbitrary commands through trailing options; review host execution",
+    match = ["fd package.json", "fd.exe --type f --extension ts"],
+)

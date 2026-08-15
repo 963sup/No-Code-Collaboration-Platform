@@ -1,0 +1,8 @@
+# fzf bindings can execute arbitrary commands.
+
+prefix_rule(
+    pattern = [["fzf", "fzf.exe"]],
+    decision = "prompt",
+    justification = "fzf is interactive and its bindings can execute arbitrary commands",
+    match = ["fzf --filter package", "fzf.exe --bind 'enter:execute(code {})'"],
+)

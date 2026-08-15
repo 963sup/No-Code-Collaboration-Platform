@@ -1,0 +1,2 @@
+# No repository-owned Python entry point currently requires host execution.
+# Add an exact rule only when a real checked-in script owns that contract.

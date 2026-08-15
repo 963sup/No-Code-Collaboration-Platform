@@ -1,0 +1,8 @@
+# scc can write reports through trailing output flags.
+
+prefix_rule(
+    pattern = [["scc", "scc.exe"]],
+    decision = "prompt",
+    justification = "scc usually counts code but can write report files outside the sandbox",
+    match = ["scc .", "scc.exe --format json --output report.json"],
+)

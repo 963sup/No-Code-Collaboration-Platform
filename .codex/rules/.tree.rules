@@ -1,0 +1,8 @@
+# Windows tree.com can enumerate arbitrary host directories.
+
+prefix_rule(
+    pattern = [["tree", "tree.com"]],
+    decision = "prompt",
+    justification = "tree is read-only but unrestricted paths can disclose directory metadata outside the workspace",
+    match = ["tree", "tree.com /F /A"],
+)

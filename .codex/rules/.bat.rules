@@ -1,0 +1,8 @@
+# bat may launch a configured pager outside the sandbox.
+
+prefix_rule(
+    pattern = [["bat", "bat.exe"]],
+    decision = "prompt",
+    justification = "bat reads files but may launch a configured pager outside the sandbox",
+    match = ["bat package.json", "bat.exe --paging=never README.md"],
+)

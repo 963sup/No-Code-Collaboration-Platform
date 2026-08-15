@@ -1,0 +1,8 @@
+# hyperfine executes arbitrary benchmark, setup, and cleanup command strings.
+
+prefix_rule(
+    pattern = [["hyperfine", "hyperfine.exe"]],
+    decision = "prompt",
+    justification = "hyperfine executes arbitrary commands; review benchmark, setup, and cleanup strings",
+    match = ["hyperfine 'pnpm.cmd verify:fast'"],
+)

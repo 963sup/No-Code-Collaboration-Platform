@@ -1,0 +1,123 @@
+# Repository-owned pnpm entry points. Network, repository writes, and local data
+# destruction remain approval-gated.
+
+prefix_rule(
+    pattern = [
+        ["pnpm", "pnpm.cmd"],
+        [
+            "build",
+            "codex:check",
+            "codex:session-context",
+            "env:check",
+            "architecture:check",
+            "format:check",
+            "lint",
+            "typecheck",
+            "test",
+            "knip",
+            "test:e2e:list",
+            "supabase:status",
+            "supabase:lint",
+            "supabase:test",
+            "supabase:types:check",
+            "ast:version",
+            "turbo:graph",
+            "verify:fast",
+            "verify:full",
+            "verify",
+        ],
+    ],
+    decision = "prompt",
+    justification = "Repository scripts execute mutable checked-in code; review any request to run them outside the workspace sandbox",
+    match = [
+        "pnpm codex:check",
+        "pnpm.cmd architecture:check",
+        "pnpm.cmd supabase:types:check",
+        "pnpm.cmd verify:full",
+    ],
+    not_match = [
+        "pnpm.cmd format",
+        "pnpm.cmd supabase:reset",
+        "pnpm.cmd browser:install",
+    ],
+)
+
+prefix_rule(
+    pattern = [
+        ["pnpm", "pnpm.cmd"],
+        ["supabase:start", "supabase:start:ci", "supabase:start:browser", "supabase:stop"],
+    ],
+    decision = "prompt",
+    justification = "Repository lifecycle scripts execute mutable checked-in code and change disposable local services",
+)
+
+prefix_rule(
+    pattern = [
+        ["pnpm", "pnpm.cmd"],
+        [
+            "format",
+            "format:staged",
+            "hooks:install",
+            "browser:install",
+            "browser:install:ci",
+            "supabase:reset",
+            "supabase:verify",
+            "supabase:baseline:compile",
+            "supabase:types:local",
+            "ui:add",
+        ],
+    ],
+    decision = "prompt",
+    justification = "These scripts write repository, Git hook, browser, generated-type, or disposable local database state",
+    match = [
+        "pnpm.cmd format",
+        "pnpm.cmd supabase:reset",
+        "pnpm.cmd browser:install",
+    ],
+)
+
+prefix_rule(
+    pattern = [["pnpm", "pnpm.cmd"], ["install", "add", "remove", "update", "up"]],
+    decision = "prompt",
+    justification = "Dependency operations may access the network and change node_modules, manifests, or the lockfile",
+    match = ["pnpm.cmd install --frozen-lockfile", "pnpm add zod"],
+)
+
+prefix_rule(
+    pattern = [
+        ["pnpm", "pnpm.cmd"],
+        "--filter",
+        "@no-code-collaboration-platform/web",
+        ["build", "lint", "typecheck"],
+    ],
+    decision = "prompt",
+    justification = "Filtered Web scripts still execute mutable checked-in code outside the workspace sandbox",
+    match = ["pnpm.cmd --filter @no-code-collaboration-platform/web build"],
+    not_match = ["pnpm.cmd --filter @no-code-collaboration-platform/web dev"],
+)
+
+prefix_rule(
+    pattern = [
+        ["pnpm", "pnpm.cmd"],
+        "--filter",
+        [
+            "@no-code-collaboration-platform/domain",
+            "@no-code-collaboration-platform/application",
+            "@no-code-collaboration-platform/supabase",
+        ],
+        ["lint", "typecheck", "test"],
+    ],
+    decision = "prompt",
+    justification = "Filtered package scripts still execute mutable checked-in code outside the workspace sandbox",
+)
+
+prefix_rule(
+    pattern = [
+        ["pnpm", "pnpm.cmd"],
+        "--filter",
+        "@no-code-collaboration-platform/ui",
+        ["lint", "typecheck"],
+    ],
+    decision = "prompt",
+    justification = "Filtered UI scripts still execute mutable checked-in code outside the workspace sandbox",
+)

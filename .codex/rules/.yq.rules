@@ -1,0 +1,8 @@
+# yq supports in-place writes through flags that may follow the expression.
+
+prefix_rule(
+    pattern = [["yq", "yq.exe"]],
+    decision = "prompt",
+    justification = "yq may modify YAML in place; review the expression and flags before host execution",
+    match = ["yq eval . pnpm-workspace.yaml", "yq.exe -i '.version = 2' config.yaml"],
+)

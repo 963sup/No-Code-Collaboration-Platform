@@ -378,6 +378,28 @@ check('.github/workflows/verify.yml', read('.github/workflows/verify.yml'), [
 check('.codex/rules/.filesystem.rules', read('.codex/rules/.filesystem.rules'), [
   [/decision = "prompt"/, 'deletion is not approval-gated']
 ]);
+const pnpmRulesPath = '.codex/rules/.pnpm.rules';
+const pnpmRules = read(pnpmRulesPath);
+check(pnpmRulesPath, pnpmRules, [
+  [/\["pnpm", "pnpm\.cmd"\]/, 'Windows and cross-platform pnpm commands are not covered'],
+  [/"codex:check"/, 'Codex verification is not covered'],
+  [/"architecture:check"/, 'architecture verification is not covered'],
+  [/"supabase:types:check"/, 'generated database type verification is not covered'],
+  [/"turbo:graph"/, 'bounded workspace discovery is not covered'],
+  [/@no-code-collaboration-platform\/web/, 'current Web package filter is missing'],
+  [
+    /"codex:check"[\s\S]*?decision = "prompt"/,
+    'repository-executing verification is not approval-gated for host escalation'
+  ],
+  [/"supabase:reset"[\s\S]*?decision = "prompt"/, 'local database reset is not approval-gated'],
+  [
+    /\["install", "add", "remove", "update", "up"\][\s\S]*?decision = "prompt"/,
+    'dependency mutation is not approval-gated'
+  ]
+]);
+if (/@ecp\//.test(pnpmRules)) {
+  failures.push(`${pnpmRulesPath}: obsolete @ecp package filters remain`);
+}
 check('.codex/rules/.rg.rules', read('.codex/rules/.rg.rules'), [
   [
     /pattern = \[\["rg", "rg\.exe"\]\][\s\S]*?decision = "allow"/,
@@ -404,6 +426,32 @@ check('.codex/rules/.serena.rules', read('.codex/rules/.serena.rules'), [
     'Serena memory validation is not restricted to the current repository'
   ]
 ]);
+for (const [path, command, decision] of [
+  ['.codex/rules/.fd.rules', 'fd', 'prompt'],
+  ['.codex/rules/.yq.rules', 'yq', 'prompt'],
+  ['.codex/rules/.delta.rules', 'delta', 'prompt'],
+  ['.codex/rules/.scc.rules', 'scc', 'prompt'],
+  ['.codex/rules/.tree.rules', 'tree', 'prompt'],
+  ['.codex/rules/.bat.rules', 'bat', 'prompt'],
+  ['.codex/rules/.fzf.rules', 'fzf', 'prompt'],
+  ['.codex/rules/.hyperfine.rules', 'hyperfine', 'prompt'],
+  ['.codex/rules/.xh.rules', 'xh', 'prompt'],
+  ['.codex/rules/.just.rules', 'just', 'allow']
+]) {
+  check(path, read(path), [
+    [
+      new RegExp(`\\["${command}", "${command}\\.(?:exe|com)"\\]`),
+      `${command} executable variants are missing`
+    ],
+    [new RegExp(`decision = "${decision}"`), `${command} decision must be ${decision}`]
+  ]);
+}
+check('.codex/rules/.gh.rules', read('.codex/rules/.gh.rules'), [
+  [
+    /pattern = \["gh", "api", \["--method", "-X"\], "GET"\][\s\S]*?decision = "prompt"/,
+    'authenticated GitHub API requests are not approval-gated'
+  ]
+]);
 check('.idea/modules.xml', read('.idea/modules.xml'), [
   [/\.idea\/No-Code-Collaboration-Platform\.iml/, 'the IntelliJ project module is not registered']
 ]);
@@ -419,8 +467,8 @@ check(
 );
 check('.codex/rules/.supabase.rules', read('.codex/rules/.supabase.rules'), [
   [
-    /pattern = \["supabase", "db", "reset"\][\s\S]*?decision = "allow"/,
-    'local reset is not allowed'
+    /pattern = \["supabase", "db", "reset", "--local"\][\s\S]*?decision = "prompt"/,
+    'explicitly local reset is not approval-gated'
   ],
   [
     /pattern = \["supabase", "db", "reset", "--linked"\][\s\S]*?decision = "forbidden"/,

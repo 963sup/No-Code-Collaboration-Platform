@@ -1,0 +1,10 @@
+# This repository currently has no Justfile. Recipe execution remains gated;
+# bounded tool and Justfile discovery is auto-approved.
+
+prefix_rule(
+    pattern = [["just", "just.exe"], ["--version", "--help", "--list", "--summary", "--show"]],
+    decision = "allow",
+    justification = "These just options inspect the tool or Justfile without executing a recipe",
+    match = ["just --list", "just.exe --show verify"],
+    not_match = ["just verify", "just.exe --evaluate"],
+)

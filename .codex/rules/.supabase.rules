@@ -8,17 +8,25 @@ prefix_rule(
 )
 
 prefix_rule(
-    pattern = ["supabase", "db", "lint"],
+    pattern = ["supabase", "db", "lint", "--local"],
     decision = "allow",
-    justification = "Database linting is read-only local verification",
+    justification = "Explicitly local database linting is read-only verification",
     match = ["supabase db lint --local --level error"],
+    not_match = ["supabase db lint --linked"],
 )
 
 prefix_rule(
-    pattern = ["supabase", "db", "reset"],
+    pattern = ["supabase", "db", "reset", "--local"],
+    decision = "prompt",
+    justification = "Local reset is reproducible but destroys disposable local database state",
+    match = ["supabase db reset --local"],
+    not_match = ["supabase db reset", "supabase db reset --linked"],
+)
+
+prefix_rule(
+    pattern = ["supabase", "test", "db"],
     decision = "allow",
-    justification = "Local reset proves that committed migration history recreates the development database",
-    match = ["supabase db reset"],
+    justification = "pgTAP runs against the configured local development database",
 )
 
 prefix_rule(
@@ -47,4 +55,10 @@ prefix_rule(
     decision = "forbidden",
     justification = "Do not destroy and rebuild a linked remote database from Codex; use local `supabase db reset` for reproducibility checks",
     match = ["supabase db reset --linked"],
+)
+
+prefix_rule(
+    pattern = ["supabase", "secrets", ["set", "unset"]],
+    decision = "forbidden",
+    justification = "Do not mutate remote secrets from Codex; use an explicitly approved operator workflow",
 )

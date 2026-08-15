@@ -1,0 +1,80 @@
+# Read-only GitHub inspection. GitHub writes remain approval-gated.
+
+prefix_rule(
+    pattern = ["gh", "auth", "status"],
+    decision = "allow",
+    justification = "GitHub authentication status is read-only and requires access to the user keyring",
+    match = ["gh auth status", "gh auth status -h github.com"],
+    not_match = ["gh auth login", "gh auth logout", "gh auth refresh"],
+)
+
+prefix_rule(
+    pattern = ["gh", "pr", ["view", "checks", "list", "diff"]],
+    decision = "allow",
+    justification = "Pull-request inspection is read-only",
+    match = ["gh pr view 42", "gh pr checks 42", "gh pr list"],
+    not_match = ["gh pr merge 42", "gh pr create"],
+)
+
+prefix_rule(
+    pattern = ["gh", "run", ["view", "list"]],
+    decision = "allow",
+    justification = "GitHub Actions inspection is read-only",
+    match = ["gh run list", "gh run view 123"],
+)
+
+prefix_rule(
+    pattern = ["gh", "issue", ["view", "list"]],
+    decision = "allow",
+    justification = "Issue inspection is read-only",
+    match = ["gh issue list", "gh issue view 42"],
+)
+
+prefix_rule(
+    pattern = ["gh", "repo", "view"],
+    decision = "allow",
+    justification = "Repository inspection is read-only",
+)
+
+prefix_rule(
+    pattern = ["gh", "workflow", ["list", "view"]],
+    decision = "allow",
+    justification = "Workflow inspection is read-only",
+)
+
+prefix_rule(
+    pattern = ["gh", "run", "watch"],
+    decision = "allow",
+    justification = "Watching an existing workflow run is read-only",
+)
+
+prefix_rule(
+    pattern = ["gh", "release", ["list", "view"]],
+    decision = "allow",
+    justification = "Release inspection is read-only",
+)
+
+prefix_rule(
+    pattern = ["gh", "label", "list"],
+    decision = "allow",
+    justification = "Label inspection is read-only",
+)
+
+prefix_rule(
+    pattern = ["gh", "status"],
+    decision = "allow",
+    justification = "GitHub status inspection is read-only",
+)
+
+prefix_rule(
+    pattern = ["gh", "search", ["prs", "issues", "code"]],
+    decision = "allow",
+    justification = "GitHub search is read-only",
+)
+
+prefix_rule(
+    pattern = ["gh", "api", ["--method", "-X"], "GET"],
+    decision = "prompt",
+    justification = "GitHub API flags may be repeated or add request bodies, so review the complete authenticated request",
+    not_match = ["gh api repos/owner/repo", "gh api --method POST repos/owner/repo/issues"],
+)

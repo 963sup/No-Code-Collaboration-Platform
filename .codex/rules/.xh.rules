@@ -1,0 +1,8 @@
+# xh crosses the network boundary and may transmit local data or mutate services.
+
+prefix_rule(
+    pattern = [["xh", "xh.exe"]],
+    decision = "prompt",
+    justification = "HTTP requests may disclose local data or mutate remote services; review the complete request",
+    match = ["xh GET https://example.com", "xh POST https://example.com name=Codex"],
+)

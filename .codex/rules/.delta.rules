@@ -1,0 +1,8 @@
+# delta can read arbitrary host files supplied as trailing paths.
+
+prefix_rule(
+    pattern = [["delta", "delta.exe"]],
+    decision = "prompt",
+    justification = "delta is read-only but unrestricted paths can disclose files outside the workspace",
+    match = ["delta --version", "delta.exe package.patch"],
+)

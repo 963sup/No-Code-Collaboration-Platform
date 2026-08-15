@@ -1,0 +1,3 @@
+# Direct Node host execution is intentionally not auto-approved. Use the
+# repository-owned pnpm entry points in .pnpm.rules so the executable contract
+# stays aligned with package.json.
