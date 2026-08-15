@@ -115,20 +115,23 @@ async function registerAndVerify(
   email: string,
   password: string
 ) {
-  await page.goto('/sign-up?next=%2Fapp');
+  await page.goto('/sign-up?next=%2Fdashboard');
   await page.getByLabel('Email').fill(email);
   await page.getByLabel('Password').fill(password);
   await page.getByRole('button', { name: 'Create account' }).click();
 
   await expect(page).toHaveURL(
-    new RegExp(`/verify-email\\?email=${encodeURIComponent(email)}&next=%2Fapp&notice=sent$`, 'u')
+    new RegExp(
+      `/verify-email\\?email=${encodeURIComponent(email)}&next=%2Fdashboard&notice=sent$`,
+      'u'
+    )
   );
 
   const code = await readVerificationCode(request, email);
 
   await page.getByLabel('Verification code').fill(code);
   await page.getByRole('button', { name: 'Verify email' }).click();
-  await expect(page).toHaveURL(/\/app$/u);
+  await expect(page).toHaveURL(/\/dashboard$/u);
 }
 
 async function signOut(page: Page) {
@@ -149,8 +152,8 @@ test('registration proves email ownership before creating an authenticated sessi
   await signOut(page);
   await expect(page).toHaveURL(/\/$/u);
 
-  await page.goto('/app');
-  await expect(page).toHaveURL(/\/sign-in\?next=%2Fapp$/u);
+  await page.goto('/dashboard');
+  await expect(page).toHaveURL(/\/sign-in\?next=%2Fdashboard$/u);
 });
 
 test('password recovery does not enumerate an unknown account', async ({ page }) => {
@@ -181,16 +184,18 @@ test('password recovery survives scanner GETs and creates only a recovery sessio
   await expect(page).toHaveURL(/\/recover-password$/u);
   await expect(page.getByRole('button', { name: 'Continue password reset' })).toBeEnabled();
 
-  const preProofProductResponse = await page.context().request.get('/app', { maxRedirects: 0 });
+  const preProofProductResponse = await page.context().request.get('/dashboard', {
+    maxRedirects: 0
+  });
   expect(preProofProductResponse.status()).toBeGreaterThanOrEqual(300);
   expect(preProofProductResponse.status()).toBeLessThan(400);
-  expect(preProofProductResponse.headers().location).toContain('/sign-in?next=%2Fapp');
+  expect(preProofProductResponse.headers().location).toContain('/sign-in?next=%2Fdashboard');
 
   await page.getByRole('button', { name: 'Continue password reset' }).click();
   await expect(page).toHaveURL(/\/reset-password$/u);
 
-  await page.goto('/app');
-  await expect(page).toHaveURL(/\/sign-in\?next=%2Fapp$/u);
+  await page.goto('/dashboard');
+  await expect(page).toHaveURL(/\/sign-in\?next=%2Fdashboard$/u);
 
   await page.goto('/reset-password');
   await page.getByLabel('New password', { exact: true }).fill(newPassword);
@@ -209,14 +214,14 @@ test('password recovery survives scanner GETs and creates only a recovery sessio
   await page.getByLabel('Email').fill(email);
   await page.getByLabel('Password').fill(newPassword);
   await page.getByRole('button', { name: 'Sign in' }).click();
-  await expect(page).toHaveURL(/\/app$/u);
+  await expect(page).toHaveURL(/\/dashboard$/u);
 
   await page.goto('/reset-password');
-  await expect(page).toHaveURL(/\/app$/u);
+  await expect(page).toHaveURL(/\/dashboard$/u);
 });
 
 test('auth pages preserve a safe post-auth destination', async ({ page }) => {
-  const repositoryPath = '/app/repositories/00000000-0000-4000-8000-000000000001';
+  const repositoryPath = '/demo-organization/demo-repository';
 
   await page.goto(`/sign-in?next=${encodeURIComponent(repositoryPath)}`);
 
@@ -233,26 +238,26 @@ test('external, protocol, and recovery destinations are replaced with the authen
 
   await expect(page.getByRole('link', { name: 'Create an account' })).toHaveAttribute(
     'href',
-    '/sign-up?next=%2Fapp'
+    '/sign-up?next=%2Fdashboard'
   );
 
   await page.goto('/sign-up?next=%2Fauth%2Fconfirm');
 
   await expect(page.getByRole('link', { name: 'Sign in' })).toHaveAttribute(
     'href',
-    '/sign-in?next=%2Fapp'
+    '/sign-in?next=%2Fdashboard'
   );
 
   await page.goto('/sign-in?next=%2Frecover-password');
   await expect(page.getByRole('link', { name: 'Create an account' })).toHaveAttribute(
     'href',
-    '/sign-up?next=%2Fapp'
+    '/sign-up?next=%2Fdashboard'
   );
 
   await page.goto('/sign-in?next=%2Freset-password');
   await expect(page.getByRole('link', { name: 'Create an account' })).toHaveAttribute(
     'href',
-    '/sign-up?next=%2Fapp'
+    '/sign-up?next=%2Fdashboard'
   );
 });
 

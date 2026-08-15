@@ -194,7 +194,7 @@ as $$
     filtered.updated_at,
     case filtered.artifact_type
       when 'repository' then '/' || filtered.owner_slug || '/' || filtered.repository_slug
-      when 'page' then '/' || filtered.owner_slug || '/' || filtered.repository_slug || '/pages/' || filtered.artifact_id::text
+      when 'page' then '/' || filtered.owner_slug || '/' || filtered.repository_slug || '/wiki/' || filtered.artifact_id::text
       when 'issue' then '/' || filtered.owner_slug || '/' || filtered.repository_slug || '/issues/' || filtered.issue_number::text
       when 'discussion' then '/' || filtered.owner_slug || '/' || filtered.repository_slug || '/discussions/' || filtered.discussion_number::text
     end as href,
@@ -337,7 +337,7 @@ as $$
     case
       when matched.result_type = 'project' then '/' || matched.owner_slug || '/' || matched.repository_slug || '/projects'
       when matched.candidate_type = 'repository' then '/' || matched.owner_slug || '/' || matched.repository_slug
-      when matched.candidate_type = 'page' then '/' || matched.owner_slug || '/' || matched.repository_slug || '/pages/' || matched.stable_id::text
+      when matched.candidate_type = 'page' then '/' || matched.owner_slug || '/' || matched.repository_slug || '/wiki/' || matched.stable_id::text
       when matched.candidate_type = 'issue' then '/' || matched.owner_slug || '/' || matched.repository_slug || '/issues/' || matched.artifact_number::text
       when matched.candidate_type = 'discussion' then '/' || matched.owner_slug || '/' || matched.repository_slug || '/discussions/' || matched.artifact_number::text
     end as href,
@@ -527,7 +527,7 @@ as $$
     filtered.created_at,
     filtered.updated_at,
     case filtered.item_type
-      when 'page' then '/' || filtered.owner_slug || '/' || filtered.repository_slug || '/pages/' || filtered.id::text
+      when 'page' then '/' || filtered.owner_slug || '/' || filtered.repository_slug || '/wiki/' || filtered.id::text
       when 'issue' then '/' || filtered.owner_slug || '/' || filtered.repository_slug || '/issues/' || filtered.artifact_number::text
       when 'discussion' then '/' || filtered.owner_slug || '/' || filtered.repository_slug || '/discussions/' || filtered.artifact_number::text
     end,

@@ -87,7 +87,7 @@ A time-bounded proof that a provider identity has authenticated. Session lifecyc
 
 ### Recovery Session
 
-A provider-verified, single-purpose credential-recovery state whose signed authentication method is `recovery`. It authorizes only the accepted recovery operation. It does not establish ordinary Product Actor readiness, cannot enter `/app`, and creates no Membership, Grant, Capability, or collaboration authority.
+A provider-verified, single-purpose credential-recovery state whose signed authentication method is `recovery`. It authorizes only the accepted recovery operation. It does not establish ordinary Product Actor readiness, cannot enter `/dashboard`, and creates no Membership, Grant, Capability, or collaboration authority.
 
 ### Recovery proof handoff
 
@@ -202,7 +202,7 @@ Human-facing routes and protocol endpoints have different responsibilities.
 | `/reset-password` | Recovery Session only | Establish a new password after recovery proof |
 | `/auth/confirm` | Protocol endpoint | Exchange an email-verification token hash |
 | `/auth/error` | Public | Present a stable, non-provider-specific failure |
-| `/app/**` | Ordinary authenticated Session | Enter the authenticated product surface |
+| `/dashboard/**` | Ordinary authenticated Session | Enter the authenticated product surface |
 
 A GET must not silently perform a single-use recovery transition when link prefetch is a realistic environment behavior. The recovery email therefore places the opaque token hash in the URL fragment. Fragments are not part of the HTTP request; the Human browser removes the fragment from the visible URL before the explicit confirmation Server Action exchanges the proof through the provider PKCE flow.
 
@@ -214,13 +214,13 @@ A GET must not silently perform a single-use recovery transition when link prefe
 4. Provider identity and Product Profile remain separate records and ownership boundaries.
 5. Application and Domain code do not expose Supabase-specific `verifyOtp`, `AuthError`, JWT, or User shapes.
 6. Password creation policy applies to registration, recovery reset, and password change; sign-in validates only a syntactically valid identifier and a non-empty bounded credential.
-7. Every post-auth `next` destination is a normalized same-origin path. External, protocol, anonymous-only, identity-proof, and recovery-only destinations fall back to `/app`.
+7. Every post-auth `next` destination is a normalized same-origin path. External, protocol, anonymous-only, identity-proof, and recovery-only destinations fall back to `/dashboard`.
 8. Auth errors exposed to the UI use stable product reason codes and do not reveal whether an arbitrary email is registered.
 9. Ordinary `Sign out` revokes only the current Session. Other-session and all-session revocation are separate explicit operations.
 10. Session cookies and cache-prevention headers remain synchronized across Proxy, Server Actions, and Route Handlers.
 11. User-editable metadata is never an authorization source.
 12. UI Context never changes Actor identity or persisted authority facts.
-13. A Recovery Session is not accepted as `GetCurrentIdentity` and cannot enter `/app`.
+13. A Recovery Session is not accepted as `GetCurrentIdentity` and cannot enter `/dashboard`.
 14. An ordinary authenticated Session is not accepted as recovery authority and cannot call the recovery-specific password reset operation.
 15. Recovery proof, password material, and recovery token hashes never become Membership, Grant, Capability, Activity Event, or application persistence facts.
 16. Merely GETting a recovery email link does not transmit the token hash to the application server, consume the provider proof, or create a Recovery Session.
@@ -258,10 +258,10 @@ Recovery-request delivery throttling and unknown-account behavior both map to th
 - Expired and invalid proofs remain distinct product reasons only after the Human explicitly submits the proof.
 - A provider code exchange that does not yield signed recovery claims is discarded and the local Session is removed.
 - Missing or invalid Recovery Session evidence fails closed before password mutation.
-- A recovery-authenticated request that targets `/app` is treated as lacking ordinary Product Actor identity.
+- A recovery-authenticated request that targets `/dashboard` is treated as lacking ordinary Product Actor identity.
 - After a successful password reset, the prior Recovery Session cannot be reused to perform another recovery mutation.
 - Provider failures fail closed and do not create a local Actor or collaboration authority.
-- Unsafe `next` input is replaced with `/app`.
+- Unsafe `next` input is replaced with `/dashboard`.
 - Unsupported onboarding, invitation, MFA, or enterprise identity behavior is not linked or described as available.
 
 ## Provider projection
@@ -331,7 +331,7 @@ This mapping is Infrastructure truth. It may change without changing the product
 
 ## Falsifiable predictions
 
-1. A new User who registers cannot enter `/app` until the email proof succeeds.
+1. A new User who registers cannot enter `/dashboard` until the email proof succeeds.
 2. A newly accepted registration creates the provider identity and existing Profile projection; completing the email proof creates the ordinary Session.
 3. Registration and credential recovery do not create any Organization membership or Repository Grant.
 4. A password shorter than the current creation minimum is rejected during sign-up or recovery reset, while sign-in does not reject a non-empty historical password solely because policy later changed.
@@ -340,7 +340,7 @@ This mapping is Infrastructure truth. It may change without changing the product
 7. Domain/Application tests can execute all current identity use cases without importing Supabase.
 8. Recovery for an unknown or delivery-throttled email does not expose account existence through the product response.
 9. A GET-only email scanner cannot observe the recovery token in the application HTTP request, consume it, or create a Recovery Session.
-10. A signed Recovery Session can reach `/reset-password` but cannot enter `/app`.
+10. A signed Recovery Session can reach `/reset-password` but cannot enter `/dashboard`.
 11. An ordinary password Session cannot reset a credential through the recovery-specific operation.
 12. A non-PKCE recovery proof cannot be converted into an ordinary OTP Session by the recovery-specific operation.
 13. After a successful recovery reset and before fresh ordinary sign-in, the Recovery Session cannot be reused to enter `/reset-password`.
@@ -374,13 +374,13 @@ Create and verify a disposable identity
 → prove the provider token remains usable
 → open the same email link in the Human browser
 → remove the fragment from the visible URL before proof exchange
-→ prove /app remains inaccessible before explicit Human confirmation
+→ prove /dashboard remains inaccessible before explicit Human confirmation
 → explicitly confirm password recovery by POST
 → provider verifies PKCE proof and returns auth code
 → exchange auth code with matching PKCE verifier
 → require signed recovery Session
 → arrive at clean /reset-password
-→ prove Recovery Session cannot enter /app
+→ prove Recovery Session cannot enter /dashboard
 → update password
 → prove Recovery Session cannot re-enter /reset-password
 → require ordinary sign-in

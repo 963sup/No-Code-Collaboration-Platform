@@ -10,6 +10,7 @@ import type {
   NotificationReader,
   NotificationWriter,
   OrganizationWriter,
+  OwnerProfileReader,
   PageReader,
   PageWriter,
   ProjectReader,
@@ -27,13 +28,14 @@ import { SupabaseActivityEventReader } from '../activity/supabase-activity-event
 import type { Database } from '../generated/database.types';
 import { SupabaseIdentityProvider } from '../identity/supabase-identity-provider';
 import { SupabaseOrganizationCreation } from '../organizations/supabase-organization-creation';
+import { SupabaseOwnerProfileReader } from '../owners/supabase-owner-profile-reader';
 import { SupabaseCollaborationProjections } from '../projections/supabase-collaboration-projections';
 import { SupabaseOwnerRepositoryRouteReader } from '../repositories/supabase-owner-repository-route-reader';
 import { SupabaseRepositoryWriter } from '../repositories/supabase-repository-creation';
 import { SupabaseRepositoryReader } from '../repositories/supabase-repository-reader';
-import { SupabasePageRepository } from '../resources/supabase-page-repository';
-import { SupabaseIssueReader } from '../resources/supabase-issue-reader';
 import { SupabaseDiscussionRepository } from '../resources/supabase-discussion-repository';
+import { SupabaseIssueReader } from '../resources/supabase-issue-reader';
+import { SupabasePageRepository } from '../resources/supabase-page-repository';
 
 export interface SupabaseServerAdapterOptions {
   readonly cookies: CookieMethodsServer;
@@ -53,6 +55,7 @@ export interface SupabaseServerAdapters {
   readonly notificationReader: NotificationReader;
   readonly notificationWriter: NotificationWriter;
   readonly organizationWriter: OrganizationWriter;
+  readonly ownerProfileReader: OwnerProfileReader;
   readonly pageReader: PageReader;
   readonly pageWriter: PageWriter;
   readonly projectReader: ProjectReader;
@@ -91,6 +94,7 @@ export function createSupabaseServerAdapters(
     notificationReader: collaborationProjections,
     notificationWriter: collaborationProjections,
     organizationWriter: new SupabaseOrganizationCreation(client),
+    ownerProfileReader: new SupabaseOwnerProfileReader(client),
     pageReader: pageRepository,
     pageWriter: pageRepository,
     projectReader: collaborationProjections,

@@ -1086,6 +1086,16 @@ export type Database = {
           governance_role: Database["public"]["Enums"]["repository_role"]
         }[]
       }
+      get_owner_profile_by_slug: {
+        Args: { target_owner_slug: string }
+        Returns: {
+          avatar_url: string
+          display_name: string
+          owner_id: string
+          owner_kind: string
+          owner_slug: string
+        }[]
+      }
       list_accessible_repository_routes: {
         Args: never
         Returns: {
@@ -1114,6 +1124,19 @@ export type Database = {
           title: string
           total_count: number
           updated_at: string
+        }[]
+      }
+      list_owner_repository_routes: {
+        Args: { target_owner_slug: string }
+        Returns: {
+          description: string
+          id: string
+          name: string
+          owner_id: string
+          owner_kind: string
+          owner_slug: string
+          slug: string
+          visibility: Database["public"]["Enums"]["repository_visibility"]
         }[]
       }
       list_project_items: {

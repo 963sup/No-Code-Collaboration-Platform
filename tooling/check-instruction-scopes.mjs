@@ -17,7 +17,7 @@ const instructionScopes = [
   'apps/web/e2e/AGENTS.md',
   'apps/web/src/AGENTS.md',
   'apps/web/src/app/(auth)/AGENTS.md',
-  'apps/web/src/app/(repository)/AGENTS.md',
+  'apps/web/src/app/(owner)/AGENTS.md',
   'apps/web/src/app/AGENTS.md',
   'apps/web/src/composition/AGENTS.md',
   'docs/AGENTS.md',
@@ -102,22 +102,19 @@ const invariantContracts = {
       'navigation identity invariant is missing'
     ]
   ],
-  'apps/web/src/app/(repository)/AGENTS.md': [
+  'apps/web/src/app/(owner)/AGENTS.md': [
     [
-      /canonical Repository URL is `\/\{ownerSlug\}\/\{repositorySlug\}`/i,
+      /\/\{ownerSlug\}.*shared.*User.*Organization/is,
+      'shared Owner namespace identity grammar is missing'
+    ],
+    [/URL shape never determines Owner kind/i, 'Owner-kind resolution boundary is missing'],
+    [
+      /\/\{ownerSlug\}\/\{repositorySlug\}.*canonical Repository identity/is,
       'canonical Repository URL is missing'
     ],
     [
-      /owner namespace resolves a User or Organization.*never implies mandatory Organization ownership/is,
-      'typed Repository owner boundary is missing'
-    ],
-    [
-      /\/app\/repositories\/\[repositoryId\]\/\*\*.*access-aware, redirect-only compatibility/is,
-      'stable-ID redirect-only compatibility boundary is missing'
-    ],
-    [
-      /Organization-only.*Repository routing is invalid/is,
-      'Organization-only Repository route rejection is missing'
+      /query state never changes identity.*authorization/is,
+      'Owner profile Context/authorization boundary is missing'
     ],
     [
       /Presentation Context and slot state never become authorization inputs/i,

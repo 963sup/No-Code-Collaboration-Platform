@@ -168,71 +168,68 @@ Capability is decision truth. Role is assignment and explanation vocabulary.
 
 ## Canonical URL and information architecture
 
-URL design follows resource identity, not GitHub's historical route vocabulary. The path owns stable identity and hierarchy; query parameters own search, filter, sort, pagination, and temporary projections; fragments own in-page location.
+After a concept passes semantic admission, the sanitized public and read-only authenticated GitHub URL hierarchy recorded in `.playwright-mcp/github/` is the presentation baseline. Domain renaming does not authorize URL rewriting. A material deviation requires a direct Product reason and a discriminating test.
 
-The target resource hierarchy is:
+The current accepted URL model is:
 
 ```text
 /
-/app
+/dashboard
+/repos
+/issues
+/issues/assigned
+/projects
+/discussions
+/notifications
+/search?q=&type=&owner=&repository=&status=&sort=&page=
+/explore?sort=&ownerType=&artifact=&page=
+/marketplace?category=&page=
+
 /{ownerSlug}
-/{ownerSlug}?tab=repositories|projects
+/{ownerSlug}?tab=repositories
+/{ownerSlug}?tab=stars
+/{ownerSlug}?tab=projects
 /{ownerSlug}/{repositorySlug}
 /{ownerSlug}/{repositorySlug}/issues
 /{ownerSlug}/{repositorySlug}/issues/{issueNumber}
 /{ownerSlug}/{repositorySlug}/projects
 /{ownerSlug}/{repositorySlug}/discussions
 /{ownerSlug}/{repositorySlug}/discussions/{discussionNumber}
-/{ownerSlug}/{repositorySlug}/pages
-/{ownerSlug}/{repositorySlug}/pages/{pageId}
+/{ownerSlug}/{repositorySlug}/wiki
+/{ownerSlug}/{repositorySlug}/wiki/{pageId}
 /{ownerSlug}/{repositorySlug}/activity
 /{ownerSlug}/{repositorySlug}/security
 /{ownerSlug}/{repositorySlug}/settings
 
-/repositories
-/issues?scope=assigned&q=&status=&sort=&page=
-/projects
-/discussions
-/notifications
-/search?q=&type=&owner=&repository=&status=&sort=&page=
-/explore?sort=&ownerType=&artifact=&page=
-/integrations?category=&page=
-
-/organizations/{organizationSlug}/members
-/organizations/{organizationSlug}/teams
-/organizations/{organizationSlug}/settings
-/organizations/{organizationSlug}/audit-log
-/organizations/{organizationSlug}/custom-properties
+/orgs/{organizationSlug}/dashboard
+/orgs/{organizationSlug}/people
+/orgs/{organizationSlug}/teams
+/organizations/{organizationSlug}/settings/profile
+/organizations/{organizationSlug}/settings/audit-log
+/organizations/{organizationSlug}/settings/custom-properties
 
 /settings/profile
 /settings/organizations
 /settings/enterprises
-/settings/appearance
+/settings/dashboardearance
 /settings/accessibility
 /settings/billing
-/settings/integrations
-/settings/applications
-/settings/programmatic-access
+/settings/installations
+/settings/dashboardlications
+/settings/tokens
 ```
 
-Examples:
+`/{ownerSlug}` is one shared public identity grammar for User and Organization. The path does not identify the kind. Owner Namespace Resolution maps the globally unique slug to exactly one stable User or Organization identity. The bare path is Overview; `?tab=repositories|stars|projects` is Presentation Context only and never changes identity, ownership, Membership, Principal resolution, or authorization.
 
-```text
-/alice/personal-crm
-/acme/customer-success
-```
+`/orgs/{organizationSlug}/...` is Organization operational/dashboard presentation. `/organizations/{organizationSlug}/settings/...` is Organization administration/governance. Neither is a second Organization profile identity.
 
-The first path segment resolves either a User or Organization Owner namespace. It does not imply Organization ownership and it is not authorization input by itself. `/{ownerSlug}` is the one canonical human identity projection; `/organizations/{organizationSlug}/...` is the Organization governance hierarchy, not a second Organization profile identity.
+`/{ownerSlug}/{repositorySlug}` remains the canonical Repository identity. GitHub Wiki URL vocabulary is preserved as `/wiki` while the target Domain remains Page/Knowledge. The current detail suffix uses stable `pageId`; a human Wiki-page slug is not invented until its identity and rename semantics are independently proven.
 
-`/app` is an authenticated discovery/dashboard surface. It is not part of Repository identity.
+GitHub `/dashboard`, `/repos`, `/issues/assigned`, `/orgs/{slug}/...`, and `/organizations/{slug}/settings/...` survive removal of Git and Code assumptions and are therefore preserved. `/issues` is an entry alias that canonicalizes to `/issues/assigned`.
 
-GitHub `/dashboard`, `/repos`, `/issues/assigned`, `/orgs/{slug}/...`, and `/organizations/{slug}/settings/...` are observed external routes, not target canonical names. Their admitted meanings map respectively to `/app`, `/repositories`, `/issues?scope=assigned`, and the single `/organizations/{organizationSlug}/...` governance hierarchy. This removes provider history from the target resource model.
+Creation and session termination are Processes/Commands rather than stable resources. `/new` remains the Repository creation entry. Organization creation may use `/organizations/new` instead of GitHub's `/organizations/plan` because the latter is a commercial plan-selection process and Billing/Licensing is explicitly deferred. Sign-out remains a command, not a bookmarkable GET resource.
 
-Creation, import, and session termination are Processes or Commands rather than canonical resources. Target command entry routes may use `/repositories/new`, `/repositories/import`, and `/organizations/new`; a new Issue opened in a dialog has no Issue URL until creation assigns stable identity. Sign-out is an authenticated command, not a bookmarkable `GET /logout` resource.
-
-Repository presentation follows one owner/Repository header and primary navigation. An active child surface may compose independently recoverable, route-specific supporting regions when sanitized public or read-only authenticated GitHub benchmark evidence and target behavior prove their necessity. Framework layout mechanisms never create additional Product boundaries or URL identities.
-
-`/projects` is a Repository attachment/list Projection; Project detail does not inherit Repository ownership and therefore does not use `/{owner}/{repository}/projects/{id}`. GitHub Wiki maps to the existing Page Resource family, so Git-backed `/wiki/{slug}` is not a second target canonical identity. `/security` contains only admitted governance, access-posture, policy, and security-evidence projections; code/dependency/secret scanning is excluded.
+Repository presentation follows one owner/Repository header and primary navigation. An active child surface may compose independently recoverable route-specific supporting regions when benchmark evidence and target behavior prove their necessity. Framework route groups and parallel/intercepting routes never create Product identity, authority, or collaboration boundaries.
 
 ## Accepted collaboration semantics
 
@@ -328,7 +325,7 @@ A projection becomes an Entity only when independent identity, lifecycle ownersh
 16. Policy may constrain accepted authority but cannot silently create Repository content authority.
 17. Historical Evidence is append-oriented; presentation projections cannot rewrite its product meaning.
 18. Page, Issue, and Discussion are the accepted concrete Repository-contained Resource kinds; Issue and Discussion v1 lifecycle, capability, concurrency, relationship, and evidence semantics are decision-complete.
-19. Canonical Repository URL is Owner namespace + Repository slug; internal delivery prefixes are not product identity.
+19. Canonical human routing uses one shared User/Organization Owner namespace: /{ownerSlug} for identity and /{ownerSlug}/{repositorySlug} for Repository identity; query tabs are Presentation Context only.
 20. Domain semantics remain provider-neutral; implementation technologies project rather than define Product truth.
 21. Generated types, migrations, diagrams, CI output, and runtime observations cannot silently replace this contract.
 22. A benchmark concept is rejected when its value does not survive removal of Source Code, arbitrary execution, CI/CD, and software-development-specific assumptions.
@@ -357,7 +354,7 @@ The Product Contract is working when:
 - a User-owned and an Organization-owned Repository both use the same Repository collaboration semantics;
 - every accepted work item has an unambiguous Repository boundary;
 - the system can explain why an Actor can or cannot perform an action;
-- `/app` navigates to canonical `/{owner}/{repository}` Repository identity;
+- `/dashboard` navigates to canonical `/{owner}/{repository}` Repository identity;
 - Page collaboration works through the same authorization and evidence boundary for both ownership modes;
 - accepted Issue and Discussion identities and lifecycle mutations remain Repository-scoped, canonical, version-safe, evidence-backed, and authorization-equivalent across presentation modes;
 - Project, Notification, Search, Explore, and Integration catalog projections cannot create authority, mutate source truth, leak inaccessible data, or imply unavailable connection success;

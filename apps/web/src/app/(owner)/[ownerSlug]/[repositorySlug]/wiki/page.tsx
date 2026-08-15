@@ -38,7 +38,9 @@ export default async function RepositoryWiki({ params, searchParams }: Repositor
     <section className='space-y-6'>
       <div>
         <h1 className='text-2xl font-semibold tracking-tight'>Wiki</h1>
-        <p className='text-sm text-muted-foreground'>Repository knowledge backed by Page resources.</p>
+        <p className='text-sm text-muted-foreground'>
+          Repository knowledge backed by Page resources.
+        </p>
       </div>
 
       {error && errorMessages[error] ? (

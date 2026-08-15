@@ -108,7 +108,7 @@ test('a new Actor creates a non-Demo personal Repository through /new', async ({
   await expect(page.getByText('Created through the Product UI.')).toBeVisible();
 
   await page.getByRole('link', { name: 'No-Code Collaboration Platform home' }).click();
-  await expect(page).toHaveURL(/\/app$/u);
+  await expect(page).toHaveURL(/\/dashboard$/u);
   await expect(page.getByRole('link', { name: new RegExp(repositoryName, 'u') })).toBeVisible();
 });
 
@@ -158,6 +158,6 @@ test('a new Actor creates an Organization and then its Repository through the Pr
   await expect(page.getByText('Created under a newly persisted Organization.')).toBeVisible();
 
   await page.getByRole('link', { name: 'No-Code Collaboration Platform home' }).click();
-  await expect(page).toHaveURL(/\/app$/u);
+  await expect(page).toHaveURL(/\/dashboard$/u);
   await expect(page.getByRole('link', { name: new RegExp(repositoryName, 'u') })).toBeVisible();
 });

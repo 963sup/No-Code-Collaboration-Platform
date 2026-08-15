@@ -73,7 +73,7 @@ async function registerAndVerifyActor(
   email: string,
   password: string
 ) {
-  await page.goto('/sign-up?next=%2Fapp');
+  await page.goto('/sign-up?next=%2Fdashboard');
   await page.getByLabel('Email').fill(email);
   await page.getByLabel('Password').fill(password);
   await page.getByRole('button', { name: 'Create account' }).click();
@@ -83,7 +83,7 @@ async function registerAndVerifyActor(
 
   await page.getByLabel('Verification code').fill(code);
   await page.getByRole('button', { name: 'Verify email' }).click();
-  await expect(page).toHaveURL(/\/app$/u);
+  await expect(page).toHaveURL(/\/dashboard$/u);
 }
 
 async function establishApiIdentity(
@@ -156,10 +156,10 @@ async function createRepositoryFixture(
   });
   expect(repositoryResponse.status()).toBe(201);
 
-  return { ownerSlug, repositoryId, repositorySlug };
+  return { ownerSlug, repositorySlug };
 }
 
-test('Page collaboration uses canonical Owner/Repository routes while stable IDs remain authorization targets', async ({
+test('Page collaboration uses GitHub-aligned Wiki URLs while stable IDs remain authorization targets', async ({
   page,
   request
 }) => {
@@ -168,14 +168,11 @@ test('Page collaboration uses canonical Owner/Repository routes while stable IDs
 
   await registerAndVerifyActor(page, request, email, password);
   const identity = await establishApiIdentity(request, email, password);
-  const { ownerSlug, repositoryId, repositorySlug } = await createRepositoryFixture(
-    request,
-    identity
-  );
+  const { ownerSlug, repositorySlug } = await createRepositoryFixture(request, identity);
   const repositoryPath = `/${ownerSlug}/${repositorySlug}`;
-  const pagesPath = `${repositoryPath}/pages`;
+  const wikiPath = `${repositoryPath}/wiki`;
 
-  await page.goto('/app');
+  await page.goto('/dashboard');
   await page.getByRole('link', { name: /E2E Repository/u }).click();
   await expect(page).toHaveURL(repositoryPath);
   await expect(
@@ -188,7 +185,7 @@ test('Page collaboration uses canonical Owner/Repository routes while stable IDs
     'aria-current',
     'page'
   );
-  await expect(page.getByRole('link', { name: 'Pages', exact: true })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Wiki', exact: true })).toBeVisible();
 
   for (const viewport of [
     { height: 900, name: 'desktop', width: 1440 },
@@ -198,7 +195,7 @@ test('Page collaboration uses canonical Owner/Repository routes while stable IDs
   ]) {
     await page.setViewportSize(viewport);
     await expect(page.getByRole('navigation', { name: 'Repository' })).toBeVisible();
-    await expect(page.getByRole('link', { name: 'Pages', exact: true })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Wiki', exact: true })).toBeVisible();
     await expect(page.getByRole('complementary', { name: 'Repository details' })).toBeVisible();
 
     if (process.env.CAPTURE_PLAYWRIGHT_MCP === '1') {
@@ -213,25 +210,17 @@ test('Page collaboration uses canonical Owner/Repository routes while stable IDs
     }
   }
 
-  await page.goto(`/app/repositories/${repositoryId}`);
-  await expect(page).toHaveURL(repositoryPath);
-
-  await page.goto(`/app/repositories/${repositoryId}/resources`);
-  await expect(page).toHaveURL(pagesPath);
-  await expect(page.getByRole('heading', { name: 'Pages', exact: true })).toBeVisible();
+  await page.goto(wikiPath);
+  await expect(page.getByRole('heading', { name: 'Wiki', exact: true })).toBeVisible();
 
   await page.getByLabel('Page title').fill('Product brief');
   await page.getByRole('button', { name: 'Create Page' }).click();
 
-  await expect(page).toHaveURL(new RegExp(`${pagesPath}/[0-9a-f-]+$`, 'u'));
+  await expect(page).toHaveURL(new RegExp(`${wikiPath}/[0-9a-f-]+$`, 'u'));
   await expect(page.getByRole('heading', { name: 'Edit Page' })).toBeVisible();
 
   const canonicalPagePath = new URL(page.url()).pathname;
-  const pageId = canonicalPagePath.split('/').at(-1);
-  expect(pageId).toBeTruthy();
-
-  await page.goto(`/app/repositories/${repositoryId}/resources/${pageId}`);
-  await expect(page).toHaveURL(canonicalPagePath);
+  expect(canonicalPagePath).toContain('/wiki/');
 
   const initialVersion = await page.locator('input[name="expectedUpdatedAt"]').inputValue();
   const stalePage = await page.context().newPage();

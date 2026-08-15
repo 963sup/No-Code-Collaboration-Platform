@@ -107,23 +107,67 @@ for (const [scope, rules] of Object.entries(packageRules)) {
   }
 }
 
-const repositoryRoute = 'apps/web/src/app/(repository)/[ownerSlug]/[repositorySlug]';
-const repositoryPagesRoute = `${repositoryRoute}/pages`;
-const requiredRepositoryFiles = [
+const authenticatedRoot = 'apps/web/src/app/(authenticated)';
+const ownerRoute = 'apps/web/src/app/(owner)/[ownerSlug]';
+const repositoryRoute = `${ownerRoute}/[repositorySlug]`;
+const repositoryWikiRoute = `${repositoryRoute}/wiki`;
+const surfaceDefinitionsPath = 'apps/web/src/navigation/surface-definitions.ts';
+
+const requiredWebFiles = [
+  `${authenticatedRoot}/dashboard/page.tsx`,
+  `${authenticatedRoot}/repos/page.tsx`,
+  `${authenticatedRoot}/issues/page.tsx`,
+  `${authenticatedRoot}/issues/assigned/page.tsx`,
+  `${authenticatedRoot}/orgs/[organizationSlug]/dashboard/page.tsx`,
+  `${authenticatedRoot}/orgs/[organizationSlug]/people/page.tsx`,
+  `${authenticatedRoot}/orgs/[organizationSlug]/teams/page.tsx`,
+  `${authenticatedRoot}/organizations/[organizationSlug]/settings/profile/page.tsx`,
+  `${ownerRoute}/page.tsx`,
   `${repositoryRoute}/layout.tsx`,
   `${repositoryRoute}/page.tsx`,
   `${repositoryRoute}/_components/repository-navigation.tsx`,
   `${repositoryRoute}/_components/repository-shell.tsx`,
   `${repositoryRoute}/_queries/get-accessible-repository-route.ts`,
-  `${repositoryPagesRoute}/page.tsx`,
-  `${repositoryPagesRoute}/[pageId]/page.tsx`,
-  `${repositoryPagesRoute}/actions.ts`,
-  `${repositoryRoute}/activity/page.tsx`
+  `${repositoryWikiRoute}/page.tsx`,
+  `${repositoryWikiRoute}/[pageId]/page.tsx`,
+  `${repositoryWikiRoute}/actions.ts`,
+  `${repositoryRoute}/activity/page.tsx`,
+  surfaceDefinitionsPath,
+  'apps/web/src/routing/auth-routes.ts',
+  'apps/web/src/routing/owner-routes.ts',
+  'apps/web/src/routing/repository-routes.ts'
 ];
 
-for (const path of requiredRepositoryFiles) {
-  if (!existsSync(resolve(root, path))) {
-    failures.push(`${path}: canonical Owner/Repository delivery contract is missing`);
+for (const path of requiredWebFiles) {
+  if (!existsSync(resolve(root, path))) failures.push(`${path}: canonical Web contract is missing`);
+}
+
+for (const obsoletePath of [
+  'apps/web/src/app/(app)',
+  'apps/web/src/app/(repository)',
+  `${authenticatedRoot}/app`,
+  `${authenticatedRoot}/repositories`,
+  `${repositoryRoute}/pages`,
+  'apps/web/src/routing/surface-definitions.ts'
+]) {
+  if (existsSync(resolve(root, obsoletePath))) {
+    failures.push(`${obsoletePath}: superseded URL/delivery vocabulary must not coexist`);
+  }
+}
+
+const ownerProfilePath = `${ownerRoute}/page.tsx`;
+if (existsSync(resolve(root, ownerProfilePath))) {
+  const content = readFileSync(resolve(root, ownerProfilePath), 'utf8');
+  for (const symbol of [
+    'GetOwnerProfile',
+    'ListOwnerRepositoryRoutes',
+    'normalizeOwnerProfileTab',
+    'profile.kind',
+    'ownerTabPath'
+  ]) {
+    if (!content.includes(symbol)) {
+      failures.push(`${ownerProfilePath}: ${symbol} shared Owner namespace boundary is missing`);
+    }
   }
 }
 
@@ -146,27 +190,27 @@ if (existsSync(resolve(root, repositoryShellPath))) {
     }
   }
   if (content.includes("href='/app'")) {
-    failures.push(
-      `${repositoryShellPath}: Owner label must not pretend /app is the Owner destination`
-    );
+    failures.push(`${repositoryShellPath}: obsolete /app destination must not return`);
   }
 }
 
 const repositoryNavigationPath = `${repositoryRoute}/_components/repository-navigation.tsx`;
-if (existsSync(resolve(root, repositoryNavigationPath))) {
-  const surfaceDefinitionsPath = 'apps/web/src/routing/surface-definitions.ts';
+if (
+  existsSync(resolve(root, repositoryNavigationPath)) &&
+  existsSync(resolve(root, surfaceDefinitionsPath))
+) {
   const content = `${readFileSync(resolve(root, repositoryNavigationPath), 'utf8')}\n${readFileSync(
     resolve(root, surfaceDefinitionsPath),
     'utf8'
   )}`;
-  for (const label of ['Overview', 'Pages', 'Activity']) {
+  for (const label of ['Overview', 'Wiki', 'Activity']) {
     if (!content.includes(label)) {
       failures.push(`${repositoryNavigationPath}: ${label} Repository navigation is missing`);
     }
   }
   for (const symbol of [
     'repositoryPath',
-    'repositoryPagesPath',
+    'repositoryWikiPath',
     'repositoryActivityPath',
     'repositorySurfaces',
     'usePathname'
@@ -177,23 +221,22 @@ if (existsSync(resolve(root, repositoryNavigationPath))) {
   }
 }
 
-const repositoryPagesPath = `${repositoryPagesRoute}/page.tsx`;
-if (existsSync(resolve(root, repositoryPagesPath))) {
-  const content = readFileSync(resolve(root, repositoryPagesPath), 'utf8');
+const repositoryWikiPath = `${repositoryWikiRoute}/page.tsx`;
+if (existsSync(resolve(root, repositoryWikiPath))) {
+  const content = readFileSync(resolve(root, repositoryWikiPath), 'utf8');
   for (const symbol of ['requireAccessibleRepositoryRoute', 'ListAccessiblePages', 'createPage']) {
     if (!content.includes(symbol)) {
-      failures.push(`${repositoryPagesPath}: ${symbol} Page boundary is missing`);
+      failures.push(`${repositoryWikiPath}: ${symbol} Page/Knowledge boundary is missing`);
     }
   }
-  if (content.includes('RepositoryShell')) {
-    failures.push(`${repositoryPagesPath}: shared Repository shell belongs in layout.tsx`);
-  }
-  if (content.includes('/resources')) {
-    failures.push(`${repositoryPagesPath}: Resource abstraction must not leak into product URLs`);
+  if (content.includes('/resources') || content.includes('/pages')) {
+    failures.push(
+      `${repositoryWikiPath}: Domain vocabulary must not leak into the GitHub-aligned Wiki URL`
+    );
   }
 }
 
-const pageDetailPath = `${repositoryPagesRoute}/[pageId]/page.tsx`;
+const pageDetailPath = `${repositoryWikiRoute}/[pageId]/page.tsx`;
 if (existsSync(resolve(root, pageDetailPath))) {
   const content = readFileSync(resolve(root, pageDetailPath), 'utf8');
   for (const symbol of ['requireAccessibleRepositoryRoute', 'GetAccessiblePage', 'updatePage']) {
@@ -201,17 +244,19 @@ if (existsSync(resolve(root, pageDetailPath))) {
       failures.push(`${pageDetailPath}: ${symbol} Page boundary is missing`);
     }
   }
-  if (content.includes('RepositoryShell')) {
-    failures.push(`${pageDetailPath}: shared Repository shell belongs in layout.tsx`);
-  }
 }
 
-const pageActionsPath = `${repositoryPagesRoute}/actions.ts`;
+const pageActionsPath = `${repositoryWikiRoute}/actions.ts`;
 if (existsSync(resolve(root, pageActionsPath))) {
   const content = readFileSync(resolve(root, pageActionsPath), 'utf8');
-  for (const symbol of ['CreatePage', 'UpdatePage', 'repositoryAccessReader', 'ownerSlug']) {
+  for (const symbol of [
+    'CreatePage',
+    'UpdatePage',
+    'repositoryAccessReader',
+    'repositoryWikiPath'
+  ]) {
     if (!content.includes(symbol)) {
-      failures.push(`${pageActionsPath}: ${symbol} owner-neutral command boundary is missing`);
+      failures.push(`${pageActionsPath}: ${symbol} owner-neutral Wiki command boundary is missing`);
     }
   }
   if (content.includes('organizationSlug')) {
@@ -225,62 +270,16 @@ if (existsSync(resolve(root, repositoryActivityPath))) {
   if (!content.includes('ListRepositoryActivity')) {
     failures.push(`${repositoryActivityPath}: Activity projection query is missing`);
   }
-  if (content.includes('RepositoryShell')) {
-    failures.push(`${repositoryActivityPath}: shared Repository shell belongs in layout.tsx`);
-  }
 }
 
-const appHomePath = 'apps/web/src/app/(app)/app/page.tsx';
-if (existsSync(resolve(root, appHomePath))) {
-  const content = readFileSync(resolve(root, appHomePath), 'utf8');
+const dashboardPath = `${authenticatedRoot}/dashboard/page.tsx`;
+if (existsSync(resolve(root, dashboardPath))) {
+  const content = readFileSync(resolve(root, dashboardPath), 'utf8');
   for (const symbol of ['ListAccessibleRepositoryRoutes', 'repositoryPath']) {
     if (!content.includes(symbol)) {
-      failures.push(`${appHomePath}: ${symbol} canonical Repository navigation is missing`);
+      failures.push(`${dashboardPath}: ${symbol} canonical Repository discovery is missing`);
     }
   }
-  if (content.includes('/app/repositories/${repository.id}')) {
-    failures.push(`${appHomePath}: stable ID must not remain primary human navigation URL`);
-  }
-}
-
-const organizationOnlyRepositoryRoute =
-  'apps/web/src/app/(app)/app/[organizationSlug]/[repositorySlug]';
-if (existsSync(resolve(root, organizationOnlyRepositoryRoute))) {
-  failures.push(
-    `${organizationOnlyRepositoryRoute}: obsolete Organization-only Repository UI must not coexist with canonical Owner routing`
-  );
-}
-
-const stableIdCompatibilityRoute = 'apps/web/src/app/(app)/app/repositories/[repositoryId]';
-const stableIdCompatibilityPath = `${stableIdCompatibilityRoute}/[[...legacyPath]]/page.tsx`;
-if (!existsSync(resolve(root, stableIdCompatibilityPath))) {
-  failures.push(
-    `${stableIdCompatibilityPath}: stable-ID Repository compatibility redirect is missing`
-  );
-} else {
-  const content = readFileSync(resolve(root, stableIdCompatibilityPath), 'utf8');
-  for (const symbol of [
-    'GetAccessibleRepositoryRouteById',
-    'repositoryPath',
-    'repositoryPagesPath',
-    'repositoryPagePath',
-    'redirect',
-    'notFound'
-  ]) {
-    if (!content.includes(symbol)) {
-      failures.push(`${stableIdCompatibilityPath}: ${symbol} compatibility boundary is missing`);
-    }
-  }
-}
-
-const compatibilitySourceFiles = collectSourceFiles(stableIdCompatibilityRoute);
-if (
-  compatibilitySourceFiles.length !== 1 ||
-  compatibilitySourceFiles[0] !== stableIdCompatibilityPath
-) {
-  failures.push(
-    `${stableIdCompatibilityRoute}: compatibility namespace must contain only the access-aware redirect route`
-  );
 }
 
 const duplicateAuthConfirmPath = 'apps/web/src/app/auth/confirm/route.ts';
@@ -293,17 +292,13 @@ if (!existsSync(resolve(root, canonicalAuthConfirmPath))) {
   failures.push(`${canonicalAuthConfirmPath}: canonical auth confirmation handler is missing`);
 }
 
-const obsoleteAuthAliasPath = 'apps/web/src/auth/auth-navigation.ts';
-if (existsSync(resolve(root, obsoleteAuthAliasPath))) {
-  failures.push(`${obsoleteAuthAliasPath}: obsolete auth routing alias must be removed`);
-}
-
-const obsoleteRepositoryRouteReader =
-  'packages/infrastructure/supabase/src/repositories/supabase-repository-route-reader.ts';
-if (existsSync(resolve(root, obsoleteRepositoryRouteReader))) {
-  failures.push(
-    `${obsoleteRepositoryRouteReader}: obsolete Repository route reader alias must be removed`
-  );
+for (const obsoletePath of [
+  'apps/web/src/auth/auth-navigation.ts',
+  'packages/infrastructure/supabase/src/repositories/supabase-repository-route-reader.ts'
+]) {
+  if (existsSync(resolve(root, obsoletePath))) {
+    failures.push(`${obsoletePath}: obsolete compatibility alias must be removed`);
+  }
 }
 
 const result = {

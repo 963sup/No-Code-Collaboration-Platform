@@ -118,6 +118,11 @@ export type {
   OrganizationWriter
 } from './ports/organization-creation';
 export type {
+  OwnerProfile,
+  OwnerProfileKind,
+  OwnerProfileReader
+} from './ports/owner-profile-reader';
+export type {
   RepositoryAccessQuery,
   RepositoryAccessReader
 } from './ports/repository-access-reader';
@@ -148,6 +153,7 @@ export { GetAccessibleRepository } from './queries/get-accessible-repository';
 export { GetAccessibleRepositoryRoute } from './queries/get-accessible-repository-route';
 export { GetAccessibleRepositoryRouteById } from './queries/get-accessible-repository-route-by-id';
 export { GetCurrentIdentity } from './queries/get-current-identity';
+export { GetOwnerProfile } from './queries/get-owner-profile';
 export { GetPasswordRecoveryIdentity } from './queries/get-password-recovery-identity';
 export { ListAccessiblePages } from './queries/list-accessible-pages';
 export { ListAccessibleDiscussions } from './queries/list-accessible-discussions';
@@ -155,6 +161,7 @@ export { ListAccessibleIssues } from './queries/list-accessible-issues';
 export type { ListAccessibleIssuesInput } from './queries/list-accessible-issues';
 export { ListAccessibleRepositories } from './queries/list-accessible-repositories';
 export { ListAccessibleRepositoryRoutes } from './queries/list-accessible-repository-routes';
+export { ListOwnerRepositoryRoutes } from './queries/list-owner-repository-routes';
 export { ListRepositoryCreationOwners } from './queries/list-repository-creation-owners';
 export { ListRepositoryActivity } from './queries/list-repository-activity';
 export type { ListRepositoryActivityInput } from './queries/list-repository-activity';

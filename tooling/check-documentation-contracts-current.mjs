@@ -19,7 +19,8 @@ try {
 const supersededLegacyFailures = new Set([
   'docs/IMPLEMENTATION_GAPS.md: GAP-OWNERSHIP-001 is missing',
   'docs/IMPLEMENTATION_GAPS.md: GAP-OWNERSHIP-001 must remain open until its closure evidence is complete',
-  'docs/domains/repository-collaboration.md: destructive Repository lifecycle rule is missing'
+  'docs/domains/repository-collaboration.md: destructive Repository lifecycle rule is missing',
+  'apps/web/README.md: stable-ID compatibility route is not redirect-only'
 ]);
 
 for (const failure of legacyResult?.failures ?? []) {

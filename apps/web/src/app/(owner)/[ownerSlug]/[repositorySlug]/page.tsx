@@ -3,7 +3,7 @@ import { BookOpenText, FileText, Globe2, LockKeyhole } from 'lucide-react';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 
-import { repositoryPagesPath } from '@/routing/repository-routes';
+import { repositoryWikiPath } from '@/routing/repository-routes';
 
 import {
   getAccessibleRepositoryRoute,
@@ -26,7 +26,7 @@ export async function generateMetadata({ params }: RepositoryPageProps): Promise
 export default async function RepositoryPage({ params }: RepositoryPageProps) {
   const { ownerSlug, repositorySlug } = await params;
   const route = await requireAccessibleRepositoryRoute(ownerSlug, repositorySlug);
-  const pagesPath = repositoryPagesPath(route);
+  const wikiPath = repositoryWikiPath(route);
   const VisibilityIcon = route.repository.visibility === 'public' ? Globe2 : LockKeyhole;
 
   return (
@@ -55,11 +55,11 @@ export default async function RepositoryPage({ params }: RepositoryPageProps) {
           <CardContent className='p-0'>
             <Link
               className='flex items-center gap-3 px-5 py-4 outline-none transition-colors hover:bg-accent/50 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset sm:px-6'
-              href={pagesPath}
+              href={wikiPath}
             >
               <FileText aria-hidden='true' className='size-5 shrink-0 text-muted-foreground' />
               <span className='min-w-0 flex-1'>
-                <span className='block text-sm font-semibold'>Pages</span>
+                <span className='block text-sm font-semibold'>Wiki</span>
                 <span className='block text-sm text-muted-foreground'>
                   Create and maintain shared Repository knowledge.
                 </span>

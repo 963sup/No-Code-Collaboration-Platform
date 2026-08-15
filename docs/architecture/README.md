@@ -22,7 +22,7 @@ GitHub supplies mature collaboration, ownership, organization, authorization, UR
 10. No bounded context, service, datastore, integration, or generic abstraction exists until necessity and lifecycle ownership are demonstrated.
 11. Turbo projects coarse workspace architecture from actual pnpm package dependencies; ontology labels do not create packages.
 12. `packages/domain` owns business truth and pure decision logic.
-13. `packages/application` owns use cases and provider-neutral Ports.
+13. `packages/dashboardlication` owns use cases and provider-neutral Ports.
 14. `packages/infrastructure/supabase` implements Ports and owns provider clients, DTO mapping, SQL-facing projections, and generated database types.
 15. `apps/web` owns delivery/composition only; provider wiring is limited to `apps/web/src/composition`.
 16. `packages/ui` owns presentation primitives and cannot define Product semantics.
@@ -34,9 +34,9 @@ GitHub supplies mature collaboration, ownership, organization, authorization, UR
 22. Page is the first accepted Resource kind. Its command contract requires Domain Capability decision, independent RLS, exact content semantics, optimistic concurrency, and required same-transaction historical evidence.
 23. Issue and Discussion are dedicated Repository-contained Resource lifecycles. Both use Repository-local atomic numbers, typed state, expected-version commands, Capability decisions, and same-transaction Activity Evidence; their subtype tables and relationships must not weaken the Page envelope.
 24. Shared Resource persistence remains acceptable for Page only while its exact subtype invariants remain explicit; Issue must not weaken the Page envelope into a generic JSON bucket.
-25. Canonical human Repository routes use the globally unambiguous Owner/Repository namespace; route resolution produces stable Repository UUID for Application authorization/RLS/evidence.
+25. Canonical human routing uses the globally unambiguous shared User/Organization Owner namespace; /{ownerSlug} resolves Owner kind and stable identity, while /{ownerSlug}/{repositorySlug} resolves stable Repository UUID for Application authorization/RLS/evidence.
 26. `Resource` is a Domain abstraction, not a required public URL segment. Concrete accepted Resource kinds own product navigation surfaces.
-27. Stable-ID Repository compatibility routes may redirect only after access-aware resolution and must not own a second Repository UI.
+27. Stable Repository IDs remain internal authorization/data identities; no public stable-ID compatibility namespace exists without a demonstrated backward-compatibility obligation.
 28. Accepted Page writes enter PostgreSQL through command-specific `SECURITY INVOKER` RPCs; raw authenticated table writes are not an alternate Page command API.
 29. Repository authority resolution is owner-neutral: callers supply stable Actor + Repository identity; authority resolves personal ownership, Organization governance, direct Grant, visibility, and future constraints.
 30. Current Repository visibility is `private | public`; no other visibility state is accepted without explicit effective-access semantics.
@@ -56,7 +56,7 @@ apps/web
    ├──────────────> packages/ui
    │
    ▼
-packages/application
+packages/dashboardlication
    │
    ▼
 packages/domain
@@ -135,96 +135,87 @@ Capability remains decision truth; a highest Role can only be an explanation pro
 
 ## Canonical Repository Web architecture
 
-The target Web hierarchy normalizes GitHub's observed aliases before composing Repository routes:
+The Web executable route tree preserves admitted GitHub URL/IA instead of inventing provider-neutral aliases. Domain vocabulary and URL vocabulary remain separate when the mature URL solves a presentation problem independently from Git or Code.
 
 ```text
-/app                                      # authenticated discovery; GitHub `/dashboard` is not copied
-/repositories                             # Repository discovery; not GitHub `/repos`
-/issues?scope=assigned                    # actor inbox Projection; `assigned` is query state
-/projects                                 # planning discovery Projection
-/discussions                              # discussion discovery Projection
-/notifications                            # actor delivery Projection
-/search?q=&type=&owner=&repository=&status=&sort=&page= # authorized no-code search
-/explore?sort=&ownerType=&artifact=&page= # public Repository discovery only
-/integrations?category=&page=             # reviewed metadata catalog only
-/organizations/{organizationSlug}/...     # one governance hierarchy; no split `/orgs` namespace
-/settings/profile                         # actor profile management
-/settings/organizations                   # Organization membership management
-/settings/enterprises                     # Enterprise relationship projection; not Enterprise identity
-/settings/appearance                      # presentation preferences
-/settings/accessibility                   # accessibility preferences
-/settings/billing                         # billing/subscription management
-/settings/integrations                    # catalog plus explicit deferred connection state
-```
+/dashboard                              # authenticated personal dashboard
+/repos                                  # authenticated Repository discovery
+/issues                                 # entry alias
+/issues/assigned                        # authenticated assigned-Issue inbox
+/projects                               # planning Projection
+/discussions                            # discussion discovery
+/notifications                          # actor delivery Projection
+/search?q=&type=&owner=&repository=&status=&sort=&page=
+/explore?sort=&ownerType=&artifact=&page=
+/marketplace?category=&page=
 
-Repository creation/import and Organization creation are Process entry routes, not stable resource identities. Sign-out is a command, not a bookmarkable resource. Project detail, Team detail, Enterprise identity, App/Installation, OAuth, credential, and connector-execution routes are not established in this milestone. Their absence is a product decision, not an implementation unknown.
-
-Product URL:
-
-```text
-/{ownerSlug}/{repositorySlug}
+/{ownerSlug}                             # shared User/Organization public identity
+/{ownerSlug}?tab=repositories|stars|projects
+/{ownerSlug}/{repositorySlug}            # Repository identity
 /{ownerSlug}/{repositorySlug}/issues
 /{ownerSlug}/{repositorySlug}/issues/{issueNumber}
 /{ownerSlug}/{repositorySlug}/projects
 /{ownerSlug}/{repositorySlug}/discussions
 /{ownerSlug}/{repositorySlug}/discussions/{discussionNumber}
-/{ownerSlug}/{repositorySlug}/pages
-/{ownerSlug}/{repositorySlug}/pages/{pageId}
+/{ownerSlug}/{repositorySlug}/wiki
+/{ownerSlug}/{repositorySlug}/wiki/{pageId}
 /{ownerSlug}/{repositorySlug}/activity
 /{ownerSlug}/{repositorySlug}/security
 /{ownerSlug}/{repositorySlug}/settings
+
+/orgs/{organizationSlug}/dashboard
+/orgs/{organizationSlug}/people
+/orgs/{organizationSlug}/teams
+/organizations/{organizationSlug}/settings/profile
+/organizations/{organizationSlug}/settings/audit-log
+/organizations/{organizationSlug}/settings/custom-properties
 ```
 
-Delivery ownership projects the canonical Repository identity without redefining it:
+Shared Owner namespace resolution is a server-side read boundary:
 
 ```text
-apps/web/src/app/
-├─ (public)/       # anonymous delivery; no authority implication
-├─ (auth)/         # identity and protocol delivery
-├─ (app)/          # authenticated discovery/dashboard
-└─ (repository)/   # canonical /{ownerSlug}/{repositorySlug} delivery
-   └─ route-specific @sidebar, @activity, or @modal only when independently justified
+/{ownerSlug}
+→ OwnerProfileReader
+→ Supabase safe Owner projection
+→ private.repository_owner_namespaces
+→ exactly one { kind: user | organization, stableOwnerId }
+→ render User or Organization identity projection
 ```
 
-Route Group names do not appear in Product URLs.
+The URL shape never determines Owner kind. The safe projection exposes only public profile fields. Repository lists under an Owner profile are separately filtered by current Repository visibility/authority; profile existence never implies visibility of private Repository content.
 
-`(app)` is authenticated-only because `/app` is Actor dashboard/discovery.
+Delivery ownership:
 
-`(repository)` is not authenticated-only. Each Repository read is visibility/authority-aware; an authenticated mutation still re-establishes Actor identity and evaluates Capability.
+```text
+apps/web/src/dashboard/
+├─ (public)/         # public static/discovery surfaces
+├─ (auth)/           # identity/protocol surfaces
+├─ (authenticated)/  # authenticated-only global GitHub-aligned surfaces
+└─ (owner)/          # shared /{ownerSlug} identity and nested Repository delivery
+   └─ [ownerSlug]/
+      ├─ page.tsx
+      └─ [repositorySlug]/
+```
+
+Route Group names do not appear in Product URLs. `(authenticated)` is access composition only. `(owner)` cannot inherit an authenticated-only wrapper because both public Owner profiles and public Repository visibility are accepted anonymous read baselines. Repository reads cannot inherit an authenticated-only wrapper when public Repository visibility is accepted.
+
+`apps/web/src/routing` owns pure URL construction/parsing. `apps/web/src/navigation` owns IA/navigation manifests. Provider wiring remains in `apps/web/src/composition`; route code never receives a raw Supabase client or generated database type.
 
 Repository shell:
 
 ```text
 Owner / Repository      Visibility
 ----------------------------------
-Overview   Issues   Projects   Discussions   Pages   Activity   Security   Settings
+Overview   Issues   Projects   Discussions   Wiki   Activity   Security   Settings
 ----------------------------------
 route-specific support | active child resource | route-specific support
 ```
 
-Supporting regions are absent when the active route does not prove a separate navigation, metadata, loading, recovery, or responsive responsibility. They are not persistent workspace panes.
+Wiki is a presentation URL over the existing Page Resource family. It does not create a Wiki Domain aggregate. Page stable IDs remain command/authorization targets even when the presentation path uses `/wiki/{pageId}`.
 
-`Context` remains a presentation concept but does not require a permanent pane. Activity is a Repository-scoped projection with a canonical route; a privacy-safe Overview summary may be composed independently only under ADR-011's removal test.
+No public stable-ID Repository compatibility namespace is currently established. Stable Repository UUIDs are internal Application/authorization/evidence identities, not human navigation. An Organization-only semantic Repository route is not a valid compatibility UI. If a future backward-compatibility obligation introduces a `legacyPath` redirect, it must perform access-aware resolution before disclosing or redirecting to canonical Owner/Repository identity and must never own a second Repository UI.
 
-ADR-011 defines the target `@sidebar`, `@activity`, and `@modal` composition. Each named slot requires a default and explicit unmatched-navigation behavior. Framework composition mechanisms do not establish new Product responsibilities merely because the framework supports them. ADR-012 owns the Issue/Discussion command and delivery-projection decision; ADR-013 owns the accepted no-code data semantic envelope.
-
-## Compatibility routing
-
-The only accepted Repository compatibility namespace is stable-ID based:
-
-```text
-/app/repositories/[repositoryId]/[[...legacyPath]]
-```
-
-It must:
-
-1. perform access-aware resolution of the Repository before any redirect;
-2. avoid leaking inaccessible private Repository names;
-3. translate only supported child destinations;
-4. redirect to the canonical Owner/Repository URL; and
-5. contain no Repository presentation, business flow, or provider query tree beyond the redirect boundary.
-
-An Organization-only semantic Repository route is not a valid compatibility UI because it encodes a false mandatory-owner assumption.
+Creation remains `/new`. Organization creation remains `/organizations/new`; GitHub's intervening commercial plan-selection URL is intentionally not copied while Billing/Licensing is deferred.
 
 ## Page collaboration boundary
 
@@ -255,7 +246,7 @@ Delivery responsibilities:
 src/routing/auth-routes.ts
 = identity URL classification and safe post-auth destination policy
 
-src/app/(auth)/**
+src/dashboard/(auth)/**
 = human/protocol identity delivery surfaces
 
 src/composition/**
@@ -330,7 +321,7 @@ Minimum Repository browser journey:
 
 ```text
 verified Actor
-→ /app dashboard
+→ /dashboard dashboard
 → click Repository card
 → /{owner}/{repository}
 → Pages

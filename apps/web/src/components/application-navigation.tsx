@@ -51,7 +51,8 @@ export function ApplicationNavigationList({ onNavigate }: { readonly onNavigate?
       {navigationItems().map((surface) => {
         const Icon = icons[surface.id as keyof typeof icons] ?? Boxes;
         const path = surface.href.split('?')[0];
-        const active = pathname === path || (path !== '/dashboard' && pathname.startsWith(`${path}/`));
+        const active =
+          pathname === path || (path !== '/dashboard' && pathname.startsWith(`${path}/`));
         return (
           <Link
             aria-current={active ? 'page' : undefined}

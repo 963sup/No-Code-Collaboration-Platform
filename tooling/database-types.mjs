@@ -35,23 +35,42 @@ if (!dbUrlLine) {
 }
 
 const dbUrl = dbUrlLine.slice('DB_URL='.length).replace(/^"|"$/gu, '');
-const result = spawnSync(
-  process.execPath,
-  [supabaseCliPath, 'gen', 'types', 'typescript', '--db-url', dbUrl],
-  {
-    cwd: process.cwd(),
-    encoding: 'utf8',
-    timeout: 120_000,
-    windowsHide: true
-  }
-);
+const maxGenerationAttempts = 3;
 
-if (result.status !== 0) {
-  process.stderr.write(result.stderr || result.stdout);
-  process.exit(result.status ?? 1);
+function generateTypes() {
+  for (let attempt = 1; attempt <= maxGenerationAttempts; attempt += 1) {
+    const result = spawnSync(
+      process.execPath,
+      [supabaseCliPath, 'gen', 'types', 'typescript', '--db-url', dbUrl],
+      {
+        cwd: process.cwd(),
+        encoding: 'utf8',
+        timeout: 120_000,
+        windowsHide: true
+      }
+    );
+
+    if (result.status === 0) return result.stdout.replaceAll('\r\n', '\n');
+
+    const failure = `${result.stderr ?? ''}\n${result.stdout ?? ''}`;
+    const registryRateLimited =
+      failure.includes('toomanyrequests') || failure.includes('Rate exceeded');
+
+    if (!registryRateLimited || attempt === maxGenerationAttempts) {
+      process.stderr.write(result.stderr || result.stdout);
+      process.exit(result.status ?? 1);
+    }
+
+    process.stderr.write(
+      `Supabase database-type generation hit a container-registry rate limit; retrying (${attempt}/${maxGenerationAttempts}).\n`
+    );
+    Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, attempt * 5_000);
+  }
+
+  throw new Error('Unreachable database-type generation state.');
 }
 
-const generated = result.stdout.replaceAll('\r\n', '\n');
+const generated = generateTypes();
 
 if (mode === 'write') {
   writeFileSync(outputPath, generated);

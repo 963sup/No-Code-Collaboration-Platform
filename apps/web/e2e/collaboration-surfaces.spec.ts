@@ -4,7 +4,7 @@ const repositoryPath = '/demo-organization/demo-repository';
 
 test.setTimeout(120_000);
 
-async function signIn(page: Page, destination = '/app') {
+async function signIn(page: Page, destination = '/dashboard') {
   await page.goto(`/sign-in?next=${encodeURIComponent(destination)}`);
   await page.getByLabel('Email').fill('sup@a-i.tw');
   await page.getByLabel('Password').fill('Aa12341234');
@@ -21,41 +21,41 @@ test('accepted breadth surfaces expose truthful availability without code-produc
 }) => {
   test.setTimeout(240_000);
   const surfaces = [
-    { availability: 'preview', path: '/repositories', title: 'Repositories' },
-    { availability: 'preview', path: '/issues', title: 'Issues' },
+    { availability: 'preview', path: '/repos', title: 'Repositories' },
+    { availability: 'preview', path: '/issues/assigned', title: 'Issues assigned to you' },
     { availability: 'live', path: '/projects', title: 'Projects' },
     { availability: 'preview', path: '/discussions', title: 'Discussions' },
     { availability: 'live', path: '/notifications', title: 'Notifications' },
     { availability: 'live', path: '/search', title: 'Search' },
     { availability: 'live', path: '/explore', title: 'Explore' },
-    { availability: 'preview', path: '/integrations?category=mcp', title: 'Integrations' },
+    { availability: 'preview', path: '/marketplace?category=mcp', title: 'Marketplace' },
     { availability: 'live', path: `${repositoryPath}/projects`, title: 'Projects' },
     { availability: 'live', path: `${repositoryPath}/discussions`, title: 'Discussions' },
     { availability: 'preview', path: `${repositoryPath}/security`, title: 'Security' },
     { availability: 'preview', path: `${repositoryPath}/settings`, title: 'Settings' },
     { availability: 'preview', path: '/settings/profile', title: 'Profile' },
     { availability: 'deferred', path: '/settings/enterprises', title: 'Enterprise' },
-    { availability: 'deferred', path: '/settings/integrations', title: 'Integration' },
+    { availability: 'deferred', path: '/settings/installations', title: 'Installed Apps' },
     {
       availability: 'preview',
-      path: '/organizations/demo-organization/members',
-      title: 'Organization members'
+      path: '/orgs/demo-organization/people',
+      title: 'People'
     },
     {
       availability: 'deferred',
-      path: '/organizations/demo-organization/teams',
-      title: 'Organization teams'
+      path: '/orgs/demo-organization/teams',
+      title: 'Teams'
     },
     {
       availability: 'preview',
-      path: '/organizations/demo-organization/audit-log',
+      path: '/organizations/demo-organization/settings/audit-log',
       title: 'Organization audit log'
     }
   ] as const;
 
   for (const surface of surfaces) {
     await page.goto(surface.path);
-    await expect(page.getByRole('heading', { level: 1 })).toContainText(surface.title);
+    await expect(page.getByRole('heading', { level: 1 }).last()).toContainText(surface.title);
     await expect(page.getByText(surface.availability, { exact: true }).last()).toBeVisible();
   }
 
@@ -67,18 +67,23 @@ test('accepted breadth surfaces expose truthful availability without code-produc
   }
 });
 
-test('surface query state normalizes to canonical no-code URLs', async ({ page }) => {
+test('surface query state normalizes without rewriting GitHub-aligned route identity', async ({
+  page
+}) => {
   await page.goto('/search?sort=bogus&page=0&code=true');
   await expect(page).toHaveURL('/search');
 
-  await page.goto('/issues?scope=bogus&page=-2&status=bogus&code=true');
-  await expect(page).toHaveURL('/issues');
+  await page.goto('/issues/assigned?page=-2&status=bogus&code=true');
+  await expect(page).toHaveURL('/issues/assigned');
 
-  await page.goto('/integrations?category=mcp&page=1');
-  await expect(page).toHaveURL('/integrations?category=mcp');
+  await page.goto('/marketplace?category=mcp&page=1');
+  await expect(page).toHaveURL('/marketplace?category=mcp');
+
+  await page.goto('/issues');
+  await expect(page).toHaveURL('/issues/assigned');
 });
 
-test('App shell remains usable at all acceptance viewports and Context does not grant authority', async ({
+test('authenticated shell remains usable at all acceptance viewports and Context does not grant authority', async ({
   page
 }) => {
   for (const viewport of [
@@ -88,7 +93,7 @@ test('App shell remains usable at all acceptance viewports and Context does not 
     { height: 844, name: 'mobile', width: 390 }
   ]) {
     await page.setViewportSize(viewport);
-    await page.goto('/app');
+    await page.goto('/dashboard');
     if (viewport.name === 'mobile') {
       await page.getByRole('button', { name: 'Open navigation' }).click();
     }
@@ -102,6 +107,7 @@ test('App shell remains usable at all acceptance viewports and Context does not 
     page.getByText('Context filters navigation only. It never changes effective authorization.')
   ).toBeVisible();
   await page.getByRole('menuitem', { name: 'All accessible repositories' }).click();
+  await expect(page).toHaveURL('/dashboard');
   await page.goto(repositoryPath);
   await expect(page.getByRole('heading', { name: 'Demo Repository', exact: true })).toBeVisible();
 });

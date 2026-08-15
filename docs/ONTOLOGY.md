@@ -142,23 +142,26 @@ Invariants:
 4. User-owned and Organization-owned Repositories use the same collaboration semantics.
 5. A future transfer lifecycle must preserve stable Repository and contained Resource identities.
 
-## 6. Owner Namespace — human routing identity
+## 6. Owner Namespace — shared User/Organization routing identity
 
 Status: **Canonical routing requirement.**
 
 ```text
+/{ownerSlug}
+/{ownerSlug}?tab=repositories|stars|projects
 /{ownerSlug}/{repositorySlug}
 ```
 
-`ownerSlug` resolves either:
+`ownerSlug` resolves exactly one persisted Owner namespace entry:
 
 ```text
-User username
+ownerSlug
+→ User username
 or
-Organization slug
+→ Organization slug
 ```
 
-The namespace is globally unambiguous across both Owner kinds.
+User and Organization intentionally share one globally unambiguous top-level URL grammar. The URL shape never determines kind; Owner Namespace Resolution returns `kind: user | organization` plus stable identity. Bare `/{ownerSlug}` is Overview. The `tab` query changes Presentation Context only and never changes identity, ownership, Principal resolution, Membership, or authorization.
 
 ```text
 ownerSlug
@@ -168,7 +171,7 @@ ownerSlug
 ≠ authorization fact
 ```
 
-Repository slug is unique within one Owner namespace.
+Repository slug is unique within one Owner namespace. `/orgs/{slug}/...` and `/organizations/{slug}/settings/...` are operational/governance surfaces for an Organization, not alternative Organization profile identities.
 
 ## 7. Repository — primary No-Code Collaboration Container
 
