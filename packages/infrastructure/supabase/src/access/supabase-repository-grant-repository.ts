@@ -12,6 +12,8 @@ type DirectGrantRow =
   Database['public']['Functions']['list_repository_direct_grants']['Returns'][number];
 type GrantTargetRow =
   Database['public']['Functions']['find_repository_grant_target_by_username']['Returns'][number];
+type GrantCommandArgs =
+  Database['public']['Functions']['execute_repository_grant_command']['Args'];
 
 const accessDeniedCodes = new Set(['42501', 'PGRST301']);
 
@@ -63,12 +65,20 @@ export class SupabaseRepositoryGrantRepository implements RepositoryGrantReposit
     readonly repositoryId: string;
     readonly targetUserId: string;
   }): Promise<RepositoryGrantMutationPersistenceResult> {
-    const { data, error } = await this.client.rpc('execute_repository_grant_command', {
+    // PostgreSQL uses NULL here as part of the Grant state machine: expected NULL means
+    // "Grant absent" and proposed NULL means "revoke". The generated Supabase RPC Args
+    // projection does not express SQL function-argument nullability, so keep that projection
+    // mismatch contained at this provider adapter boundary rather than inventing a Product sentinel.
+    const commandArgs = {
       expected_role: input.expectedRole,
       proposed_role: input.proposedRole,
       target_repository_id: input.repositoryId,
       target_user_id: input.targetUserId
-    });
+    } as unknown as GrantCommandArgs;
+    const { data, error } = await this.client.rpc(
+      'execute_repository_grant_command',
+      commandArgs
+    );
 
     if (error) {
       if (accessDeniedCodes.has(error.code)) return { ok: false, reason: 'forbidden' };
