@@ -53,7 +53,7 @@ export class GetRepositoryGrantManagement {
     });
     if (!access) return { ok: false, reason: 'repository-unavailable' };
 
-    const actorRole = effectiveRepositoryRole(access.sources);
+    const actorRole = effectiveRepositoryRole(access);
     if (actorRole === null || !hasRepositoryCapability(actorRole, 'member.manage')) {
       return { ok: false, reason: 'forbidden' };
     }
