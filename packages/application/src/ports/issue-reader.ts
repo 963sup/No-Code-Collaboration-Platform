@@ -2,7 +2,7 @@ import type {
   IssueDetail,
   IssueStatus,
   IssueSummary
-} from '@no-code-collaboration-platform/domain';
+} from '@no-code-collaboration-platform/domain/resource';
 
 export type IssueStatusFilter = IssueStatus | 'all';
 

@@ -3,7 +3,7 @@ import type {
   PageDraft,
   PageSummary,
   PageUpdate
-} from '@no-code-collaboration-platform/domain';
+} from '@no-code-collaboration-platform/domain/resource';
 
 export interface AccessiblePageQuery {
   readonly pageId: string;

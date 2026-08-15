@@ -1,7 +1,7 @@
 import type {
   OrganizationDraft,
   OrganizationSummary
-} from '@no-code-collaboration-platform/domain';
+} from '@no-code-collaboration-platform/domain/organization';
 
 export type OrganizationPersistenceResult =
   | { readonly ok: true; readonly organization: OrganizationSummary }

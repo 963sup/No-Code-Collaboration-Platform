@@ -1,4 +1,5 @@
-import type { OrganizationRole, RepositoryOwner } from '@no-code-collaboration-platform/domain';
+import type { OrganizationRole } from '@no-code-collaboration-platform/domain/access';
+import type { RepositoryOwner } from '@no-code-collaboration-platform/domain/repository';
 
 export interface RepositoryCreationOwner {
   readonly name: string;

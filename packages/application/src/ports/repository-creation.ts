@@ -1,4 +1,7 @@
-import type { RepositoryDraft, RepositorySummary } from '@no-code-collaboration-platform/domain';
+import type {
+  RepositoryDraft,
+  RepositorySummary
+} from '@no-code-collaboration-platform/domain/repository';
 
 export type RepositoryPersistenceResult =
   | { readonly ok: true; readonly repository: RepositorySummary }

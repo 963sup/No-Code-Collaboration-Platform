@@ -1,4 +1,4 @@
-import type { RepositorySummary } from '@no-code-collaboration-platform/domain';
+import type { RepositorySummary } from '@no-code-collaboration-platform/domain/repository';
 
 export interface RepositoryRouteKey {
   readonly ownerSlug: string;

@@ -3,7 +3,7 @@ import type {
   DiscussionDetail,
   DiscussionStatus,
   DiscussionSummary
-} from '@no-code-collaboration-platform/domain';
+} from '@no-code-collaboration-platform/domain/resource';
 
 export interface AccessibleDiscussionQuery {
   readonly discussionNumber: number;

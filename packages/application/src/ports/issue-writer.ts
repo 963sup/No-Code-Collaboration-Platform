@@ -1,4 +1,4 @@
-import type { IssueCommand, IssueDetail } from '@no-code-collaboration-platform/domain';
+import type { IssueCommand, IssueDetail } from '@no-code-collaboration-platform/domain/resource';
 
 export type IssueCommandPersistenceResult =
   | { readonly issue: IssueDetail; readonly ok: true }

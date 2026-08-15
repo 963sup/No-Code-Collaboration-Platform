@@ -1,4 +1,4 @@
-import type { RepositorySummary } from '@no-code-collaboration-platform/domain';
+import type { RepositorySummary } from '@no-code-collaboration-platform/domain/repository';
 
 export interface RepositoryReader {
   findAccessibleRepositoryById(repositoryId: string): Promise<RepositorySummary | null>;

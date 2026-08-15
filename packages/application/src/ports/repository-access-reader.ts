@@ -1,4 +1,4 @@
-import type { RepositoryAuthoritySources } from '@no-code-collaboration-platform/domain';
+import type { RepositoryAuthoritySources } from '@no-code-collaboration-platform/domain/access';
 
 export interface RepositoryAccessQuery {
   readonly actorId: string;
