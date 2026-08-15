@@ -1,6 +1,9 @@
 'use server';
 
-import { CreateRepository } from '@no-code-collaboration-platform/application';
+import {
+  CreateRepository,
+  RepositoryCreationAccessPolicy
+} from '@no-code-collaboration-platform/application';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { z } from 'zod';
@@ -40,9 +43,10 @@ export async function createRepository(formData: FormData) {
       ? { kind: 'user' as const, userId: parsed.data.ownerId }
       : { kind: 'organization' as const, organizationId: parsed.data.ownerId };
   const services = await createRequestServices();
+  const accessPolicy = new RepositoryCreationAccessPolicy(services.repositoryCreationAccessReader);
   const result = await new CreateRepository(
     services.identityProvider,
-    services.repositoryCreationOwnerReader,
+    accessPolicy,
     services.repositoryWriter
   )
     .execute({

@@ -91,15 +91,17 @@ Current branch now implements the corrected target through these concrete projec
 - `packages/application/src/ports/repository-access-reader.ts` accepts stable `actorId + repositoryId`; the old Organization-specific authority Port is removed.
 - `packages/infrastructure/supabase/src/access/supabase-repository-access-reader.ts` reads owner-neutral direct/governance sources.
 - `supabase/schemas/30_repository.sql` models exactly one `owner_user_id XOR owner_organization_id`; the legacy `organization_id` ownership column is absent from current desired state.
-- `supabase/schemas/91_repository_access_projection.sql` declares owner-neutral authority-source projection.
+- `packages/domain/src/access/repository-creation-policy.ts` defines the pre-identity, Owner-scoped `repository.create` decision independently of Repository Role bundles.
+- `packages/application/src/policies/repository-creation-access-policy.ts` authorizes a requested typed Owner before the Repository command validates creation mechanics.
+- `supabase/schemas/91_repository_access_projection.sql` declares owner-neutral authority-source projection and the database projection of the Owner-scoped creation policy.
 - `supabase/schemas/95_repository_routing.sql` resolves one global User/Organization Owner namespace.
 - `supabase/schemas/26_repository_owner_namespace_guardrails.sql` reserves command-route segments, including `organizations`, so canonical Repository identity cannot collide with `/organizations/new`.
-- `supabase/schemas/99_rls.sql` has separate personal-owner and Organization-admin Repository creation policies and no Organization-only owner field.
+- `supabase/schemas/99_rls.sql` has one Repository INSERT Access Policy that permits the matching personal Owner or an Organization owner/admin, rejects an ordinary member, and preserves Actor attribution.
 - `supabase/schemas/30_repository.sql` is the current ownership truth, and `supabase/migrations/20260814190012_local_development_baseline.sql` replays it without the historical compatibility column.
 - `apps/web/src/app/(repository)/[ownerSlug]/[repositorySlug]/**` is the only Repository UI tree; the obsolete Organization-only tree has been removed.
 - `apps/web/src/routing/repository-routes.ts` builds canonical `/{owner}/{repository}` URLs; `/app` remains dashboard/discovery.
-- `packages/application/src/commands/create-repository.ts` authenticates the Actor, restricts the selected typed Owner to namespaces returned by the Repository-creation Owner Port, and validates the Repository draft through Domain rules before persistence.
-- `packages/infrastructure/supabase/src/repositories/supabase-repository-creation.ts` lists the Actor's personal namespace plus Organization namespaces where the Actor is an admin/owner, then performs a regular authenticated-session INSERT whose RLS policy independently enforces the same boundary.
+- `packages/application/src/commands/create-repository.ts` authenticates the Actor, requires an Owner authorized by the Access Policy, and then validates the Repository draft through Domain rules before persistence.
+- `packages/infrastructure/supabase/src/access/supabase-repository-creation-access-reader.ts` returns personal Owner and all Organization Membership-role facts without deciding policy; `packages/infrastructure/supabase/src/repositories/supabase-repository-creation.ts` only performs the authenticated-session INSERT.
 - `packages/domain/src/organization/organization.ts` and `packages/application/src/commands/create-organization.ts` validate Organization identity and attribute the creation command to the authenticated Actor without treating Organization as an Actor or collaboration Container.
 - `packages/infrastructure/supabase/src/organizations/supabase-organization-creation.ts` performs the ordinary authenticated INSERT; the shared `organization_created_owner` trigger atomically establishes the global Owner namespace and founder-owner Membership for both Product-created and deterministic Demo Organizations.
 - `apps/web/src/app/(app)/organizations/new/**` implements the accepted creation Process entry route and hands the newly created Organization to `/new` as a validated Owner selection.
@@ -130,7 +132,7 @@ Until closure:
 
 - PR #27 remains Draft and must not be represented as production-ready while this gap is Open.
 - `/organizations/new` creates only an Actor-attributed Organization and relies on the database trigger for its founder-owner relationship; no Demo-only or delivery-only authority shortcut exists.
-- `/new` accepts only personal or current Organization admin/owner namespaces returned for the authenticated Actor; stale or forged authority fails closed in the Application use case and database RLS.
+- `/new` projects only typed Owner scopes accepted by the Domain Access Policy; stale or forged authority fails closed in the Application use case and the same-semantics database RLS policy.
 - Generated database types remain projections; stale checked-in output is treated as a verification failure, never as Product truth.
 
 #### Closure evidence
@@ -143,7 +145,7 @@ Close only after the same exact PR head proves all of the following:
 4. Personal Owner derives Repository admin without fabricated Grant; Organization admin/owner derives admin only for Organization-owned Repository; ordinary member does not.
 5. Route RPCs/adapters resolve `ownerSlug + repositorySlug` for both Owner kinds.
 6. Web canonical Repository URL is `/{ownerSlug}/{repositorySlug}`; `/app` is dashboard only; stable-ID compatibility routes redirect safely; no Organization-only Repository UI tree remains.
-7. `/new` supports personal ownership and authorized Organization ownership through explicit Application/Infrastructure contracts and RLS.
+7. `/new` supports personal ownership and authorized Organization ownership through a Domain Owner-scoped `repository.create` Access Policy, fact-only Infrastructure reader, Repository-only creation writer, and same-semantics RLS.
 8. `/organizations/new` creates an Actor-attributed Organization, atomically establishes founder ownership, and exposes it as a valid Repository Owner without treating Organization Membership as Repository access.
 9. Playwright explicitly clicks a Repository card from `/app`, verifies canonical navigation, and completes accepted Page collaboration through that route.
 10. pgTAP proves Organization bootstrap, namespace collision rejection, typed ownership, creation/authorization matrix, legacy-column absence, and visibility semantics.

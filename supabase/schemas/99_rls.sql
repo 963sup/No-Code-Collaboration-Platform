@@ -117,25 +117,18 @@ for select
 to anon, authenticated
 using ((select private.can_view_repository(id)));
 
-create policy repositories_insert_personal_owner
+create policy repositories_insert_access_policy
 on public.repositories
 for insert
 to authenticated
 with check (
   (select auth.uid()) = created_by
-  and owner_user_id = (select auth.uid())
-  and owner_organization_id is null
-);
-
-create policy repositories_insert_organization_admin
-on public.repositories
-for insert
-to authenticated
-with check (
-  (select auth.uid()) = created_by
-  and owner_user_id is null
-  and owner_organization_id is not null
-  and (select private.is_organization_admin(owner_organization_id))
+  and (
+    select private.can_create_repository_for_owner(
+      owner_user_id,
+      owner_organization_id
+    )
+  )
 );
 
 create policy repositories_update_manager

@@ -21,7 +21,7 @@
 - `.serena/memories` is this project's durable project-memory store. Keep only verified, stable, cross-task project facts that are expensive to rediscover.
 - Project facts are distilled in place; do not append task logs, transient status, credentials, workstation preferences, or speculative conclusions.
 - Codex local memory owns cross-project workstation and operating habits only. It must not duplicate or override Product, Domain, Architecture, URL, authorization, schema, or migration truth stored in this repository and Serena.
-- Follow focused memories such as `mem:database/supabase_schema_lifecycle` for detailed lifecycle contracts.
+- Follow `mem:domain/repository_creation_authority` for the Repository-create ownership and authorization contract, and `mem:database/supabase_schema_lifecycle` for detailed database lifecycle contracts.
 
 ## Verification commands
 

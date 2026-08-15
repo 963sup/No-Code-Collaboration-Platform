@@ -3,23 +3,26 @@ import { describe, expect, it, vi } from 'vitest';
 import {
   CreateRepository,
   ListRepositoryCreationOwners,
+  RepositoryCreationAccessPolicy,
   type IdentityProvider,
-  type RepositoryCreationOwner,
-  type RepositoryCreationOwnerReader,
+  type RepositoryCreationAccessReader,
+  type RepositoryCreationOwnerCandidate,
   type RepositoryWriter
 } from '../src/index';
 
 const personalOwner = {
   name: 'Actor',
+  organizationRole: null,
   owner: { kind: 'user' as const, userId: 'user-1' },
   slug: 'actor'
-} satisfies RepositoryCreationOwner;
+} satisfies RepositoryCreationOwnerCandidate;
 
 const organizationOwner = {
   name: 'Operations',
+  organizationRole: 'owner' as const,
   owner: { kind: 'organization' as const, organizationId: 'organization-1' },
   slug: 'operations'
-} satisfies RepositoryCreationOwner;
+} satisfies RepositoryCreationOwnerCandidate;
 
 function createIdentityProvider(actorId: string | null): IdentityProvider {
   return {
@@ -54,14 +57,20 @@ function createIdentityProvider(actorId: string | null): IdentityProvider {
   };
 }
 
-function createOwnerReader(
-  owners: readonly RepositoryCreationOwner[] = [personalOwner, organizationOwner]
-): RepositoryCreationOwnerReader {
+function createAccessReader(
+  candidates: readonly RepositoryCreationOwnerCandidate[] = [personalOwner, organizationOwner]
+): RepositoryCreationAccessReader {
   return {
-    async listCreatableRepositoryOwners() {
-      return owners;
+    async listRepositoryCreationOwnerCandidates() {
+      return candidates;
     }
   };
+}
+
+function createAccessPolicy(
+  candidates: readonly RepositoryCreationOwnerCandidate[] = [personalOwner, organizationOwner]
+) {
+  return new RepositoryCreationAccessPolicy(createAccessReader(candidates));
 }
 
 function successfulWriter(): RepositoryWriter {
@@ -84,18 +93,38 @@ function successfulWriter(): RepositoryWriter {
 
 describe('Repository creation', () => {
   it('does not expose creation owners without an authenticated Actor', async () => {
-    const listCreatableRepositoryOwners = vi.fn();
-    const query = new ListRepositoryCreationOwners(createIdentityProvider(null), {
-      listCreatableRepositoryOwners
-    });
+    const listRepositoryCreationOwnerCandidates = vi.fn();
+    const query = new ListRepositoryCreationOwners(
+      createIdentityProvider(null),
+      new RepositoryCreationAccessPolicy({ listRepositoryCreationOwnerCandidates })
+    );
 
     await expect(query.execute()).resolves.toEqual([]);
-    expect(listCreatableRepositoryOwners).not.toHaveBeenCalled();
+    expect(listRepositoryCreationOwnerCandidates).not.toHaveBeenCalled();
+  });
+
+  it('lists only Owner scopes accepted by Access Policy', async () => {
+    const memberCandidate = {
+      ...organizationOwner,
+      name: 'Member Organization',
+      organizationRole: 'member' as const,
+      owner: { kind: 'organization' as const, organizationId: 'organization-2' },
+      slug: 'member-organization'
+    };
+    const query = new ListRepositoryCreationOwners(
+      createIdentityProvider('user-1'),
+      createAccessPolicy([personalOwner, organizationOwner, memberCandidate])
+    );
+
+    await expect(query.execute()).resolves.toEqual([
+      { name: 'Actor', owner: personalOwner.owner, slug: 'actor' },
+      { name: 'Operations', owner: organizationOwner.owner, slug: 'operations' }
+    ]);
   });
 
   it('creates a personal Repository through a typed owner contract', async () => {
     const createRepository = vi.fn(successfulWriter().createRepository);
-    const useCase = new CreateRepository(createIdentityProvider('user-1'), createOwnerReader(), {
+    const useCase = new CreateRepository(createIdentityProvider('user-1'), createAccessPolicy(), {
       createRepository
     });
 
@@ -124,7 +153,7 @@ describe('Repository creation', () => {
   it('accepts an Organization returned by the governance-aware owner reader', async () => {
     const useCase = new CreateRepository(
       createIdentityProvider('user-1'),
-      createOwnerReader(),
+      createAccessPolicy(),
       successfulWriter()
     );
 
@@ -142,11 +171,12 @@ describe('Repository creation', () => {
     });
   });
 
-  it('fails closed before persistence for an unavailable Owner', async () => {
+  it('fails closed before persistence when Access Policy rejects the Owner scope', async () => {
     const createRepository = vi.fn();
+    const memberCandidate = { ...organizationOwner, organizationRole: 'member' as const };
     const useCase = new CreateRepository(
       createIdentityProvider('user-1'),
-      createOwnerReader([personalOwner]),
+      createAccessPolicy([personalOwner, memberCandidate]),
       { createRepository }
     );
 
@@ -162,7 +192,7 @@ describe('Repository creation', () => {
   });
 
   it('preserves an RLS rejection when authority changes after the owner read', async () => {
-    const useCase = new CreateRepository(createIdentityProvider('user-1'), createOwnerReader(), {
+    const useCase = new CreateRepository(createIdentityProvider('user-1'), createAccessPolicy(), {
       async createRepository() {
         return { ok: false, reason: 'forbidden' };
       }
@@ -181,7 +211,7 @@ describe('Repository creation', () => {
   it('reports invalid fields and owner-scoped slug collisions without provider leakage', async () => {
     const invalidUseCase = new CreateRepository(
       createIdentityProvider('user-1'),
-      createOwnerReader(),
+      createAccessPolicy(),
       successfulWriter()
     );
     await expect(
@@ -195,7 +225,7 @@ describe('Repository creation', () => {
 
     const collisionUseCase = new CreateRepository(
       createIdentityProvider('user-1'),
-      createOwnerReader(),
+      createAccessPolicy(),
       {
         async createRepository() {
           return { ok: false, reason: 'slug-taken' };

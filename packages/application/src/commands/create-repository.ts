@@ -5,11 +5,8 @@ import {
 } from '@no-code-collaboration-platform/domain';
 
 import type { IdentityProvider } from '../ports/identity-provider';
-import type {
-  RepositoryCreationOwner,
-  RepositoryCreationOwnerReader,
-  RepositoryWriter
-} from '../ports/repository-creation';
+import type { RepositoryWriter } from '../ports/repository-creation';
+import type { RepositoryCreationAccessPolicy } from '../policies/repository-creation-access-policy';
 
 export interface CreateRepositoryInput {
   readonly description?: string | null;
@@ -36,25 +33,10 @@ export type CreateRepositoryResult =
       readonly reason: CreateRepositoryFailureReason;
     };
 
-function sameOwner(left: RepositoryOwner, right: RepositoryOwner): boolean {
-  if (left.kind === 'user' && right.kind === 'user') return left.userId === right.userId;
-  if (left.kind === 'organization' && right.kind === 'organization') {
-    return left.organizationId === right.organizationId;
-  }
-  return false;
-}
-
-function findRequestedOwner(
-  owners: readonly RepositoryCreationOwner[],
-  requestedOwner: RepositoryOwner
-) {
-  return owners.find(({ owner }) => sameOwner(owner, requestedOwner));
-}
-
 export class CreateRepository {
   public constructor(
     private readonly identityProvider: IdentityProvider,
-    private readonly ownerReader: RepositoryCreationOwnerReader,
+    private readonly accessPolicy: RepositoryCreationAccessPolicy,
     private readonly repositoryWriter: RepositoryWriter
   ) {}
 
@@ -62,8 +44,7 @@ export class CreateRepository {
     const actor = await this.identityProvider.getCurrentIdentity();
     if (actor === null) return { ok: false, reason: 'unauthenticated' };
 
-    const availableOwners = await this.ownerReader.listCreatableRepositoryOwners(actor.id);
-    const selectedOwner = findRequestedOwner(availableOwners, input.owner);
+    const selectedOwner = await this.accessPolicy.authorizeOwner(actor.id, input.owner);
     if (!selectedOwner) return { ok: false, reason: 'forbidden' };
 
     const draft = createRepositoryDraft({

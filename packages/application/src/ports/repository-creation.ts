@@ -1,18 +1,4 @@
-import type {
-  RepositoryDraft,
-  RepositoryOwner,
-  RepositorySummary
-} from '@no-code-collaboration-platform/domain';
-
-export interface RepositoryCreationOwner {
-  readonly name: string;
-  readonly owner: RepositoryOwner;
-  readonly slug: string;
-}
-
-export interface RepositoryCreationOwnerReader {
-  listCreatableRepositoryOwners(actorId: string): Promise<readonly RepositoryCreationOwner[]>;
-}
+import type { RepositoryDraft, RepositorySummary } from '@no-code-collaboration-platform/domain';
 
 export type RepositoryPersistenceResult =
   | { readonly ok: true; readonly repository: RepositorySummary }

@@ -6,7 +6,7 @@ import type {
   PageReader,
   PageWriter,
   RepositoryAccessReader,
-  RepositoryCreationOwnerReader,
+  RepositoryCreationAccessReader,
   RepositoryReader,
   RepositoryRouteReader,
   RepositoryWriter
@@ -14,12 +14,13 @@ import type {
 import { createServerClient, type CookieMethodsServer } from '@supabase/ssr';
 
 import { SupabaseRepositoryAccessReader } from '../access/supabase-repository-access-reader';
+import { SupabaseRepositoryCreationAccessReader } from '../access/supabase-repository-creation-access-reader';
 import { SupabaseActivityEventReader } from '../activity/supabase-activity-event-reader';
 import type { Database } from '../generated/database.types';
 import { SupabaseIdentityProvider } from '../identity/supabase-identity-provider';
 import { SupabaseOrganizationCreation } from '../organizations/supabase-organization-creation';
 import { SupabaseOwnerRepositoryRouteReader } from '../repositories/supabase-owner-repository-route-reader';
-import { SupabaseRepositoryCreation } from '../repositories/supabase-repository-creation';
+import { SupabaseRepositoryWriter } from '../repositories/supabase-repository-creation';
 import { SupabaseRepositoryReader } from '../repositories/supabase-repository-reader';
 import { SupabasePageRepository } from '../resources/supabase-page-repository';
 import { SupabaseIssueReader } from '../resources/supabase-issue-reader';
@@ -38,7 +39,7 @@ export interface SupabaseServerAdapters {
   readonly pageReader: PageReader;
   readonly pageWriter: PageWriter;
   readonly repositoryAccessReader: RepositoryAccessReader;
-  readonly repositoryCreationOwnerReader: RepositoryCreationOwnerReader;
+  readonly repositoryCreationAccessReader: RepositoryCreationAccessReader;
   readonly repositoryReader: RepositoryReader;
   readonly repositoryRouteReader: RepositoryRouteReader;
   readonly repositoryWriter: RepositoryWriter;
@@ -51,7 +52,7 @@ export function createSupabaseServerAdapters(
     cookies: options.cookies
   });
   const pageRepository = new SupabasePageRepository(client);
-  const repositoryCreation = new SupabaseRepositoryCreation(client);
+  const repositoryWriter = new SupabaseRepositoryWriter(client);
 
   return {
     activityEventReader: new SupabaseActivityEventReader(client),
@@ -65,9 +66,9 @@ export function createSupabaseServerAdapters(
     pageReader: pageRepository,
     pageWriter: pageRepository,
     repositoryAccessReader: new SupabaseRepositoryAccessReader(client),
-    repositoryCreationOwnerReader: repositoryCreation,
+    repositoryCreationAccessReader: new SupabaseRepositoryCreationAccessReader(client),
     repositoryReader: new SupabaseRepositoryReader(client),
     repositoryRouteReader: new SupabaseOwnerRepositoryRouteReader(client),
-    repositoryWriter: repositoryCreation
+    repositoryWriter
   };
 }

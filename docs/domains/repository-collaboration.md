@@ -73,6 +73,7 @@ This contract owns:
 - Repository stable identity;
 - typed Repository ownership (`User | Organization`);
 - Owner namespace and Repository slug rules;
+- how a valid Repository creation draft is normalized, validated, and persisted after authorization;
 - Repository visibility vocabulary;
 - Repository-to-Resource containment;
 - rules for ownership transfer/archive/destructive lifecycle when accepted; and
@@ -83,7 +84,7 @@ This contract does not own:
 - authentication credential lifecycle;
 - User profile/onboarding beyond Owner namespace identity needed for routing;
 - Organization Membership lifecycle;
-- Principal Grant evaluation/Role bundles/delegation;
+- who may create under an Owner Scope, Principal Grant evaluation, Role bundles, or delegation;
 - Resource subtype content model;
 - feed/notification/analytics projections;
 - framework route composition; or
@@ -188,8 +189,10 @@ Archive, transfer, templates, restore, and destructive lifecycle remain separate
 
 ### Transition rules
 
-- Creating a personal Repository requires an authenticated User Owner with an established Owner namespace.
-- Creating an Organization-owned Repository requires an existing Organization and Actor authority to administer Repository ownership under it.
+- Before Repository identity exists, Access Authority must authorize `repository.create` against the requested typed Owner Scope.
+- After authorization, Repository creation owns the mechanics: normalize and validate name, owner-scoped slug, optional description, visibility, attribution, and persistence.
+- Creating a personal Repository requires an authenticated User Owner with an established Owner namespace; Access Policy permits only the matching User Actor.
+- Creating an Organization-owned Repository requires an existing Organization; Access Policy permits only an Organization owner/admin Actor, not an ordinary member.
 - Repository slug is unique inside the chosen Owner namespace.
 - Renaming Repository display name does not change stable identity.
 - Changing Repository slug changes human URL but not stable identity.
@@ -217,6 +220,7 @@ Archive, transfer, templates, restore, and destructive lifecycle remain separate
 14. Internal delivery prefixes such as `/app` are not Repository identity.
 15. Semantic-role classification cannot by itself create a new Domain, table, package, or persistence supertype.
 16. A benchmark feature is not admitted merely because GitHub exposes it.
+17. Repository creation mechanics cannot decide authority, and Access Policy cannot construct or persist a Repository.
 
 ## Actors, owners, principals, contexts, and permissions
 

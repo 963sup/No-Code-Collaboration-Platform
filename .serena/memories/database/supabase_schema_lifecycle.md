@@ -17,6 +17,6 @@
 ## Verified reconstruction contract
 
 - `pnpm supabase:verify` explicitly resets the local database, lints SQL, runs all pgTAP suites, and checks generated database types.
-- The consolidated baseline replay passed lint, 8 pgTAP files / 118 assertions, and generated-type consistency.
+- The consolidated baseline replay must pass lint, the current pgTAP suites, and generated-type consistency; fixed suite/assertion counts are intentionally not stored because they drift with accepted coverage.
 - The baseline must remain an exact ordered projection of `supabase/schemas/*.sql`; schema changes start in schemas, then update the baseline or add a post-freeze forward migration according to the phase rule.
 - `seed.sql` is deterministic local/test data, not schema truth or production data.

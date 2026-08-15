@@ -88,6 +88,7 @@ A User-owned Repository has no Organization governance source by implication.
 
 This contract owns:
 
+- Owner-scoped `repository.create` decisions before a Repository identity exists;
 - direct Principal-to-Repository Grant semantics;
 - ownership/governance-derived Repository authority sources;
 - Repository Role definitions as Capability bundles;
@@ -99,7 +100,7 @@ This contract owns:
 This contract does not own:
 
 - authentication credential lifecycle;
-- Repository ownership lifecycle itself;
+- Repository creation mechanics or ownership lifecycle itself;
 - Organization/Team Membership lifecycle;
 - Repository/Resource lifecycle;
 - UI navigation/selected Context;
@@ -205,6 +206,8 @@ resource.update
 member.manage
 ```
 
+`repository.create` is a current Capability on a typed `User | Organization` Owner Scope, not on an existing Repository. It is intentionally absent from Repository Role bundles: authority over Repository A cannot authorize creation of Repository B. A User may create in its own personal Owner Scope; an Organization owner/admin may create in that Organization Owner Scope; ordinary Membership does not qualify.
+
 Resource hard deletion is not an accepted Product operation. No current Role grants a `resource.delete` Capability.
 
 Role rank may help assignment/explanation while bundles remain nested. Capability remains decision truth.
@@ -226,6 +229,18 @@ Actor
 ```
 
 Application authority readers accept stable `actorId + repositoryId`; callers must not supply `organizationId` as an authorization assumption. The authority adapter resolves Repository ownership from stable Repository facts.
+
+Repository creation is the pre-identity exception and uses a different, explicit chain:
+
+```text
+Actor
+→ resolve requested typed Owner Scope
+→ collect personal ownership or Organization Membership role facts
+→ evaluate repository.create Access Policy
+→ pass only an authorized Owner to the Repository creation command
+```
+
+The Infrastructure reader returns facts, including ordinary Membership; it does not filter roles or decide policy. The Repository command owns validation and persistence mechanics only after authorization succeeds. Database RLS independently enforces the same Owner-scoped decision against the authenticated Actor.
 
 `Highest role` is an explanation projection, not canonical persisted access state.
 
@@ -256,7 +271,7 @@ Every transition evaluates:
 ## Invariants
 
 1. Valid Session proves identity only, never Repository access.
-2. Authorization targets stable Repository/Resource IDs, not owner slug, Repository slug, URL, tab, or selected Context.
+2. Authorization targets stable Repository/Resource IDs, except pre-identity Repository creation targets a stable typed Owner ID; it never targets owner slug, Repository slug, URL, tab, or selected Context.
 3. UI visibility/Context is never sole enforcement.
 4. Capability is authorization decision primitive; Role is bundle/explanation.
 5. Grant connects one Principal, one Repository, one Role.
@@ -274,6 +289,7 @@ Every transition evaluates:
 17. Collaborator/Outside Collaborator/Highest Role remain derived classifications/projections.
 18. Semantic-role classification never grants authority by itself.
 19. A Product operation that is not accepted is absent from current Capability bundles.
+20. `repository.create` is decided against an Owner Scope and never inherited from an existing Repository Role.
 
 ## Derived classifications
 
@@ -296,7 +312,7 @@ Authorization denials are decision outcomes, not automatically persistent Activi
 ## Dependencies and failure behavior
 
 - **Identity provider**: if Actor cannot be established where authentication is required, fail closed.
-- **Repository Collaboration**: ownership and target Repository/Resource must resolve by stable IDs.
+- **Repository Collaboration**: owns valid Repository creation mechanics and existing Repository/Resource identity; Access Authority decides who may invoke creation for an Owner Scope.
 - **Organization Membership**: consulted only when Repository owner is Organization; stale/unavailable data must not increase access.
 - **Database enforcement**: RLS projects least privilege; SQL does not own Role/Capability meaning.
 - **Application**: coordinates authorization-sensitive use cases and safe denied results.
@@ -357,3 +373,5 @@ Reopen when:
 9. Grant attribution differing from authenticated Actor is rejected.
 10. Domain tests and database tests produce same decision matrix for representative owner modes, Grants, visibility, targets.
 11. Any unaccepted lifecycle operation is absent from current Capability bundles and remains inaccessible through RLS/table privileges.
+12. A User may create in its own personal Owner Scope but not another User's Owner Scope.
+13. Organization owner/admin may create in that Organization Owner Scope; ordinary member and outsider cannot, and Application and RLS return the same matrix.

@@ -82,10 +82,11 @@ export type {
 export type { RepositoryReader } from './ports/repository-reader';
 export type {
   RepositoryCreationOwner,
-  RepositoryCreationOwnerReader,
-  RepositoryPersistenceResult,
-  RepositoryWriter
-} from './ports/repository-creation';
+  RepositoryCreationOwnerCandidate,
+  RepositoryCreationAccessReader
+} from './ports/repository-creation-access';
+export type { RepositoryPersistenceResult, RepositoryWriter } from './ports/repository-creation';
+export { RepositoryCreationAccessPolicy } from './policies/repository-creation-access-policy';
 export { CanReadRepositoryActivity } from './queries/can-read-repository-activity';
 export type { CanReadRepositoryActivityInput } from './queries/can-read-repository-activity';
 export { GetAccessiblePage } from './queries/get-accessible-page';

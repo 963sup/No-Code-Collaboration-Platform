@@ -1,5 +1,6 @@
 import {
   ListRepositoryCreationOwners,
+  RepositoryCreationAccessPolicy,
   type RepositoryCreationOwner
 } from '@no-code-collaboration-platform/application';
 import {
@@ -42,9 +43,10 @@ function ownerValue(owner: RepositoryCreationOwner) {
 
 export default async function NewRepositoryPage({ searchParams }: NewRepositoryPageProps) {
   const services = await createRequestServices();
+  const accessPolicy = new RepositoryCreationAccessPolicy(services.repositoryCreationAccessReader);
   const owners = await new ListRepositoryCreationOwners(
     services.identityProvider,
-    services.repositoryCreationOwnerReader
+    accessPolicy
   ).execute();
   const { error, notice, owner: requestedOwner } = await searchParams;
   const defaultOwner =

@@ -2,7 +2,7 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import { describe, expect, it, vi } from 'vitest';
 
 import type { Database } from '../src/generated/database.types';
-import { SupabaseRepositoryCreation } from '../src/repositories/supabase-repository-creation';
+import { SupabaseRepositoryWriter } from '../src/repositories/supabase-repository-creation';
 
 const draft = {
   createdBy: '00000000-0000-4000-8000-000000000001',
@@ -16,11 +16,11 @@ const draft = {
   visibility: 'private' as const
 };
 
-describe('SupabaseRepositoryCreation', () => {
+describe('SupabaseRepositoryWriter', () => {
   it('uses a minimal INSERT response so private-Repository SELECT RLS runs in a later request', async () => {
     const insert = vi.fn(async () => ({ data: null, error: null }));
     const from = vi.fn(() => ({ insert }));
-    const adapter = new SupabaseRepositoryCreation({ from } as unknown as SupabaseClient<Database>);
+    const adapter = new SupabaseRepositoryWriter({ from } as unknown as SupabaseClient<Database>);
 
     const result = await adapter.createRepository(draft);
 
@@ -62,7 +62,7 @@ describe('SupabaseRepositoryCreation', () => {
       }
     } as unknown as SupabaseClient<Database>;
 
-    await expect(new SupabaseRepositoryCreation(client).createRepository(draft)).resolves.toEqual({
+    await expect(new SupabaseRepositoryWriter(client).createRepository(draft)).resolves.toEqual({
       ok: false,
       reason
     });

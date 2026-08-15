@@ -14,6 +14,11 @@ export {
   type OrganizationRole
 } from './access/delegation';
 export { effectiveRepositoryRole, type RepositoryAuthoritySources } from './access/authority';
+export {
+  canCreateRepositoryForOwner,
+  repositoryCreationCapability,
+  type RepositoryCreationPolicyInput
+} from './access/repository-creation-policy';
 export type { ActivityEventSummary } from './activity/activity-event';
 export {
   createOrganizationDraft,

@@ -1,18 +1,16 @@
 import type { IdentityProvider } from '../ports/identity-provider';
-import type {
-  RepositoryCreationOwner,
-  RepositoryCreationOwnerReader
-} from '../ports/repository-creation';
+import type { RepositoryCreationOwner } from '../ports/repository-creation-access';
+import type { RepositoryCreationAccessPolicy } from '../policies/repository-creation-access-policy';
 
 export class ListRepositoryCreationOwners {
   public constructor(
     private readonly identityProvider: IdentityProvider,
-    private readonly ownerReader: RepositoryCreationOwnerReader
+    private readonly accessPolicy: RepositoryCreationAccessPolicy
   ) {}
 
   public async execute(): Promise<readonly RepositoryCreationOwner[]> {
     const actor = await this.identityProvider.getCurrentIdentity();
     if (actor === null) return [];
-    return this.ownerReader.listCreatableRepositoryOwners(actor.id);
+    return this.accessPolicy.listAuthorizedOwners(actor.id);
   }
 }

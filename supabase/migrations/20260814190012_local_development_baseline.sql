@@ -858,6 +858,37 @@ revoke all on function private.get_current_repository_access_sources(uuid)
   from public, anon, authenticated;
 grant execute on function private.get_current_repository_access_sources(uuid) to authenticated;
 
+create function private.can_create_repository_for_owner(
+  target_owner_user_id uuid,
+  target_owner_organization_id uuid
+)
+returns boolean
+language sql
+stable
+security definer
+set search_path = ''
+as $$
+  select
+    case
+      when (select auth.uid()) is null then false
+      when target_owner_user_id = (select auth.uid())
+        and target_owner_organization_id is null then true
+      when target_owner_user_id is null
+        and target_owner_organization_id is not null then exists (
+          select 1
+          from public.organization_memberships as membership
+          where membership.organization_id = target_owner_organization_id
+            and membership.user_id = (select auth.uid())
+            and membership.role in ('admin', 'owner')
+        )
+      else false
+    end;
+$$;
+
+revoke all on function private.can_create_repository_for_owner(uuid, uuid)
+  from public, anon, authenticated;
+grant execute on function private.can_create_repository_for_owner(uuid, uuid) to authenticated;
+
 create function public.get_current_repository_access_sources(target_repository_id uuid)
 returns table (
   direct_role public.repository_role,
@@ -1343,25 +1374,18 @@ for select
 to anon, authenticated
 using ((select private.can_view_repository(id)));
 
-create policy repositories_insert_personal_owner
+create policy repositories_insert_access_policy
 on public.repositories
 for insert
 to authenticated
 with check (
   (select auth.uid()) = created_by
-  and owner_user_id = (select auth.uid())
-  and owner_organization_id is null
-);
-
-create policy repositories_insert_organization_admin
-on public.repositories
-for insert
-to authenticated
-with check (
-  (select auth.uid()) = created_by
-  and owner_user_id is null
-  and owner_organization_id is not null
-  and (select private.is_organization_admin(owner_organization_id))
+  and (
+    select private.can_create_repository_for_owner(
+      owner_user_id,
+      owner_organization_id
+    )
+  )
 );
 
 create policy repositories_update_manager

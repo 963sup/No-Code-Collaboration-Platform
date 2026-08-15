@@ -303,6 +303,22 @@ It must support:
 
 Creating a Repository derives owner authority from the ownership Relationship. It does not create a synthetic direct Grant for the Owner.
 
+Creation responsibility is intentionally split:
+
+```text
+Browser / Server Action
+→ authenticated Actor
+→ RepositoryCreationAccessReader returns Owner and Membership-role facts
+→ Domain Access Policy evaluates repository.create on User | Organization Owner Scope
+→ authorized Owner
+→ Repository command validates and constructs the Repository draft
+→ RepositoryWriter performs an authenticated INSERT
+→ RLS independently enforces the same Owner-scoped policy
+→ /{ownerSlug}/{repositorySlug}
+```
+
+The Access Policy owns **who may create**. Repository Collaboration owns **how a valid Repository is created**. The pre-identity `repository.create` Capability is not part of any existing Repository Role bundle.
+
 ## Database truth lifecycle
 
 ```text
