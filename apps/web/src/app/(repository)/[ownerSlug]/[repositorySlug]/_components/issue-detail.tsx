@@ -1,5 +1,5 @@
 import type { IssueDetail } from '@no-code-collaboration-platform/application';
-import { Card, CardContent, CardHeader } from '@no-code-collaboration-platform/ui';
+import { Badge, Card, CardContent, CardHeader } from '@no-code-collaboration-platform/ui';
 
 import { IssueState } from './issue-state';
 
@@ -63,10 +63,43 @@ export function IssueDetailView({ issue, showMetadata = false }: IssueDetailProp
         </CardContent>
       </Card>
 
-      <div className='rounded-md border border-dashed p-4 text-sm text-muted-foreground'>
-        Conversation commands remain unavailable until comment attribution, moderation, and evidence
-        contracts are executable.
-      </div>
+      {issue.labels.length || issue.assignees.length ? (
+        <div className='flex flex-wrap gap-2'>
+          {issue.labels.map((label) => (
+            <Badge key={label.id} variant='outline'>
+              {label.name}
+            </Badge>
+          ))}
+          {issue.assignees.map((assignee) => (
+            <Badge key={assignee.id} variant='secondary'>
+              Assigned {assignee.id}
+            </Badge>
+          ))}
+        </div>
+      ) : null}
+
+      <section aria-labelledby='issue-conversation' className='space-y-3'>
+        <h2 className='text-lg font-semibold' id='issue-conversation'>
+          Conversation
+        </h2>
+        {issue.comments.length === 0 ? (
+          <p className='rounded-md border border-dashed p-4 text-sm text-muted-foreground'>
+            No comments yet.
+          </p>
+        ) : (
+          issue.comments.map((comment) => (
+            <Card key={comment.id}>
+              <CardHeader className='border-b py-3 text-xs text-muted-foreground'>
+                {comment.createdBy} commented on{' '}
+                <time dateTime={comment.createdAt}>
+                  {new Date(comment.createdAt).toLocaleDateString()}
+                </time>
+              </CardHeader>
+              <CardContent className='whitespace-pre-wrap py-5 text-sm'>{comment.body}</CardContent>
+            </Card>
+          ))
+        )}
+      </section>
     </article>
   );
 }

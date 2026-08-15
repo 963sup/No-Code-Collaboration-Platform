@@ -8,6 +8,8 @@ Schema files execute in lexicographic order by default. Start with a small numbe
 
 Reviewed schema changes update the sole consolidated baseline in `../migrations/` while the project remains `LocalOnly`. Once an identified persistent environment applies that baseline, it becomes immutable and later accepted transitions are append-only. A migration file and successful local replay do not prove persistent application; Applied status belongs to the identified environment's migration ledger and provider evidence.
 
+While the status remains `LocalOnly`, run `pnpm supabase:baseline:compile` after reviewing declarative schema changes. The compiler accepts exactly one local-development baseline and concatenates every `.sql` schema in lexicographic order; it refuses to operate once the migration shape no longer matches that replaceable-baseline contract.
+
 The current execution target is the disposable Supabase CLI local stack. No Supabase Cloud project is provisioned. Generated `packages/infrastructure/supabase/src/generated/database.types.ts` is a projection of the applied local schema. Tables exposed through the Data API require explicit grants and RLS policies appropriate to their resource and ownership model.
 
 Declarative diffing has known coverage gaps. DML and some PostgreSQL metadata or policy/view/grant changes may need explicit reviewed migration SQL. Generated migration output is never accepted without review.

@@ -14,7 +14,9 @@ Use this file to locate decision history. Current architecture truth lives in [`
 | [ADR-008](./ADR-008-repository-semantic-routing.md) | Historical; superseded by ADR-010 | Records the intermediate Organization-only Repository routing model. It is not current ownership or URL truth. |
 | [ADR-009](./ADR-009-controlled-page-command-mutation-boundary.md) | Accepted | Requires command-specific invoker RPCs plus independent RLS for accepted Page writes. |
 | [ADR-010](./ADR-010-repository-owner-namespace.md) | Accepted current ownership/routing identity | Makes `Repository Owner = User | Organization`, establishes one global Owner namespace, makes `/{ownerSlug}/{repositorySlug}` canonical, uses `private | public` visibility, and makes ownership-derived authorization owner-neutral. |
-| [ADR-011](./ADR-011-github-surface-parallel-composition.md) | Accepted | Makes admitted GitHub public URL/IA/UI/UX the presentation baseline and defines responsive route-specific `@sidebar`, `@activity`, and `@modal` composition. |
+| [ADR-011](./ADR-011-github-surface-parallel-composition.md) | Accepted; Data admission refined by ADR-013 | Makes admitted GitHub public URL/IA/UI/UX the presentation baseline and defines responsive route-specific `@sidebar`, `@activity`, and `@modal` composition. ADR-013 promotes only its conditional no-code Data envelope. |
+| [ADR-012](./ADR-012-collaboration-lifecycle-and-projection-boundaries.md) | Accepted; item 10 partially superseded by ADR-013 | Defines Issue/Discussion command persistence and keeps planning, delivery, search, discovery, catalog, and governance surfaces non-owning Projections. ADR-013 replaces only its rejection/deferral of no-code Data semantics. |
+| [ADR-013](./ADR-013-core-no-code-data-semantic-envelope.md) | Accepted | Accepts the no-code Data Change, Exchange, and Repository Derivation semantic envelope without authorizing concrete lifecycle or implementation; Git/code/execution rejection remains current. |
 
 ## Reading rule
 

@@ -85,6 +85,15 @@ User ≠ Role
 User ≠ Context
 ```
 
+`Account` is the product-surface family through which a User or Organization manages identity, settings, administration, and commercial concerns. Account is not a generic Entity and never replaces User, Organization, Actor, Owner, Principal, or Scope.
+
+```text
+Identity establishes a trusted User Actor.
+Access resolves effective Capability for that Actor and target.
+```
+
+An authenticated Session is Identity evidence, not Repository authorization.
+
 ## 4. Organization — organizational identity and administration Scope
 
 Status: **Canonical.**
@@ -211,9 +220,9 @@ Membership ≠ Repository Grant
 
 Organization Membership Roles describe Organization-scope administration. They are not Repository Roles.
 
-## 9. Team — future Organization-scoped group Principal
+## 9. Team — excluded milestone concept
 
-Status: **Deferred.**
+Status: **Explicitly not established in this milestone.**
 
 If a second shared authority source is proven necessary:
 
@@ -231,7 +240,7 @@ Team
 = Organization-scoped group Principal
 ```
 
-Team is not an authenticated Actor, Repository Owner, Repository parent, Tenant, or collaboration Container.
+No Team identity, Membership, Repository Grant, detail route, or table exists. Organization Teams presentation shows an explicit deferred state only. Team may be reconsidered only when a real workflow must grant the same durable group of Users authority across Repositories. Team is never an authenticated Actor, Repository Owner, Repository parent, Tenant, or collaboration Container.
 
 Critical invariant:
 
@@ -381,11 +390,13 @@ same-transaction historical evidence
 user-visible projection
 ```
 
-Issue and Discussion are admitted because their no-code problems, stable identities, and lifecycles are distinct from Page; their executable Domain/persistence contracts remain Open work. No additional Resource family is accepted from benchmark vocabulary alone.
+Issue and Discussion are admitted because their no-code problems, stable identities, and lifecycles are distinct from Page. Their v1 lifecycle, authorization, concurrency, relationship, and Evidence semantics are decision-complete in their Domain contracts; executable status remains a separate gap/code/test fact. No additional Resource family is accepted from benchmark vocabulary alone.
+
+GitHub Knowledge and Wiki semantics map to Page as the Repository knowledge surface. They do not create a Git-backed history model, second Artifact family, or separate collaboration Container.
 
 ## 15. Issue — accepted actionable Artifact
 
-Status: **Accepted Product/Ontology semantic; executable Domain and persistence deferred.**
+Status: **Accepted target semantic and lifecycle.**
 
 Durable benchmark problem:
 
@@ -397,13 +408,13 @@ Issue
 stable identity = Repository ID + issue number
 ```
 
-Issue exists to track work that can be assigned, classified, discussed, and completed. Status, Assignee, Label, Milestone, Comment, Mention, and Reaction semantics are admitted only as Issue-contained state/relationships/events; their exact persistence and transition rules require the Issue Domain contract.
+Issue owns `open | closed` state, `completed | cancelled` close reason, Repository-scoped labels, access-eligible User assignees, and flat chronological comments. Assignment is responsibility, not authority. Create/edit/comment/assign/label/close/reopen use Repository Capabilities, expected version, and same-transaction Activity Evidence. Hard delete, nested replies, milestones, and reactions are excluded from v1.
 
 It is never a collaboration Container.
 
 ## 16. Discussion — accepted conversation Artifact
 
-Status: **Accepted Product/Ontology semantic; executable Domain and persistence deferred.**
+Status: **Accepted target semantic and lifecycle.**
 
 Durable benchmark problem:
 
@@ -415,7 +426,7 @@ Discussion
 stable identity = Repository ID + discussion number
 ```
 
-It is distinct from actionable Issue work and remains contained by Repository. Category classifies the conversation; Answer selects a response without turning it into a separate Artifact owner; Comment, Mention, and Reaction remain contained relationships/events. Exact lifecycle and authorization require the Discussion Domain contract.
+It is distinct from actionable Issue work and remains contained by Repository. Categories are fixed to `general | question | announcement`; status is `open | closed`; locked is an independent moderation state. Comments are flat and chronological. A `question` may select one of its own comments as Answer; other categories cannot. Announcement creation and lock moderation require `repository.manage`. Every mutation uses expected version and same-transaction Activity Evidence. Hard delete, nested replies, and reactions are excluded from v1.
 
 ## 17. Project-style planning view — Projection
 
@@ -434,47 +445,33 @@ It does not own the underlying Artifacts, become a Repository parent, or create 
 
 Cross-Repository presentation does not create cross-Repository ownership.
 
-## 18. No-code Data Change and Transfer — conditional semantic envelope
+v1 creates no Project entity, table, command, saved view, or detail identity. Global and Repository planning screens derive rows from already-authorized Issue, Discussion, and Page state; URL filters cannot mutate their sources.
 
-Status: **Accepted Product/Ontology envelope; Candidate Domain contracts exist but remain unaccepted and non-executable.**
+## 18. No-code Data Change, Exchange, and Derivation
 
-These GitHub-derived names survive only after removing every Source Code and arbitrary-execution assumption:
+Status: **Accepted semantic envelope; concrete lifecycles and implementation deferred.**
 
-| Name | Canonical no-code meaning | Role |
-| --- | --- | --- |
-| Commit / Data Commit | Immutable actor-attributed batch of changes to accepted structured Repository data | Process result + Evidence |
-| Branch / Data Branch | Named isolated data-state line scoped to one Repository | Context + Process state |
-| Diff / Data Diff | Derived field/record comparison between two authorized structured-data states | Projection |
-| Pull Request / Change Proposal | Request to review and apply a bounded Data Commit/change set | Process |
-| Actions / Data Transfer | Declarative transfer of typed data between allowlisted endpoints | Process |
-| Gist / Data Capsule | Bounded typed data payload shared or transferred inside Repository authority | Artifact candidate |
+| Canonical concept | Semantic role | Repository relationship | Authority rule |
+| --- | --- | --- | --- |
+| Data Commit | immutable historical Evidence for one typed change batch | belongs to exactly one Repository | Actor attribution records action; it grants nothing |
+| Data Branch | isolated data-state line and selectable Context | exists inside one Repository | selection cannot change Membership, Grant, Role, or Capability |
+| Data Diff | derived Projection | compares read-authorized states in one Repository | filters fields and records before comparison output |
+| Change Proposal | propose/review/decide/apply Process | applies only to typed changes in one Repository | participation, review, and approval grant no Capability; apply reauthorizes |
+| Data Transfer | typed transfer Process | source and destination authority are checked independently | only allowlisted connectors/endpoints and mappings are permitted |
+| Data Capsule | finite typed-data Artifact | contained by exactly one Repository | visibility cannot exceed Repository authority |
+| Repository Derivation | provenance-preserving creation Process | creates a distinct Repository from a source Repository | destination has independent Owner and authority |
 
-```text
-Repository
-├─ accepted Resource state
-├─ Data Branch                         # never a Container or Grant scope
-├─ Data Commit                         # immutable Evidence of accepted data changes
-├─ Data Diff                           # derived, authorization-filtered Projection
-├─ Change Proposal                     # review/apply Process
-├─ Data Transfer                       # allowlisted transfer Process
-└─ Gist/Data Capsule                   # Repository-contained typed payload
-```
+Repository Derivation copies only explicitly admitted data. Secrets, Sessions, and Grants are excluded by default. Provenance does not make the source an Owner, Principal, Container parent, or continuing authority source for the derived Repository.
 
-Absolute boundaries:
+`Commit`, `Branch`, `Diff`, `Pull Request`, `Actions`, `Gist`, `Fork`, `Pull`, and `Push` are external benchmark aliases only. `Pull` and `Push` may describe Data Transfer direction; no alias creates a canonical route, Entity, Capability, or generic version-control/automation engine.
 
-1. Source Code, executable payloads, shell/script/expression runtimes, code review, Code Search, git refs/merge, CI/CD, build, test, deploy, Package, and Release source capabilities remain excluded.
-2. Payloads use accepted Resource schemas. Opaque text is never parsed, compiled, interpreted, or executed as code.
-3. Every read, compare, proposal, apply, capsule access, and transfer evaluates the same stable Repository authorization facts as its source/target Resources.
-4. Data Branch, Change Proposal, Data Transfer, and Data Capsule cannot own Repository, visibility, Role, Grant, Membership, or independent collaboration space.
-5. Diff is derived and authorization-filtered; it cannot reveal fields or Resources the Actor cannot read and cannot rewrite source Evidence.
-6. Data Transfer accepts only allowlisted connectors/endpoints, typed payloads, fixed mappings, bounded size/retention, and explicit delivery Evidence. No user-authored program or general-purpose transform exists.
-7. Credential and secret values stay in controlled Infrastructure references and never enter Product payloads, Diff, Capsule, logs, or user-visible Evidence.
+The shared envelope does not prove one generic `version_control` or `automation` aggregate. Source Code, file trees, Git refs/merge, code review, executable payloads, arbitrary expressions, CI/CD, build, test, deploy, Package, and Release remain rejected.
 
-The shared envelope does not prove one generic `version_control` or `automation` aggregate. Each concrete lifecycle still requires a Domain owner, invariant set, failure behavior, concurrency model, and falsification tests.
+Concrete identity, lifecycle, persistence, Capability, URL, API, and UI remain unavailable until the narrowest Domain contract and discriminating tests accept them.
 
 ## 19. App and Installation — machine identity and access Relationship
 
-Status: **Deferred candidate.**
+Status: **Explicitly not established in this milestone.**
 
 If integrations require non-human authority:
 
@@ -487,11 +484,13 @@ Installation
 = explicit App access Relationship to accepted scopes/Repositories
 ```
 
-App identity and Installation lifecycle are distinct. An integration is not an ordinary Repository Resource by default.
+No App identity, Installation, OAuth, credential store, Repository binding, arbitrary endpoint, or connector execution exists. Reconsider only when an external machine must act as a typed Principal on a Repository.
+
+`Workflow` and `Run` may later describe an admitted orchestration definition and one execution record. They do not imply a script runtime, arbitrary execution, authority, persistence, or route; those concrete decisions remain deferred.
 
 ## 20. Enterprise — future cross-Organization Governance Scope
 
-Status: **Deferred.**
+Status: **Explicitly not established in this milestone.**
 
 ```text
 Enterprise
@@ -503,11 +502,13 @@ Enterprise does not become Repository Owner, Repository parent, collaboration Co
 
 A future Enterprise Policy may restrict Organization-owned Repository behavior. It must not silently grant Repository content authority.
 
-`Enterprise-grade` is a product-quality goal, not evidence that an Enterprise Entity is already required.
+`Enterprise-grade` is a product-quality goal, not evidence that an Enterprise Entity is required. `/settings/enterprises` is explanatory governance Projection only. Reconsider Enterprise only for a real constraint spanning multiple Organizations that grants no Repository content access.
+
+Billing and Licensing describe commercial offerings, entitlements, and administration. They never imply Repository ownership or content authority, and their concrete identity, persistence, routes, Capabilities, and lifecycle remain deferred.
 
 ## 21. Activity Event and projections — historical Evidence
 
-Status: **Partially executable baseline.**
+Status: **Canonical Evidence/Projection boundary.**
 
 ```text
 Accepted action
@@ -522,6 +523,12 @@ Accepted action
 Activity Event = historical Evidence
 Feed / Notification / Audit / Analytics = Projections
 ```
+
+Governance constrains future actions through Policy and accepted authority rules. Audit explains or proves past actions from sufficient historical Evidence. Governance is not Audit; Audit is not an authority source.
+
+Notification recipients are limited to explicit watch, Issue assignment, mention, or unmuted prior participation; the initiating Actor is excluded. Threads aggregate by recipient + Repository + Artifact, revalidate Repository access before any content/count/URL, and keep `unread | read | archived` delivery state independent from source Evidence.
+
+Search authorizes before ranking/count/snippet and covers only Repository metadata, Page, Issue, Discussion, and planning projections through PostgreSQL full-text search. Explore uses public Repository metadata only. Integration discovery is a reviewed catalog Projection with no connection success controls. Full query and ranking contracts live in [`domains/collaboration-projections.md`](./domains/collaboration-projections.md).
 
 The current Activity Event envelope is not automatically a complete enterprise audit store. Stronger completeness, retention, causality, rebuild, or regulatory guarantees require an independently accepted evidence contract.
 
@@ -575,7 +582,9 @@ Canonical invariants:
 18. A new benchmark surface cannot become a second Repository-equivalent Container without falsifying evidence.
 19. Provider, framework, database, generated output, and UI composition project Product truth; they do not define it.
 20. A benchmark capability is excluded when its value depends on implementation assumptions that do not survive the no-code collaboration model.
-21. Data Commit/Branch/Diff/Change Proposal/Data Transfer/Data Capsule semantics, when admitted, operate only on authorized structured Repository data and cannot introduce code execution, secrets, independent authority, or another Container.
+21. Data Commit, Data Branch, Data Diff, Change Proposal, Data Transfer, Data Capsule, and Repository Derivation are admitted only inside the accepted typed-data envelope and cannot introduce code execution, secrets, independent authority, or another Container.
+22. Structural containment, Branch selection, Proposal participation or approval, Project filters, and Notification state cannot change effective authority.
+23. A derived Repository has independent ownership and authority; provenance cannot copy secrets, Sessions, or Grants by default.
 
 ## 23. Domain, persistence, URL, UI, and validation projection rules
 
@@ -603,7 +612,7 @@ Concrete rules:
 - Keep User Grant persistence typed while User is the only accepted persisted Principal.
 - Add Team only when a real second group authority source is required.
 - Add Enterprise only when a real cross-Organization governance constraint is required.
-- Add Issue or Discussion persistence only after its Domain contract defines lifecycle, invariants, authorization, evidence, and Repository reuse; Product identity is already accepted.
+- Add or change Issue/Discussion persistence only through their accepted lifecycle, invariant, authorization, Evidence, and Repository-reuse contracts; executable status remains a gap/code/test fact.
 - Keep Project-style planning as a Projection unless independent lifecycle proves otherwise.
 - Add App/Installation only when a real machine authority use case exists.
 - Do not infer a generic version-control or automation engine from benchmark feature catalogs. Data Change/Transfer semantics require explicit schema, Repository authorization, no-execution, endpoint, secret, conflict, retention, and Evidence contracts.
@@ -632,6 +641,7 @@ Minimum discriminating tests:
 12. Future Enterprise constraint must limit Organization behavior without owning Repository or granting Repository content access.
 13. Feed/Notification/Audit/Planning projections may change without rewriting Artifact, authority, ownership, or source Evidence truth.
 14. A Data Change/Transfer flow rejects executable or untyped payloads, rechecks source/target Repository Capabilities, filters Diff by read authority, never exposes secret values, and cannot execute user-provided code.
+15. Repository Derivation retains provenance while establishing an independent Owner/authority boundary and excluding secrets, Sessions, and Grants by default.
 
 Compact semantic law:
 

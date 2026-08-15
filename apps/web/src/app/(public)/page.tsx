@@ -66,8 +66,8 @@ export default function PublicHomePage() {
           </CardHeader>
           <CardContent className='space-y-4 text-sm leading-6 text-muted-foreground'>
             <p>User is the actor.</p>
-            <p>Organization is the ownership boundary.</p>
-            <p>Team is an access principal.</p>
+            <p>Repository Owner is one User or Organization relationship.</p>
+            <p>Team is absent until a real group-authority need proves it.</p>
             <p>Repository is the collaboration boundary.</p>
             <p>Resource is the work unit.</p>
             <p>Event is the historical fact.</p>

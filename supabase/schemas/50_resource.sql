@@ -9,6 +9,10 @@ create table public.resources (
   created_by uuid not null references auth.users (id),
   created_at timestamptz not null default timezone('utc', now()),
   updated_at timestamptz not null default timezone('utc', now()),
+  search_vector tsvector generated always as (
+    setweight(to_tsvector('simple', coalesce(title, '')), 'A')
+    || setweight(to_tsvector('simple', coalesce(content ->> 'body', '')), 'B')
+  ) stored,
   constraint resources_title_length check (
     char_length(title) between 1 and 240
     and title ~ '[^[:space:]]'
@@ -25,6 +29,8 @@ create table public.resources (
 
 create index resources_repository_id_idx
   on public.resources (repository_id, created_at desc);
+
+create index resources_search_vector_idx on public.resources using gin (search_vector);
 
 comment on table public.resources is
   'Repository-scoped work units. The shared envelope is relational; subtype content remains explicit.';

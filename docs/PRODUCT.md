@@ -18,6 +18,7 @@ Every accepted product concept must preserve all of the following:
 - collaboration has one primary Container: Repository;
 - collaborative work is contained by a Repository;
 - Repository is the primary authorization target for contained work;
+- structural containment, grouping, or an isolated state line inside a Repository does not create another collaboration Container or authority boundary;
 - ownership, governance, identity, grouping, presentation, and evidence may surround Repository but cannot replace it as the collaboration Container; and
 - framework, provider, database, routing, or benchmark vocabulary cannot redefine Repository.
 
@@ -65,6 +66,7 @@ Cross-cutting semantics remain separate:
 | Term | Canonical meaning | Must not be confused with |
 | --- | --- | --- |
 | User | Persistent human product identity; may act, receive authority, and own Repositories | Membership, Role, selected Context |
+| Account | Administrative, settings, and presentation surface family for a User or Organization | Generic Account entity, Actor, Owner, or Principal |
 | Organization | Persistent organizational identity plus Membership/administration Scope; may own Repositories | Mandatory Repository parent, Actor, collaboration Container |
 | Repository Owner | Exactly one User or Organization that owns a Repository | Actor, explicit Grant, future Enterprise governance |
 | Owner Namespace | Globally unambiguous User username or Organization slug used for Repository human routing | Authorization, stable Repository identity |
@@ -75,12 +77,13 @@ Cross-cutting semantics remain separate:
 | Issue | Repository-scoped actionable Resource with assignment, classification, status, and conversation semantics | Developer ticket or cross-Repository inbox Projection |
 | Discussion | Repository-scoped conversation Resource organized for shared understanding | Forum Container or Issue alias |
 | Project-style planning view | Owner-scoped Projection over accepted work and Repository attachments | Repository child owner, collaboration Container, or authority boundary |
-| Commit / Data Commit | Immutable, actor-attributed batch of accepted structured-data changes inside one Repository | Source Code commit, arbitrary file tree, or authorization decision |
-| Branch / Data Branch | Named isolated data-state line inside one Repository | Repository, independent visibility/Grant boundary, or git ref |
-| Diff / Data Diff | Derived comparison of two authorized structured-data states | Source-code line diff, syntax analysis, or source Evidence |
-| Pull Request / Change Proposal | Review-and-apply Process for an authorized structured-data change set | Code review, git merge, or a second collaboration Container |
-| Actions / Data Transfer | Allowlisted declarative transfer of typed Repository data between approved endpoints | Script, shell, arbitrary runtime, CI/CD, build, test, or deploy |
-| Gist / Data Capsule | Typed Repository-contained Artifact for sharing or transferring a bounded data payload | Executable snippet, independent workspace, or visibility bypass |
+| Data Commit | Immutable, Actor-attributed batch of accepted structured-data changes inside one Repository | Source Code commit, arbitrary file tree, or authorization decision |
+| Data Branch | Named isolated data-state line inside one Repository | Repository, independent visibility/Grant boundary, or Git ref |
+| Data Diff | Read-authorized derived comparison of two structured-data states | Source-code line diff, syntax analysis, or authority source |
+| Change Proposal | Process for proposing, reviewing, deciding, and applying one bounded structured-data change set | Code review, Git merge, Grant, or second collaboration Container |
+| Data Transfer | Allowlisted declarative transfer of typed Repository data between approved endpoints | Script, shell, arbitrary runtime, CI/CD, build, test, or deploy |
+| Data Capsule | Repository-contained, finite typed-data Artifact | Executable snippet, independent workspace, or visibility bypass |
+| Repository Derivation | Process that creates a new Repository from an existing Repository while retaining provenance | Git fork, shared ownership, or copied authority |
 | Membership | User ↔ Organization belonging relationship | Repository access |
 | Grant | Principal ↔ Repository authority relationship carrying a Role | Ownership relationship or effective-access cache |
 | Role | Named Capability bundle for assignment and explanation | Authorization decision primitive |
@@ -88,6 +91,8 @@ Cross-cutting semantics remain separate:
 | Context | Selected navigation, filter, or view state | Identity, ownership, persisted relationship, authorization fact |
 | Collaborator | Derived label for a User with effective Repository access | User subtype or independent entity |
 | Activity Event | Append-oriented historical fact produced by an accepted action | Feed item, notification, metric, mutable status |
+
+`Commit`, `Branch`, `Diff`, `Pull Request`, `Actions`, `Gist`, `Fork`, `Pull`, and `Push` are external benchmark aliases only. They are not canonical target vocabulary and create no Git route, code surface, or generic version-control engine.
 
 ## Repository ownership
 
@@ -189,7 +194,9 @@ The target resource hierarchy is:
 /projects
 /discussions
 /notifications
-/search?q=&type=&sort=&page=
+/search?q=&type=&owner=&repository=&status=&sort=&page=
+/explore?sort=&ownerType=&artifact=&page=
+/integrations?category=&page=
 
 /organizations/{organizationSlug}/members
 /organizations/{organizationSlug}/teams
@@ -227,55 +234,43 @@ Repository presentation follows one owner/Repository header and primary navigati
 
 `/projects` is a Repository attachment/list Projection; Project detail does not inherit Repository ownership and therefore does not use `/{owner}/{repository}/projects/{id}`. GitHub Wiki maps to the existing Page Resource family, so Git-backed `/wiki/{slug}` is not a second target canonical identity. `/security` contains only admitted governance, access-posture, policy, and security-evidence projections; code/dependency/secret scanning is excluded.
 
-## Accepted collaboration semantics and executable baseline
+## Accepted collaboration semantics
 
-The currently executable collaboration family is intentionally small:
-
-```text
-Repository
-└─ Page
-```
-
-Page proves the first complete Repository-contained collaboration loop:
+Page, Issue, and Discussion are accepted Repository-contained Resource kinds. They reuse one collaboration loop:
 
 ```text
 Actor
 → Repository authorization
-→ Page command
+→ Resource command
 → state transition
 → Activity Event
 → read projection
 → user-visible result
 ```
 
-Issue and Discussion are also accepted Repository-contained Resource kinds. Issue represents actionable work with assignment/status/completion behavior; Discussion represents category/answer/conversation behavior. Both retain stable Repository-scoped identity and reuse Repository authorization. Issue now has an executable read-only identity, persistence, authorization, list/detail, and full-page/dialog delivery slice; its commands, relationships, conversation, and historical evidence remain unsupported and fail closed. Discussion remains entirely non-executable and is an explicitly registered gap.
+Issue owns actionable work, Repository-scoped classification and responsibility, flat conversation, and `open | closed` completion with `completed | cancelled` close reasons. Discussion owns shared understanding, `general | question | announcement` categories, flat conversation, independent closed/locked state, and one optional Answer for `question`. Both use Repository-local atomic numbers, expected-version mutation, Repository Capabilities, and same-transaction Activity Evidence.
+
+Project-style planning, Notification delivery, Search, Explore, and Integrations are Projections. Their v1 query, ranking, recipient, privacy, and availability semantics are owned by [`domains/collaboration-projections.md`](./domains/collaboration-projections.md). None owns an Artifact, Repository, Principal, Grant, or authorization boundary.
+
+Product acceptance never proves executable support. Current schema, API, route, UI, and environment status belongs to [`IMPLEMENTATION_GAPS.md`](./IMPLEMENTATION_GAPS.md) plus code, policies, tests, CI, and direct provider evidence.
 
 ## No-code data change and transfer semantics
 
-`Commit`, `Branch`, `Diff`, `Pull Request`, `Actions`, and `Gist` are not prohibited names. They are admitted only when their complete Product meaning is structured-data collaboration inside Repository:
+The following semantics are accepted as a Product envelope. Acceptance establishes meaning and safety boundaries only; it does not authorize a concrete identity, lifecycle, Capability, schema, API, route, or UI:
 
-```text
-accepted Repository Resource state
-→ optional isolated Data Branch
-→ immutable Data Commit
-→ derived Data Diff
-→ optional Change Proposal review
-→ authorized apply
-→ optional allowlisted Data Transfer or Repository-contained Data Capsule
-```
+- **Data Commit** is an immutable, Actor-attributed batch of typed structured-data changes inside one Repository.
+- **Data Branch** is an isolated Repository data-state line. Selecting one is Context, never an authority Scope.
+- **Data Diff** is a derived comparison filtered by the requesting Actor's read authority.
+- **Change Proposal** proposes, reviews, decides, and applies typed data changes. Participation, review, or approval never creates a Capability.
+- **Data Transfer** moves typed data through allowlisted connectors and endpoints. `Pull` and `Push` describe transfer direction only.
+- **Data Capsule** is a finite, typed, Repository-contained data Artifact.
+- **Repository Derivation** creates a new Repository with provenance from an existing Repository. The new Repository has independent Owner and authority; secrets, Sessions, and Grants are not copied by default.
 
-This flow never introduces Source Code, a file tree, executable content, arbitrary expressions, git refs, code review, CI/CD, build, test, deployment, Package, or Release source behavior.
+Opaque text is never parsed or executed as code. Every change or transfer reuses the target Resource's validation and Repository authorization; allowlisted connectors/endpoints cannot introduce arbitrary execution or bypass source and destination authority.
 
-Mandatory boundaries:
+## Rejected implementation surfaces
 
-1. Payloads conform to accepted Repository Resource schemas; opaque text is never parsed or executed as code.
-2. Every snapshot, comparison, proposal, apply, capsule read, and transfer re-evaluates Actor, Repository, Capability, and target Resource state.
-3. Data Branch, Change Proposal, Data Transfer, and Gist/Data Capsule never own Repository, Membership, Grant, Role, visibility, or a second collaboration space.
-4. Data Diff is a Projection and cannot rewrite Commit/Evidence.
-5. Data Transfer is limited to typed payloads, allowlisted connectors/endpoints, fixed mappings, bounded size/retention, and explicit delivery evidence. User-provided scripts or general-purpose transforms are impossible by contract.
-6. Credentials and secrets are referenced only through controlled Infrastructure; their values never enter Product payloads, Diff, Gist, logs, or user-visible Evidence.
-
-The semantic envelope is accepted. Concrete identity, lifecycle, concurrency, conflict, retention, authorization Capabilities, URL, persistence, and Application contracts remain Deferred until a dedicated Domain contract passes discriminating tests.
+Source Code, file trees, Git references and merge mechanics, code review, executable content, arbitrary expressions, CI/CD, build, test, deployment, Package, and Release remain rejected. The external aliases above authorize no `/pulls`, `/gist`, Git route, code surface, or generic version-control/automation engine.
 
 ## GitHub-derived admissions and remaining candidates
 
@@ -283,14 +278,20 @@ Accepted Product semantics:
 
 - **Issue**: Repository-scoped actionable work Artifact with stable Repository + issue-number identity.
 - **Discussion**: Repository-scoped shared-understanding Artifact with stable Repository + discussion-number identity.
-- **Project-style planning view**: Projection over Repository-scoped work; never ownership or authorization boundary. Repository `/projects` lists attachments; detail identity is owner-scoped.
-- **No-code data change/transfer envelope**: Commit, Branch, Diff, Pull Request, Actions, and Gist may represent structured-data Evidence, Process state, Projection, Proposal, transfer, and Data Capsule semantics under the mandatory no-code boundaries above.
+- **Project-style planning view**: derivable Projection over Repository-scoped work; never an entity, owner, Container, or authorization boundary. No project detail identity exists in v1.
+- **Notification/Search/Explore**: actor-delivery and discovery Projections with authorization-before-content/ranking rules.
+- **Integrations**: reviewed provider-neutral catalog Projection only; connection and machine authority are not implemented.
+- **Structured data change and transfer**: the seven semantics in the accepted envelope above, with concrete lifecycle and implementation still deferred.
 
-The following remain candidates until a real use case proves lifecycle and reuse:
+The following meanings may be described for non-confusion, but their concrete identities, persistence, routes, Capabilities, and lifecycles remain deferred until a real use case proves them:
 
-- **Team**: Organization-scoped group Principal for shared Repository authority.
-- **Enterprise**: cross-Organization governance Scope; never a Repository Owner by implication.
-- **App/Installation**: machine identity/Principal plus explicit access Relationship when integrations require it.
+- **Team**: explicitly not established in this milestone. Reconsider only for a proven durable group-authority need.
+- **Enterprise**: explicitly not established in this milestone. Reconsider only for a proven cross-Organization constraint that grants no Repository content access.
+- **App/Installation**: explicitly not established in this milestone. Reconsider only when an external machine must act as a typed Principal on a Repository.
+- **Workflow/Run**: a future orchestration definition and one execution record, never authority or permission to execute arbitrary code.
+- **Billing/Licensing**: commercial entitlement and administration semantics, never Repository ownership or content authority.
+
+GitHub Knowledge maps to the Page family that carries Repository knowledge. Project, Notification, Search, Explore, and Audit remain non-owning Projections.
 
 A future product capability not justified by these durable GitHub collaboration semantics must be derived independently from this platform's own user problem.
 
@@ -302,6 +303,8 @@ A future product capability not justified by these durable GitHub collaboration 
 - **Current organization / current team**: selected presentation/filter state only.
 - **Planning view**: Projection over accepted work; never ownership/authorization boundary merely because it crosses Repositories.
 - **Activity feed / notification / audit view / analytics**: projections over sufficient historical evidence; they do not redefine source facts.
+- **Governance / Audit**: Governance constrains future action; Audit explains or proves past action. Neither is a synonym for the other.
+- **Identity / Access**: Identity establishes a trusted Actor; Access resolves effective authority. Authentication alone never supplies a Capability.
 
 A projection becomes an Entity only when independent identity, lifecycle ownership, invariants, and non-derivable behavior are proven.
 
@@ -324,29 +327,28 @@ A projection becomes an Entity only when independent identity, lifecycle ownersh
 15. Collaborator and Outside collaborator are derived classifications, never identity types.
 16. Policy may constrain accepted authority but cannot silently create Repository content authority.
 17. Historical Evidence is append-oriented; presentation projections cannot rewrite its product meaning.
-18. Page, Issue, and Discussion are accepted concrete Repository-contained Resource kinds; Page commands and Issue reads are currently executable, while undefined Issue mutations and all Discussion behavior fail closed.
+18. Page, Issue, and Discussion are the accepted concrete Repository-contained Resource kinds; Issue and Discussion v1 lifecycle, capability, concurrency, relationship, and evidence semantics are decision-complete.
 19. Canonical Repository URL is Owner namespace + Repository slug; internal delivery prefixes are not product identity.
 20. Domain semantics remain provider-neutral; implementation technologies project rather than define Product truth.
 21. Generated types, migrations, diagrams, CI output, and runtime observations cannot silently replace this contract.
 22. A benchmark concept is rejected when its value does not survive removal of Source Code, arbitrary execution, CI/CD, and software-development-specific assumptions.
-23. Commit/Branch/Diff/Pull Request/Actions/Gist semantics, when present, operate only on accepted structured Repository data and never create code capability, independent authority, or a second collaboration Container.
+23. Data Commit, Data Branch, Data Diff, Change Proposal, Data Transfer, Data Capsule, and Repository Derivation are accepted no-code semantic envelopes; benchmark aliases provide no route, Git, code, execution, or implementation authority.
+24. Branch selection, proposal participation or approval, Project filters, Notification state, Context, and Projection cannot alter effective authority.
+25. Governance constrains future action; Audit and Activity Evidence explain or prove past action without becoming Feed, Notification, or Analytics source ownership.
 
 ## Deferred product decisions
 
 These remain unaccepted until direct evidence requires them:
 
-- Team persistence and Team Repository Grants.
-- Enterprise persistence and typed cross-Organization policies.
-- Issue creation, number allocation, state transitions, relationships, conversation, historical evidence, and destructive lifecycle; the read slice is executable but mutations are not.
-- Discussion Domain lifecycle, persistence, authorization, evidence, and delivery implementation; Product identity is accepted, executable contracts are not.
-- Project-style planning persistence beyond a derivable Projection.
-- App Principal and Installation lifecycle.
+- Team Principal, Team membership, Team Grants, detail route, and persistence; reconsideration requires proven group authority.
+- Enterprise identity, ownership, policy engine, and persistence; reconsideration requires a proven cross-Organization constraint without content access.
+- App Principal, Installation, OAuth, credentials, Repository binding, and connector execution; reconsideration requires proven machine authority.
+- Project entity, persistence, create command, saved view, or detail identity. Project-style planning remains derivable only.
 - Organization-wide Repository base permission for ordinary members.
 - Custom Roles, explicit deny precedence, nested groups, or generic policy engines.
 - Repository transfer, archive, restore, and destructive lifecycle semantics.
 - Any new Resource family beyond Page, Issue, and Discussion.
-- Concrete Data Commit, Data Branch, Data Diff, Change Proposal, Data Transfer, and Gist/Data Capsule Domain lifecycle, identity, persistence, URL, Capability, conflict, retention, and delivery contracts.
-- Any automation or transfer capability beyond typed, allowlisted, fixed-mapping data delivery with no arbitrary execution.
+- Concrete identity, lifecycle, Capability, persistence, route, API, and UI for the accepted structured-data change, exchange, and Repository Derivation envelope.
 
 ## Success model
 
@@ -357,8 +359,10 @@ The Product Contract is working when:
 - the system can explain why an Actor can or cannot perform an action;
 - `/app` navigates to canonical `/{owner}/{repository}` Repository identity;
 - Page collaboration works through the same authorization and evidence boundary for both ownership modes;
-- accepted Issue and Discussion identities remain Repository-scoped, canonical, and authorization-equivalent across full-page/modal presentation;
-- any admitted data Commit/Branch/Diff/Proposal/Action/Gist flow remains Repository-scoped, schema-validated, authorization-equivalent, secret-free, and incapable of executing code;
+- accepted Issue and Discussion identities and lifecycle mutations remain Repository-scoped, canonical, version-safe, evidence-backed, and authorization-equivalent across presentation modes;
+- Project, Notification, Search, Explore, and Integration catalog projections cannot create authority, mutate source truth, leak inaccessible data, or imply unavailable connection success;
+- all navigation and executable capability remain free of Source Code, Git, arbitrary execution, and code-review semantics;
+- Data Change and Transfer fixtures reject script, expression, Git ref, code payload, secret material, and cross-Repository authority bypass;
 - ownership, Membership, Grants, Roles, Capabilities, Context, and projections are not conflated;
 - new GitHub benchmark concepts are classified and tested before persistence or architecture is introduced; and
 - production/provider observations may correct the earliest invalid contract without turning undocumented runtime behavior into Product truth.

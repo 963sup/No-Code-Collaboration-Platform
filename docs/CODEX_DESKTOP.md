@@ -39,15 +39,14 @@ Choose the narrowest applicable owner instead of invoking every matching Skill. 
 
 | Need | Owning Skill | Composition rule |
 | --- | --- | --- |
-| GitHub-derived Product adaptation, naming, ownership, permissions, navigation, collaboration semantics, or review | `github-semantics-first-principles` | Primary task Skill; it embeds first-principles reasoning and enforces the immutable no-code/code-exclusion boundary. |
-| Canonical GitHub benchmark admission outcomes and guardrails | `github-product-semantics` | Supporting policy reference with implicit invocation disabled; the task Skill reads it and it never runs as a parallel decision workflow. |
-| Broader or non-GitHub Product, Domain, permission, navigation, workflow, data-model, or architecture decision | `first-principles-architecture` | Separate general method; compose with the GitHub task Skill only when the task contains another real decision outside GitHub admission. |
+| GitHub-derived Product adaptation, naming, ownership, permissions, navigation, collaboration semantics, or review | `github-semantic-reverse` | Primary task Skill; it embeds first-principles reasoning and applies the canonical no-code/code-exclusion contracts. |
+| Broader or non-GitHub Product, Domain, permission, navigation, workflow, data-model, or architecture decision | `first-principles` | Separate general method; compose with the GitHub task Skill only when the task contains another real decision outside GitHub admission. |
 | Connected external coordination, provider, documentation, security, deployment, or production evidence | `plugin-development-workflow` | Tool/evidence router only; it does not replace the active domain or decision Skill and does not require ceremonial plugin calls. |
 | Local semantic discovery or relationship-aware refactoring | `serena-jetbrains` | Operational; compose only when repository navigation or refactoring needs it. |
 | Cross-package ownership or dependency impact | `workspace-impact-analysis` | Operational; compose only when its workspace trigger is present. |
 | Post-change deterministic validation | `verify-change` | Operational closure after repository changes. |
 
-`first-principles-architecture` and `github-semantics-first-principles` are not substitutes: one is the general decision method; the other is the specialized workflow for reverse-engineering GitHub Product semantics while excluding all code and source-control capability. Do not invoke overlapping Skills to manufacture consensus, repeat equivalent instructions, or produce duplicate required-output formats.
+`first-principles` and `github-semantic-reverse` are not substitutes: one is the general decision method; the other is the specialized workflow for reverse-engineering GitHub Product semantics while excluding all code and source-control capability. Do not invoke overlapping Skills to manufacture consensus, repeat equivalent instructions, or produce duplicate required-output formats.
 
 ## Committed MCP boundary
 

@@ -44,13 +44,20 @@ A Candidate contract may intentionally lead executable behavior, but every obser
 - [`repository-collaboration.md`](./repository-collaboration.md): typed User/Organization Repository ownership, Owner namespace, Resource containment, and collaboration-boundary invariants.
 - [`access-authority.md`](./access-authority.md): Principal Grants, Role bundles, Capabilities, delegation, ownership/governance sources, and authorization explanation.
 - [`page-resource.md`](./page-resource.md): first Page work unit, create/update transitions, optimistic concurrency, and required historical evidence.
-- [`issue-resource.md`](./issue-resource.md): Repository-scoped actionable work identity, read projection, canonical presentation equivalence, and fail-closed mutation boundary.
-- [`structured-data-change.md`](./structured-data-change.md): candidate typed change batching, isolated data state, comparison, and review/apply semantics without Git or code execution.
-- [`data-exchange.md`](./data-exchange.md): candidate allowlisted typed-data delivery and Repository-contained Data Capsule semantics without automation or executable transformation.
+- [`issue-resource.md`](./issue-resource.md): Repository-scoped actionable work identity, lifecycle, responsibility, classification, conversation, optimistic concurrency, and Activity Evidence.
+- [`discussion-resource.md`](./discussion-resource.md): Repository-scoped shared-understanding lifecycle, fixed categories, moderation, flat conversation, and question Answer semantics.
+- [`collaboration-projections.md`](./collaboration-projections.md): planning, notification, search, explore, integration-catalog, availability, and explicitly deferred governance projections.
+
+### Accepted semantic envelopes with Candidate concrete lifecycles
+
+- [`structured-data-change.md`](./structured-data-change.md): accepted meanings and safety boundary for Data Commit, Data Branch, Data Diff, and Change Proposal; identity, lifecycle, Capability, persistence, route, API, and UI remain Candidate.
+- [`data-exchange.md`](./data-exchange.md): accepted meanings and safety boundary for Data Transfer and Data Capsule; endpoint, connector, lifecycle, Capability, persistence, route, API, and UI remain Candidate.
+
+`Commit`, `Branch`, `Diff`, `Pull Request`, `Actions`, `Gist`, `Fork`, `Pull`, and `Push` are external benchmark aliases only. Source Code, Git mechanics, arbitrary execution, and a generic version-control or automation engine remain rejected.
 
 ### Accepted contracts
 
-No bounded-context map is accepted yet.
+No bounded-context map or executable Data lifecycle is accepted by this catalog.
 
 ## Acceptance gate
 

@@ -1,19 +1,18 @@
-import {
-  CanReadRepositoryActivity,
-  GetCurrentIdentity
-} from '@no-code-collaboration-platform/application';
+import { GetCurrentIdentity } from '@no-code-collaboration-platform/application';
 import type { ReactNode } from 'react';
 
+import { signOut } from '@/actions/sign-out';
 import { createRequestServices } from '@/composition/create-request-services';
 
 import { RepositoryShell } from './_components/repository-shell';
 import { requireAccessibleRepositoryRoute } from './_queries/get-accessible-repository-route';
+import { updateRepositoryNotificationPreferenceAction } from './notification-actions';
 
 interface RepositoryLayoutProps {
   readonly children: ReactNode;
-  readonly modal?: ReactNode;
+  readonly modal: ReactNode;
   readonly params: Promise<{ ownerSlug: string; repositorySlug: string }>;
-  readonly sidebar?: ReactNode;
+  readonly sidebar: ReactNode;
 }
 
 export default async function RepositoryLayout({
@@ -26,20 +25,20 @@ export default async function RepositoryLayout({
   const route = await requireAccessibleRepositoryRoute(ownerSlug, repositorySlug);
   const services = await createRequestServices();
   const identity = await new GetCurrentIdentity(services.identityProvider).execute();
-  const showActivity = identity
-    ? await new CanReadRepositoryActivity(services.repositoryAccessReader).execute({
-        actorId: identity.id,
-        repositoryId: route.repository.id
-      })
-    : false;
 
   return (
     <RepositoryShell
       isAuthenticated={Boolean(identity)}
+      identityLabel={identity?.email ?? undefined}
       ownerSlug={route.ownerSlug}
       repositoryName={route.repository.name}
       repositorySlug={route.repository.slug}
-      showActivity={showActivity}
+      signOutAction={signOut}
+      updateNotificationPreferenceAction={updateRepositoryNotificationPreferenceAction.bind(
+        null,
+        route.ownerSlug,
+        route.repository.slug
+      )}
       visibility={route.repository.visibility}
     >
       <div className='repository-route-composition'>

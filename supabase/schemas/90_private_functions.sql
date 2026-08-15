@@ -394,21 +394,15 @@ security definer
 set search_path = ''
 as $$
 begin
-  insert into public.activity_events (
-    repository_id,
-    actor_id,
-    event_type,
-    subject_type,
-    subject_id,
-    payload
-  )
-  values (
+  perform private.record_collaboration_event(
     new.id,
     new.created_by,
     'repository.created',
     'repository',
     new.id,
-    jsonb_build_object('name', new.name)
+    jsonb_build_object('name', new.name),
+    'repository',
+    new.name
   );
   return new;
 end;
@@ -421,21 +415,15 @@ security definer
 set search_path = ''
 as $$
 begin
-  insert into public.activity_events (
-    repository_id,
-    actor_id,
-    event_type,
-    subject_type,
-    subject_id,
-    payload
-  )
-  values (
+  perform private.record_collaboration_event(
     new.repository_id,
     new.created_by,
     'resource.created',
     'resource',
     new.id,
-    jsonb_build_object('kind', new.kind, 'title', new.title)
+    jsonb_build_object('kind', new.kind, 'title', new.title),
+    'page',
+    new.title
   );
   return new;
 end;
@@ -503,3 +491,16 @@ grant execute on function private.can_manage_repository_grant(
   public.repository_role
 ) to authenticated;
 grant execute on function private.can_view_repository(uuid) to anon, authenticated;
+grant execute on function private.user_can_view_repository(uuid, uuid) to authenticated;
+grant execute on function private.next_artifact_number(uuid, text) to authenticated;
+grant execute on function private.record_collaboration_event(
+  uuid,
+  uuid,
+  text,
+  text,
+  uuid,
+  jsonb,
+  public.notification_artifact_type,
+  text,
+  uuid[]
+) to authenticated;

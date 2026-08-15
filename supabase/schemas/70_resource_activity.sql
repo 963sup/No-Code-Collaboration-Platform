@@ -15,15 +15,7 @@ begin
       using errcode = '42501';
   end if;
 
-  insert into public.activity_events (
-    repository_id,
-    actor_id,
-    event_type,
-    subject_type,
-    subject_id,
-    payload
-  )
-  values (
+  perform private.record_collaboration_event(
     new.repository_id,
     authenticated_actor,
     'resource.updated',
@@ -34,7 +26,9 @@ begin
       'title', new.title,
       'title_changed', old.title is distinct from new.title,
       'content_changed', old.content is distinct from new.content
-    )
+    ),
+    'page',
+    new.title
   );
   return new;
 end;

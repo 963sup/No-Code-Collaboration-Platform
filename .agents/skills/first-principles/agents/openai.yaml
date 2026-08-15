@@ -1,0 +1,6 @@
+interface:
+  display_name: "First Principles"
+  short_description: "Rebuild decisions from necessary facts and falsifiable models."
+  default_prompt: "Use $first-principles to analyze this decision and produce a falsifiable minimum sufficient model."
+policy:
+  allow_implicit_invocation: true

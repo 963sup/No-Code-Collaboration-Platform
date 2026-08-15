@@ -1,6 +1,6 @@
 # Domain Contract: Structured Data Change
 
-- Status: Candidate
+- Status: Accepted semantic envelope; Candidate concrete lifecycle
 - Contract owner: Product and Domain
 - Last reviewed: 2026-08-15
 
@@ -16,7 +16,7 @@ This contract owns the meaning and safety boundary of Data Commit, Data Branch, 
 
 - Page already has typed create/update transitions, optimistic-concurrency evidence, and actor-attributed immutable Activity Events.
 - GitHub demonstrates mature names and interaction patterns for grouped change evidence, isolated state, comparison, and review, but its Source Code and Git implementation is not target authority.
-- The user explicitly requires Commit, Branch, Diff, and Pull Request to be available only as data-transfer/change semantics with no code capability.
+- The Product Contract and ADR-013 accept Data Commit, Data Branch, Data Diff, and Change Proposal as no-code semantics while withholding concrete implementation authority.
 
 ### Constraints
 
@@ -45,7 +45,7 @@ This contract owns the meaning and safety boundary of Data Commit, Data Branch, 
 - Prefer explicit typed operations over a generic patch language.
 - Prefer the target Resource's existing command contract over a parallel mutation API.
 - Prefer derived comparison over stored mutable Diff state.
-- Prefer a small, reversible candidate model until a concrete multi-change workflow proves the lifecycle.
+- Prefer a small, reversible concrete model only after a real multi-change workflow proves the lifecycle.
 
 ## Boundary and owner
 
@@ -62,10 +62,10 @@ It does not own Resource subtype invariants, Repository ownership, Membership, G
 
 | Canonical term | External alias | Meaning |
 | --- | --- | --- |
-| Data Commit | Commit | Immutable actor-attributed batch of accepted structured-data operations and their evidence |
+| Data Commit | Commit | Immutable Actor-attributed batch of accepted structured-data operations and their evidence |
 | Data Branch | Branch | Named isolated line of Repository data state; never an authority Scope or Container |
 | Data Diff | Diff | Authorization-filtered derived comparison of typed fields or records |
-| Change Proposal | Pull Request | Request to review and apply one bounded structured-data change set |
+| Change Proposal | Pull Request | Process to propose, review, decide, and apply one bounded structured-data change set |
 | Change operation | — | Typed reference to a Resource command and its validated input, never executable code |
 | Base evidence | — | Stable concurrency/version evidence against which a change was prepared |
 
@@ -79,11 +79,11 @@ Change Proposal 1 ── proposes ── 1 bounded change set
 Data Diff = derived comparison(base evidence, proposed state, Actor authority)
 ```
 
-Data Commit and Change Proposal are candidate persistent identities. Data Branch remains candidate state-line identity. Data Diff is always derived and cannot own lifecycle, authority, or content. None is a Repository, Resource owner, Membership Scope, Principal, Grant, or independent visibility boundary.
+The four semantic meanings above are accepted. Data Commit and Change Proposal persistent identity, Data Branch state-line identity, and every concrete lifecycle remain Candidate. Data Diff is always derived and cannot own lifecycle, authority, or content. None is a Repository, Resource owner, Membership Scope, Principal, Grant, or independent visibility boundary.
 
 ## States and transitions
 
-Only the minimum candidate lifecycle is admitted:
+The following lifecycle is a Candidate used to make unknowns falsifiable; it is not implementation authority:
 
 ```text
 Prepared change set
@@ -121,7 +121,7 @@ Approval never substitutes for apply authorization. Applying a proposal revalida
 
 ## Events and workflows
 
-Candidate facts include `data_commit.recorded`, `change_proposal.opened`, `change_proposal.reviewed`, `change_proposal.applied`, and `change_proposal.closed`. Exact event names and payloads are not accepted yet.
+Candidate facts include `data_commit.recorded`, `change_proposal.opened`, `change_proposal.reviewed`, `change_proposal.applied`, and `change_proposal.closed`. Exact event names and payloads are not accepted.
 
 Any eventual workflow must be idempotent by stable command/proposal identity, preserve actor attribution, avoid copying sensitive Resource content into broad Activity projections, and commit required Resource state plus historical evidence atomically.
 
@@ -138,7 +138,7 @@ Atomicity across multiple Resources remains an unresolved requirement. Until it 
 
 ## Known implementation gaps
 
-No executable mismatch is registered because Product explicitly defers the concrete lifecycle, identity, Capability, persistence, URL, and conflict contracts for these concepts. Inspection of `packages/domain`, `packages/application`, Supabase schemas, and Web routes found no claimed Structured Data Change capability. That absence is intentional containment, not an implementation gap.
+The semantic envelope is accepted, while Product explicitly defers its concrete lifecycle, identity, Capability, persistence, URL, conflict, and atomicity contracts. Their executable absence is recorded as intentional containment in [`../IMPLEMENTATION_GAPS.md`](../IMPLEMENTATION_GAPS.md), not treated as Product rejection.
 
 If a concrete slice is accepted, any partial implementation must be registered in [`../IMPLEMENTATION_GAPS.md`](../IMPLEMENTATION_GAPS.md) before it is presented as supported.
 
@@ -160,7 +160,7 @@ Rejected because it would hide Resource-specific invariants behind an unbounded 
 
 Rejected because process participation cannot create Capability.
 
-Removing this candidate contract changes nothing executable today. If future users need multi-change review or isolated data-state work, its removal would force those rules into UI or provider adapters and duplicate authorization decisions.
+Removing the Candidate lifecycle changes nothing executable today. Removing the accepted envelope would reopen Product meaning and could force inconsistent rules into UI or provider adapters.
 
 ## Falsification conditions
 
@@ -182,4 +182,3 @@ Reopen or split this boundary when:
 6. Data Diff redacts fields unavailable to the requesting Actor and cannot be client-authored.
 7. Branch selection changes work-state projection but never effective authority.
 8. Script, shell, executable expression, source file, git ref/merge, and secret-bearing payload fixtures are rejected.
-

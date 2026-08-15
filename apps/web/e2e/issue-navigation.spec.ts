@@ -18,7 +18,7 @@ test('Issue list preserves Repository-scoped URL state and responsive supporting
   page
 }) => {
   await expect(page.getByRole('heading', { name: 'All issues' })).toBeVisible();
-  await expect(page.getByRole('button', { name: 'New issue' })).toBeDisabled();
+  await expect(page.getByText('New issue', { exact: true })).toBeVisible();
   await expect(
     page.getByRole('link', { name: 'Clarify the customer onboarding handoff' })
   ).toBeVisible();
@@ -58,6 +58,33 @@ test('Issue list preserves Repository-scoped URL state and responsive supporting
   await page.getByRole('button', { name: 'Submit issue search' }).click();
   await expect(page).toHaveURL(`${issuesPath}?q=missing+work`);
   await expect(page.getByText('No issues match this view')).toBeVisible();
+});
+
+test('Issue commands create Activity-backed work and expose the locked lifecycle', async ({
+  page
+}) => {
+  const suffix = Date.now().toString();
+  const title = `E2E actionable work ${suffix}`;
+  const comment = `E2E chronological comment ${suffix}`;
+
+  await page.getByText('New issue', { exact: true }).click();
+  await page.getByPlaceholder('Issue title').fill(title);
+  await page
+    .getByPlaceholder('Describe the actionable work')
+    .fill('Created from the live Issue surface.');
+  await page.getByRole('button', { name: 'Create issue' }).click();
+  await expect(page).toHaveURL(new RegExp(`${issuesPath}/\\d+$`, 'u'));
+  await expect(page.getByRole('heading', { name: new RegExp(title, 'u') })).toBeVisible();
+
+  const commentForm = page.getByRole('heading', { name: 'Add comment' }).locator('..');
+  await commentForm.locator('textarea[name="body"]').fill(comment);
+  await commentForm.getByRole('button', { name: 'Comment' }).click();
+  await expect(page.getByText(comment, { exact: true })).toBeVisible();
+
+  await page.getByRole('button', { name: 'Close issue' }).click();
+  await expect(page.getByRole('button', { name: 'Reopen issue' })).toBeVisible();
+  await page.getByRole('button', { name: 'Reopen issue' }).click();
+  await expect(page.getByRole('button', { name: 'Close issue' })).toBeVisible();
 });
 
 test('Issue soft navigation, Back, Forward, refresh, and direct URL share canonical identity', async ({

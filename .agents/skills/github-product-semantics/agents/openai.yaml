@@ -1,6 +1,0 @@
-interface:
-  display_name: "GitHub Product Semantics"
-  short_description: "Reference GitHub admission outcomes and no-code guardrails."
-  default_prompt: "Use $github-product-semantics as the supporting policy reference for current GitHub benchmark admission outcomes and no-code guardrails."
-policy:
-  allow_implicit_invocation: false

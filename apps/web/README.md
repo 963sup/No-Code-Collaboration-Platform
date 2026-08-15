@@ -7,18 +7,16 @@ Route groups clarify delivery context without changing URLs:
 - `(public)` renders public product surfaces at routes such as `/`.
 - `(auth)` renders identity flows at routes such as `/sign-in`.
 - `(app)` renders authenticated collaboration surfaces under the real `/app` segment.
+- `(repository)` renders canonical `/{ownerSlug}/{repositorySlug}` Repository surfaces with visibility- and authority-aware access.
 
 There is one root layout. Domain truth remains in `packages/domain`, use-case orchestration and neutral ports remain in `packages/application`, Supabase implementation details remain in `packages/infrastructure/supabase`, and source-owned shadcn/ui primitives remain in `packages/ui`.
 
 Next.js routes and components call Application use cases. Provider wiring is localized in `src/composition`; no route, layout, Server Action, or component receives a Supabase client or generated database type.
 
-## Repository workspace
+## Repository delivery
 
-`/app/repositories/[repositoryId]` is the first composite Repository experience. Its layout renders the implicit `children` header together with four Parallel Route slots:
+The canonical Repository URL is `/{ownerSlug}/{repositorySlug}`. The owner namespace resolves a User or Organization, while stable Repository identity and server-side authorization remain independent of the human-readable path.
 
-- `@navigation` — Repository-local product navigation;
-- `@workspace` — the primary no-code resource surface;
-- `@context` — scope and visibility explanation;
-- `@activity` — the event-history projection surface.
+Repository presentation has one owner/Repository header, primary navigation, and one active child-resource surface. Route-specific `@sidebar`, `@activity`, or `@modal` regions are used only when independent data, navigation, loading, recovery, or canonical soft-navigation behavior justifies them. Every named slot defines an explicit default and clearing behavior.
 
-These slots are presentation responsibilities, not bounded contexts or aggregates. They share a request-scoped, memoized Application query for the authorization-aware Repository projection. Every named slot has `default.tsx` so hard navigation has an explicit fallback.
+`/app/repositories/[repositoryId]/**` is access-aware, redirect-only compatibility resolution. It never owns a second Repository UI. Parallel and Intercepting Routes are presentation mechanics, not Containers, Domain boundaries, or authorization inputs.

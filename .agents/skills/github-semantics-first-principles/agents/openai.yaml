@@ -1,6 +1,0 @@
-interface:
-  display_name: "GitHub Semantics First Principles"
-  short_description: "Reverse-engineer GitHub semantics without code capabilities."
-  default_prompt: "Use $github-semantics-first-principles to adapt this GitHub-derived Product concept under the immutable no-code Repository axiom and reject every code or source-control capability."
-policy:
-  allow_implicit_invocation: true

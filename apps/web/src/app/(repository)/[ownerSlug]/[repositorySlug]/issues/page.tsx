@@ -14,6 +14,7 @@ import { repositoryIssuePath, repositoryIssuesPath } from '@/routing/repository-
 
 import { IssueState } from '../_components/issue-state';
 import { requireAccessibleRepositoryRoute } from '../_queries/get-accessible-repository-route';
+import { createIssueAction } from './actions';
 
 interface RepositoryIssuesProps {
   readonly params: Promise<{ ownerSlug: string; repositorySlug: string }>;
@@ -61,9 +62,23 @@ export default async function RepositoryIssues({ params, searchParams }: Reposit
           <h1 className='text-2xl font-semibold tracking-tight'>All issues</h1>
           <p className='text-sm text-muted-foreground'>Actionable work in this Repository.</p>
         </div>
-        <Button disabled title='Issue creation is not executable yet'>
-          New issue
-        </Button>
+        <details className='rounded-md border bg-card px-3 py-2'>
+          <summary className='cursor-pointer text-sm font-semibold'>New issue</summary>
+          <form
+            action={createIssueAction.bind(null, ownerSlug, repositorySlug)}
+            className='mt-3 grid min-w-[min(32rem,75vw)] gap-3'
+          >
+            <Input maxLength={240} name='title' placeholder='Issue title' required />
+            <textarea
+              className='min-h-24 rounded-md border border-input bg-transparent px-3 py-2 text-sm'
+              name='body'
+              placeholder='Describe the actionable work'
+            />
+            <Button className='justify-self-end' type='submit'>
+              Create issue
+            </Button>
+          </form>
+        </details>
       </header>
 
       <form action={basePath} className='flex gap-2' method='get' role='search'>

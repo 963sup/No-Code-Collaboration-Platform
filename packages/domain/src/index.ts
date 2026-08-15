@@ -29,15 +29,44 @@ export {
   type OrganizationSummary
 } from './organization/organization';
 export {
+  canTransitionIssue,
+  isIssueCloseReason,
   isIssueNumber,
   isIssueStatus,
   isIssueTitle,
+  isIssueVersion,
+  issueCloseReasons,
   issueStatuses,
   issueTitleMaxLength,
+  normalizeIssueTitle,
+  type IssueAssignee,
+  type IssueCloseReason,
+  type IssueCommand,
+  type IssueComment,
   type IssueDetail,
+  type IssueLabel,
   type IssueStatus,
   type IssueSummary
 } from './resource/issue';
+export {
+  canCommentOnDiscussion,
+  canSelectDiscussionAnswer,
+  discussionCategories,
+  discussionStatuses,
+  discussionTitleMaxLength,
+  isDiscussionCategory,
+  isDiscussionNumber,
+  isDiscussionStatus,
+  isDiscussionTitle,
+  isDiscussionVersion,
+  normalizeDiscussionTitle,
+  type DiscussionCategory,
+  type DiscussionCommand,
+  type DiscussionComment,
+  type DiscussionDetail,
+  type DiscussionStatus,
+  type DiscussionSummary
+} from './resource/discussion';
 export {
   createPageDraft,
   createPageUpdate,

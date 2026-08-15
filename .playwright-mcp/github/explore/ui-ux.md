@@ -1,3 +1,3 @@
 # Explore
 
-Recommendation/discovery projection. It is not Domain truth and must exclude Code-specific recommendations in the target product.
+The observed Explore page presented recommendation and discovery content with filters and links to GitHub resources. This is external evidence only.

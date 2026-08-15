@@ -11,6 +11,33 @@ export default function PublicLayout({ children }: Readonly<{ children: ReactNod
             No-Code Collaboration Platform
           </Link>
           <nav aria-label='Public navigation' className='flex items-center gap-2'>
+            <Link
+              className={cn(
+                buttonVariants({ variant: 'ghost', size: 'sm' }),
+                'hidden sm:inline-flex'
+              )}
+              href='/explore'
+            >
+              Explore
+            </Link>
+            <Link
+              className={cn(
+                buttonVariants({ variant: 'ghost', size: 'sm' }),
+                'hidden md:inline-flex'
+              )}
+              href='/integrations'
+            >
+              Integrations
+            </Link>
+            <Link
+              className={cn(
+                buttonVariants({ variant: 'ghost', size: 'sm' }),
+                'hidden sm:inline-flex'
+              )}
+              href='/search'
+            >
+              Search
+            </Link>
             <Link className={cn(buttonVariants({ variant: 'ghost', size: 'sm' }))} href='/sign-in'>
               Sign in
             </Link>

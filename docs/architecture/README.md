@@ -31,8 +31,8 @@ GitHub supplies mature collaboration, ownership, organization, authorization, UR
 19. Operation Capability and delegation authority are distinct; authority mutation evaluates Actor authority, current Role, proposed Role, and governance invariants.
 20. Selected provider is not proof of a provisioned environment; migration artifact is not proof of applied deployment; local/CI verification is not production validation.
 21. Organization, Repository, and Resource hard deletion remain unavailable to end-user roles until lifecycle contracts define containment fate, retention, restore/redaction, history, and recovery.
-22. Page is the first accepted Resource kind and owns an executable command lifecycle. Page create/update requires Domain Capability decision, independent RLS, exact content semantics, optimistic concurrency, and required same-transaction historical evidence.
-23. Issue is the second proven Resource persistence lifecycle: its Repository-local number, status, closed attribution, query shape, and future conversation lifecycle justify a dedicated table. The current Issue slice is SELECT-only; undefined commands fail closed.
+22. Page is the first accepted Resource kind. Its command contract requires Domain Capability decision, independent RLS, exact content semantics, optimistic concurrency, and required same-transaction historical evidence.
+23. Issue and Discussion are dedicated Repository-contained Resource lifecycles. Both use Repository-local atomic numbers, typed state, expected-version commands, Capability decisions, and same-transaction Activity Evidence; their subtype tables and relationships must not weaken the Page envelope.
 24. Shared Resource persistence remains acceptable for Page only while its exact subtype invariants remain explicit; Issue must not weaken the Page envelope into a generic JSON bucket.
 25. Canonical human Repository routes use the globally unambiguous Owner/Repository namespace; route resolution produces stable Repository UUID for Application authorization/RLS/evidence.
 26. `Resource` is a Domain abstraction, not a required public URL segment. Concrete accepted Resource kinds own product navigation surfaces.
@@ -44,7 +44,9 @@ GitHub supplies mature collaboration, ownership, organization, authorization, UR
 32. Route Groups, Parallel Routes, Intercepting Routes, and framework layouts are presentation/access composition only. They do not create Product URL, Container, Artifact, or Domain boundaries.
 33. Canonical Repository reads cannot inherit an authenticated-only wrapper because public Repository visibility is an accepted anonymous read baseline.
 34. An obsolete Organization-only Repository UI tree may not coexist with canonical Owner routing.
-35. Commit, Branch, Diff, Pull Request, Actions, and Gist names can enter architecture only through accepted structured-data change or controlled-data-exchange contracts; Source Code, executable transformation, git refs/merge, code review, CI/CD, secret-bearing payloads, and a second Container remain forbidden.
+35. Data Commit, Data Branch, Data Diff, Change Proposal, Data Transfer, Data Capsule, and Repository Derivation are accepted Product semantics but authorize no concrete lifecycle, persistence, API, route, Capability, or UI. Source Code, Git mechanics, arbitrary execution, and generic version-control/automation engines remain rejected.
+36. Project planning, Notification delivery, Search, Explore, Integrations, Team explanation, Enterprise explanation, and Audit are non-owning Projections. They cannot own Repository Artifacts, authority, or source Evidence.
+37. Structural containment, Data Branch selection, Change Proposal participation or approval, Project filters, Notification state, Context, and Projection cannot create or change authority.
 
 ## Dependency direction
 
@@ -142,7 +144,9 @@ The target Web hierarchy normalizes GitHub's observed aliases before composing R
 /projects                                 # planning discovery Projection
 /discussions                              # discussion discovery Projection
 /notifications                            # actor delivery Projection
-/search?q=&type=&sort=&page=              # admitted-resource search; Code Search excluded
+/search?q=&type=&owner=&repository=&status=&sort=&page= # authorized no-code search
+/explore?sort=&ownerType=&artifact=&page= # public Repository discovery only
+/integrations?category=&page=             # reviewed metadata catalog only
 /organizations/{organizationSlug}/...     # one governance hierarchy; no split `/orgs` namespace
 /settings/profile                         # actor profile management
 /settings/organizations                   # Organization membership management
@@ -150,12 +154,10 @@ The target Web hierarchy normalizes GitHub's observed aliases before composing R
 /settings/appearance                      # presentation preferences
 /settings/accessibility                   # accessibility preferences
 /settings/billing                         # billing/subscription management
-/settings/integrations                    # installed integration management
-/settings/applications                    # delegated application authorization management
-/settings/programmatic-access             # credential metadata/revocation only; never secret content
+/settings/integrations                    # catalog plus explicit deferred connection state
 ```
 
-Repository creation/import and Organization creation are Process entry routes, not stable resource identities. Sign-out is a command, not a bookmarkable resource. Project detail, Team detail, and Enterprise identity routes are not accepted until their independent stable identity and lifecycle are proven.
+Repository creation/import and Organization creation are Process entry routes, not stable resource identities. Sign-out is a command, not a bookmarkable resource. Project detail, Team detail, Enterprise identity, App/Installation, OAuth, credential, and connector-execution routes are not established in this milestone. Their absence is a product decision, not an implementation unknown.
 
 Product URL:
 
@@ -173,34 +175,15 @@ Product URL:
 /{ownerSlug}/{repositorySlug}/settings
 ```
 
-Current executable Next.js delivery projection:
+Delivery ownership projects the canonical Repository identity without redefining it:
 
 ```text
 apps/web/src/app/
-├─ (app)/
-│  └─ app/
-│     └─ page.tsx                     # authenticated discovery/dashboard
-│
-├─ (repository)/
-│  └─ [ownerSlug]/
-│     └─ [repositorySlug]/
-│        ├─ layout.tsx                # one Repository shell
-│        ├─ page.tsx                  # Overview
-│        ├─ issues/
-│        │  ├─ page.tsx               # read-only list
-│        │  └─ [issueNumber]/page.tsx # full-page detail
-│        ├─ pages/
-│        │  ├─ page.tsx
-│        │  └─ [pageId]/page.tsx
-│        ├─ activity/page.tsx
-│        ├─ @sidebar/
-│        │  ├─ default.tsx
-│        │  └─ issues/**              # independent navigation/metadata
-│        └─ @modal/
-│           ├─ default.tsx
-│           └─ (.)issues/[issueNumber]/page.tsx
-│
-└─ (auth)/                             # human/protocol identity surfaces
+├─ (public)/       # anonymous delivery; no authority implication
+├─ (auth)/         # identity and protocol delivery
+├─ (app)/          # authenticated discovery/dashboard
+└─ (repository)/   # canonical /{ownerSlug}/{repositorySlug} delivery
+   └─ route-specific @sidebar, @activity, or @modal only when independently justified
 ```
 
 Route Group names do not appear in Product URLs.
@@ -223,7 +206,7 @@ Supporting regions are absent when the active route does not prove a separate na
 
 `Context` remains a presentation concept but does not require a permanent pane. Activity is a Repository-scoped projection with a canonical route; a privacy-safe Overview summary may be composed independently only under ADR-011's removal test.
 
-ADR-011 defines the target `@sidebar`, `@activity`, and `@modal` composition. The Issue read slice now proves `@sidebar` as independent route navigation/metadata and `@modal` as canonical soft-navigation presentation; both define defaults and unmatched-navigation clearing behavior. Discussion and any `@activity` composition remain unimplemented. Framework composition mechanisms do not establish new Product responsibilities merely because the framework supports them.
+ADR-011 defines the target `@sidebar`, `@activity`, and `@modal` composition. Each named slot requires a default and explicit unmatched-navigation behavior. Framework composition mechanisms do not establish new Product responsibilities merely because the framework supports them. ADR-012 owns the Issue/Discussion command and delivery-projection decision; ADR-013 owns the accepted no-code data semantic envelope.
 
 ## Compatibility routing
 
@@ -382,5 +365,7 @@ Read `ADR_INDEX.md` before individual ADRs.
 - ADR-009 remains current for controlled Page write boundaries.
 - ADR-010 owns current Repository ownership and canonical Owner/Repository route identity.
 - ADR-011 owns the admitted GitHub public presentation baseline and route-specific responsive Parallel/Intercepting Route composition.
+- ADR-012 owns the accepted Issue/Discussion lifecycle persistence and the non-owning Project/Notification/Search/Explore/Integration projection boundaries; ADR-013 supersedes only its former rejection of no-code Data semantics.
+- ADR-013 owns the Product-level semantic envelope for Data Change, Exchange, and Repository Derivation without authorizing implementation.
 
 No final bounded-context map is declared. Domain modules require coherent business ownership/lifecycle evidence rather than symmetry with ontology labels.

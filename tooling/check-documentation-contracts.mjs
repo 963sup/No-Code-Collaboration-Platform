@@ -1,5 +1,5 @@
-import { existsSync, readFileSync } from 'node:fs';
-import { resolve } from 'node:path';
+import { existsSync, readFileSync, readdirSync } from 'node:fs';
+import { dirname, extname, resolve } from 'node:path';
 
 const root = process.cwd();
 const failures = [];
@@ -22,6 +22,34 @@ function forbidMatch(path, content, pattern, message) {
   if (pattern.test(content)) failures.push(`${path}: ${message}`);
 }
 
+const skippedDirectories = new Set([
+  '.git',
+  '.next',
+  '.turbo',
+  'coverage',
+  'node_modules',
+  'playwright-report',
+  'test-results'
+]);
+
+function walkFiles(directory) {
+  const files = [];
+
+  for (const entry of readdirSync(directory, { withFileTypes: true })) {
+    if (entry.isDirectory() && skippedDirectories.has(entry.name)) continue;
+
+    const absolute = resolve(directory, entry.name);
+    if (entry.isDirectory()) files.push(...walkFiles(absolute));
+    else if (entry.isFile()) files.push(absolute);
+  }
+
+  return files;
+}
+
+function repositoryPath(absolute) {
+  return absolute.slice(root.length + 1).replaceAll('\\', '/');
+}
+
 const requiredDocuments = [
   'README.md',
   'docs/AGENTS.md',
@@ -35,17 +63,33 @@ const requiredDocuments = [
   'docs/architecture/ADR-003-repository-workspace-parallel-composition.md',
   'docs/architecture/ADR-005-local-first-supabase-lifecycle.md',
   'docs/architecture/ADR-010-repository-owner-namespace.md',
+  'docs/architecture/ADR-011-github-surface-parallel-composition.md',
+  'docs/architecture/ADR-012-collaboration-lifecycle-and-projection-boundaries.md',
+  'docs/architecture/ADR-013-core-no-code-data-semantic-envelope.md',
+  'docs/benchmarks/GITHUB_PUBLIC_URL_UI_UX.md',
   'docs/domains/DOMAIN_TEMPLATE.md',
+  'docs/domains/README.md',
   'docs/domains/access-authority.md',
   'docs/domains/data-exchange.md',
   'docs/domains/identity-lifecycle.md',
   'docs/domains/structured-data-change.md',
   'docs/domains/repository-collaboration.md',
   'docs/operations/AGENTS.md',
-  'docs/operations/RUNBOOK.md'
+  'docs/operations/RUNBOOK.md',
+  'apps/web/README.md',
+  '.playwright-mcp/github-ui-ux.md',
+  '.playwright-mcp/github-urls.json'
 ];
 
 const documents = Object.fromEntries(requiredDocuments.map((path) => [path, read(path)]));
+for (const forbiddenConstitutionPath of ['CONSTITUTION.md', 'docs/CONSTITUTION.md']) {
+  if (existsSync(resolve(root, forbiddenConstitutionPath))) {
+    failures.push(
+      `${forbiddenConstitutionPath}: docs/PRODUCT.md must remain the only Product constitution`
+    );
+  }
+}
+
 const product = documents['docs/PRODUCT.md'];
 const ontology = documents['docs/ONTOLOGY.md'];
 const repositoryDomain = documents['docs/domains/repository-collaboration.md'];
@@ -57,6 +101,10 @@ const architectureReadme = documents['docs/architecture/README.md'];
 const architectureDecisionIndex = documents['docs/architecture/ADR_INDEX.md'];
 const compositionAdr =
   documents['docs/architecture/ADR-003-repository-workspace-parallel-composition.md'];
+const semanticEnvelopeAdr =
+  documents['docs/architecture/ADR-013-core-no-code-data-semantic-envelope.md'];
+const benchmarkSummary = documents['docs/benchmarks/GITHUB_PUBLIC_URL_UI_UX.md'];
+const benchmarkEvidenceIndex = documents['.playwright-mcp/github-ui-ux.md'];
 
 requireMatch(
   'README.md',
@@ -85,10 +133,62 @@ for (const [pattern, message] of [
   [
     /^## No-code data change and transfer semantics$[\s\S]*opaque text is never parsed or executed as code[\s\S]*allowlisted connectors\/endpoints/ims,
     'no-code structured-data change and transfer boundary is missing'
+  ],
+  [
+    /structural containment[\s\S]*does not create another collaboration Container or authority boundary/i,
+    'structural containment/Container boundary is missing'
+  ],
+  [
+    /Identity establishes a trusted Actor[\s\S]*Access resolves effective authority/i,
+    'Identity/Access non-confusion law is missing'
+  ],
+  [
+    /Governance constrains future action[\s\S]*Audit[\s\S]*past action/i,
+    'Governance/Audit time-direction law is missing'
+  ],
+  [
+    /Repository Derivation[\s\S]*independent Owner and authority[\s\S]*secrets, Sessions, and Grants are not copied by default/i,
+    'Repository Derivation independence boundary is missing'
+  ],
+  [
+    /Commit.*Branch.*Diff.*Pull Request.*Actions.*Gist.*Fork.*Pull.*Push[\s\S]*external benchmark aliases only/is,
+    'external benchmark alias boundary is missing'
   ]
 ]) {
   requireMatch('docs/PRODUCT.md', product, pattern, message);
 }
+
+const productAxiomMatches =
+  product.match(/Repository\s*=\s*No-Code Collaboration Container/gi) ?? [];
+if (productAxiomMatches.length !== 1) {
+  failures.push(
+    `docs/PRODUCT.md: expected exactly one Product axiom declaration, found ${productAxiomMatches.length}`
+  );
+}
+
+for (const semantic of [
+  'Data Commit',
+  'Data Branch',
+  'Data Diff',
+  'Change Proposal',
+  'Data Transfer',
+  'Data Capsule',
+  'Repository Derivation'
+]) {
+  requireMatch(
+    'docs/PRODUCT.md',
+    product,
+    new RegExp(`\\*\\*${semantic}\\*\\*`),
+    `${semantic} accepted semantic envelope is missing`
+  );
+}
+
+forbidMatch(
+  'docs/PRODUCT.md',
+  product,
+  /GitHub Pull Request, Gist, Commit, Branch, Diff, Code, Actions, Source, and code-review surfaces are rejected/i,
+  'old blanket rejection incorrectly rejects accepted no-code semantics'
+);
 
 for (const [pattern, message] of [
   [
@@ -108,8 +208,16 @@ for (const [pattern, message] of [
     'canonical Repository interaction model is missing'
   ],
   [
-    /^## 18\. No-code Data Change and Transfer[\s\S]*shared envelope does not prove one generic `version_control` or `automation` aggregate/ims,
-    'conditional no-code data-change and data-transfer ontology is missing'
+    /^## 18\. No-code Data Change, Exchange, and Derivation[\s\S]*shared envelope does not prove one generic `version_control` or `automation` aggregate/ims,
+    'accepted no-code data-change, exchange, and derivation ontology is missing'
+  ],
+  [
+    /Account.*not a generic Entity[\s\S]*Identity establishes a trusted User Actor[\s\S]*Access resolves effective Capability/is,
+    'Account and Identity/Access non-confusion boundary is missing'
+  ],
+  [
+    /Governance constrains future actions[\s\S]*Audit explains or proves past actions/i,
+    'Governance/Audit ontology boundary is missing'
   ]
 ]) {
   requireMatch('docs/ONTOLOGY.md', ontology, pattern, message);
@@ -176,6 +284,10 @@ for (const [pattern, message] of [
   [
     /legacyPath[\s\S]*access-aware resolution/is,
     'stable-ID compatibility redirect boundary is missing'
+  ],
+  [
+    /Data Commit, Data Branch, Data Diff, Change Proposal, Data Transfer, Data Capsule, and Repository Derivation[\s\S]*authorize no concrete lifecycle, persistence, API, route, Capability, or UI/i,
+    'accepted semantic envelope/architecture non-implementation boundary is missing'
   ]
 ]) {
   requireMatch('docs/architecture/README.md', architectureReadme, pattern, message);
@@ -191,9 +303,48 @@ for (const [pattern, message] of [
   [
     /ADR-011[\s\S]*Accepted[\s\S]*route-specific `@sidebar`, `@activity`, and `@modal` composition/i,
     'ADR-011 current supporting-composition status is missing'
+  ],
+  [
+    /ADR-012[\s\S]*item 10 partially superseded by ADR-013[\s\S]*replaces only its rejection\/deferral of no-code Data semantics/i,
+    'ADR-012 precise partial supersession is missing'
+  ],
+  [
+    /ADR-013[\s\S]*Accepted[\s\S]*without authorizing concrete lifecycle or implementation/i,
+    'ADR-013 accepted semantic-envelope decision is missing'
   ]
 ]) {
   requireMatch('docs/architecture/ADR_INDEX.md', architectureDecisionIndex, pattern, message);
+}
+
+for (const [pattern, message] of [
+  [/^- Status: Accepted$/m, 'ADR-013 is not accepted'],
+  [
+    /ADR-011 is refined[\s\S]*conditional Data-semantics admission[\s\S]*accepted Product envelope/i,
+    'ADR-011 refinement boundary is missing'
+  ],
+  [
+    /ADR-012 Decision item 10 is superseded only[\s\S]*Source Code, Git mechanics, code review, arbitrary execution, and CI\/CD remains? current/i,
+    'ADR-012 partial supersession boundary is missing'
+  ],
+  [
+    /authorizes no Domain entity, schema, migration, Capability, API, route, UI[\s\S]*generic version-control engine[\s\S]*automation runtime/i,
+    'semantic acceptance/implementation boundary is missing'
+  ],
+  [
+    /Branch selection[\s\S]*Proposal (?:participation or )?approval[\s\S]*Project filter[\s\S]*Notification state[\s\S]*do not change effective authority/i,
+    'non-authoritative Branch, Proposal, Project, and Notification cases are missing'
+  ],
+  [
+    /script[\s\S]*expression[\s\S]*Git ref[\s\S]*(?:code|executable) payload[\s\S]*secret (?:material|value)[\s\S]*cross-Repository authority bypass/i,
+    'required Data rejection fixtures are missing'
+  ]
+]) {
+  requireMatch(
+    'docs/architecture/ADR-013-core-no-code-data-semantic-envelope.md',
+    semanticEnvelopeAdr,
+    pattern,
+    message
+  );
 }
 
 for (const [pattern, message] of [
@@ -218,6 +369,49 @@ for (const [pattern, message] of [
     message
   );
 }
+
+const currentTruthDocuments = [
+  ['docs/PRODUCT.md', product],
+  ['docs/ONTOLOGY.md', ontology],
+  ['docs/architecture/README.md', architectureReadme],
+  ['docs/domains/README.md', documents['docs/domains/README.md']],
+  ['docs/IMPLEMENTATION_GAPS.md', gapRegister]
+];
+
+for (const [path, content] of currentTruthDocuments) {
+  for (const [pattern, message] of [
+    [/conditionally admitted only/i, 'old conditional Data-semantics admission remains'],
+    [
+      /retained only as non-current research evidence/i,
+      'accepted Data envelope is mislabeled as research'
+    ],
+    [
+      /future typed data proposals?\/capsules? require new target vocabulary/i,
+      'old future-only Data-semantics rejection remains'
+    ]
+  ]) {
+    forbidMatch(path, content, pattern, message);
+  }
+}
+
+for (const [pattern, message] of [
+  [
+    /canonical Repository URL is `\/\{ownerSlug\}\/\{repositorySlug\}`/i,
+    'canonical Repository delivery URL is missing'
+  ],
+  [
+    /\/app\/repositories\/\[repositoryId\]\/\*\*.*redirect-only compatibility/is,
+    'stable-ID compatibility route is not redirect-only'
+  ]
+]) {
+  requireMatch('apps/web/README.md', documents['apps/web/README.md'], pattern, message);
+}
+forbidMatch(
+  'apps/web/README.md',
+  documents['apps/web/README.md'],
+  /four Parallel Route slots|@navigation[\s\S]*@workspace[\s\S]*@context[\s\S]*@activity/i,
+  'obsolete four-slot Repository workspace remains'
+);
 
 for (const openGapId of ['GAP-OWNERSHIP-001', 'GAP-IDENTITY-001']) {
   requireMatch(
@@ -346,7 +540,10 @@ for (const [path, content, requiredPatterns] of [
     'docs/domains/structured-data-change.md',
     structuredDataChangeDomain,
     [
-      [/^- Status: Candidate$/m, 'candidate status is missing'],
+      [
+        /^- Status: Accepted semantic envelope; Candidate concrete lifecycle$/m,
+        'semantic-envelope/candidate-lifecycle status is missing'
+      ],
       [
         /Every Data Commit, Data Branch, and Change Proposal belongs to exactly one Repository/i,
         'single-Repository change boundary is missing'
@@ -365,7 +562,10 @@ for (const [path, content, requiredPatterns] of [
     'docs/domains/data-exchange.md',
     dataExchangeDomain,
     [
-      [/^- Status: Candidate$/m, 'candidate status is missing'],
+      [
+        /^- Status: Accepted semantic envelope; Candidate concrete lifecycle$/m,
+        'semantic-envelope/candidate-lifecycle status is missing'
+      ],
       [
         /Every Data Transfer and Data Capsule belongs to exactly one Repository/i,
         'single-Repository exchange boundary is missing'
@@ -417,11 +617,187 @@ requireMatch(
   'Cloud provisioning status is missing'
 );
 
+for (const [path, content] of [
+  ['docs/benchmarks/GITHUB_PUBLIC_URL_UI_UX.md', benchmarkSummary],
+  ['.playwright-mcp/github-ui-ux.md', benchmarkEvidenceIndex]
+]) {
+  requireMatch(
+    path,
+    content,
+    /github-urls\.json/i,
+    'authoritative benchmark manifest link is missing'
+  );
+  forbidMatch(
+    path,
+    content,
+    /\b\d+\s+(?:URL[- ]resource inventories|resource inventories|component inventories|screenshots)\b/i,
+    'handwritten benchmark inventory count is forbidden'
+  );
+}
+
+const benchmarkManifestPath = '.playwright-mcp/github-urls.json';
+let benchmarkManifest = null;
+try {
+  benchmarkManifest = JSON.parse(documents[benchmarkManifestPath]);
+} catch (error) {
+  failures.push(`${benchmarkManifestPath}: invalid JSON: ${error.message}`);
+}
+
+let benchmarkResources = 0;
+let benchmarkComponents = 0;
+let benchmarkScreenshots = 0;
+if (benchmarkManifest) {
+  const resources = benchmarkManifest.resourceInventories ?? [];
+  const components = benchmarkManifest.componentInventories ?? [];
+  const inventories = [...resources, ...components];
+  benchmarkResources = resources.length;
+  benchmarkComponents = components.length;
+
+  if (benchmarkManifest.credentialDataStored !== false) {
+    failures.push(`${benchmarkManifestPath}: credentialDataStored must be false`);
+  }
+
+  for (const inventory of inventories) {
+    const inventoryPath = `.playwright-mcp/${inventory.path}`;
+    const inventoryAbsolute = resolve(root, inventoryPath);
+    if (!existsSync(inventoryAbsolute)) {
+      failures.push(`${benchmarkManifestPath}: missing inventory ${inventoryPath}`);
+      continue;
+    }
+
+    const sidecarPath = resolve(dirname(inventoryAbsolute), 'ui-ux.md');
+    if (!existsSync(sidecarPath)) {
+      failures.push(
+        `${benchmarkManifestPath}: ${repositoryPath(sidecarPath)} is missing for ${inventory.path}`
+      );
+    }
+
+    let inventoryEntries = null;
+    try {
+      inventoryEntries = JSON.parse(readFileSync(inventoryAbsolute, 'utf8'));
+    } catch (error) {
+      failures.push(`${inventoryPath}: invalid JSON: ${error.message}`);
+    }
+    if (!Array.isArray(inventoryEntries)) {
+      failures.push(`${inventoryPath}: inventory must be an array`);
+    } else if (
+      inventoryEntries.some(
+        (entry) =>
+          /127\.0\.0\.1|localhost/i.test(`${entry.url ?? ''} ${entry.canonicalUrl ?? ''}`) ||
+          /^target\b/i.test(entry.resourceType ?? '')
+      )
+    ) {
+      failures.push(
+        `${inventoryPath}: target/local implementation evidence is mixed into benchmark`
+      );
+    }
+
+    const screenshotDirectory = resolve(dirname(inventoryAbsolute), 'screenshots');
+    const actualScreenshots = existsSync(screenshotDirectory)
+      ? readdirSync(screenshotDirectory, { withFileTypes: true }).filter(
+          (entry) =>
+            entry.isFile() &&
+            extname(entry.name).toLowerCase() === '.png' &&
+            !entry.name.startsWith('target-')
+        ).length
+      : 0;
+    const declaredScreenshots = Number(inventory.screenshots);
+    if (!Number.isInteger(declaredScreenshots) || declaredScreenshots < 0) {
+      failures.push(`${benchmarkManifestPath}: ${inventory.path} has invalid screenshot count`);
+    } else {
+      benchmarkScreenshots += declaredScreenshots;
+      if (declaredScreenshots !== actualScreenshots) {
+        failures.push(
+          `${benchmarkManifestPath}: ${inventory.path} declares ${declaredScreenshots} screenshots but ${actualScreenshots} non-target PNG files exist`
+        );
+      }
+    }
+  }
+
+  if (benchmarkManifest.screenshotCount !== benchmarkScreenshots) {
+    failures.push(
+      `${benchmarkManifestPath}: screenshotCount ${benchmarkManifest.screenshotCount} does not equal derived inventory total ${benchmarkScreenshots}`
+    );
+  }
+}
+
+const markdownFiles = walkFiles(root).filter(
+  (absolute) => extname(absolute).toLowerCase() === '.md'
+);
+let relativeMarkdownLinks = 0;
+for (const absolute of markdownFiles) {
+  const path = repositoryPath(absolute);
+  const content = readFileSync(absolute, 'utf8');
+  const linkPattern = /!?\[[^\]]*\]\((<[^>]+>|[^)\n]+)\)/g;
+
+  for (const match of content.matchAll(linkPattern)) {
+    let target = match[1].trim();
+    if (target.startsWith('<') && target.endsWith('>')) target = target.slice(1, -1);
+    else target = target.split(/\s+(?=["'])/, 1)[0];
+
+    if (
+      !target ||
+      target.startsWith('#') ||
+      target.startsWith('/') ||
+      target.startsWith('\\') ||
+      /^[a-z][a-z\d+.-]*:/i.test(target)
+    ) {
+      continue;
+    }
+
+    target = target.split('#', 1)[0].split('?', 1)[0];
+    if (!target) continue;
+
+    try {
+      target = decodeURIComponent(target);
+    } catch {
+      failures.push(`${path}: malformed percent-encoding in Markdown link ${match[1]}`);
+      continue;
+    }
+
+    relativeMarkdownLinks += 1;
+    const resolvedTarget = resolve(dirname(absolute), target);
+    if (!existsSync(resolvedTarget)) {
+      failures.push(`${path}: relative Markdown link target is missing: ${target}`);
+    }
+  }
+}
+
+for (const absolute of markdownFiles.filter((path) =>
+  repositoryPath(path).startsWith('.playwright-mcp/')
+)) {
+  const path = repositoryPath(absolute);
+  const content = readFileSync(absolute, 'utf8');
+  for (const [pattern, message] of [
+    [/^## Target comparison/im, 'target comparison is mixed into benchmark evidence'],
+    [/^## Proposed App Router/im, 'target architecture is mixed into benchmark evidence'],
+    [
+      /^## Existing architecture conflicts/im,
+      'implementation status is mixed into benchmark evidence'
+    ],
+    [
+      /^## Runtime and shadcn checkpoint/im,
+      'local runtime snapshot is mixed into benchmark evidence'
+    ],
+    [
+      /current target slice/i,
+      'current target implementation snapshot is mixed into benchmark evidence'
+    ]
+  ]) {
+    forbidMatch(path, content, pattern, message);
+  }
+}
+
 const result = {
   ok: failures.length === 0,
   requiredDocuments: requiredDocuments.length,
   currentGaps: 2,
   archivedClosedGaps: 4,
+  markdownFiles: markdownFiles.length,
+  relativeMarkdownLinks,
+  benchmarkResources,
+  benchmarkComponents,
+  benchmarkScreenshots,
   failures
 };
 

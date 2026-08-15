@@ -75,9 +75,298 @@ export type Database = {
           },
         ]
       }
+      discussion_comments: {
+        Row: {
+          body: string
+          created_at: string
+          created_by: string
+          discussion_id: string
+          id: string
+          repository_id: string
+          updated_at: string
+          version: number
+        }
+        Insert: {
+          body: string
+          created_at?: string
+          created_by: string
+          discussion_id: string
+          id?: string
+          repository_id: string
+          updated_at?: string
+          version?: number
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          created_by?: string
+          discussion_id?: string
+          id?: string
+          repository_id?: string
+          updated_at?: string
+          version?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "discussion_comments_discussion_id_fkey"
+            columns: ["discussion_id"]
+            isOneToOne: false
+            referencedRelation: "discussions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "discussion_comments_discussion_repository_fk"
+            columns: ["repository_id", "discussion_id"]
+            isOneToOne: false
+            referencedRelation: "discussions"
+            referencedColumns: ["repository_id", "id"]
+          },
+          {
+            foreignKeyName: "discussion_comments_repository_id_fkey"
+            columns: ["repository_id"]
+            isOneToOne: false
+            referencedRelation: "repositories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      discussions: {
+        Row: {
+          answer_comment_id: string | null
+          body: string
+          category: Database["public"]["Enums"]["discussion_category"]
+          closed_at: string | null
+          closed_by: string | null
+          created_at: string
+          created_by: string
+          discussion_number: number
+          id: string
+          is_locked: boolean
+          repository_id: string
+          search_vector: unknown
+          status: Database["public"]["Enums"]["discussion_status"]
+          title: string
+          updated_at: string
+          version: number
+        }
+        Insert: {
+          answer_comment_id?: string | null
+          body?: string
+          category: Database["public"]["Enums"]["discussion_category"]
+          closed_at?: string | null
+          closed_by?: string | null
+          created_at?: string
+          created_by: string
+          discussion_number: number
+          id?: string
+          is_locked?: boolean
+          repository_id: string
+          search_vector?: unknown
+          status?: Database["public"]["Enums"]["discussion_status"]
+          title: string
+          updated_at?: string
+          version?: number
+        }
+        Update: {
+          answer_comment_id?: string | null
+          body?: string
+          category?: Database["public"]["Enums"]["discussion_category"]
+          closed_at?: string | null
+          closed_by?: string | null
+          created_at?: string
+          created_by?: string
+          discussion_number?: number
+          id?: string
+          is_locked?: boolean
+          repository_id?: string
+          search_vector?: unknown
+          status?: Database["public"]["Enums"]["discussion_status"]
+          title?: string
+          updated_at?: string
+          version?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "discussions_answer_comment_fk"
+            columns: ["id", "answer_comment_id"]
+            isOneToOne: false
+            referencedRelation: "discussion_comments"
+            referencedColumns: ["discussion_id", "id"]
+          },
+          {
+            foreignKeyName: "discussions_repository_id_fkey"
+            columns: ["repository_id"]
+            isOneToOne: false
+            referencedRelation: "repositories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      issue_assignees: {
+        Row: {
+          assigned_at: string
+          assigned_by: string
+          issue_id: string
+          repository_id: string
+          user_id: string
+        }
+        Insert: {
+          assigned_at?: string
+          assigned_by: string
+          issue_id: string
+          repository_id: string
+          user_id: string
+        }
+        Update: {
+          assigned_at?: string
+          assigned_by?: string
+          issue_id?: string
+          repository_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "issue_assignees_issue_id_fkey"
+            columns: ["issue_id"]
+            isOneToOne: false
+            referencedRelation: "issues"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "issue_assignees_issue_repository_fk"
+            columns: ["repository_id", "issue_id"]
+            isOneToOne: false
+            referencedRelation: "issues"
+            referencedColumns: ["repository_id", "id"]
+          },
+          {
+            foreignKeyName: "issue_assignees_repository_id_fkey"
+            columns: ["repository_id"]
+            isOneToOne: false
+            referencedRelation: "repositories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      issue_comments: {
+        Row: {
+          body: string
+          created_at: string
+          created_by: string
+          id: string
+          issue_id: string
+          repository_id: string
+          updated_at: string
+          version: number
+        }
+        Insert: {
+          body: string
+          created_at?: string
+          created_by: string
+          id?: string
+          issue_id: string
+          repository_id: string
+          updated_at?: string
+          version?: number
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          created_by?: string
+          id?: string
+          issue_id?: string
+          repository_id?: string
+          updated_at?: string
+          version?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "issue_comments_issue_id_fkey"
+            columns: ["issue_id"]
+            isOneToOne: false
+            referencedRelation: "issues"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "issue_comments_issue_repository_fk"
+            columns: ["repository_id", "issue_id"]
+            isOneToOne: false
+            referencedRelation: "issues"
+            referencedColumns: ["repository_id", "id"]
+          },
+          {
+            foreignKeyName: "issue_comments_repository_id_fkey"
+            columns: ["repository_id"]
+            isOneToOne: false
+            referencedRelation: "repositories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      issue_labels: {
+        Row: {
+          applied_at: string
+          applied_by: string
+          issue_id: string
+          label_id: string
+          repository_id: string
+        }
+        Insert: {
+          applied_at?: string
+          applied_by: string
+          issue_id: string
+          label_id: string
+          repository_id: string
+        }
+        Update: {
+          applied_at?: string
+          applied_by?: string
+          issue_id?: string
+          label_id?: string
+          repository_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "issue_labels_issue_id_fkey"
+            columns: ["issue_id"]
+            isOneToOne: false
+            referencedRelation: "issues"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "issue_labels_issue_repository_fk"
+            columns: ["repository_id", "issue_id"]
+            isOneToOne: false
+            referencedRelation: "issues"
+            referencedColumns: ["repository_id", "id"]
+          },
+          {
+            foreignKeyName: "issue_labels_label_id_fkey"
+            columns: ["label_id"]
+            isOneToOne: false
+            referencedRelation: "repository_labels"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "issue_labels_label_repository_fk"
+            columns: ["repository_id", "label_id"]
+            isOneToOne: false
+            referencedRelation: "repository_labels"
+            referencedColumns: ["repository_id", "id"]
+          },
+          {
+            foreignKeyName: "issue_labels_repository_id_fkey"
+            columns: ["repository_id"]
+            isOneToOne: false
+            referencedRelation: "repositories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       issues: {
         Row: {
           body: string
+          close_reason: Database["public"]["Enums"]["issue_close_reason"] | null
           closed_at: string | null
           closed_by: string | null
           created_at: string
@@ -85,12 +374,17 @@ export type Database = {
           id: string
           issue_number: number
           repository_id: string
+          search_vector: unknown
           status: Database["public"]["Enums"]["issue_status"]
           title: string
           updated_at: string
+          version: number
         }
         Insert: {
           body?: string
+          close_reason?:
+            | Database["public"]["Enums"]["issue_close_reason"]
+            | null
           closed_at?: string | null
           closed_by?: string | null
           created_at?: string
@@ -98,12 +392,17 @@ export type Database = {
           id?: string
           issue_number: number
           repository_id: string
+          search_vector?: unknown
           status?: Database["public"]["Enums"]["issue_status"]
           title: string
           updated_at?: string
+          version?: number
         }
         Update: {
           body?: string
+          close_reason?:
+            | Database["public"]["Enums"]["issue_close_reason"]
+            | null
           closed_at?: string | null
           closed_by?: string | null
           created_at?: string
@@ -111,9 +410,11 @@ export type Database = {
           id?: string
           issue_number?: number
           repository_id?: string
+          search_vector?: unknown
           status?: Database["public"]["Enums"]["issue_status"]
           title?: string
           updated_at?: string
+          version?: number
         }
         Relationships: [
           {
@@ -121,6 +422,104 @@ export type Database = {
             columns: ["repository_id"]
             isOneToOne: false
             referencedRelation: "repositories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      notification_preferences: {
+        Row: {
+          is_muted: boolean
+          is_watched: boolean
+          recipient_id: string
+          repository_id: string
+          subject_id: string
+          subject_type: Database["public"]["Enums"]["notification_artifact_type"]
+          updated_at: string
+        }
+        Insert: {
+          is_muted?: boolean
+          is_watched?: boolean
+          recipient_id: string
+          repository_id: string
+          subject_id: string
+          subject_type: Database["public"]["Enums"]["notification_artifact_type"]
+          updated_at?: string
+        }
+        Update: {
+          is_muted?: boolean
+          is_watched?: boolean
+          recipient_id?: string
+          repository_id?: string
+          subject_id?: string
+          subject_type?: Database["public"]["Enums"]["notification_artifact_type"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notification_preferences_repository_id_fkey"
+            columns: ["repository_id"]
+            isOneToOne: false
+            referencedRelation: "repositories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      notification_threads: {
+        Row: {
+          artifact_id: string
+          artifact_type: Database["public"]["Enums"]["notification_artifact_type"]
+          created_at: string
+          event_count: number
+          id: string
+          reason: Database["public"]["Enums"]["notification_reason"]
+          recipient_id: string
+          repository_id: string
+          source_evidence_id: number
+          state: Database["public"]["Enums"]["notification_state"]
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          artifact_id: string
+          artifact_type: Database["public"]["Enums"]["notification_artifact_type"]
+          created_at?: string
+          event_count?: number
+          id?: string
+          reason: Database["public"]["Enums"]["notification_reason"]
+          recipient_id: string
+          repository_id: string
+          source_evidence_id: number
+          state?: Database["public"]["Enums"]["notification_state"]
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          artifact_id?: string
+          artifact_type?: Database["public"]["Enums"]["notification_artifact_type"]
+          created_at?: string
+          event_count?: number
+          id?: string
+          reason?: Database["public"]["Enums"]["notification_reason"]
+          recipient_id?: string
+          repository_id?: string
+          source_evidence_id?: number
+          state?: Database["public"]["Enums"]["notification_state"]
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notification_threads_repository_id_fkey"
+            columns: ["repository_id"]
+            isOneToOne: false
+            referencedRelation: "repositories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notification_threads_source_evidence_id_fkey"
+            columns: ["source_evidence_id"]
+            isOneToOne: false
+            referencedRelation: "activity_events"
             referencedColumns: ["id"]
           },
         ]
@@ -217,6 +616,7 @@ export type Database = {
           name: string
           owner_organization_id: string | null
           owner_user_id: string | null
+          search_vector: unknown
           slug: string
           updated_at: string
           visibility: Database["public"]["Enums"]["repository_visibility"]
@@ -229,6 +629,7 @@ export type Database = {
           name: string
           owner_organization_id?: string | null
           owner_user_id?: string | null
+          search_vector?: unknown
           slug: string
           updated_at?: string
           visibility?: Database["public"]["Enums"]["repository_visibility"]
@@ -241,6 +642,7 @@ export type Database = {
           name?: string
           owner_organization_id?: string | null
           owner_user_id?: string | null
+          search_vector?: unknown
           slug?: string
           updated_at?: string
           visibility?: Database["public"]["Enums"]["repository_visibility"]
@@ -251,6 +653,64 @@ export type Database = {
             columns: ["owner_organization_id"]
             isOneToOne: false
             referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      repository_artifact_counters: {
+        Row: {
+          artifact_type: string
+          last_number: number
+          repository_id: string
+        }
+        Insert: {
+          artifact_type: string
+          last_number?: number
+          repository_id: string
+        }
+        Update: {
+          artifact_type?: string
+          last_number?: number
+          repository_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "repository_artifact_counters_repository_id_fkey"
+            columns: ["repository_id"]
+            isOneToOne: false
+            referencedRelation: "repositories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      repository_labels: {
+        Row: {
+          color: string
+          created_at: string
+          id: string
+          name: string
+          repository_id: string
+        }
+        Insert: {
+          color: string
+          created_at?: string
+          id?: string
+          name: string
+          repository_id: string
+        }
+        Update: {
+          color?: string
+          created_at?: string
+          id?: string
+          name?: string
+          repository_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "repository_labels_repository_id_fkey"
+            columns: ["repository_id"]
+            isOneToOne: false
+            referencedRelation: "repositories"
             referencedColumns: ["id"]
           },
         ]
@@ -295,6 +755,7 @@ export type Database = {
           id: string
           kind: Database["public"]["Enums"]["resource_kind"]
           repository_id: string
+          search_vector: unknown
           title: string
           updated_at: string
         }
@@ -305,6 +766,7 @@ export type Database = {
           id?: string
           kind: Database["public"]["Enums"]["resource_kind"]
           repository_id: string
+          search_vector?: unknown
           title: string
           updated_at?: string
         }
@@ -315,6 +777,7 @@ export type Database = {
           id?: string
           kind?: Database["public"]["Enums"]["resource_kind"]
           repository_id?: string
+          search_vector?: unknown
           title?: string
           updated_at?: string
         }
@@ -333,6 +796,164 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      add_discussion_comment: {
+        Args: {
+          comment_body: string
+          discussion_id: string
+          expected_version: number
+          mentioned_user_ids?: string[]
+          target_repository_id: string
+        }
+        Returns: {
+          answer_comment_id: string | null
+          body: string
+          category: Database["public"]["Enums"]["discussion_category"]
+          closed_at: string | null
+          closed_by: string | null
+          created_at: string
+          created_by: string
+          discussion_number: number
+          id: string
+          is_locked: boolean
+          repository_id: string
+          search_vector: unknown
+          status: Database["public"]["Enums"]["discussion_status"]
+          title: string
+          updated_at: string
+          version: number
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "discussions"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
+      add_issue_comment: {
+        Args: {
+          comment_body: string
+          expected_version: number
+          issue_id: string
+          mentioned_user_ids?: string[]
+          target_repository_id: string
+        }
+        Returns: {
+          body: string
+          close_reason: Database["public"]["Enums"]["issue_close_reason"] | null
+          closed_at: string | null
+          closed_by: string | null
+          created_at: string
+          created_by: string
+          id: string
+          issue_number: number
+          repository_id: string
+          search_vector: unknown
+          status: Database["public"]["Enums"]["issue_status"]
+          title: string
+          updated_at: string
+          version: number
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "issues"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
+      clear_discussion_answer: {
+        Args: {
+          discussion_id: string
+          expected_version: number
+          target_repository_id: string
+        }
+        Returns: {
+          answer_comment_id: string | null
+          body: string
+          category: Database["public"]["Enums"]["discussion_category"]
+          closed_at: string | null
+          closed_by: string | null
+          created_at: string
+          created_by: string
+          discussion_number: number
+          id: string
+          is_locked: boolean
+          repository_id: string
+          search_vector: unknown
+          status: Database["public"]["Enums"]["discussion_status"]
+          title: string
+          updated_at: string
+          version: number
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "discussions"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
+      create_discussion: {
+        Args: {
+          discussion_body?: string
+          discussion_category: Database["public"]["Enums"]["discussion_category"]
+          discussion_title: string
+          mentioned_user_ids?: string[]
+          target_repository_id: string
+        }
+        Returns: {
+          answer_comment_id: string | null
+          body: string
+          category: Database["public"]["Enums"]["discussion_category"]
+          closed_at: string | null
+          closed_by: string | null
+          created_at: string
+          created_by: string
+          discussion_number: number
+          id: string
+          is_locked: boolean
+          repository_id: string
+          search_vector: unknown
+          status: Database["public"]["Enums"]["discussion_status"]
+          title: string
+          updated_at: string
+          version: number
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "discussions"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
+      create_issue: {
+        Args: {
+          issue_body?: string
+          issue_title: string
+          mentioned_user_ids?: string[]
+          target_repository_id: string
+        }
+        Returns: {
+          body: string
+          close_reason: Database["public"]["Enums"]["issue_close_reason"] | null
+          closed_at: string | null
+          closed_by: string | null
+          created_at: string
+          created_by: string
+          id: string
+          issue_number: number
+          repository_id: string
+          search_vector: unknown
+          status: Database["public"]["Enums"]["issue_status"]
+          title: string
+          updated_at: string
+          version: number
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "issues"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
       create_page: {
         Args: { page_title: string; target_repository_id: string }
         Returns: {
@@ -344,6 +965,92 @@ export type Database = {
           repository_id: string
           title: string
           updated_at: string
+        }[]
+      }
+      edit_discussion: {
+        Args: {
+          discussion_body: string
+          discussion_id: string
+          discussion_title: string
+          expected_version: number
+          mentioned_user_ids?: string[]
+          target_repository_id: string
+        }
+        Returns: {
+          answer_comment_id: string | null
+          body: string
+          category: Database["public"]["Enums"]["discussion_category"]
+          closed_at: string | null
+          closed_by: string | null
+          created_at: string
+          created_by: string
+          discussion_number: number
+          id: string
+          is_locked: boolean
+          repository_id: string
+          search_vector: unknown
+          status: Database["public"]["Enums"]["discussion_status"]
+          title: string
+          updated_at: string
+          version: number
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "discussions"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
+      edit_issue: {
+        Args: {
+          expected_version: number
+          issue_body: string
+          issue_id: string
+          issue_title: string
+          mentioned_user_ids?: string[]
+          target_repository_id: string
+        }
+        Returns: {
+          body: string
+          close_reason: Database["public"]["Enums"]["issue_close_reason"] | null
+          closed_at: string | null
+          closed_by: string | null
+          created_at: string
+          created_by: string
+          id: string
+          issue_number: number
+          repository_id: string
+          search_vector: unknown
+          status: Database["public"]["Enums"]["issue_status"]
+          title: string
+          updated_at: string
+          version: number
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "issues"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
+      explore_public_repositories: {
+        Args: {
+          requested_artifact_type?: string
+          requested_owner_type?: string
+          requested_page?: number
+          requested_sort?: string
+        }
+        Returns: {
+          created_at: string
+          description: string
+          href: string
+          id: string
+          last_public_activity_at: string
+          name: string
+          owner_slug: string
+          owner_type: string
+          slug: string
+          total_count: number
         }[]
       }
       get_accessible_repository_route_by_id: {
@@ -392,6 +1099,273 @@ export type Database = {
           visibility: Database["public"]["Enums"]["repository_visibility"]
         }[]
       }
+      list_notifications: {
+        Args: { requested_page?: number; requested_state?: string }
+        Returns: {
+          artifact_id: string
+          artifact_type: Database["public"]["Enums"]["notification_artifact_type"]
+          event_count: number
+          href: string
+          id: string
+          reason: Database["public"]["Enums"]["notification_reason"]
+          repository_id: string
+          source_evidence_id: number
+          state: Database["public"]["Enums"]["notification_state"]
+          title: string
+          total_count: number
+          updated_at: string
+        }[]
+      }
+      list_project_items: {
+        Args: {
+          requested_assignee_id?: string
+          requested_label_id?: string
+          requested_page?: number
+          requested_sort?: string
+          requested_status?: string
+          requested_type?: string
+          target_repository_id?: string
+        }
+        Returns: {
+          created_at: string
+          href: string
+          id: string
+          item_type: string
+          repository_id: string
+          status: string
+          title: string
+          total_count: number
+          updated_at: string
+        }[]
+      }
+      mark_all_notifications_read: { Args: never; Returns: number }
+      search_collaboration: {
+        Args: {
+          requested_owner?: string
+          requested_page?: number
+          requested_repository?: string
+          requested_sort?: string
+          requested_status?: string
+          requested_type?: string
+          search_query: string
+        }
+        Returns: {
+          body_snippet: string
+          created_at: string
+          href: string
+          repository_id: string
+          result_type: string
+          stable_id: string
+          title: string
+          total_count: number
+          updated_at: string
+        }[]
+      }
+      set_discussion_answer: {
+        Args: {
+          expected_version: number
+          target_answer_comment_id: string
+          target_discussion_id: string
+          target_repository_id: string
+        }
+        Returns: {
+          answer_comment_id: string | null
+          body: string
+          category: Database["public"]["Enums"]["discussion_category"]
+          closed_at: string | null
+          closed_by: string | null
+          created_at: string
+          created_by: string
+          discussion_number: number
+          id: string
+          is_locked: boolean
+          repository_id: string
+          search_vector: unknown
+          status: Database["public"]["Enums"]["discussion_status"]
+          title: string
+          updated_at: string
+          version: number
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "discussions"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
+      set_discussion_lock: {
+        Args: {
+          discussion_id: string
+          expected_version: number
+          should_lock: boolean
+          target_repository_id: string
+        }
+        Returns: {
+          answer_comment_id: string | null
+          body: string
+          category: Database["public"]["Enums"]["discussion_category"]
+          closed_at: string | null
+          closed_by: string | null
+          created_at: string
+          created_by: string
+          discussion_number: number
+          id: string
+          is_locked: boolean
+          repository_id: string
+          search_vector: unknown
+          status: Database["public"]["Enums"]["discussion_status"]
+          title: string
+          updated_at: string
+          version: number
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "discussions"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
+      set_issue_assignee: {
+        Args: {
+          assignee_id: string
+          expected_version: number
+          should_assign: boolean
+          target_issue_id: string
+          target_repository_id: string
+        }
+        Returns: {
+          body: string
+          close_reason: Database["public"]["Enums"]["issue_close_reason"] | null
+          closed_at: string | null
+          closed_by: string | null
+          created_at: string
+          created_by: string
+          id: string
+          issue_number: number
+          repository_id: string
+          search_vector: unknown
+          status: Database["public"]["Enums"]["issue_status"]
+          title: string
+          updated_at: string
+          version: number
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "issues"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
+      set_issue_label: {
+        Args: {
+          expected_version: number
+          issue_id: string
+          label_id: string
+          should_apply: boolean
+          target_repository_id: string
+        }
+        Returns: {
+          body: string
+          close_reason: Database["public"]["Enums"]["issue_close_reason"] | null
+          closed_at: string | null
+          closed_by: string | null
+          created_at: string
+          created_by: string
+          id: string
+          issue_number: number
+          repository_id: string
+          search_vector: unknown
+          status: Database["public"]["Enums"]["issue_status"]
+          title: string
+          updated_at: string
+          version: number
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "issues"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
+      set_notification_preference: {
+        Args: {
+          target_mode: string
+          target_repository_id: string
+          target_subject_id: string
+          target_subject_type: Database["public"]["Enums"]["notification_artifact_type"]
+        }
+        Returns: boolean
+      }
+      transition_discussion: {
+        Args: {
+          discussion_id: string
+          expected_version: number
+          target_repository_id: string
+          target_status: Database["public"]["Enums"]["discussion_status"]
+        }
+        Returns: {
+          answer_comment_id: string | null
+          body: string
+          category: Database["public"]["Enums"]["discussion_category"]
+          closed_at: string | null
+          closed_by: string | null
+          created_at: string
+          created_by: string
+          discussion_number: number
+          id: string
+          is_locked: boolean
+          repository_id: string
+          search_vector: unknown
+          status: Database["public"]["Enums"]["discussion_status"]
+          title: string
+          updated_at: string
+          version: number
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "discussions"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
+      transition_issue: {
+        Args: {
+          expected_version: number
+          issue_id: string
+          target_close_reason?: Database["public"]["Enums"]["issue_close_reason"]
+          target_repository_id: string
+          target_status: Database["public"]["Enums"]["issue_status"]
+        }
+        Returns: {
+          body: string
+          close_reason: Database["public"]["Enums"]["issue_close_reason"] | null
+          closed_at: string | null
+          closed_by: string | null
+          created_at: string
+          created_by: string
+          id: string
+          issue_number: number
+          repository_id: string
+          search_vector: unknown
+          status: Database["public"]["Enums"]["issue_status"]
+          title: string
+          updated_at: string
+          version: number
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "issues"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
+      update_notification_state: {
+        Args: {
+          notification_id: string
+          target_state: Database["public"]["Enums"]["notification_state"]
+        }
+        Returns: boolean
+      }
       update_page: {
         Args: {
           expected_updated_at: string
@@ -413,7 +1387,17 @@ export type Database = {
       }
     }
     Enums: {
+      discussion_category: "general" | "question" | "announcement"
+      discussion_status: "open" | "closed"
+      issue_close_reason: "completed" | "cancelled"
       issue_status: "open" | "closed"
+      notification_artifact_type: "repository" | "page" | "issue" | "discussion"
+      notification_reason:
+        | "watching"
+        | "assigned"
+        | "mentioned"
+        | "participating"
+      notification_state: "unread" | "read" | "archived"
       organization_role: "member" | "admin" | "owner"
       repository_role: "viewer" | "contributor" | "manager" | "admin"
       repository_visibility: "private" | "public"
@@ -548,7 +1532,18 @@ export const Constants = {
   },
   public: {
     Enums: {
+      discussion_category: ["general", "question", "announcement"],
+      discussion_status: ["open", "closed"],
+      issue_close_reason: ["completed", "cancelled"],
       issue_status: ["open", "closed"],
+      notification_artifact_type: ["repository", "page", "issue", "discussion"],
+      notification_reason: [
+        "watching",
+        "assigned",
+        "mentioned",
+        "participating",
+      ],
+      notification_state: ["unread", "read", "archived"],
       organization_role: ["member", "admin", "owner"],
       repository_role: ["viewer", "contributor", "manager", "admin"],
       repository_visibility: ["private", "public"],

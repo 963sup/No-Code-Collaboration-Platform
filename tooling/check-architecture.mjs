@@ -154,7 +154,11 @@ if (existsSync(resolve(root, repositoryShellPath))) {
 
 const repositoryNavigationPath = `${repositoryRoute}/_components/repository-navigation.tsx`;
 if (existsSync(resolve(root, repositoryNavigationPath))) {
-  const content = readFileSync(resolve(root, repositoryNavigationPath), 'utf8');
+  const surfaceDefinitionsPath = 'apps/web/src/routing/surface-definitions.ts';
+  const content = `${readFileSync(resolve(root, repositoryNavigationPath), 'utf8')}\n${readFileSync(
+    resolve(root, surfaceDefinitionsPath),
+    'utf8'
+  )}`;
   for (const label of ['Overview', 'Pages', 'Activity']) {
     if (!content.includes(label)) {
       failures.push(`${repositoryNavigationPath}: ${label} Repository navigation is missing`);
@@ -164,6 +168,7 @@ if (existsSync(resolve(root, repositoryNavigationPath))) {
     'repositoryPath',
     'repositoryPagesPath',
     'repositoryActivityPath',
+    'repositorySurfaces',
     'usePathname'
   ]) {
     if (!content.includes(symbol)) {

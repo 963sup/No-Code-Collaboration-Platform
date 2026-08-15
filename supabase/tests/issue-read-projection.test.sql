@@ -78,14 +78,14 @@ values
 
 select is(
   has_table_privilege('authenticated', 'public.issues', 'INSERT'),
-  false,
-  'authenticated actors cannot bypass the unaccepted CreateIssue command'
+  true,
+  'authenticated command RPCs receive the table privilege required by SECURITY INVOKER'
 );
 
 select is(
-  has_table_privilege('authenticated', 'public.issues', 'UPDATE'),
-  false,
-  'authenticated actors cannot bypass unaccepted Issue state transitions'
+  has_column_privilege('authenticated', 'public.issues', 'title', 'UPDATE'),
+  true,
+  'authenticated command RPCs receive the update privilege while RLS still requires command context'
 );
 
 select is(
@@ -143,7 +143,7 @@ select throws_ok(
   $$,
   '23514',
   'new row for relation "issues" violates check constraint "issues_closed_state_consistent"',
-  'closed Issue state requires actor attribution and time evidence'
+  'closed Issue state requires reason, actor attribution, and time evidence'
 );
 
 set local role authenticated;

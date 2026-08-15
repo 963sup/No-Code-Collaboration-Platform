@@ -31,11 +31,11 @@ A gap is not permission to redefine the target model, postpone an invariant sile
 
 ## Open gaps
 
-### GAP-COLLABORATION-SURFACES-001 — Accepted GitHub-derived non-Code collaboration surfaces are not yet executable
+### GAP-COLLABORATION-SURFACES-001 — Accepted collaboration surfaces have truthful breadth while selected delivery remains Preview or Deferred
 
-- Status: Open
+- Status: Contained
 - Affected contracts: [`PRODUCT.md`](./PRODUCT.md), [`ONTOLOGY.md`](./ONTOLOGY.md), [`domains/repository-collaboration.md`](./domains/repository-collaboration.md), [`architecture/README.md`](./architecture/README.md), [ADR-011](./architecture/ADR-011-github-surface-parallel-composition.md)
-- Affected invariants: Repository remains the only collaboration Container; Issue/Discussion stable identity is Repository-scoped; Project is a Projection; Wiki maps to Page; modal/full-page presentation preserves one canonical URL and authorization result
+- Affected invariants: Repository remains the only collaboration Container; Issue/Discussion stable identity and lifecycle are Repository-scoped; Project/Notification/Search/Explore/Integrations are non-owning Projections; availability is honest; code-product surfaces are absent
 - Risk class: target/executable mismatch and misleading feature-readiness claims
 
 #### Direct evidence
@@ -43,8 +43,9 @@ A gap is not permission to redefine the target model, postpone an invariant sile
 - [`.playwright-mcp/github-urls.json`](../.playwright-mcp/github-urls.json) indexes the sanitized URL-resource and component inventories plus 444 current screenshots across Desktop, Laptop, Tablet, and Mobile, including the target Issue comparison set.
 - [`.playwright-mcp/github-ui-ux.md`](../.playwright-mcp/github-ui-ux.md) records canonical redirects, Dashboard/account context switching, Repository navigation, Issues, Projects attachment behavior, Discussions availability, Wiki/Page behavior, Activity, Security posture, Settings, Notifications, and governance surfaces.
 - The accepted target URL set now includes Repository Issues, Projects attachment list, Discussions, Pages, Activity, Security posture, and Settings; actor-level Repository/Issue/Project/Discussion discovery, Notifications, Search, Organization governance, and personal Settings are separate resource/projection families rather than Repository children.
-- The executable App Router now exposes Repository Overview, Pages/Page detail, Activity, and an Issue read-only slice: list, full-page detail, route-specific sidebar/metadata, and an intercepted dialog at the same canonical URL.
-- `docs/domains/issue-resource.md`, Domain/Application queries, a dedicated SELECT-only Issue persistence projection, Repository-aware RLS, and pgTAP tests now define and enforce current Issue identity/read behavior. Issue creation, number allocation, transitions, relationships, conversation, and historical evidence remain unsupported. Discussion has no executable Domain/Application/persistence/Web slice, and Project/Security/Settings target slices remain unverified.
+- The executable App Router now exposes the manifest-driven App shell and every admitted global, Repository, account, Organization-governance, settings, and integration-catalog route with explicit `live | preview | deferred` availability. Source Code, Git, Pull Request, Gist, Actions, and arbitrary execution surfaces are absent.
+- Issue and Discussion now have executable Domain/Application/schema/adapter/Web command lifecycles with Repository-local numbering, optimistic concurrency, flat comments, Activity Evidence, question-only Answer selection, and independent Discussion moderation state. Notifications, Search, Explore, and Repository Projects are authorized read projections; Notification preference and inbox-state commands are live.
+- The remaining delivery mismatch is explicit rather than product-semantic uncertainty: actor-wide `/issues` and `/discussions`, selected account/Organization/settings surfaces, and the provider-neutral integration catalog remain Preview; Team, Enterprise, and connector installation/connection remain Deferred by Product decision.
 
 #### Predicted failure
 
@@ -53,17 +54,16 @@ Without containment, documentation or UI work could present target-only surfaces
 #### Temporary containment
 
 - Product admission is explicitly separated from implementation status in Product, Architecture, and Web instruction contracts.
-- Unsupported routes are not claimed available and must fail closed rather than use placeholder Domain logic.
-- Issue mutations remain blocked until command, concurrency, relationship/conversation, authorization, and historical-evidence contracts are accepted; table mutation grants/policies and executable controls are absent. The current read slice does not imply mutation support.
-- Discussion implementation remains blocked until its Domain identity, lifecycle, authorization, conversation, and evidence contract is accepted.
+- Every surface must declare `live | preview | deferred`; Preview may render routing, layout, query state, form shape, and control intent but cannot fabricate data, authorization, persistence, or success.
+- Preview and Deferred surfaces expose no fabricated records, authority, persistence, installation, or successful controls. Raw Issue and Discussion table mutation paths fail closed; live changes pass through typed commands.
 - Project remains a read/planning Projection; Repository `/projects` cannot establish Project ownership or independent authority.
-- Source Code, git refs/merge, code review, Code Search, executable payloads, CI/CD, and Git-backed Wiki history remain excluded even when visible in benchmark screenshots. Commit, Branch, Diff, Pull Request, Actions, and Gist names are conditionally admitted only through the non-executable structured-data boundaries in Product/Ontology; their concrete lifecycles remain unsupported and fail closed until their Candidate Domain contracts are accepted.
+- Source Code, Git refs/merge, code review, Code Search, executable payloads, CI/CD, and Git-backed Wiki history remain excluded even when visible in benchmark screenshots. Product/Ontology and ADR-013 accept the Data Commit, Data Branch, Data Diff, Change Proposal, Data Transfer, Data Capsule, and Repository Derivation semantic envelope, but no concrete identity, lifecycle, Capability, schema, API, route, or UI is thereby accepted. Executable behavior remains absent and fails closed until the Candidate concrete Domain lifecycles and discriminating tests are separately accepted.
 
 #### Closure evidence
 
 Close only after the same exact change set proves:
 
-1. Issue and Discussion Domain contracts define stable Repository-scoped identity, lifecycle, authorization, comments/relationships, and historical evidence without Code-domain dependencies.
+1. Issue and Discussion executable Domain/Application/schema/adapters prove the already accepted stable Repository-scoped lifecycle, authorization, comments/relationships, optimistic concurrency, and Activity Evidence without code-domain dependencies.
 2. Application use cases and provider adapters preserve Repository authorization and do not place Domain decisions in React components.
 3. The App Router implements accepted target routes with Server Components by default and only minimal interaction islands.
 4. Every `@sidebar`, `@activity`, and `@modal` slot has `default.tsx`, explicit unmatched soft-navigation behavior, and a removal test proving independent responsibility.
@@ -71,8 +71,9 @@ Close only after the same exact change set proves:
 6. Projects stays an attachment/list Projection and owner-scoped Project detail does not appear under a Repository-owned detail path.
 7. Wiki/Page knowledge has one canonical target identity and no Git-backed history semantics.
 8. GitHub `/dashboard`, `/repos`, `/issues/assigned`, split Organization namespaces, and command paths are mapped to the target resource/query/process model without provider aliases becoming canonical Domain identity.
-9. Next DevTools reports no build, type, runtime, hydration, browser-log, or server-log errors for each implemented slice.
-10. Playwright compares GitHub and local behavior at `1440x900`, `1280x800`, `768x1024`, and `390x844`, then updates the sanitized inventory without credentials or private request material.
+9. Notification access revocation leaks no title/snippet/count/URL; Search authorization precedes ranking/count/snippet; Project filters do not mutate Artifacts; Discussion Answer is question-only; Context switching does not change effective authorization.
+10. Next DevTools reports no build, type, runtime, hydration, browser-log, or server-log errors for each implemented slice.
+11. Playwright validates GitHub-aligned local behavior at `1440x900`, `1280x800`, `768x1024`, and `390x844` without credentials or private request material.
 
 ### GAP-OWNERSHIP-001 — Repository ownership and creation are implemented, but exact-head verification evidence remains incomplete
 

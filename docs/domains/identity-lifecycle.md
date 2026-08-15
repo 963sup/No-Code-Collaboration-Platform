@@ -401,14 +401,4 @@ Required evidence:
 
 [`../IMPLEMENTATION_GAPS.md`](../IMPLEMENTATION_GAPS.md) records `GAP-IDENTITY-001`.
 
-The following remain outside the current executable baseline:
-
-- Product Actor readiness and onboarding;
-- Organization invitation acceptance;
-- email and ordinary authenticated password change;
-- Session listing and selective revocation UI;
-- MFA and step-up authentication;
-- OAuth and enterprise SSO;
-- production SMTP, CAPTCHA, redirect, notification, and hosted Session configuration evidence.
-
-These gaps are not permission to infer support from Supabase feature availability.
+That register and executable/provider evidence exclusively own current implementation and environment status. Provider feature availability is never permission to infer supported identity behavior.

@@ -1,63 +1,46 @@
 'use client';
 
-import { Activity, CircleDot, FileText, LayoutDashboard } from 'lucide-react';
+import {
+  Activity,
+  CircleDot,
+  FileText,
+  FolderKanban,
+  LayoutDashboard,
+  MessagesSquare,
+  Settings,
+  ShieldCheck
+} from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
-import {
-  repositoryActivityPath,
-  repositoryIssuesPath,
-  repositoryPagesPath,
-  repositoryPath
-} from '@/routing/repository-routes';
+import { repositorySurfaces } from '@/routing/surface-definitions';
+import { Badge } from '@no-code-collaboration-platform/ui';
 
 interface RepositoryNavigationProps {
   readonly ownerSlug: string;
   readonly repositorySlug: string;
-  readonly showActivity: boolean;
 }
 
-export function RepositoryNavigation({
-  ownerSlug,
-  repositorySlug,
-  showActivity
-}: RepositoryNavigationProps) {
+export function RepositoryNavigation({ ownerSlug, repositorySlug }: RepositoryNavigationProps) {
   const pathname = usePathname();
   const repositoryRoute = { ownerSlug, repositorySlug };
-  const overviewPath = repositoryPath(repositoryRoute);
-  const pagesPath = repositoryPagesPath(repositoryRoute);
-  const issuesPath = repositoryIssuesPath(repositoryRoute);
-  const activityPath = repositoryActivityPath(repositoryRoute);
-  const items = [
-    {
-      active: pathname === issuesPath || pathname.startsWith(`${issuesPath}/`),
-      href: issuesPath,
-      icon: <CircleDot aria-hidden='true' className='size-4' />,
-      label: 'Issues'
-    },
-    {
-      active: pathname === overviewPath,
-      href: overviewPath,
-      icon: <LayoutDashboard aria-hidden='true' className='size-4' />,
-      label: 'Overview'
-    },
-    {
-      active: pathname === pagesPath || pathname.startsWith(`${pagesPath}/`),
-      href: pagesPath,
-      icon: <FileText aria-hidden='true' className='size-4' />,
-      label: 'Pages'
-    },
-    ...(showActivity
-      ? [
-          {
-            active: pathname === activityPath,
-            href: activityPath,
-            icon: <Activity aria-hidden='true' className='size-4' />,
-            label: 'Activity'
-          }
-        ]
-      : [])
-  ];
+  const iconById = {
+    overview: LayoutDashboard,
+    issues: CircleDot,
+    projects: FolderKanban,
+    discussions: MessagesSquare,
+    pages: FileText,
+    activity: Activity,
+    security: ShieldCheck,
+    settings: Settings
+  } as const;
+  const items = repositorySurfaces(repositoryRoute).map((surface) => ({
+    ...surface,
+    active:
+      pathname === surface.href ||
+      (surface.id !== 'overview' && pathname.startsWith(`${surface.href}/`)),
+    icon: iconById[surface.id as keyof typeof iconById]
+  }));
 
   return (
     <nav aria-label='Repository' className='-mb-px flex min-w-max gap-1'>
@@ -72,8 +55,11 @@ export function RepositoryNavigation({
           href={item.href}
           key={item.href}
         >
-          {item.icon}
+          <item.icon aria-hidden='true' className='size-4' />
           {item.label}
+          {item.availability === 'live' ? null : (
+            <Badge variant={item.availability}>{item.availability}</Badge>
+          )}
         </Link>
       ))}
     </nav>

@@ -158,13 +158,7 @@
       "path": "github/repositories/369sup/support/issues/urls.json",
       "url": "https://github.com/369sup/support/issues",
       "resourceType": "Repository issue collection",
-      "screenshots": 8
-    },
-    {
-      "path": "github/repositories/369sup/support/issues/1/urls.json",
-      "url": "http://127.0.0.1:3000/demo-organization/demo-repository/issues/1",
-      "resourceType": "target Repository issue comparison",
-      "screenshots": 8
+      "screenshots": 4
     },
     {
       "path": "github/repositories/369sup/support/projects/urls.json",
@@ -398,6 +392,6 @@
       "screenshots": 4
     }
   ],
-  "screenshotCount": 444,
+  "screenshotCount": 294,
   "credentialDataStored": false
 }

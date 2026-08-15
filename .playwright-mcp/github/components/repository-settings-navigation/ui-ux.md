@@ -1,3 +1,3 @@
 # Repository settings navigation
 
-Settings is permission-gated and scoped to the selected Repository. The left navigation groups general configuration, access, integrations, security, moderation and archive/delete commands. On a narrow viewport the navigation becomes a full-width vertical region above the content; it is not an independent URL resource. Code-specific settings observed in GitHub are excluded from the target.
+Under the authorized test account, Settings appeared beneath the selected Repository. The left navigation grouped general configuration, access, integrations, security, moderation, and archive/delete actions. On a narrow viewport it became a full-width vertical region above the content; selecting a group changed the Repository settings path.

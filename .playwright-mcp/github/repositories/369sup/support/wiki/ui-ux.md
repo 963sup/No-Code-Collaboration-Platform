@@ -1,3 +1,3 @@
 # Repository wiki
 
-The authenticated owner sees an empty-state creation affordance, while the public observation falls back to the Repository overview. The target maps Wiki to collaborative Page artifacts and excludes Git-backed history, clone and source-edit semantics.
+The authenticated owner observation showed an empty-state creation affordance, while the public observation fell back to the Repository overview. GitHub's Wiki surface also exposed Git-backed history, clone, and source-edit semantics.

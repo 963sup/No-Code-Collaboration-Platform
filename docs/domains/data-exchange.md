@@ -1,6 +1,6 @@
 # Domain Contract: Controlled Data Exchange
 
-- Status: Candidate
+- Status: Accepted semantic envelope; Candidate concrete lifecycle
 - Contract owner: Product and Domain
 - Last reviewed: 2026-08-15
 
@@ -16,7 +16,7 @@ This contract owns the meaning and safety boundary of Data Transfer and Data Cap
 
 - GitHub exposes Actions and Gist names, but their code execution, workflow, and snippet meanings are not admissible Product authority.
 - The Product already recognizes Integration, GitHub App, OAuth App, Webhook, and token/programmatic-access management semantics while excluding secret values.
-- The user explicitly permits Actions and Gist only as strictly limited data transfer with no code.
+- The Product Contract and ADR-013 accept Data Transfer and Data Capsule as no-code semantics while withholding concrete implementation authority.
 
 ### Constraints
 
@@ -63,8 +63,8 @@ It does not own connector authentication, secret storage, Repository or Resource
 
 | Canonical term | External alias | Meaning |
 | --- | --- | --- |
-| Data Transfer | Actions / Action | Declarative delivery of typed data between two approved endpoints |
-| Data Capsule | Gist | Repository-contained typed payload prepared for controlled sharing or transfer |
+| Data Transfer | Actions / Action; Pull / Push as direction only | Declarative delivery of typed data between two approved endpoints |
+| Data Capsule | Gist | Repository-contained finite typed payload prepared for controlled sharing or transfer |
 | Endpoint | — | Allowlisted typed source or destination contract, never an arbitrary URL plus code |
 | Mapping | — | Predefined schema-to-schema field mapping maintained as Product configuration, not user code |
 | Delivery attempt | — | Idempotent Infrastructure operation with redacted outcome evidence |
@@ -80,11 +80,11 @@ Data Transfer 1 ── delivers ── 1 allowlisted destination
 Data Transfer 1 ── may reference ── 1 Data Capsule
 ```
 
-Data Transfer is a candidate Process identity. Data Capsule is a candidate Repository-contained Artifact. Endpoint availability and delivery status are projections of owned contracts and evidence; they are not Principals, Containers, or authority sources.
+Data Transfer Process and Data Capsule Artifact meanings are accepted. Their concrete identity and lifecycle remain Candidate. Endpoint availability and delivery status are projections of owned contracts and evidence; they are not Principals, Containers, or authority sources.
 
 ## States and transitions
 
-Only the minimum candidate delivery lifecycle is admitted:
+The following delivery lifecycle is a Candidate used to make unknowns falsifiable; it is not implementation authority:
 
 ```text
 Requested
@@ -134,7 +134,7 @@ Delivery must be idempotent, time-bounded, independently observable through reda
 
 ## Known implementation gaps
 
-No executable mismatch is registered because Product explicitly defers concrete Data Transfer and Data Capsule lifecycle, identity, Capability, persistence, URL, and delivery contracts. Inspection of `packages/domain`, `packages/application`, Supabase schemas, and Web routes found no claimed Controlled Data Exchange capability. That absence is intentional containment, not an implementation gap.
+The semantic envelope is accepted, while Product explicitly defers concrete Data Exchange lifecycle, identity, Capability, endpoint, connector, persistence, URL, and secret-management contracts. Their executable absence is recorded as intentional containment in [`../IMPLEMENTATION_GAPS.md`](../IMPLEMENTATION_GAPS.md), not treated as Product rejection.
 
 If a concrete connector or Capsule slice is accepted, any partial implementation must be registered in [`../IMPLEMENTATION_GAPS.md`](../IMPLEMENTATION_GAPS.md) before it is presented as supported.
 
@@ -156,7 +156,7 @@ Rejected because it creates a second collaboration space, independent visibility
 
 Rejected because it destroys the secret-management boundary and leaks authority-bearing material into historical or user-visible data.
 
-Removing this candidate contract changes nothing executable today. If future users need controlled exchange, its removal would force authorization, schema, idempotency, and secret rules into provider adapters or React components.
+Removing the Candidate lifecycle changes nothing executable today. Removing the accepted envelope would reopen Product meaning and could push secret, retry, and authorization decisions into Infrastructure or UI.
 
 ## Falsification conditions
 
@@ -180,4 +180,3 @@ Any of the last four outcomes rejects the proposed capability rather than weaken
 6. Data Capsule access never exceeds Repository authority and cannot create a standalone public workspace.
 7. Script, shell, expression, arbitrary URL, build, test, deploy, source file, and credential-bearing fixtures are rejected.
 8. Domain and Application tests remain provider-neutral; adapter tests prove secret resolution and provider translation stay outside them.
-

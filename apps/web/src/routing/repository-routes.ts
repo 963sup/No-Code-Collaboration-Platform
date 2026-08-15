@@ -37,3 +37,23 @@ export function repositoryPagePath(route: RepositoryRouteAddress, pageId: string
 export function repositoryActivityPath(route: RepositoryRouteAddress) {
   return `${repositoryPath(route)}/activity`;
 }
+
+export function repositoryProjectsPath(route: RepositoryRouteAddress) {
+  return `${repositoryPath(route)}/projects`;
+}
+
+export function repositoryDiscussionsPath(route: RepositoryRouteAddress) {
+  return `${repositoryPath(route)}/discussions`;
+}
+
+export function repositoryDiscussionPath(route: RepositoryRouteAddress, discussionNumber: number) {
+  return `${repositoryDiscussionsPath(route)}/${discussionNumber}`;
+}
+
+export function repositorySecurityPath(route: RepositoryRouteAddress) {
+  return `${repositoryPath(route)}/security`;
+}
+
+export function repositorySettingsPath(route: RepositoryRouteAddress) {
+  return `${repositoryPath(route)}/settings`;
+}

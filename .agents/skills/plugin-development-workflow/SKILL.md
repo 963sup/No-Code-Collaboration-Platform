@@ -29,8 +29,8 @@ description: Use when a task needs connected external coordination, provider, do
 Product / Domain / Architecture
 -> GitHub current contracts
 -> active decision Skill selected by narrowest ownership
--> github-semantics-first-principles for GitHub-derived Product decisions
--> first-principles-architecture for broader or non-GitHub decisions
+-> github-semantic-reverse for GitHub-derived Product decisions
+-> first-principles for broader or non-GitHub decisions
 -> Notion if durable knowledge is needed
 -> Context7 only for external mechanisms
 

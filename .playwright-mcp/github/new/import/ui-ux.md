@@ -1,3 +1,3 @@
 # Import process
 
-Benchmark process only. Target import must accept provider-neutral collaboration data and reject source-code history.
+The observed GitHub import page requested source-repository details and destination ownership/name information. No import was submitted and this observation makes no target import decision.

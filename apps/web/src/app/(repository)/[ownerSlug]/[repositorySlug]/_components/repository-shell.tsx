@@ -1,7 +1,10 @@
-import { BookOpenText, LayoutDashboard } from 'lucide-react';
+import { BookOpenText } from 'lucide-react';
 import Link from 'next/link';
 import type { ReactNode } from 'react';
 
+import { Button } from '@no-code-collaboration-platform/ui';
+
+import { AppHeaderControls } from '@/components/app-header-controls';
 import { SiteHeader } from '@/components/site-header';
 import { repositoryPath } from '@/routing/repository-routes';
 
@@ -10,20 +13,24 @@ import { RepositoryNavigation } from './repository-navigation';
 interface RepositoryShellProps {
   readonly children: ReactNode;
   readonly isAuthenticated: boolean;
+  readonly identityLabel?: string;
   readonly ownerSlug: string;
   readonly repositorySlug: string;
   readonly repositoryName: string;
-  readonly showActivity: boolean;
+  readonly signOutAction: () => Promise<void>;
+  readonly updateNotificationPreferenceAction: (formData: FormData) => Promise<void>;
   readonly visibility: 'private' | 'public';
 }
 
 export function RepositoryShell({
   children,
   isAuthenticated,
+  identityLabel,
   ownerSlug,
   repositorySlug,
   repositoryName,
-  showActivity,
+  signOutAction,
+  updateNotificationPreferenceAction,
   visibility
 }: RepositoryShellProps) {
   const repositoryRoute = { ownerSlug, repositorySlug };
@@ -33,13 +40,11 @@ export function RepositoryShell({
     <div className='min-h-dvh bg-background'>
       <SiteHeader
         actions={
-          <Link
-            className='inline-flex h-8 items-center justify-center gap-2 rounded-md border border-shell-border px-3 text-xs font-medium text-shell-foreground outline-none transition-colors hover:bg-shell-accent focus-visible:ring-2 focus-visible:ring-shell-ring'
-            href={isAuthenticated ? '/app' : `/sign-in?next=${encodeURIComponent(basePath)}`}
-          >
-            <LayoutDashboard aria-hidden='true' className='size-3.5' />
-            {isAuthenticated ? 'Dashboard' : 'Sign in'}
-          </Link>
+          <AppHeaderControls
+            identityLabel={isAuthenticated ? identityLabel : undefined}
+            signInNext={basePath}
+            signOutAction={isAuthenticated ? signOutAction : undefined}
+          />
         }
         homeHref={isAuthenticated ? '/app' : '/'}
       />
@@ -57,13 +62,19 @@ export function RepositoryShell({
             <span className='rounded-full border bg-background px-2 py-0.5 text-xs font-medium capitalize text-muted-foreground'>
               {visibility}
             </span>
+            {isAuthenticated ? (
+              <form action={updateNotificationPreferenceAction} className='ml-auto flex gap-1'>
+                <Button name='intent' size='sm' type='submit' value='watch' variant='outline'>
+                  Watch
+                </Button>
+                <Button name='intent' size='sm' type='submit' value='mute' variant='ghost'>
+                  Mute
+                </Button>
+              </form>
+            ) : null}
           </div>
           <div className='overflow-x-auto'>
-            <RepositoryNavigation
-              ownerSlug={ownerSlug}
-              repositorySlug={repositorySlug}
-              showActivity={showActivity}
-            />
+            <RepositoryNavigation ownerSlug={ownerSlug} repositorySlug={repositorySlug} />
           </div>
         </div>
       </div>

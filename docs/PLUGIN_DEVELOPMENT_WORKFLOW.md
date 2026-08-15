@@ -90,8 +90,8 @@ Use:
 ```text
 GitHub current contracts/code
 + active decision Skill selected by narrowest ownership
-  - github-semantics-first-principles for GitHub-derived Product decisions
-  - first-principles-architecture for broader or non-GitHub decisions
+  - github-semantic-reverse for GitHub-derived Product decisions
+  - first-principles for broader or non-GitHub decisions
 + Notion only when durable human knowledge is relevant
 + Context7 only for external mechanisms used by the decision
 ```

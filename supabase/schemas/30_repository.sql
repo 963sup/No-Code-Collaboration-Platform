@@ -11,6 +11,10 @@ create table public.repositories (
   created_by uuid not null references auth.users (id),
   created_at timestamptz not null default timezone('utc', now()),
   updated_at timestamptz not null default timezone('utc', now()),
+  search_vector tsvector generated always as (
+    setweight(to_tsvector('simple', coalesce(name, '')), 'A')
+    || setweight(to_tsvector('simple', coalesce(description, '')), 'B')
+  ) stored,
   constraint repositories_exactly_one_owner check (
     (owner_user_id is not null and owner_organization_id is null)
     or (owner_user_id is null and owner_organization_id is not null)
@@ -37,6 +41,8 @@ create index repositories_owner_user_id_idx
 create index repositories_owner_organization_id_idx
   on public.repositories (owner_organization_id, id)
   where owner_organization_id is not null;
+
+create index repositories_search_vector_idx on public.repositories using gin (search_vector);
 
 comment on table public.repositories is
   'No-code collaboration containers and the primary Resource/authorization/history boundary; each Repository is owned by exactly one User or Organization.';

@@ -1,4 +1,3 @@
 # Discussions collection
 
-- Discussion is a stable collaborative Artifact under a Repository or Organization scope.
-- Categories classify purpose/format; accepted answers are selected relationships/states, not separate owner resources.
+- The observed Repository Discussions collection used a stable child path, category filters, question/answer indicators, and links to individual discussions. This sidecar records visible behavior only.

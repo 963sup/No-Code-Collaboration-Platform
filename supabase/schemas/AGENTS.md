@@ -17,8 +17,7 @@ This directory owns current PostgreSQL schema truth and the database enforcement
 - Schema and migration files are local database contracts. Their presence MUST NOT be used as evidence that a Supabase Cloud project exists or that a remote deployment occurred.
 - Organization, Repository, and Resource hard deletion MUST remain unavailable to end-user roles until accepted lifecycle contracts define retention, restore, redaction, containment or subtype fate, historical continuity, and recovery behavior.
 - A missing lifecycle MUST fail closed through both table privileges and RLS policy absence; owner or administrator authority alone cannot make an undefined destructive transition valid.
-- `GAP-LIFECYCLE-001` records the verified fail-closed boundary for Organization and Repository hard deletion.
-- `GAP-LIFECYCLE-002` records the verified fail-closed boundary for Resource hard deletion; `resource.delete` remains authority vocabulary only and MUST NOT be treated as evidence that Page archive, restore, retention, purge, redaction, or historical guarantees are accepted.
+- An authorization vocabulary entry is not lifecycle acceptance. Undefined archive, restore, retention, purge, redaction, or historical guarantees remain unavailable and fail closed.
 - The accepted Page content projection MUST remain exactly one JSON object containing one string field named `body`; additional keys or non-string bodies are invalid.
 - Page title enforcement MUST reject a title whose trimmed content is empty.
 - `resources.updated_at` is server-managed Page concurrency evidence for accepted update paths; authenticated clients MUST NOT directly assign it.
@@ -27,7 +26,7 @@ This directory owns current PostgreSQL schema truth and the database enforcement
 - A no-op Page update MUST NOT advance `updated_at` or fabricate `resource.updated`.
 - A meaningful Page create or update and its required immutable fact MUST commit in one PostgreSQL transaction. Fact failure MUST abort the Resource transition.
 - `resource.updated` facts MUST attribute the current authenticated actor, MUST NOT duplicate Page body content, and MUST NOT be emitted for no-op updates.
-- Issue is an independent Repository-contained read projection identified by `(repository_id, issue_number)`. Current end-user reachability is SELECT-only through Repository visibility/authority; INSERT, UPDATE, and DELETE privileges and policies MUST remain absent until Issue command, concurrency, and historical-evidence contracts are accepted.
+- Issue is an independent Repository-contained projection identified by `(repository_id, issue_number)`. Its reads and mutations must follow the accepted Issue command, concurrency, authorization, and historical-evidence contracts; unaccepted transitions remain unavailable through both privileges and RLS.
 - Issue constraints MUST preserve positive Repository-local numbering, non-blank bounded title, and complete closed-state attribution. Seed or migration data is not an Issue-number allocation or mutation contract.
 
 ## Projection rule

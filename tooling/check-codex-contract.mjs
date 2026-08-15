@@ -195,11 +195,15 @@ check(
 );
 
 const requiredSkills = [
-  'first-principles-architecture',
-  'github-product-semantics',
-  'github-semantics-first-principles',
+  'first-principles',
+  'github-semantic-reverse',
   'verify-change',
   'workspace-impact-analysis'
+];
+const retiredSkills = [
+  'first-principles-architecture',
+  'github-product-semantics',
+  'github-semantics-first-principles'
 ];
 const skills = list('.agents/skills', { withFileTypes: true })
   .filter(
@@ -211,44 +215,43 @@ const skills = list('.agents/skills', { withFileTypes: true })
 for (const required of requiredSkills) {
   if (!skills.includes(required)) failures.push(`.agents/skills: missing ${required}`);
 }
+for (const retired of retiredSkills) {
+  if (skills.includes(retired)) failures.push(`.agents/skills: retired Skill remains ${retired}`);
+}
 for (const skill of skills) {
   const path = `.agents/skills/${skill}/SKILL.md`;
-  check(path, read(path), [
+  const skillContract = read(path);
+  check(path, skillContract, [
     [/^---\nname: [a-z0-9-]+\ndescription: .+\n---\n/m, 'skill frontmatter is invalid']
   ]);
+  const declaredName = skillContract.match(/^---\nname: ([a-z0-9-]+)\n/m)?.[1];
+  if (declaredName !== skill) {
+    failures.push(`${path}: frontmatter name must match its Skill folder (${skill})`);
+  }
   const metadataPath = `.agents/skills/${skill}/agents/openai.yaml`;
-  check(metadataPath, read(metadataPath), [
+  const metadata = read(metadataPath);
+  check(metadataPath, metadata, [
     [/^interface:\n  display_name: .+\n  short_description: .+/m, 'Desktop metadata is missing']
   ]);
+  if (!metadata.includes(`$${skill}`)) {
+    failures.push(`${metadataPath}: default prompt must reference $${skill}`);
+  }
 }
 check(
-  '.agents/skills/github-product-semantics/SKILL.md',
-  read('.agents/skills/github-product-semantics/SKILL.md'),
+  '.agents/skills/github-semantic-reverse/SKILL.md',
+  read('.agents/skills/github-semantic-reverse/SKILL.md'),
   [
-    [/supporting policy reference/i, 'GitHub Product reference boundary is missing'],
-    [/Do not invoke both Skills independently/, 'parallel GitHub decision guard is missing'],
-    [/git refs, merge\/checkout semantics/, 'source-control exclusion is missing']
-  ]
-);
-check(
-  '.agents/skills/github-semantics-first-principles/SKILL.md',
-  read('.agents/skills/github-semantics-first-principles/SKILL.md'),
-  [
-    [/Repository = No-Code Collaboration Container/, 'no-code Repository axiom is missing'],
     [
-      /Source Code, source-control file trees, git refs/,
-      'code/source-control exclusion is missing'
+      /Absolute Product axiom without reinterpretation/,
+      'no-code Repository axiom route is missing'
     ],
     [
-      /do not also invoke `first-principles-architecture` unless/i,
-      'general-method boundary is missing'
-    ]
+      /code, source-control, arbitrary execution, CI\/CD, build, test, deployment/,
+      'code/source-control exclusion is missing'
+    ],
+    [/do not also invoke `first-principles` unless/i, 'general-method boundary is missing'],
+    [/never replaces those contracts/i, 'canonical-contract boundary is missing']
   ]
-);
-check(
-  '.agents/skills/github-product-semantics/agents/openai.yaml',
-  read('.agents/skills/github-product-semantics/agents/openai.yaml'),
-  [[/allow_implicit_invocation: false/, 'GitHub Product reference must not invoke implicitly']]
 );
 check(
   '.agents/skills/plugin-development-workflow/SKILL.md',
@@ -256,21 +259,21 @@ check(
   [
     [/active decision Skill selected by narrowest ownership/, 'plugin router bypasses Skill owner'],
     [
-      /github-semantics-first-principles for GitHub-derived Product decisions/,
+      /github-semantic-reverse for GitHub-derived Product decisions/,
       'GitHub decision route is missing'
     ],
-    [
-      /first-principles-architecture for broader or non-GitHub decisions/,
-      'general decision route is missing'
-    ]
+    [/first-principles for broader or non-GitHub decisions/, 'general decision route is missing']
   ]
 );
 
 const instructionScopes = [
+  '.agents/AGENTS.md',
+  '.codex/AGENTS.md',
+  '.github/AGENTS.md',
+  '.serena/AGENTS.md',
+  'apps/AGENTS.md',
   'docs/AGENTS.md',
-  'docs/architecture/AGENTS.md',
-  'docs/domains/AGENTS.md',
-  'packages/domain/AGENTS.md',
+  'packages/AGENTS.md',
   'supabase/AGENTS.md',
   'tooling/AGENTS.md'
 ];
@@ -287,7 +290,7 @@ check('AGENTS.md', rootInstructions, [
   ],
   [/Select skills by narrowest ownership/, 'narrowest-owner skill routing is missing'],
   [/Explicit user-named skills win/, 'explicit skill precedence is missing'],
-  [/github-semantics-first-principles/, 'GitHub decision Skill owner is missing'],
+  [/github-semantic-reverse/, 'GitHub decision Skill owner is missing'],
   [/docs\/README\.md/, 'current-truth router is missing'],
   [
     /Do not redesign architecture while solving a local task/,

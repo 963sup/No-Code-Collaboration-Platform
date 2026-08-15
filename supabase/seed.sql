@@ -67,6 +67,13 @@ update public.profiles
 set display_name = 'Sup Demo'
 where id = '00000000-0000-0000-0000-00000000d001';
 
+-- Activity Evidence keeps the same Actor attribution contract in fixtures as in Product commands.
+select set_config(
+  'request.jwt.claim.sub',
+  '00000000-0000-0000-0000-00000000d001',
+  true
+);
+
 -- Demo data relies on the same organization_created_owner trigger as an authenticated Product
 -- insert; no Demo-only Membership or Owner bootstrap is permitted.
 insert into public.organizations (id, slug, name, created_by)
@@ -130,6 +137,17 @@ values (
   'Document the owner, acceptance criteria, and next step for the onboarding handoff.',
   'open',
   '00000000-0000-0000-0000-00000000d001'
+);
+
+insert into public.repository_artifact_counters (
+  repository_id,
+  artifact_type,
+  last_number
+)
+values (
+  '20000000-0000-0000-0000-00000000d001',
+  'issue',
+  1
 );
 
 commit;

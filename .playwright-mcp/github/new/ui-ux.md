@@ -1,9 +1,7 @@
 # Repository creation
 
-Creation command before a Repository identity exists. The target form may create only a no-code collaboration Container; all code-initialization options are rejected.
+Observed creation form:
 
-Observed product semantics:
-
-- Owner selection precedes Repository details and projects scopes in which the Actor may create; it is not a Repository identity or a selected Context that grants authority.
-- After an Owner is authorized, retained creation mechanics are name, owner-scoped slug, optional description, and visibility.
-- Template, source initialization, README, ignore rules, license, and other software-development-specific choices are rejected by the no-code admission test.
+- Owner selection preceded Repository details and listed scopes available to the authenticated test account.
+- Fields included name, owner-scoped slug, optional description, and visibility.
+- The page also exposed template, source initialization, README, ignore-rule, license, and other GitHub-specific choices. No Repository was created.

@@ -131,6 +131,11 @@ async function registerAndVerify(
   await expect(page).toHaveURL(/\/app$/u);
 }
 
+async function signOut(page: Page) {
+  await page.getByRole('button', { name: 'User menu' }).click();
+  await page.getByRole('menuitem', { name: 'Sign out' }).click();
+}
+
 test('registration proves email ownership before creating an authenticated session', async ({
   page,
   request
@@ -141,7 +146,7 @@ test('registration proves email ownership before creating an authenticated sessi
   await registerAndVerify(page, request, email, password);
   await expect(page.getByRole('heading', { name: 'Repositories', exact: true })).toBeVisible();
 
-  await page.getByRole('button', { name: 'Sign out' }).click();
+  await signOut(page);
   await expect(page).toHaveURL(/\/$/u);
 
   await page.goto('/app');
@@ -163,7 +168,7 @@ test('password recovery survives scanner GETs and creates only a recovery sessio
   const newPassword = 'Different-Horse-Battery-Staple-84';
 
   await registerAndVerify(page, request, email, password);
-  await page.getByRole('button', { name: 'Sign out' }).click();
+  await signOut(page);
   await expect(page).toHaveURL(/\/$/u);
 
   const tokenHash = await requestRecoveryAndReadTokenHash(page, request, email);

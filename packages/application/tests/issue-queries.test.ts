@@ -3,16 +3,21 @@ import { describe, expect, it, vi } from 'vitest';
 import { GetAccessibleIssue, ListAccessibleIssues, type IssueReader } from '../src/index';
 
 const issue = {
+  assignees: [],
   body: 'A no-code collaboration problem.',
+  closeReason: null,
   closedAt: null,
+  comments: [],
   createdAt: '2026-08-15T00:00:00.000Z',
   createdBy: 'user-1',
   id: 'issue-1',
   issueNumber: 7,
+  labels: [],
   repositoryId: 'repository-1',
   status: 'open' as const,
   title: 'Clarify customer onboarding',
-  updatedAt: '2026-08-15T00:00:00.000Z'
+  updatedAt: '2026-08-15T00:00:00.000Z',
+  version: 1
 };
 
 describe('Issue queries', () => {

@@ -1,4 +1,3 @@
-# Repository Projects projection
+# Repository Projects observation
 
-- This URL is a Repository-scoped attachment/discovery projection, not proof that a Project is owned by the Repository.
-- Target Project identity should remain owner-scoped; Repository pages may reference or filter attached Projects.
+- The observed Repository Projects URL presented Project attachments/discovery beneath the Repository shell and linked onward to GitHub Project surfaces. Ownership semantics were not inferred from the page.

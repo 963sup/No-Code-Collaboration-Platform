@@ -6,31 +6,7 @@
 
 This is the Product's single non-negotiable axiom.
 
-GitHub is the benchmark for mature ownership, organization, authority, URL/IA, navigation, and collaboration interaction semantics. It is not an implementation template. A GitHub benchmark concept is admitted only when the same collaboration or organizational problem remains valid for an arbitrary no-code Repository. If its value depends on software-development-specific implementation assumptions, the concept is excluded rather than renamed or generically wrapped.
-
-The product uses seven semantic roles as a reasoning lens, not as an entity/package/table taxonomy:
-
-```text
-Actor        = who acts
-Scope        = which ownership or governance boundary applies
-Principal    = who may receive authority
-Container    = where collaboration has one stable boundary
-Relationship = how actors, principals, scopes, owners, and containers connect
-Artifact     = what collaborative work exists inside a container
-Process      = how artifacts or relationships validly change
-```
-
-Authorization (`Role`, `Capability`, `Policy`), presentation (`Context`, `Projection`), and evidence (`Activity Event`) remain cross-cutting semantics.
-
-Canonical ownership and routing:
-
-```text
-Repository Owner = User | Organization
-Repository URL   = /{ownerSlug}/{repositorySlug}
-/app             = authenticated Repository discovery/dashboard
-```
-
-The root Product Contract is [`docs/PRODUCT.md`](./docs/PRODUCT.md). The canonical semantic expansion and admission rules are in [`docs/ONTOLOGY.md`](./docs/ONTOLOGY.md).
+The root Product Contract is [`docs/PRODUCT.md`](./docs/PRODUCT.md). It alone owns the axiom, accepted meanings, and non-confusion laws. [`docs/ONTOLOGY.md`](./docs/ONTOLOGY.md) expands those semantics, while [`docs/README.md`](./docs/README.md) routes architecture, Domain, executable-gap, evidence, and operations questions. GitHub remains benchmark evidence, never implementation authority.
 
 ## Executable architecture
 
