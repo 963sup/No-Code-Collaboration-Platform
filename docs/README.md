@@ -57,7 +57,7 @@ The diagram is a projection of the written contracts, not an independent source 
 | What are current ownership, dependency, authorization, URL, and Repository presentation boundaries? | `docs/architecture/README.md` and executable route/checker contracts |
 | Why was an architecture decision made, and is it still current? | `docs/architecture/ADR_INDEX.md`, then only the relevant ADR |
 | Where does current executable behavior differ from target? | `docs/IMPLEMENTATION_GAPS.md`, backed by exact executable/provider evidence |
-| How should development agents route Linear/GitHub/Notion/Context7/Codex Security/Vercel/Supabase? | `docs/PLUGIN_DEVELOPMENT_WORKFLOW.md` and `.agents/skills/plugin-development-workflow/SKILL.md` |
+| How should development agents select Skills or route connected external tools? | `docs/CODEX_DESKTOP.md` Skill routing, then `docs/PLUGIN_DEVELOPMENT_WORKFLOW.md` only when external tools or evidence are needed |
 | What is current desired database structure? | `supabase/schemas/*.sql` |
 | How can an empty database be rebuilt? | Reviewed replayable migrations plus deterministic seed data |
 | Which migrations are applied in a persistent environment? | That environment's migration ledger and direct provider evidence |

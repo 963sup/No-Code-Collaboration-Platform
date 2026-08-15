@@ -15,7 +15,7 @@ Authority remains:
 5. direct provider observations and current official external documentation;
 6. generated or session context as non-authoritative projections.
 
-Historical evidence is opt-in. For why, regression analysis, or provenance, route through `docs/architecture/ADR_INDEX.md` before the relevant ADR, Closed-gap archive, pull request, commit, CI evidence, or migration history. Do not reconstruct current project state from historical evidence during normal task execution.
+Relevant prior context is preserved rather than discarded. Conversation state, summaries, project memory, and historical evidence may recover established decisions or provide rationale, regression, and provenance evidence. Reconcile them against the current authority order; none is current truth by itself. For decision history, route through `docs/architecture/ADR_INDEX.md` before the relevant ADR, Closed-gap archive, pull request, commit, CI evidence, or migration history.
 
 ## Context router
 
@@ -32,6 +32,22 @@ Use the narrowest authoritative source that answers the question. Do not recursi
 | Why a decision changed, regression archaeology, or provenance | `docs/architecture/ADR_INDEX.md`, then only the relevant historical evidence | Primary thread; focused reviewer only when useful |
 
 External documentation may explain a benchmark or dependency, but it must not silently redefine the platform model.
+
+## Skill routing
+
+Choose the narrowest applicable owner instead of invoking every matching Skill. Explicitly user-named Skills take precedence. Use one primary decision Skill, then compose operational Skills only for distinct responsibilities:
+
+| Need | Owning Skill | Composition rule |
+| --- | --- | --- |
+| GitHub-derived Product adaptation, naming, ownership, permissions, navigation, collaboration semantics, or review | `github-semantics-first-principles` | Primary task Skill; it embeds first-principles reasoning and enforces the immutable no-code/code-exclusion boundary. |
+| Canonical GitHub benchmark admission outcomes and guardrails | `github-product-semantics` | Supporting policy reference with implicit invocation disabled; the task Skill reads it and it never runs as a parallel decision workflow. |
+| Broader or non-GitHub Product, Domain, permission, navigation, workflow, data-model, or architecture decision | `first-principles-architecture` | Separate general method; compose with the GitHub task Skill only when the task contains another real decision outside GitHub admission. |
+| Connected external coordination, provider, documentation, security, deployment, or production evidence | `plugin-development-workflow` | Tool/evidence router only; it does not replace the active domain or decision Skill and does not require ceremonial plugin calls. |
+| Local semantic discovery or relationship-aware refactoring | `serena-jetbrains` | Operational; compose only when repository navigation or refactoring needs it. |
+| Cross-package ownership or dependency impact | `workspace-impact-analysis` | Operational; compose only when its workspace trigger is present. |
+| Post-change deterministic validation | `verify-change` | Operational closure after repository changes. |
+
+`first-principles-architecture` and `github-semantics-first-principles` are not substitutes: one is the general decision method; the other is the specialized workflow for reverse-engineering GitHub Product semantics while excluding all code and source-control capability. Do not invoke overlapping Skills to manufacture consensus, repeat equivalent instructions, or produce duplicate required-output formats.
 
 ## Committed MCP boundary
 
@@ -69,8 +85,9 @@ The primary thread owns edits, decisions, and verification claims. Agents reduce
 
 The single `SessionStart` hook emits bounded observations and routing instructions:
 
-- zero-context cold-start order through the current task, applicable `AGENTS.md` chain, and `docs/README.md`;
-- explicit historical-evidence opt-in for why, regression analysis, or provenance;
+- continuity-aware grounding through retained task/session context, the current task, applicable `AGENTS.md` chain, and `docs/README.md`;
+- relevant prior and historical context as supporting evidence rather than current truth;
+- narrowest-owner Skill routing without consensus-by-duplication;
 - project root and applicable instruction reminder;
 - workspace packages;
 - Turbo presence;
@@ -121,7 +138,7 @@ Secret scanning is not duplicated in this workflow. Repository-level GitHub secr
 
 Project rules allow routine bounded inspection and local verification. They prompt before destructive filesystem operations and remote Supabase mutations. Resetting a linked Supabase database remains forbidden. When rules overlap, the most restrictive matching rule is expected to win.
 
-Git history remains available for explicit why, regression, security investigation, or provenance tasks. It is not forbidden and does not require a blanket history gate; semantic routing keeps it out of normal cold-start context.
+Git history remains available whenever it can materially recover an established decision, explain why, investigate a regression or security concern, or establish provenance. Use the narrowest relevant history and reconcile it against current contracts and executable evidence.
 
 ## Verification
 

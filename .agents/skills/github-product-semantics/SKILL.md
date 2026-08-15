@@ -1,9 +1,13 @@
 ---
 name: github-product-semantics
-description: Use when researching or adapting GitHub product concepts, ownership, permissions, navigation, collaboration flows, enterprise organization semantics, or naming for this no-code platform.
+description: Supporting policy reference for GitHub benchmark admission outcomes and no-code guardrails. Do not invoke as a parallel task workflow; github-semantics-first-principles owns GitHub-derived adaptation and review.
 ---
 
 # GitHub Product Semantics
+
+## Role boundary
+
+This Skill is a supporting policy reference, not a second decision workflow. `github-semantics-first-principles` owns task execution for adapting, naming, designing, or reviewing GitHub-derived concepts and reads this reference for the canonical admission procedure, current outcomes, and guardrails. Do not invoke both Skills independently to seek consensus.
 
 ## Absolute axiom
 
@@ -73,6 +77,6 @@ Do not create a Collaborator aggregate or identity subtype.
 
 Do not promote Team, Enterprise, Project persistence, App/Installation, or another Resource family from Deferred/Candidate solely because of taxonomy completeness. Do not infer Issue/Discussion or Data Change/Transfer persistence from Product admission; require their Domain identity, lifecycle, authorization, evidence, schema, endpoint, and no-arbitrary-execution contracts first.
 
-Source Code, executable payloads, shell/script/expression runtimes, code review, Code Search, CI/CD, build, test, deployment, Package, and Release source capability remain excluded. A text field is opaque data; the Product must never parse or execute it as code. Data Branch/Proposal/Gist cannot become a second Container or independent authorization boundary.
+Source Code, source-control file trees, git refs, merge/checkout semantics, executable payloads, shell/script/expression runtimes, code-specific review/diff behavior, Code Search, CI/CD, build, test, deployment, Package, and Release source capability remain excluded. A text field is opaque data; the Product must never parse or execute it as code. Data Branch/Proposal/Gist cannot become a second Container or independent authorization boundary.
 
 Use `docs/PRODUCT.md` as the root Product Contract and `docs/ONTOLOGY.md` as its canonical semantic expansion.

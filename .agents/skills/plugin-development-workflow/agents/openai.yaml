@@ -1,6 +1,6 @@
 interface:
   display_name: "Plugin Development Workflow"
-  short_description: "Route development plugins by truth class and evidence boundary."
-  default_prompt: "Use $plugin-development-workflow to route this task through only the necessary connected tools while preserving repository truth boundaries."
+  short_description: "Route necessary external tools by truth and evidence boundary."
+  default_prompt: "Use $plugin-development-workflow only for the connected external tools or evidence this task needs; preserve the active domain skill and repository truth boundaries."
 policy:
   allow_implicit_invocation: true

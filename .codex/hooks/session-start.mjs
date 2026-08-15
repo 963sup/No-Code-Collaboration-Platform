@@ -49,11 +49,11 @@ const status = runGit(['status', '--porcelain=v1', '--untracked-files=normal']);
 const changedPaths = status ? status.split(/\r?\n/u).length : 0;
 
 const context = [
-  'Cold-start contract: current task -> applicable AGENTS.md chain -> docs/README.md -> narrowest task-specific current contract -> executable evidence.',
-  'Historical evidence is opt-in. Use ADRs, Closed gaps, PRs, commits, Git history, and migration history only for why, regression analysis, or provenance.',
+  'Context continuity: preserve relevant task/session decisions, then ground them against current task -> applicable AGENTS.md chain -> docs/README.md -> narrowest task-specific current contract -> executable evidence. This does not require discarding context or simulating a fresh start.',
+  'Historical and prior context may be used when relevant to recover decisions, explain rationale, investigate regressions, or establish provenance. It remains supporting evidence and never overrides current contracts or executable evidence.',
   'Do not recursively load documentation or reconstruct current architecture from history. If current authorities disagree, do not invent architecture; resolve the nearest current contract against executable evidence and register a real mismatch as a current gap.',
   'Read the applicable AGENTS.md chain before editing; nearer scoped instructions override broader guidance.',
-  'For non-trivial product, implementation, review, release, provider-validation, or production-learning work, use the plugin-development-workflow skill to route connected Linear, GitHub, Notion, Context7, Codex Security, Vercel, Supabase, Sentry, and PostHog tools by truth class; never invoke them ceremonially.',
+  'Skill routing: explicit user-named skills win; otherwise choose the narrowest owner. github-semantics-first-principles owns GitHub-derived Product decisions and reads github-product-semantics only as a policy reference; first-principles-architecture owns broader or non-GitHub decisions. plugin-development-workflow routes external tools/evidence only. Compose skills only for distinct responsibilities; never invoke overlaps for consensus.',
   'Treat Sentry as production engineering evidence and PostHog as production product-behavior evidence. Neither redefines Product/Domain truth or replaces deterministic verification; minimize telemetry and do not intentionally capture credentials, auth tokens, secrets, or raw private Repository content.',
   'The project root is anchored by pnpm-workspace.yaml, turbo.json, and .git, including when Codex starts inside a package.',
   `Workspace packages (${workspacePackages.length}): ${packageSummary}.`,

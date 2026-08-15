@@ -196,11 +196,15 @@ check(
 const requiredSkills = [
   'first-principles-architecture',
   'github-product-semantics',
+  'github-semantics-first-principles',
   'verify-change',
   'workspace-impact-analysis'
 ];
 const skills = list('.agents/skills', { withFileTypes: true })
-  .filter((entry) => entry.isDirectory())
+  .filter(
+    (entry) =>
+      entry.isDirectory() && existsSync(resolve(root, '.agents/skills', entry.name, 'SKILL.md'))
+  )
   .map((entry) => entry.name)
   .toSorted();
 for (const required of requiredSkills) {
@@ -216,6 +220,50 @@ for (const skill of skills) {
     [/^interface:\n  display_name: .+\n  short_description: .+/m, 'Desktop metadata is missing']
   ]);
 }
+check(
+  '.agents/skills/github-product-semantics/SKILL.md',
+  read('.agents/skills/github-product-semantics/SKILL.md'),
+  [
+    [/supporting policy reference/i, 'GitHub Product reference boundary is missing'],
+    [/Do not invoke both Skills independently/, 'parallel GitHub decision guard is missing'],
+    [/git refs, merge\/checkout semantics/, 'source-control exclusion is missing']
+  ]
+);
+check(
+  '.agents/skills/github-semantics-first-principles/SKILL.md',
+  read('.agents/skills/github-semantics-first-principles/SKILL.md'),
+  [
+    [/Repository = No-Code Collaboration Container/, 'no-code Repository axiom is missing'],
+    [
+      /Source Code, source-control file trees, git refs/,
+      'code/source-control exclusion is missing'
+    ],
+    [
+      /do not also invoke `first-principles-architecture` unless/i,
+      'general-method boundary is missing'
+    ]
+  ]
+);
+check(
+  '.agents/skills/github-product-semantics/agents/openai.yaml',
+  read('.agents/skills/github-product-semantics/agents/openai.yaml'),
+  [[/allow_implicit_invocation: false/, 'GitHub Product reference must not invoke implicitly']]
+);
+check(
+  '.agents/skills/plugin-development-workflow/SKILL.md',
+  read('.agents/skills/plugin-development-workflow/SKILL.md'),
+  [
+    [/active decision Skill selected by narrowest ownership/, 'plugin router bypasses Skill owner'],
+    [
+      /github-semantics-first-principles for GitHub-derived Product decisions/,
+      'GitHub decision route is missing'
+    ],
+    [
+      /first-principles-architecture for broader or non-GitHub decisions/,
+      'general decision route is missing'
+    ]
+  ]
+);
 
 const instructionScopes = [
   'docs/AGENTS.md',
@@ -231,8 +279,14 @@ for (const path of instructionScopes) {
 
 const rootInstructions = read('AGENTS.md');
 check('AGENTS.md', rootInstructions, [
-  [/## Zero-context cold start/, 'zero-context cold-start contract is missing'],
-  [/Historical evidence is opt-in/, 'historical evidence is not opt-in'],
+  [/## Context continuity and skill routing/, 'context-continuity contract is missing'],
+  [
+    /does not require discarding context or simulating a fresh start/i,
+    'fresh-start reset is not explicitly rejected'
+  ],
+  [/Select skills by narrowest ownership/, 'narrowest-owner skill routing is missing'],
+  [/Explicit user-named skills win/, 'explicit skill precedence is missing'],
+  [/github-semantics-first-principles/, 'GitHub decision Skill owner is missing'],
   [/docs\/README\.md/, 'current-truth router is missing'],
   [
     /Do not redesign architecture while solving a local task/,
@@ -296,9 +350,11 @@ check('docs/CODEX_DESKTOP.md', read('docs/CODEX_DESKTOP.md'), [
   [/machine-local Supabase project context/i, 'machine-local Supabase boundary is missing'],
   [/read-only by default/i, 'machine-local Supabase access is not read-only by default'],
   [/documentation[- ]only/i, 'committed Supabase boundary is not explicit'],
-  [/Historical evidence is opt-in/, 'historical evidence opt-in boundary is missing'],
+  [/Relevant prior context is preserved/, 'context-continuity boundary is missing'],
   [/docs\/architecture\/ADR_INDEX\.md/, 'ADR history router is missing'],
-  [/zero-context cold-start/i, 'zero-context SessionStart contract is missing']
+  [/## Skill routing/, 'Skill routing contract is missing'],
+  [/narrowest applicable owner/, 'narrowest-owner Skill routing is missing'],
+  [/does not replace the active domain or decision Skill/, 'tool-router boundary is missing']
 ]);
 check('supabase/config.toml', read('supabase/config.toml'), [
   [/^\[db\.migrations\]$/m, 'declarative migrations are missing'],
@@ -358,9 +414,12 @@ if (hookRun.status !== 0) {
     if (output?.hookSpecificOutput?.hookEventName !== 'SessionStart')
       failures.push('SessionStart event shape is invalid');
     for (const expected of [
-      'Cold-start contract',
+      'Context continuity',
+      'does not require discarding context',
       'docs/README.md',
-      'Historical evidence is opt-in',
+      'Historical and prior context',
+      'Skill routing',
+      'GitHub-derived Product decisions',
       'do not invent architecture',
       'Workspace packages',
       'Turbo',

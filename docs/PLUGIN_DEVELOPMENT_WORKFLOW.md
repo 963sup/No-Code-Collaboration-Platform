@@ -2,7 +2,7 @@
 
 ## Purpose
 
-This contract standardizes how development agents use connected Linear, GitHub, Notion, Context7, Codex Security, Vercel, Supabase, Sentry, and PostHog tools while preserving the repository's existing truth model.
+This contract applies when a development task needs connected Linear, GitHub, Notion, Context7, Codex Security, Vercel, Supabase, Sentry, or PostHog tools. It standardizes external tool and evidence routing while preserving the repository's existing truth model; it does not choose or replace the task's domain or decision Skill.
 
 The plugins are not competing sources of truth. They are specialized evidence, execution, observation, and coordination surfaces around the repository contracts.
 
@@ -89,7 +89,9 @@ Use:
 
 ```text
 GitHub current contracts/code
-+ first-principles-architecture skill
++ active decision Skill selected by narrowest ownership
+  - github-semantics-first-principles for GitHub-derived Product decisions
+  - first-principles-architecture for broader or non-GitHub decisions
 + Notion only when durable human knowledge is relevant
 + Context7 only for external mechanisms used by the decision
 ```

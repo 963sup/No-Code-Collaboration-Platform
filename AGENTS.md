@@ -45,13 +45,13 @@ Organization is a Membership/administration Scope and possible Owner, not a mand
 
 Use `docs/README.md` as the truth router.
 
-## Zero-context cold start
+## Context continuity and skill routing
 
-A fresh agent starts from the current task, applicable `AGENTS.md` chain, `docs/README.md`, the narrowest current contract, then executable evidence. Historical evidence is opt-in for why, regression, or provenance; it is not current truth by default.
+Preserve task/session context and established decisions. Ground them against the task, applicable `AGENTS.md` chain, `docs/README.md`, the narrowest current contract, then executable evidence. This order validates continuity; it does not require discarding context or simulating a fresh start. Prior conversation, summaries, project memory, and history may be used when relevant; they are evidence, not current truth by themselves.
+
+Select skills by narrowest ownership. Explicit user-named skills win. `github-semantics-first-principles` owns GitHub-derived Product decisions and uses `github-product-semantics` only as its policy reference; `first-principles-architecture` owns broader or non-GitHub decisions. Combine decision skills only for separate decisions. `plugin-development-workflow` routes only necessary external tools/evidence. Operational skills may compose only for distinct responsibilities. Do not invoke overlaps for consensus.
 
 Do not recursively reconstruct current state from broad history. When required current context is missing or authorities disagree, do not invent the missing architecture; resolve the nearest current contract and executable evidence or register the mismatch.
-
-For non-trivial product, implementation, review, release, provider-validation, or production-learning work, use `.agents/skills/plugin-development-workflow/SKILL.md` to route connected Linear, GitHub, Notion, Context7, Codex Security, Vercel, Supabase, Sentry, and PostHog tools by truth class. Never invoke every connected plugin ceremonially or let an external tool redefine repository truth.
 
 ## Architecture boundaries
 

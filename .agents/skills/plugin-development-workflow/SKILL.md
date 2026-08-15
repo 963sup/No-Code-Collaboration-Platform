@@ -1,11 +1,11 @@
 ---
 name: plugin-development-workflow
-description: Use for non-trivial product, implementation, review, release, provider-validation, or production-learning work to route Linear, GitHub, Notion, Context7, Codex Security, Vercel, Supabase, Sentry, and PostHog by truth class without creating duplicate sources of truth.
+description: Use when a task needs connected external coordination, provider, documentation, security, deployment, or production evidence. This is a tool and evidence router, not a domain decision skill.
 ---
 
 # Plugin Development Workflow
 
-1. Start from the current task, applicable `AGENTS.md`, `docs/README.md`, the narrowest current contract, current gap when relevant, then executable evidence. Plugins never override that order.
+1. Apply this skill only when the task needs a connected external tool or evidence surface. It does not select or replace the task's domain or decision skill. Preserve relevant task/session context, then ground it through applicable `AGENTS.md`, `docs/README.md`, the narrowest current contract, the current gap when relevant, and executable evidence. Plugins never override that order.
 2. Classify the task before choosing tools. Never invoke every connected plugin ceremonially.
 3. Use **Notion** for durable human knowledge, research synthesis, or accepted semantic/decision summaries. Do not treat Notion as current code/schema/CI truth.
 4. Use **Linear** for the executable work graph: issue scope, dependencies, priority, acceptance criteria, and progress. Link to canonical repository contracts/gaps instead of copying them.
@@ -28,7 +28,9 @@ description: Use for non-trivial product, implementation, review, release, provi
 ```text
 Product / Domain / Architecture
 -> GitHub current contracts
--> first-principles-architecture
+-> active decision Skill selected by narrowest ownership
+-> github-semantics-first-principles for GitHub-derived Product decisions
+-> first-principles-architecture for broader or non-GitHub decisions
 -> Notion if durable knowledge is needed
 -> Context7 only for external mechanisms
 
