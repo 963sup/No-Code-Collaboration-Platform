@@ -78,6 +78,7 @@ check(configPath, config, [
   [/^max_concurrent_threads_per_session = 4$/m, 'agent concurrency is not bounded'],
   [/^inherit = "core"$/m, 'environment inheritance is not bounded'],
   [/^ignore_default_excludes = false$/m, 'secret-like environment exclusions are not enabled'],
+  [/^PYTHONUTF8 = "1"$/m, 'Python CLI output is not pinned to UTF-8 on Windows'],
   [/^network_access = false$/m, 'shell network access is not disabled']
 ]);
 
@@ -377,6 +378,45 @@ check('.github/workflows/verify.yml', read('.github/workflows/verify.yml'), [
 check('.codex/rules/.filesystem.rules', read('.codex/rules/.filesystem.rules'), [
   [/decision = "prompt"/, 'deletion is not approval-gated']
 ]);
+check('.codex/rules/.rg.rules', read('.codex/rules/.rg.rules'), [
+  [
+    /pattern = \[\["rg", "rg\.exe"\]\][\s\S]*?decision = "allow"/,
+    'read-only ripgrep discovery is not allowed outside the workspace sandbox'
+  ]
+]);
+check('.codex/rules/.uv.rules', read('.codex/rules/.uv.rules'), [
+  [
+    /pattern = \["uv", "tool", "list"\][\s\S]*?decision = "prompt"/,
+    'open-ended uv tool discovery is not approval-gated'
+  ],
+  [
+    /pattern = \["uv", "tool", "upgrade", "serena-agent"\][\s\S]*?decision = "prompt"/,
+    'user-level Serena upgrades are not approval-gated'
+  ]
+]);
+check('.codex/rules/.serena.rules', read('.codex/rules/.serena.rules'), [
+  [
+    /pattern = \["serena", "project", "health-check", "\."\][\s\S]*?decision = "allow"/,
+    'the Serena project health check is not restricted to the current repository'
+  ],
+  [
+    /pattern = \["serena", "memories", "check", "\."\][\s\S]*?decision = "allow"/,
+    'Serena memory validation is not restricted to the current repository'
+  ]
+]);
+check('.idea/modules.xml', read('.idea/modules.xml'), [
+  [/\.idea\/No-Code-Collaboration-Platform\.iml/, 'the IntelliJ project module is not registered']
+]);
+check(
+  '.idea/No-Code-Collaboration-Platform.iml',
+  read('.idea/No-Code-Collaboration-Platform.iml'),
+  [
+    [
+      /<content url="file:\/\/\$MODULE_DIR\$\/\.\.">/,
+      'the IntelliJ module content root must be the repository root'
+    ]
+  ]
+);
 check('.codex/rules/.supabase.rules', read('.codex/rules/.supabase.rules'), [
   [
     /pattern = \["supabase", "db", "reset"\][\s\S]*?decision = "allow"/,

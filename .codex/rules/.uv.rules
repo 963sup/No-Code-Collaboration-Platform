@@ -1,0 +1,15 @@
+# Native uv commands remain approval-gated because prefix rules also admit trailing options.
+
+prefix_rule(
+    pattern = ["uv", "tool", "list"],
+    decision = "prompt",
+    justification = "uv listing accepts trailing network, config, directory, and cache options",
+    match = ["uv tool list"],
+)
+
+prefix_rule(
+    pattern = ["uv", "tool", "upgrade", "serena-agent"],
+    decision = "prompt",
+    justification = "Upgrading Serena changes a user-level tool installation and may access the network",
+    match = ["uv tool upgrade serena-agent"],
+)

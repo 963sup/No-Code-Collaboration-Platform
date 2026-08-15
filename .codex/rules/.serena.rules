@@ -1,0 +1,22 @@
+# Routine local Serena diagnostics are allowed outside the workspace sandbox.
+
+prefix_rule(
+    pattern = ["serena", ["--version", "-V"]],
+    decision = "allow",
+    justification = "Reading the installed Serena version is bounded workstation inspection",
+    match = ["serena --version", "serena -V"],
+)
+
+prefix_rule(
+    pattern = ["serena", "project", "health-check", "."],
+    decision = "allow",
+    justification = "The Serena project health check is bounded to the current repository",
+    match = ["serena project health-check ."],
+)
+
+prefix_rule(
+    pattern = ["serena", "memories", "check", "."],
+    decision = "allow",
+    justification = "Serena memory validation is bounded to the current repository",
+    match = ["serena memories check ."],
+)

@@ -68,6 +68,9 @@ interrupt_message = true
 inherit = "core"
 ignore_default_excludes = false
 
+[shell_environment_policy.set]
+PYTHONUTF8 = "1"
+
 [sandbox_workspace_write]
 network_access = false
 
