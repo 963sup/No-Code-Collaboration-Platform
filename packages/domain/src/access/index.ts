@@ -13,7 +13,16 @@ export {
   preservesOrganizationOwnership,
   type OrganizationRole
 } from './delegation';
-export { effectiveRepositoryRole, type RepositoryAuthoritySources } from './authority';
+export {
+  decideRepositoryCapability,
+  effectiveRepositoryRole,
+  explainRepositoryAccess,
+  type RepositoryAccessExplanation,
+  type RepositoryAccessExplanationInput,
+  type RepositoryAccessSource,
+  type RepositoryAuthoritySources,
+  type RepositoryCapabilityDecision
+} from './authority';
 export {
   canCreateRepositoryForOwner,
   repositoryCreationCapability,

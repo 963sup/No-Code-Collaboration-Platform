@@ -136,6 +136,11 @@ export type { RepositoryPersistenceResult, RepositoryWriter } from './ports/repo
 export { RepositoryCreationAccessPolicy } from './policies/repository-creation-access-policy';
 export { CanReadRepositoryActivity } from './queries/can-read-repository-activity';
 export type { CanReadRepositoryActivityInput } from './queries/can-read-repository-activity';
+export { ExplainCurrentRepositoryAccess } from './queries/explain-current-repository-access';
+export type {
+  ExplainCurrentRepositoryAccessFailureReason,
+  ExplainCurrentRepositoryAccessResult
+} from './queries/explain-current-repository-access';
 export { GetAccessiblePage } from './queries/get-accessible-page';
 export { GetAccessibleDiscussion } from './queries/get-accessible-discussion';
 export { GetAccessibleIssue } from './queries/get-accessible-issue';
