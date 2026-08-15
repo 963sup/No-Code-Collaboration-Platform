@@ -1,12 +1,13 @@
 import {
-  effectiveRepositoryRole,
-  hasRepositoryCapability,
+  decideRepositoryCapability,
+  type RepositoryCapability
+} from '@no-code-collaboration-platform/domain/access';
+import {
   isIssueCloseReason,
   isIssueVersion,
   normalizeIssueTitle,
-  type IssueCommand,
-  type RepositoryCapability
-} from '@no-code-collaboration-platform/domain';
+  type IssueCommand
+} from '@no-code-collaboration-platform/domain/resource';
 
 import type { IdentityProvider } from '../ports/identity-provider';
 import type { IssueCommandPersistenceResult, IssueWriter } from '../ports/issue-writer';
@@ -76,10 +77,11 @@ export class ExecuteIssueCommand {
       actorId: actor.id,
       repositoryId: repository.id
     });
-    const role = effectiveRepositoryRole(sources);
-    if (role === null || !hasRepositoryCapability(role, requiredCapability(normalized))) {
-      return { ok: false, reason: 'forbidden' };
-    }
+    const decision = decideRepositoryCapability(
+      { sources, visibility: repository.visibility },
+      requiredCapability(normalized)
+    );
+    if (!decision.allowed) return { ok: false, reason: 'forbidden' };
 
     return this.issueWriter.executeIssueCommand(normalized);
   }

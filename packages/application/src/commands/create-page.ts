@@ -1,9 +1,5 @@
-import {
-  createPageDraft,
-  effectiveRepositoryRole,
-  hasRepositoryCapability,
-  type PageDetail
-} from '@no-code-collaboration-platform/domain';
+import { decideRepositoryCapability } from '@no-code-collaboration-platform/domain/access';
+import { createPageDraft, type PageDetail } from '@no-code-collaboration-platform/domain/resource';
 
 import type { IdentityProvider } from '../ports/identity-provider';
 import type { PageWriter } from '../ports/page-repository';
@@ -50,11 +46,12 @@ export class CreatePage {
       actorId: actor.id,
       repositoryId: repository.id
     });
-    const role = effectiveRepositoryRole(sources);
+    const decision = decideRepositoryCapability(
+      { sources, visibility: repository.visibility },
+      'resource.create'
+    );
 
-    if (role === null || !hasRepositoryCapability(role, 'resource.create')) {
-      return { ok: false, reason: 'forbidden' };
-    }
+    if (!decision.allowed) return { ok: false, reason: 'forbidden' };
 
     const draft = createPageDraft({
       createdBy: actor.id,

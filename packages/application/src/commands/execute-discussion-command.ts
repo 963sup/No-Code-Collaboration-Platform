@@ -1,12 +1,13 @@
 import {
-  effectiveRepositoryRole,
-  hasRepositoryCapability,
+  decideRepositoryCapability,
+  type RepositoryCapability
+} from '@no-code-collaboration-platform/domain/access';
+import {
   isDiscussionCategory,
   isDiscussionVersion,
   normalizeDiscussionTitle,
-  type DiscussionCommand,
-  type RepositoryCapability
-} from '@no-code-collaboration-platform/domain';
+  type DiscussionCommand
+} from '@no-code-collaboration-platform/domain/resource';
 
 import type { DiscussionWriter } from '../ports/discussion-repository';
 import type { IdentityProvider } from '../ports/identity-provider';
@@ -68,10 +69,11 @@ export class ExecuteDiscussionCommand {
       actorId: actor.id,
       repositoryId: repository.id
     });
-    const role = effectiveRepositoryRole(sources);
-    if (role === null || !hasRepositoryCapability(role, requiredCapability(normalized))) {
-      return { ok: false as const, reason: 'forbidden' as const };
-    }
+    const decision = decideRepositoryCapability(
+      { sources, visibility: repository.visibility },
+      requiredCapability(normalized)
+    );
+    if (!decision.allowed) return { ok: false as const, reason: 'forbidden' as const };
     return this.discussionWriter.executeDiscussionCommand(normalized);
   }
 }

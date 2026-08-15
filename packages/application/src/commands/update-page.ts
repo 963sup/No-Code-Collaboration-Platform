@@ -1,9 +1,5 @@
-import {
-  createPageUpdate,
-  effectiveRepositoryRole,
-  hasRepositoryCapability,
-  type PageDetail
-} from '@no-code-collaboration-platform/domain';
+import { decideRepositoryCapability } from '@no-code-collaboration-platform/domain/access';
+import { createPageUpdate, type PageDetail } from '@no-code-collaboration-platform/domain/resource';
 
 import type { IdentityProvider } from '../ports/identity-provider';
 import type { PageWriter } from '../ports/page-repository';
@@ -54,11 +50,12 @@ export class UpdatePage {
       actorId: actor.id,
       repositoryId: repository.id
     });
-    const role = effectiveRepositoryRole(sources);
+    const decision = decideRepositoryCapability(
+      { sources, visibility: repository.visibility },
+      'resource.update'
+    );
 
-    if (role === null || !hasRepositoryCapability(role, 'resource.update')) {
-      return { ok: false, reason: 'forbidden' };
-    }
+    if (!decision.allowed) return { ok: false, reason: 'forbidden' };
 
     const update = createPageUpdate({
       body: input.body,
