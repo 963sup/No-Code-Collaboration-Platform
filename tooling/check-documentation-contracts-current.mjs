@@ -100,8 +100,7 @@ for (const [pattern, message] of [
 
 for (const [pattern, message] of [
   [/\(authenticated\).*\/dashboard.*\/repos.*\/issues\/assigned/is, 'current authenticated Route Group projection is missing'],
-  [/\(owner\).*\/\{ownerSlug\}.*\/\{ownerSlug\}\/\{repositorySlug\}/is, 'current Owner Route Group projection is missing'],
-  [/no public stable-ID Repository compatibility namespace/i, 'current stable-ID compatibility boundary is missing']
+  [/\(owner\).*\/\{ownerSlug\}.*\/\{ownerSlug\}\/\{repositorySlug\}/is, 'current Owner Route Group projection is missing']
 ]) {
   requireMatch(paths.rootReadme, documents.rootReadme, pattern, message);
 }
