@@ -2,7 +2,7 @@
 
 - Status: Baseline; not yet production-validated
 - Operational owner: Repository owner until an explicit on-call owner is assigned
-- Last reviewed: 2026-08-12
+- Last reviewed: 2026-08-15
 
 ## Purpose
 
@@ -22,8 +22,9 @@ Development bootstrap and local commands belong in [`DEVELOPMENT_ENVIRONMENT.md`
 6. An accepted migration file is replayable transition history; only an identified environment's migration ledger proves that it was applied there.
 7. Every release and incident must leave enough evidence to identify actor, artifact, environment, time, result, and recovery action.
 8. Destructive or provider-mutating actions require explicit operator intent.
-9. A selected adapter is not evidence that an external environment has been provisioned.
+9. A selected adapter or hosted provider resource is not evidence that a persistent environment has been accepted.
 10. Local or CI verification is not preview or production validation.
+11. Git history is provenance. Do not rewrite shared `main` commits merely to make the visible history cleaner; move stale current-state claims into historical archives while preserving commit/PR/CI references.
 
 ## Runtime boundaries
 
@@ -32,15 +33,15 @@ The current target baseline and observed provisioning status are:
 | Boundary | Responsibility | Selected adapter | Provisioning status |
 | --- | --- | --- | --- |
 | GitHub | Source, review history, CI evidence, release commit identity | GitHub | Provisioned |
-| Web delivery | Next.js application and composition root | Vercel | Preview integration observed; production mapping unverified |
-| Identity | Authentication session and User identity | Supabase Auth | Local stack only; no Supabase Cloud project |
-| Data | PostgreSQL schema, records, grants, and activity history | Supabase PostgreSQL | Local stack only; no Supabase Cloud project |
+| Web delivery | Next.js application and composition root | Vercel | Preview deployment evidence exists; exact project/environment mapping remains unverified through the connected Vercel view |
+| Identity | Authentication session and User identity | Supabase Auth | Local flow verified; hosted provider project exists but hosted Auth configuration is not accepted/verified as Preview, Staging, or Production |
+| Data | PostgreSQL schema, records, grants, and activity history | Supabase PostgreSQL | Local stack is canonical; hosted provider project exists with no repository baseline claimed Applied |
 | Row enforcement | Database row access | PostgreSQL grants and RLS | Verified against disposable local/CI databases |
 | Generated projection | TypeScript view of the applied database schema | Supabase type generation | Generated from the local applied schema |
 
 Provider names describe selected adapters. They do not redefine product or domain semantics, and they do not prove that a durable environment exists.
 
-The only provisioned database runtime is the disposable Supabase CLI local stack used by developer workstations and GitHub Actions. No Supabase Cloud project is provisioned, linked, or represented by `supabase/config.toml`.
+The only accepted repository database execution environment is the disposable Supabase CLI local stack used by developer workstations and GitHub Actions. A hosted Supabase project currently exists as a provider resource, but **no Supabase Cloud project is provisioned as an accepted persistent Preview, Staging, or Production database environment**, no repository migration is recorded as Applied there, and this repository is not linked to it for ordinary development or CI.
 
 No background worker, queue, independent API service, or realtime-critical subsystem is accepted as a production boundary yet.
 
@@ -54,7 +55,7 @@ Migration state is environment-specific:
 | Accepted | Versioned migration plus successful local/CI replay and required tests |
 | Applied | Target-environment migration ledger plus provider/deployment evidence |
 
-A migration may be Accepted without being Applied to any persistent environment. File presence and CI success must never be reported as remote deployment evidence.
+A migration may be Accepted without being Applied to any persistent environment. File presence, hosted-project existence, and CI success must never be reported as remote deployment evidence.
 
 ## Environment classes
 
@@ -68,7 +69,7 @@ Evidence:
 - local Supabase stack is isolated;
 - schema reset, database tests, generated types, unit tests, and browser tests can run;
 - accepted migrations replay from an empty local database;
-- no production credentials or project references are present.
+- no production credentials or project references are present in repository scripts or ordinary CI.
 
 ### Preview
 
@@ -80,32 +81,35 @@ Required properties:
 - no production service-role credentials;
 - explicit data source and reset policy;
 - artifact traceable to one commit;
-- safe authentication and authorization test identities.
+- safe authentication and authorization test identities;
+- identified database lifecycle role if persistent data is used; and
+- migration-ledger evidence for any Applied database transition.
 
-A Vercel preview is not a full-stack preview while no isolated persistent database has been provisioned. It must not be represented as evidence of hosted Supabase behavior.
+A Vercel preview is not a full-stack preview while no isolated persistent database environment has been accepted and verified. A blank or unclassified Supabase project must not be represented as evidence of hosted application behavior.
 
 ### Production
 
 Purpose: serve real users and durable data.
 
-No production database environment currently exists. Production is considered operational only after the production gates at the end of this runbook are satisfied.
+No production database environment is accepted or has the repository baseline Applied. Production is considered operational only after the production gates at the end of this runbook are satisfied.
 
-## Persistent database provisioning gate
+## Persistent database acceptance and application gate
 
-Before creating or linking the first persistent database:
+Before classifying, linking, or applying the repository baseline to any hosted database:
 
 1. State the demonstrated requirement that disposable local infrastructure cannot satisfy.
 2. Identify the environment class, accountable owner, cost owner, project identity, and region.
 3. Define credential ownership, secret storage, access controls, and operator authority.
-4. Review every accepted migration from an empty database.
-5. Verify that no migration creates an unsafe intermediate authorization or data-integrity state.
-6. Decide whether to preserve the complete accepted history or create a separately reviewed secure initial baseline.
-7. Define backup coverage, recovery point objective, recovery time objective, and restore validation.
-8. Define observability, data classification, retention, and deletion constraints.
-9. Preview the exact migration set against the identified target.
-10. Record stop conditions, rollback or forward-recovery behavior, and required provider evidence.
+4. Inspect the target's current migration ledger and schema without mutating it.
+5. Review every accepted migration/baseline from an empty database.
+6. Verify that no migration creates an unsafe intermediate authorization or data-integrity state.
+7. Decide whether to preserve the complete accepted history or create a separately reviewed secure initial baseline.
+8. Define backup coverage, recovery point objective, recovery time objective, and restore validation.
+9. Define observability, data classification, retention, and deletion constraints.
+10. Preview the exact migration set against the identified target through an approved mechanism.
+11. Record stop conditions, rollback or forward-recovery behavior, and required provider evidence.
 
-Creating a Supabase Cloud project does not by itself satisfy this gate.
+Creating or discovering a Supabase Cloud project does not by itself satisfy this gate.
 
 ## Release contract
 
@@ -131,13 +135,13 @@ Before any production release:
 2. Required GitHub Actions checks are green for the exact commit.
 3. Product, domain, architecture, schema, and runbook contracts affected by the change are updated.
 4. No secret, `.env` file, service credential, private project reference, or production data is in the diff.
-5. Database changes have reviewed declarative schema changes and append-only accepted migrations.
+5. Database changes have reviewed declarative schema changes and the migration/baseline required by the current lifecycle phase.
 6. Generated database types match the applied local schema when database shape changed.
 7. Authorization-sensitive changes have Domain/Application tests and database enforcement tests.
 8. The operator knows the stop condition and recovery path before mutation begins.
 9. Backup and restore expectations are confirmed for any change with material data-loss risk.
 10. External-provider status and maintenance windows have been checked when they can affect the release.
-11. Any persistent target environment has passed the provisioning gate and is unambiguously identified.
+11. Any persistent target environment has passed the acceptance/application gate and is unambiguously identified.
 
 If any precondition cannot be proven, stop rather than replacing evidence with assumption.
 
@@ -162,12 +166,12 @@ Stop when:
 
 ### Database release
 
-This procedure is deferred until a persistent database passes the provisioning gate.
+This procedure is deferred until a persistent database passes the acceptance/application gate.
 
 Target procedure:
 
 1. Modify `supabase/schemas/*.sql` as current database truth.
-2. Generate and review an append-only accepted migration.
+2. Produce and review the migration artifact appropriate to the current lifecycle phase: the replaceable baseline before first persistent application, or an append-only forward migration after freeze.
 3. Reset the local database explicitly from migration history.
 4. Run SQL lint, pgTAP authorization/invariant tests, generated-type consistency checks, and affected browser tests.
 5. Identify lock, rewrite, backfill, data-loss, and RLS effects.
@@ -182,7 +186,7 @@ Ordinary package scripts and the verification workflow must not perform steps 7â
 
 Stop when:
 
-- no persistent target environment has passed the provisioning gate;
+- no persistent target environment has passed the acceptance/application gate;
 - the target project cannot be unambiguously identified;
 - migration history differs from the reviewed source;
 - a destructive operation lacks explicit approval and recovery evidence;
@@ -190,7 +194,7 @@ Stop when:
 - an operation can lock or rewrite material data without an accepted execution plan; or
 - post-migration types or policies differ from the reviewed model.
 
-Never edit or delete an already applied migration to make history appear clean. An accepted but never-applied migration may be replaced only through a separately reviewed baseline decision that preserves relevant security and architecture evidence.
+Never edit or delete an already Applied migration to make history appear clean. An Accepted but never-Applied baseline may be replaced only while the lifecycle remains `LocalOnly`, with local replay and review preserving relevant security and architecture evidence. Git `main` history itself remains immutable provenance.
 
 ## Post-release verification
 
@@ -378,12 +382,13 @@ Do not copy production secrets or private data into GitHub issues, pull requests
 
 The following remain unresolved and therefore must not be reported as production-validated:
 
-- no Supabase Cloud project or other persistent database environment is provisioned;
-- the first persistent database has not passed the initial baseline gate;
+- no hosted Supabase project is accepted/classified as the repository's persistent Preview, Staging, or Production database environment;
+- the repository baseline is not evidenced as Applied in any accepted persistent environment migration ledger;
 - production deployment ownership and approval path;
 - exact Vercel project and environment mapping;
 - exact Supabase production project and environment mapping;
 - preview-data isolation;
+- hosted Auth redirect, SMTP, abuse-protection, template, notification, and Session configuration;
 - backup retention and point-in-time recovery configuration;
 - tested restore procedure and measured recovery objectives;
 - production secret rotation procedure;

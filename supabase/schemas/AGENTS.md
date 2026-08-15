@@ -14,7 +14,7 @@ This directory owns current PostgreSQL schema truth and the database enforcement
 - Authorization helper functions belong in a non-exposed schema. `SECURITY DEFINER` is permitted only for an explicit RLS boundary, with `search_path = ''`, fully qualified relations, caller-aware logic, and least-privilege `EXECUTE` grants.
 - End-user authorization MUST never depend on service-role bypass, user-editable metadata, presentation context, or hidden UI controls.
 - Declarative schema changes MUST be accompanied by a reviewed replay projection and attack-path regression tests before merge: the one consolidated baseline while `LocalOnly`, or an append-only forward migration after persistent application freezes that baseline.
-- Schema and migration files are local database contracts. Their presence MUST NOT be used as evidence that a Supabase Cloud project exists or that a remote deployment occurred.
+- Schema and migration files are local database contracts. Their presence, a hosted provider project, or successful local replay MUST NOT be used as evidence of remote deployment.
 - Organization, Repository, and Resource hard deletion MUST remain unavailable to end-user roles until accepted lifecycle contracts define retention, restore, redaction, containment or subtype fate, historical continuity, and recovery behavior.
 - A missing lifecycle MUST fail closed through both table privileges and RLS policy absence; owner or administrator authority alone cannot make an undefined destructive transition valid.
 - An authorization vocabulary entry is not lifecycle acceptance. Undefined archive, restore, retention, purge, redaction, or historical guarantees remain unavailable and fail closed.
@@ -35,7 +35,7 @@ If Domain policy and SQL enforcement disagree, the change is incomplete. Correct
 
 ## Local-only environment rule
 
-When provider discovery returns `projects: []`, continue authoring and verifying these schemas against local/shadow databases. Do not create, link, pull from, or mutate a remote project to obtain schema truth. Provider absence changes environment state, not Domain ownership or database invariants.
+`LocalOnly` means no identified persistent environment has recorded the repository baseline as Applied. A hosted Supabase project may exist independently and still remain outside the accepted database lifecycle. Continue authoring and verifying these schemas against local/shadow databases until the Runbook/ADR-005 persistent-environment gate is explicitly satisfied. Do not create, link, pull from, push to, or mutate a remote project merely to obtain schema truth.
 
 ## Modern declarative authoring
 

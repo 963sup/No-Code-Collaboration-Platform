@@ -33,7 +33,7 @@ The dependency path is `Next.js Entry → Application → Port ← Supabase Adap
 
 ## Database lifecycle
 
-The only provisioned database runtime is the disposable Supabase CLI local stack used by developer workstations and GitHub Actions. No Supabase Cloud project is provisioned.
+The canonical database execution boundary remains the disposable Supabase CLI local stack used by developer workstations and GitHub Actions. A hosted Supabase provider project may exist independently, but **no Supabase Cloud project is provisioned as an accepted persistent Preview, Staging, or Production database environment**, and the repository database baseline has not been established as Applied there.
 
 ```text
 supabase/schemas
@@ -45,11 +45,13 @@ supabase/migrations
 local db reset + tests
 = reproducibility and enforcement evidence
 
-remote migration ledger + provider evidence
-= proof that a database transition was applied to that environment
+identified persistent environment
++ migration ledger
++ direct provider evidence
+= proof that a database transition was applied there
 ```
 
-A migration file may exist before any hosted database exists. Local or CI success does not imply preview or production deployment. Supabase Cloud remains a deferred durable-hosting candidate until a real persistent-environment requirement and the operational gates in the runbook justify provisioning it.
+Provider-resource existence is not environment acceptance. A migration file, a blank hosted project, or local/CI success does not imply preview or production deployment. Classifying, linking, or mutating a hosted database remains a separate operational decision governed by [`docs/operations/RUNBOOK.md`](./docs/operations/RUNBOOK.md) and ADR-005.
 
 ## Next.js route groups
 

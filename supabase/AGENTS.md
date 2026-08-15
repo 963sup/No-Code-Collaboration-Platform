@@ -4,10 +4,11 @@ This subtree owns declarative PostgreSQL truth, replayable transitions, local se
 
 ## Environment boundary
 
-- The selected adapter and a provisioned environment are separate facts. At the current verified LocalOnly boundary, no Supabase Cloud project is provisioned; re-check provider state whenever a remote decision depends on it.
-- File presence, local reset, migration replay, or CI success MUST NOT be described as proof of remote deployment.
+- The selected adapter, a hosted provider resource, and an accepted persistent environment are separate facts. At the current verified `LocalOnly` boundary, **no Supabase Cloud project is provisioned as an accepted persistent Preview, Staging, or Production database environment**. A hosted project may exist without the repository baseline being classified, linked, or Applied there; re-check provider and migration-ledger evidence whenever a remote decision depends on it.
+- File presence, local reset, migration replay, CI success, or hosted-project existence MUST NOT be described as proof of remote deployment.
 - Default package scripts and ordinary CI MUST NOT contain remote credentials or invoke remote link, pull, push, reset, SQL, or equivalent persistent-environment mutation.
-- Creating, linking, or mutating a persistent environment requires explicit user intent, current provider discovery, an identified lifecycle role, and the Operations Runbook/ADR-005 gates.
+- Classifying, linking, or mutating a persistent environment requires explicit user intent, current provider discovery, an identified lifecycle role, and the Operations Runbook/ADR-005 gates.
+- The local-development baseline remains replaceable until an identified persistent environment records it as Applied. Provider-resource creation alone does not freeze migration history.
 
 ## Ownership and workflow
 

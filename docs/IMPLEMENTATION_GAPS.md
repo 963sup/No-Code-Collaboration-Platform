@@ -21,6 +21,7 @@ A gap is not permission to redefine the target model, postpone an invariant sile
 5. A merged implementation does not close a gap by itself. Required tests/runtime evidence must pass for the exact change.
 6. Once a gap is Closed or Superseded, move detailed evidence to `history/CLOSED_GAPS.md` and retain only an index entry here.
 7. If a gap proves target contract wrong, update the earliest invalid Product/Domain/Architecture boundary rather than weakening executable enforcement silently.
+8. External CI/provider failure is evidence about the execution environment, not automatically a Product/Domain regression. Classify the failing boundary before changing a gap's semantic status.
 
 ## Status model
 
@@ -75,16 +76,16 @@ Close only after the same exact change set proves:
 10. Next DevTools reports no build, type, runtime, hydration, browser-log, or server-log errors for each implemented slice.
 11. Playwright validates GitHub-aligned local behavior at `1440x900`, `1280x800`, `768x1024`, and `390x844` without credentials or private request material.
 
-### GAP-OWNERSHIP-001 — Repository ownership and creation are implemented, but exact-head verification evidence remains incomplete
+### GAP-OWNERSHIP-001 — Repository ownership and creation are implemented; latest exact-head closure evidence remains incomplete
 
 - Status: Open
 - Affected contracts: [`PRODUCT.md`](./PRODUCT.md), [`ONTOLOGY.md`](./ONTOLOGY.md), [`domains/repository-collaboration.md`](./domains/repository-collaboration.md), [`domains/access-authority.md`](./domains/access-authority.md), [`architecture/README.md`](./architecture/README.md), [ADR-010](./architecture/ADR-010-repository-owner-namespace.md)
 - Affected invariants: `Repository Owner = User | Organization`, owner-neutral authorization, globally unambiguous Owner namespace, canonical `/{owner}/{repository}` routing, visibility vocabulary
-- Risk class: incomplete exact-head evidence
+- Risk class: incomplete exact-head integration evidence, not a known ownership-semantic defect
 
 #### Direct evidence
 
-Current branch now implements the corrected target through these concrete projections:
+The corrected target is implemented in current `main`:
 
 - `packages/domain/src/repository/ownership.ts` defines typed User/Organization Repository Owner.
 - `packages/domain/src/repository/repository.ts` exposes typed `owner` and `private | public` visibility with no Organization-only compatibility field.
@@ -97,48 +98,35 @@ Current branch now implements the corrected target through these concrete projec
 - `supabase/schemas/91_repository_access_projection.sql` declares owner-neutral authority-source projection and the database projection of the Owner-scoped creation policy.
 - `supabase/schemas/95_repository_routing.sql` resolves one global User/Organization Owner namespace.
 - `supabase/schemas/26_repository_owner_namespace_guardrails.sql` reserves command-route segments, including `organizations`, so canonical Repository identity cannot collide with `/organizations/new`.
-- `supabase/schemas/99_rls.sql` has one Repository INSERT Access Policy that permits the matching personal Owner or an Organization owner/admin, rejects an ordinary member, and preserves Actor attribution.
-- `supabase/schemas/30_repository.sql` is the current ownership truth, and `supabase/migrations/20260814190012_local_development_baseline.sql` replays it without the historical compatibility column.
-- `apps/web/src/app/(repository)/[ownerSlug]/[repositorySlug]/**` is the only Repository UI tree; the obsolete Organization-only tree has been removed.
-- `apps/web/src/routing/repository-routes.ts` builds canonical `/{owner}/{repository}` URLs; `/app` remains dashboard/discovery.
-- `packages/application/src/commands/create-repository.ts` authenticates the Actor, requires an Owner authorized by the Access Policy, and then validates the Repository draft through Domain rules before persistence.
-- `packages/infrastructure/supabase/src/access/supabase-repository-creation-access-reader.ts` returns personal Owner and all Organization Membership-role facts without deciding policy; `packages/infrastructure/supabase/src/repositories/supabase-repository-creation.ts` only performs the authenticated-session INSERT.
-- `packages/domain/src/organization/organization.ts` and `packages/application/src/commands/create-organization.ts` validate Organization identity and attribute the creation command to the authenticated Actor without treating Organization as an Actor or collaboration Container.
-- `packages/infrastructure/supabase/src/organizations/supabase-organization-creation.ts` performs the ordinary authenticated INSERT; the shared `organization_created_owner` trigger atomically establishes the global Owner namespace and founder-owner Membership for both Product-created and deterministic Demo Organizations.
-- `apps/web/src/app/(app)/organizations/new/**` implements the accepted creation Process entry route and hands the newly created Organization to `/new` as a validated Owner selection.
-- `apps/web/src/app/(app)/new/**` exposes the human creation flow for a personal or eligible Organization Owner and redirects successful creation to the canonical Owner/Repository URL.
-- `apps/web/e2e/repository-creation.spec.ts` registers and verifies new non-Demo Actors, covers both creation pages at four required viewports, creates a personal Repository and a real Organization followed by its Repository, verifies both canonical routes, and finds the new Repositories on `/app`.
-- `apps/web/e2e/page-collaboration.spec.ts` now clicks a Repository card from `/app`, lands on the canonical route, follows stable-ID compatibility redirects, and executes Page collaboration through the canonical path.
-- pgTAP ownership contracts assert typed ownership, Organization founder bootstrap, forged creator rejection, namespace collision rollback, personal/Organization authority separation, ordinary-Member non-authority, and absence of the legacy `repositories.organization_id` column.
-- Checked-in `packages/infrastructure/supabase/src/generated/database.types.ts` matches the replayed desired schema under `pnpm supabase:types:check`; generated types remain a projection and cannot redefine target truth.
-- Supabase contract verification has demonstrated migration replay, schema lint, pgTAP, and generated-type consistency on the corrected ownership baseline; exact-head closure still requires the complete required check set on one latest PR head.
+- `supabase/schemas/99_rls.sql` permits creation only for the matching personal Owner or an Organization owner/admin, rejects an ordinary member, and preserves Actor attribution.
+- `apps/web/src/app/(repository)/[ownerSlug]/[repositorySlug]/**` is the canonical Repository UI tree; the obsolete Organization-only tree is absent.
+- `/new` supports personal ownership and eligible Organization ownership; `/organizations/new` establishes founder ownership through the accepted Organization creation path.
+- PR [#27](https://github.com/963sup/No-Code-Collaboration-Platform/pull/27) is merged; its old Draft wording is historical and is not a current containment condition.
+- Commit `108ccfc6ac546dcfa653105f6174d98618f93bee` passed Verify #438 with Workflow guardrails, Repository contracts, Supabase contracts, and Browser contracts; its Vercel status also succeeded.
+- Current `main` commit `7423d82d558c904ba12cb6a1d83a5eb4941e6bfd` changes Serena tooling documentation rather than ownership/runtime behavior. Verify #439 passed Repository contracts and Workflow guardrails; local Supabase reset, lint, and all 10 pgTAP files / 183 assertions passed, but generated-type verification was interrupted by external ECR `toomanyrequests` while pulling `postgres-meta:v0.96.6`, so Browser contracts were skipped.
 
-Current incomplete evidence/capability:
-
-- Exact-head end-to-end closure evidence remains incomplete until Repository, Supabase, Browser, and deployment checks all succeed for the same latest PR head; an individual green check does not close this gap.
+The latest failure is classified as environment evidence rather than ownership-regression evidence, but the project closure protocol still requires one latest exact head to complete the full required matrix before this gap moves to history.
 
 #### Root cause
 
 An early Organization-only executable shortcut was promoted into Product, Domain, authorization, persistence, and URL assumptions. Those assumptions then cited one another as evidence.
 
-The earliest invalid boundaries and the missing human creation capability have now been replaced. This gap remains Open only for exact-head end-to-end runtime/deployment evidence; it must not continue describing the removed Organization-only implementation as current truth.
+The invalid Product/Domain/Architecture/executable boundaries have been replaced. The remaining gap is evidence closure only.
 
 #### Predicted failure
 
-Until closure:
-
-- without one latest head proving the full verification matrix, a Web/browser/deployment regression could remain undetected even when narrower checks are green.
+Until closure, a later non-ownership change could still hide an integration regression if no current exact SHA completes Repository, Supabase, Browser, and deployment evidence together.
 
 #### Temporary containment
 
-- PR #27 remains Draft and must not be represented as production-ready while this gap is Open.
-- `/organizations/new` creates only an Actor-attributed Organization and relies on the database trigger for its founder-owner relationship; no Demo-only or delivery-only authority shortcut exists.
-- `/new` projects only typed Owner scopes accepted by the Domain Access Policy; stale or forged authority fails closed in the Application use case and the same-semantics database RLS policy.
-- Generated database types remain projections; stale checked-in output is treated as a verification failure, never as Product truth.
+- Treat the typed User/Organization ownership model as current Product/Domain truth; do not reintroduce Organization-only compatibility semantics merely because this evidence gap is Open.
+- Keep generated database types as projections; stale checked-in output remains a verification failure, never Product truth.
+- Do not classify an external registry failure as permission to weaken database verification or to push the repository baseline to a hosted Supabase project.
+- Do not claim production validation from prior local/CI evidence; ownership semantics and production readiness are separate questions.
 
 #### Closure evidence
 
-Close only after the same exact PR head proves all of the following:
+Close only after the same latest branch/main SHA proves all of the following:
 
 1. Domain models typed `RepositoryOwner = User | Organization` and `private | public` visibility.
 2. Application authority lookup accepts `actorId + repositoryId` without caller-supplied Organization ownership.
@@ -146,11 +134,11 @@ Close only after the same exact PR head proves all of the following:
 4. Personal Owner derives Repository admin without fabricated Grant; Organization admin/owner derives admin only for Organization-owned Repository; ordinary member does not.
 5. Route RPCs/adapters resolve `ownerSlug + repositorySlug` for both Owner kinds.
 6. Web canonical Repository URL is `/{ownerSlug}/{repositorySlug}`; `/app` is dashboard only; stable-ID compatibility routes redirect safely; no Organization-only Repository UI tree remains.
-7. `/new` supports personal ownership and authorized Organization ownership through a Domain Owner-scoped `repository.create` Access Policy, fact-only Infrastructure reader, Repository-only creation writer, and same-semantics RLS.
+7. `/new` supports personal ownership and authorized Organization ownership through the Domain Owner-scoped `repository.create` policy and same-semantics RLS.
 8. `/organizations/new` creates an Actor-attributed Organization, atomically establishes founder ownership, and exposes it as a valid Repository Owner without treating Organization Membership as Repository access.
-9. Playwright explicitly clicks a Repository card from `/app`, verifies canonical navigation, and completes accepted Page collaboration through that route.
+9. Playwright explicitly navigates from `/app` to the canonical Repository route and completes accepted collaboration behavior through that route.
 10. pgTAP proves Organization bootstrap, namespace collision rejection, typed ownership, creation/authorization matrix, legacy-column absence, and visibility semantics.
-11. Generated DB types match the replayed desired schema, Repository verification succeeds, Supabase verification succeeds, Browser contracts succeed, and deployment status succeeds for the same latest head.
+11. Generated DB types match the replayed desired schema, Repository verification succeeds, Supabase verification succeeds, Browser contracts succeed, and deployment status succeeds for the same latest SHA.
 
 ### GAP-IDENTITY-001 — Identity lifecycle remains incomplete after verified Session and recovery establishment
 
@@ -164,30 +152,30 @@ Close only after the same exact PR head proves all of the following:
 - The executable slice implements password registration, email verification, ordinary Session establishment, current-Session sign-out, Profile creation through the existing `auth.users` trigger, password-recovery request, provider recovery proof, Recovery Session discrimination, and password reset.
 - Recovery is intentionally single-purpose: `GetCurrentIdentity` excludes signed Sessions whose `amr` contains `recovery`; `/reset-password` requires recovery evidence; an ordinary password Session cannot use recovery reset; recovery creates no Membership, Grant, Capability, or Activity facts.
 - `apps/web/e2e/auth.spec.ts` carries a local Mailpit path from registration/verification through recovery proof, recovery-only routing, reset, fresh ordinary sign-in, and rejection of ordinary Sessions from recovery page.
-- No Application use case or human-facing route currently implements Product Actor readiness, onboarding, Organization invitation acceptance, email change, MFA, Session listing, selective revocation UI, or enterprise identity policy.
-- Repository contains local Auth configuration/templates/Mailpit browser contracts, but no hosted Supabase project evidence. Production Auth redirect, SMTP, CAPTCHA, notification, and Session settings are unverified.
+- No Application use case or human-facing route currently implements Organization invitation acceptance, email change, MFA, Session listing, selective revocation UI, or enterprise identity policy.
+- Direct provider discovery on 2026-08-15 found a healthy hosted Supabase project, but no repository application schema or migration ledger is established there and it is not accepted as Preview, Staging, or Production. Hosted Auth redirect, SMTP, CAPTCHA/abuse protection, notification, and Session settings remain unverified.
 - Open registration intentionally creates no Organization Membership or Repository Grant.
 
 #### Predicted failure
 
-A User can establish/recover the current local email/password credential flow, but cannot complete Product Actor onboarding, accept an Organization invitation, or manage stronger account-security lifecycle operations through the product. Local success may not match hosted Auth delivery/security behavior.
+A User can establish/recover the current local email/password credential flow, but cannot accept an Organization invitation or manage stronger account-security lifecycle operations through the product. Local success may not match hosted Auth delivery/security behavior.
 
 #### Temporary containment
 
 - Recovery is exposed only through the accepted single-purpose Recovery Session path; a recovery-authenticated request is not accepted as ordinary `/app` identity.
-- Unsupported onboarding, invitation, MFA, OAuth, SSO, Session-management, and broader account-security behavior is not described as available.
+- Unsupported invitation, MFA, OAuth, SSO, Session-management, and broader account-security behavior is not described as available.
 - Registration/recovery do not create collaboration authority; authenticated Users without persisted authority remain unauthorized by RLS.
-- Production identity readiness remains blocked until hosted configuration/delivery are directly verified.
+- A hosted provider project is not treated as an accepted identity environment merely because it exists. Production identity readiness remains blocked until hosted configuration/delivery are directly verified.
 
 #### Closure evidence
 
 Close only after:
 
 1. password recovery/reset are exact-head verified without account enumeration, ordinary-Session bypass, or Recovery-Session product access;
-2. Product Actor readiness/onboarding have one authoritative state model;
+2. Product Actor readiness has one authoritative minimal model and does not manufacture an unnecessary onboarding state;
 3. Organization invitations survive sign-in/registration/verification/recovery without implicit invalid Membership;
 4. credential/Session security operations have explicit scope/reauthentication rules;
-5. hosted Supabase redirect, SMTP, abuse-protection, template, notification, and Session settings are verified; and
+5. hosted Supabase redirect, SMTP, abuse-protection, template, notification, and Session settings are verified in an accepted environment; and
 6. Application, adapter, browser, provider, and operational tests produce consistent evidence.
 
 ## Closed gap index
@@ -203,4 +191,5 @@ Close only after:
 2. Fix earliest invalid target/executable boundary.
 3. Add regression evidence at every independently permissive enforcement layer.
 4. Record closing commit/PR/CI/migration/operational evidence when applicable.
-5. Change status only after evidence review, then move detailed entry to historical archive.
+5. Distinguish Product/regression failure from external CI/provider failure before changing semantic status.
+6. Change status only after evidence review, then move detailed entry to historical archive.

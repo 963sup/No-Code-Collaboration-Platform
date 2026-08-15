@@ -36,12 +36,13 @@ Network access remains disabled inside the default Codex workspace sandbox. Depe
 
 ## Current database environment
 
-The only provisioned database runtime is the disposable Supabase CLI local stack used by developer workstations and GitHub Actions.
+The canonical repository database execution environment is the disposable Supabase CLI local stack used by developer workstations and GitHub Actions.
 
-- No Supabase Cloud project is provisioned.
+- A hosted Supabase provider project may exist, but **no Supabase Cloud project is provisioned as an accepted persistent Preview, Staging, or Production database environment** for this repository.
 - `supabase/config.toml` configures local services; its `project_id` distinguishes local containers and is not a Cloud project reference.
-- The sole checked-in migration is a reviewed replay candidate, not evidence of remote deployment. `20260814190012_local_development_baseline.sql` remains replaceable while the project is purely local; the first identified persistent application freezes it, after which future accepted changes append migrations.
-- A future persistent environment requires the provisioning gate in [`operations/RUNBOOK.md`](./operations/RUNBOOK.md) and the decision in [`architecture/ADR-005-local-first-supabase-lifecycle.md`](./architecture/ADR-005-local-first-supabase-lifecycle.md).
+- The sole checked-in migration is a reviewed replay candidate, not evidence of remote deployment. `20260814190012_local_development_baseline.sql` remains replaceable while no identified persistent environment has recorded it as Applied; that first persistent application freezes it, after which future accepted changes append migrations.
+- Hosted-project existence without an accepted environment classification, repository link, and migration-ledger application does not change the `LocalOnly` lifecycle state.
+- A future persistent environment requires the provisioning/application gate in [`operations/RUNBOOK.md`](./operations/RUNBOOK.md) and the decision in [`architecture/ADR-005-local-first-supabase-lifecycle.md`](./architecture/ADR-005-local-first-supabase-lifecycle.md).
 
 ## Codex project boundaries
 
@@ -103,8 +104,8 @@ supabase/migrations after persistent application
 local migration ledger
 = transitions applied to the current disposable local database
 
-remote migration ledger
-= future environment-specific applied-state evidence
+persistent-environment migration ledger
+= environment-specific Applied-state evidence
 ```
 
 Do not alternate between declarative and imperative schema authoring on a per-change basis.

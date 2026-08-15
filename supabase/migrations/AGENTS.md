@@ -1,12 +1,12 @@
 # Migration History Scope
 
-This directory contains the replay contract derived from reviewed declarative schema changes. It is a single replaceable local-development baseline until an identified persistent environment applies it; from that application boundary onward, the frozen baseline and later accepted transitions are append-only.
+This directory contains the replay contract derived from reviewed declarative schema changes. It is a single replaceable local-development baseline until an identified persistent environment records that baseline as Applied; from that application boundary onward, the frozen baseline and later accepted transitions are append-only.
 
 ## Inviolable invariants
 
 - Never edit or delete a migration that an identified persistent environment has applied.
 - Every migration MUST move an empty or previously applied database toward the state declared in `supabase/schemas`.
-- A migration file proves that a transition is versioned. It does not prove that any persistent environment applied it.
+- A migration file proves that a transition is versioned. It does not prove that any persistent environment applied that transition.
 - Accepted migrations MUST pass local/CI replay. Applied status MUST be established separately for each environment through its migration ledger and direct provider evidence.
 - Security-sensitive migrations MUST include all policy, function privilege, trigger, and grant changes needed to close the boundary; partial deployment states are not acceptable.
 - `SECURITY DEFINER` functions introduced by a migration MUST have public execution revoked before selective grants are applied.
@@ -15,6 +15,7 @@ This directory contains the replay contract derived from reviewed declarative sc
 - `20260814190012_local_development_baseline.sql` is the only current replay file and is compiled in `schema_paths` order from `supabase/schemas`.
 - Before any persistent application, reviewed local-only changes MUST be consolidated into that one baseline; Git retains development provenance without making every disposable transition part of deployment history.
 - Rebaseline is forbidden after any persistent environment applies the baseline or a later migration. From that evidence-backed cutoff forward, accepted migrations are append-only.
+- Hosted-project existence alone does not freeze the baseline. The cutoff is an identified environment's Applied migration-ledger evidence.
 
 ## State model
 
@@ -29,14 +30,14 @@ Applied
 → recorded in one identified environment's migration ledger
 ```
 
-Applied state is environment-specific and cannot be inferred from Git history.
+Applied state is environment-specific and cannot be inferred from Git history or provider-resource existence.
 
 ## `LocalOnly` and the baseline
 
-- With no provisioned Cloud project and no linked project reference, this directory describes deployment intent and local/CI replay only.
+- `LocalOnly` means no identified persistent environment has recorded the repository baseline as Applied. A hosted provider project may exist independently without changing this state.
 - `20260814190012_local_development_baseline.sql` is the sole local replay candidate. Empty replay, drift comparison, pgTAP, lint, and generated-type consistency are required before it is Accepted; these checks do not make it remotely Applied.
-- Do not manufacture a remote ledger or create/link a project to validate a migration. Local shadow databases and `db reset --local` are the verification boundary.
-- The first persistent environment must begin from this baseline through the separately approved provisioning workflow. After any persistent environment applies it, its timestamp and contents are immutable everywhere.
+- Do not manufacture a remote ledger, link an otherwise unclassified hosted project, or create a project merely to validate a migration. Local shadow databases and `db reset --local` are the verification boundary.
+- The first accepted persistent application must pass the Runbook/ADR-005 gate. Once its ledger records the baseline as Applied, that baseline timestamp and contents become immutable everywhere.
 
 ## Transition workflow
 
