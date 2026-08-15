@@ -2,7 +2,7 @@ import type {
   OrganizationPersistenceResult,
   OrganizationWriter
 } from '@no-code-collaboration-platform/application';
-import type { OrganizationDraft } from '@no-code-collaboration-platform/domain';
+import type { OrganizationDraft } from '@no-code-collaboration-platform/domain/organization';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
 import type { Database } from '../generated/database.types';

@@ -2,7 +2,7 @@ import type {
   RepositoryAccessQuery,
   RepositoryAccessReader
 } from '@no-code-collaboration-platform/application';
-import type { RepositoryAuthoritySources } from '@no-code-collaboration-platform/domain';
+import type { RepositoryAuthoritySources } from '@no-code-collaboration-platform/domain/access';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
 import type { Database } from '../generated/database.types';

@@ -1,4 +1,4 @@
-import type { ActivityEventSummary } from '@no-code-collaboration-platform/domain';
+import type { ActivityEventSummary } from '@no-code-collaboration-platform/domain/activity';
 
 import type { Database, Json } from '../generated/database.types';
 

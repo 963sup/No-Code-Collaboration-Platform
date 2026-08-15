@@ -2,7 +2,7 @@ import type {
   RepositoryPersistenceResult,
   RepositoryWriter
 } from '@no-code-collaboration-platform/application';
-import type { RepositoryDraft } from '@no-code-collaboration-platform/domain';
+import type { RepositoryDraft } from '@no-code-collaboration-platform/domain/repository';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
 import type { Database } from '../generated/database.types';

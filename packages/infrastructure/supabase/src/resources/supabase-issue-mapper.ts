@@ -9,7 +9,7 @@ import {
   type IssueDetail,
   type IssueLabel,
   type IssueSummary
-} from '@no-code-collaboration-platform/domain';
+} from '@no-code-collaboration-platform/domain/resource';
 
 import type { Database } from '../generated/database.types';
 

@@ -7,7 +7,7 @@ import {
   type DiscussionComment,
   type DiscussionDetail,
   type DiscussionSummary
-} from '@no-code-collaboration-platform/domain';
+} from '@no-code-collaboration-platform/domain/resource';
 
 import type { Database } from '../generated/database.types';
 
