@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - first-principles/semantic-rebaseline
   pull_request:
 
 permissions:
