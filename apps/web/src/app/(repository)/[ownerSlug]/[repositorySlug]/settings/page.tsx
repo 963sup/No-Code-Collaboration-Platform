@@ -21,7 +21,8 @@ export default async function RepositorySettingsPage({ params }: RepositorySetti
         <CardHeader>
           <CardTitle className='text-lg'>Your Repository access</CardTitle>
           <CardDescription>
-            Inspect the current Actor&apos;s effective Role, Capabilities, and accepted authority sources.
+            Inspect the current Actor&apos;s effective Role, Capabilities, and accepted authority
+            sources.
           </CardDescription>
           <Link
             className='pt-2 text-sm font-medium underline underline-offset-4'

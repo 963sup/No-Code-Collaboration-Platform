@@ -73,7 +73,9 @@ export default async function RepositoryAccessPage({ params }: RepositoryAccessP
         <Card>
           <CardHeader>
             <CardTitle className='text-lg'>Effective role</CardTitle>
-            <CardDescription>Role is an explanation bundle; Capability remains decision truth.</CardDescription>
+            <CardDescription>
+              Role is an explanation bundle; Capability remains decision truth.
+            </CardDescription>
           </CardHeader>
           <CardContent className='space-y-2 text-sm'>
             <p className='font-medium'>{explanation.effectiveRole ?? 'No assigned role'}</p>
@@ -84,11 +86,15 @@ export default async function RepositoryAccessPage({ params }: RepositoryAccessP
         <Card>
           <CardHeader>
             <CardTitle className='text-lg'>Authority sources</CardTitle>
-            <CardDescription>Only sources proven by the current authority projection are shown.</CardDescription>
+            <CardDescription>
+              Only sources proven by the current authority projection are shown.
+            </CardDescription>
           </CardHeader>
           <CardContent>
             {explanation.sources.length === 0 ? (
-              <p className='text-sm text-muted-foreground'>No accepted authority source is present.</p>
+              <p className='text-sm text-muted-foreground'>
+                No accepted authority source is present.
+              </p>
             ) : (
               <ul className='space-y-2 text-sm'>
                 {explanation.sources.map((source) => (
@@ -106,7 +112,8 @@ export default async function RepositoryAccessPage({ params }: RepositoryAccessP
         <CardHeader>
           <CardTitle className='text-lg'>Effective capabilities</CardTitle>
           <CardDescription>
-            Public visibility may contribute read capabilities, but never manufactures mutation authority.
+            Public visibility may contribute read capabilities, but never manufactures mutation
+            authority.
           </CardDescription>
         </CardHeader>
         <CardContent className='flex flex-wrap gap-2'>
