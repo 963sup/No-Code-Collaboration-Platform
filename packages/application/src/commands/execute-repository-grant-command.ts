@@ -66,7 +66,7 @@ export class ExecuteRepositoryGrantCommand {
     });
     if (!access) return { ok: false, reason: 'repository-unavailable' };
 
-    const actorRole = effectiveRepositoryRole(access.sources);
+    const actorRole = effectiveRepositoryRole(access);
     if (actorRole === null) return { ok: false, reason: 'forbidden' };
 
     const grants = await this.repositoryGrantRepository.listDirectRepositoryGrants(
