@@ -64,7 +64,7 @@ export async function refreshSession(request: NextRequest) {
 
     const ordinaryIdentity = await new GetCurrentIdentity(identityProvider).execute();
     const redirectUrl = request.nextUrl.clone();
-    redirectUrl.pathname = ordinaryIdentity ? '/app' : '/forgot-password';
+    redirectUrl.pathname = ordinaryIdentity ? '/dashboard' : '/forgot-password';
     redirectUrl.search = ordinaryIdentity
       ? ''
       : `?${new URLSearchParams({ error: 'invalid-recovery-session' }).toString()}`;

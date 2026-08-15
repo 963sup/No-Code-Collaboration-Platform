@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import type { ReactNode } from 'react';
 
-import { globalSurfaces } from '@/routing/surface-definitions';
+import { globalSurfaces } from '@/navigation/surface-definitions';
 
 export default function SettingsLayout({ children }: { readonly children: ReactNode }) {
   const settings = globalSurfaces.filter((surface) => surface.placement === 'settings');

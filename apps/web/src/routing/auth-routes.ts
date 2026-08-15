@@ -1,4 +1,4 @@
-const DEFAULT_AUTHENTICATED_PATH = '/app';
+const DEFAULT_AUTHENTICATED_PATH = '/dashboard';
 
 const INTERNAL_ORIGIN = 'https://auth-navigation.invalid';
 const MAX_INTERNAL_PATH_LENGTH = 2048;
@@ -20,6 +20,27 @@ function containsControlCharacter(value: string) {
   return false;
 }
 
+function isAuthenticatedProductPath(pathname: string) {
+  return (
+    pathname === '/dashboard' ||
+    pathname === '/repos' ||
+    pathname === '/issues' ||
+    pathname.startsWith('/issues/') ||
+    pathname === '/projects' ||
+    pathname.startsWith('/projects/') ||
+    pathname === '/discussions' ||
+    pathname.startsWith('/discussions/') ||
+    pathname === '/notifications' ||
+    pathname.startsWith('/notifications/') ||
+    pathname === '/new' ||
+    pathname === '/organizations/new' ||
+    pathname.startsWith('/orgs/') ||
+    pathname.startsWith('/organizations/') ||
+    pathname === '/settings' ||
+    pathname.startsWith('/settings/')
+  );
+}
+
 export function classifyRouteAccess(pathname: string): RouteAccess {
   if (pathname === '/sign-in' || pathname === '/sign-up' || pathname === '/forgot-password') {
     return 'anonymous-only';
@@ -28,14 +49,7 @@ export function classifyRouteAccess(pathname: string): RouteAccess {
   if (pathname === '/reset-password') return 'password-recovery';
   if (pathname === '/auth/error') return 'public';
   if (pathname.startsWith('/auth/')) return 'auth-protocol';
-  if (
-    pathname === '/new' ||
-    pathname === '/organizations/new' ||
-    pathname === '/app' ||
-    pathname.startsWith('/app/')
-  ) {
-    return 'authenticated';
-  }
+  if (isAuthenticatedProductPath(pathname)) return 'authenticated';
   return 'public';
 }
 

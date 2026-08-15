@@ -15,10 +15,10 @@ import { createRequestServices } from '@/composition/create-request-services';
 import { repositoryPath } from '@/routing/repository-routes';
 
 export const metadata: Metadata = {
-  title: 'Repositories'
+  title: 'Dashboard'
 };
 
-export default async function AppHomePage() {
+export default async function DashboardPage() {
   const { repositoryRouteReader } = await createRequestServices();
   const routes = await new ListAccessibleRepositoryRoutes(repositoryRouteReader).execute();
 
@@ -26,7 +26,7 @@ export default async function AppHomePage() {
     <div className='mx-auto max-w-6xl space-y-8'>
       <div className='flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between'>
         <div className='space-y-2'>
-          <p className='text-sm font-medium text-muted-foreground'>Collaboration containers</p>
+          <p className='text-sm font-medium text-muted-foreground'>Dashboard</p>
           <h1 className='text-3xl font-semibold tracking-tight'>Repositories</h1>
           <p className='max-w-2xl text-muted-foreground'>
             Choose a Repository you can access. Owner and Repository names resolve to stable

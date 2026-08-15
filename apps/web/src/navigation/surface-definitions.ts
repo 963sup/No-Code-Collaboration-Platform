@@ -8,7 +8,7 @@ import {
   repositorySecurityPath,
   repositorySettingsPath,
   type RepositoryRouteAddress
-} from './repository-routes';
+} from '@/routing/repository-routes';
 
 export type SurfaceAvailability = 'live' | 'preview' | 'deferred';
 type SurfacePlacement = 'primary' | 'discovery' | 'governance' | 'settings';
@@ -27,7 +27,7 @@ export interface SurfaceDefinition {
 export const globalSurfaces: readonly SurfaceDefinition[] = [
   {
     id: 'dashboard',
-    href: '/app',
+    href: '/dashboard',
     placement: 'primary',
     audience: 'authenticated',
     availability: 'live',
@@ -36,7 +36,7 @@ export const globalSurfaces: readonly SurfaceDefinition[] = [
   },
   {
     id: 'repositories',
-    href: '/repositories',
+    href: '/repos',
     placement: 'primary',
     audience: 'authenticated',
     availability: 'preview',
@@ -45,12 +45,12 @@ export const globalSurfaces: readonly SurfaceDefinition[] = [
   },
   {
     id: 'issues',
-    href: '/issues?scope=assigned',
+    href: '/issues/assigned',
     placement: 'primary',
     audience: 'authenticated',
     availability: 'preview',
     label: 'Issues',
-    description: 'Actionable work across accessible Repositories.'
+    description: 'Actionable work assigned to the Actor across accessible Repositories.'
   },
   {
     id: 'projects',

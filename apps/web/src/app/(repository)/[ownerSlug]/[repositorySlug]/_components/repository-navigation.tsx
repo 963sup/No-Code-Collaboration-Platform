@@ -13,7 +13,7 @@ import {
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
-import { repositorySurfaces } from '@/routing/surface-definitions';
+import { repositorySurfaces } from '@/navigation/surface-definitions';
 import { Badge } from '@no-code-collaboration-platform/ui';
 
 interface RepositoryNavigationProps {

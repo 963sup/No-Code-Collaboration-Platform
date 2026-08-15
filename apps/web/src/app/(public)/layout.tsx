@@ -41,8 +41,8 @@ export default function PublicLayout({ children }: Readonly<{ children: ReactNod
             <Link className={cn(buttonVariants({ variant: 'ghost', size: 'sm' }))} href='/sign-in'>
               Sign in
             </Link>
-            <Link className={cn(buttonVariants({ size: 'sm' }))} href='/app'>
-              Open app
+            <Link className={cn(buttonVariants({ size: 'sm' }))} href='/dashboard'>
+              Dashboard
             </Link>
           </nav>
         </div>

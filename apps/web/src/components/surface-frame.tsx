@@ -10,7 +10,7 @@ import {
 import { CircleDashed, Info } from 'lucide-react';
 import type { ReactNode } from 'react';
 
-import type { SurfaceAvailability } from '@/routing/surface-definitions';
+import type { SurfaceAvailability } from '@/navigation/surface-definitions';
 
 interface SurfaceFrameProps {
   readonly title: string;

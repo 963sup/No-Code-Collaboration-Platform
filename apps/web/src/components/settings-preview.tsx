@@ -1,4 +1,4 @@
-import type { SurfaceAvailability } from '@/routing/surface-definitions';
+import type { SurfaceAvailability } from '@/navigation/surface-definitions';
 
 import { SurfaceFrame } from './surface-frame';
 

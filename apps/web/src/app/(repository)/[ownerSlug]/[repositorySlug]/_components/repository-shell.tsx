@@ -46,7 +46,7 @@ export function RepositoryShell({
             signOutAction={isAuthenticated ? signOutAction : undefined}
           />
         }
-        homeHref={isAuthenticated ? '/app' : '/'}
+        homeHref={isAuthenticated ? '/dashboard' : '/'}
       />
       <div className='border-b bg-repository-header'>
         <div className='mx-auto max-w-7xl px-4 pt-4 sm:px-6 lg:px-8'>

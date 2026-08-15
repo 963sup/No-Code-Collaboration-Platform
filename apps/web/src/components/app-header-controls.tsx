@@ -41,7 +41,7 @@ interface AppHeaderControlsProps {
 export function AppHeaderControls({
   identityLabel,
   signOutAction,
-  signInNext = '/app'
+  signInNext = '/dashboard'
 }: AppHeaderControlsProps) {
   const [isSigningOut, startSignOut] = useTransition();
 
@@ -85,7 +85,7 @@ export function AppHeaderControls({
           <DropdownMenuContent align='start' className='w-72'>
             <DropdownMenuLabel>Presentation context</DropdownMenuLabel>
             <DropdownMenuItem asChild>
-              <Link href='/app'>
+              <Link href='/dashboard'>
                 <LayoutDashboard aria-hidden='true' className='size-4' />
                 All accessible repositories
               </Link>

@@ -49,8 +49,8 @@ export default function PublicHomePage() {
             </p>
           </div>
           <div className='flex flex-wrap gap-3'>
-            <Link className={cn(buttonVariants({ size: 'lg' }))} href='/app'>
-              Enter workspace
+            <Link className={cn(buttonVariants({ size: 'lg' }))} href='/dashboard'>
+              Open dashboard
             </Link>
             <Link
               className={cn(buttonVariants({ variant: 'outline', size: 'lg' }))}
