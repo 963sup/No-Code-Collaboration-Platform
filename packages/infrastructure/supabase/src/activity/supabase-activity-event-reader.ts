@@ -1,5 +1,5 @@
 import type { ActivityEventReader } from '@no-code-collaboration-platform/application';
-import type { ActivityEventSummary } from '@no-code-collaboration-platform/domain';
+import type { ActivityEventSummary } from '@no-code-collaboration-platform/domain/activity';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
 import type { Database } from '../generated/database.types';

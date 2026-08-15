@@ -8,7 +8,7 @@ import type {
   PageDraft,
   PageSummary,
   PageUpdate
-} from '@no-code-collaboration-platform/domain';
+} from '@no-code-collaboration-platform/domain/resource';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
 import type { Database } from '../generated/database.types';

@@ -6,7 +6,10 @@ import type {
   DiscussionReader,
   DiscussionWriter
 } from '@no-code-collaboration-platform/application';
-import type { DiscussionCommand, DiscussionDetail } from '@no-code-collaboration-platform/domain';
+import type {
+  DiscussionCommand,
+  DiscussionDetail
+} from '@no-code-collaboration-platform/domain/resource';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
 import type { Database } from '../generated/database.types';
