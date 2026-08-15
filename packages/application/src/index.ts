@@ -3,6 +3,11 @@ export { ExecuteDiscussionCommand } from './commands/execute-discussion-command'
 export type { ExecuteDiscussionCommandFailureReason } from './commands/execute-discussion-command';
 export { ExecuteIssueCommand } from './commands/execute-issue-command';
 export { ExecuteNotificationCommand } from './commands/execute-notification-command';
+export { ExecuteRepositoryGrantCommand } from './commands/execute-repository-grant-command';
+export type {
+  ExecuteRepositoryGrantCommandResult,
+  RepositoryGrantCommand
+} from './commands/execute-repository-grant-command';
 export type {
   ExecuteIssueCommandFailureReason,
   ExecuteIssueCommandResult
@@ -127,6 +132,12 @@ export type {
   RepositoryAccessReader
 } from './ports/repository-access-reader';
 export type {
+  DirectRepositoryGrant,
+  RepositoryGrantMutationPersistenceResult,
+  RepositoryGrantRepository,
+  RepositoryGrantUser
+} from './ports/repository-grant-repository';
+export type {
   RepositoryRouteKey,
   RepositoryRouteReader,
   RepositoryRouteSummary
@@ -155,6 +166,11 @@ export { GetAccessibleRepositoryRouteById } from './queries/get-accessible-repos
 export { GetCurrentIdentity } from './queries/get-current-identity';
 export { GetOwnerProfile } from './queries/get-owner-profile';
 export { GetPasswordRecoveryIdentity } from './queries/get-password-recovery-identity';
+export { GetRepositoryGrantManagement } from './queries/get-repository-grant-management';
+export type {
+  GetRepositoryGrantManagementResult,
+  ManageableDirectRepositoryGrant
+} from './queries/get-repository-grant-management';
 export { ListAccessiblePages } from './queries/list-accessible-pages';
 export { ListAccessibleDiscussions } from './queries/list-accessible-discussions';
 export { ListAccessibleIssues } from './queries/list-accessible-issues';

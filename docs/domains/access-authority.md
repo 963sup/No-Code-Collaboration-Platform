@@ -2,7 +2,7 @@
 
 - Status: Candidate
 - Contract owner: Product and Domain
-- Last reviewed: 2026-08-14
+- Last reviewed: 2026-08-16
 
 ## Problem owned and success condition
 
@@ -263,8 +263,9 @@ Every transition evaluates:
 1. Actor may enter member-management operation;
 2. Actor may manage target current Role;
 3. Actor may assign proposed Role;
-4. ownership/governance continuity invariants remain valid; and
-5. attribution records authenticated Actor.
+4. ownership/governance continuity invariants remain valid;
+5. attribution records authenticated Actor; and
+6. Actor and target Principal differ. Direct Grant delegation is never a self-target operation.
 
 `member.manage` alone does not imply unlimited Role assignment.
 
@@ -290,6 +291,8 @@ Every transition evaluates:
 18. Semantic-role classification never grants authority by itself.
 19. A Product operation that is not accepted is absent from current Capability bundles.
 20. `repository.create` is decided against an Owner Scope and never inherited from an existing Repository Role.
+21. Direct Grant delegation cannot target the acting User itself. Self-removal, if later accepted, is a separate access lifecycle rather than delegation.
+22. Accepted Direct Grant create/change/revoke succeeds only with same-transaction Activity Evidence; raw Data API mutation is not an accepted Grant command.
 
 ## Derived classifications
 
@@ -299,13 +302,13 @@ Every transition evaluates:
 
 ## Events and explanations
 
-Candidate historical evidence for accepted Grant mutations may include:
+Accepted Direct Grant mutations require same-transaction Activity Evidence:
 
 - `repository_grant.created`
 - `repository_grant.role_changed`
 - `repository_grant.revoked`
 
-Grant mutation history should record Actor, target Principal, Repository, previous/proposed Role, source, timestamp without secrets when that evidence contract is accepted.
+Each fact records authenticated Actor, target User Principal, Repository, previous/resulting Role, and timestamp without secrets. A Direct Grant mutation cannot report success unless the required Evidence is durably recorded in the same transaction. Raw Data API mutation is not an accepted Grant command and must fail closed rather than bypassing Evidence.
 
 Authorization denials are decision outcomes, not automatically persistent Activity Events. Persisting denied attempts requires its own security/audit purpose and retention contract.
 
@@ -375,3 +378,6 @@ Reopen when:
 11. Any unaccepted lifecycle operation is absent from current Capability bundles and remains inaccessible through RLS/table privileges.
 12. A User may create in its own personal Owner Scope but not another User's Owner Scope.
 13. Organization owner/admin may create in that Organization Owner Scope; ordinary member and outsider cannot, and Application and RLS return the same matrix.
+14. Direct Grant create/change/revoke changes another User Principal's effective Repository Capabilities immediately and revocation removes private Repository visibility.
+15. A delegation attempt targeting the acting User itself is rejected independently by Domain/Application and database enforcement.
+16. Raw Data API Grant mutation fails closed; accepted Grant commands persist `repository_grant.created | repository_grant.role_changed | repository_grant.revoked` in the same transaction.

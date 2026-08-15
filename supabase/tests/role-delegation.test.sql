@@ -128,11 +128,7 @@ with changed as (
     and user_id = '00000000-0000-0000-0000-000000000101'
   returning 1
 )
-select is(
-  (select count(*)::integer from changed),
-  0,
-  'organization admin cannot demote an existing owner'
-);
+select is((select count(*)::integer from changed), 0, 'organization admin cannot demote an existing owner');
 
 with changed as (
   delete from public.organization_memberships
@@ -140,17 +136,10 @@ with changed as (
     and user_id = '00000000-0000-0000-0000-000000000101'
   returning 1
 )
-select is(
-  (select count(*)::integer from changed),
-  0,
-  'organization admin cannot delete an owner relationship'
-);
+select is((select count(*)::integer from changed), 0, 'organization admin cannot delete an owner relationship');
 
 select throws_ok(
-  $$
-    delete from public.organizations
-    where id = '10000000-0000-0000-0000-000000000101'
-  $$,
+  $$ delete from public.organizations where id = '10000000-0000-0000-0000-000000000101' $$,
   '42501',
   'permission denied for table organizations',
   'organization admin cannot invoke an unaccepted destructive lifecycle'
@@ -177,11 +166,7 @@ with changed as (
     and user_id = '00000000-0000-0000-0000-000000000103'
   returning 1
 )
-select is(
-  (select count(*)::integer from changed),
-  1,
-  'organization owner can delegate owner authority'
-);
+select is((select count(*)::integer from changed), 1, 'organization owner can delegate owner authority');
 
 with changed as (
   update public.organization_memberships
@@ -190,11 +175,7 @@ with changed as (
     and user_id = '00000000-0000-0000-0000-000000000102'
   returning 1
 )
-select is(
-  (select count(*)::integer from changed),
-  1,
-  'organization owner can demote another owner when ownership remains'
-);
+select is((select count(*)::integer from changed), 1, 'organization owner can demote another owner when ownership remains');
 
 select throws_ok(
   $$
@@ -226,11 +207,7 @@ with changed as (
   where id = '10000000-0000-0000-0000-000000000103'
   returning 1
 )
-select is(
-  (select count(*)::integer from changed),
-  1,
-  'owner-continuity trigger permits privileged parent cascade mechanics'
-);
+select is((select count(*)::integer from changed), 1, 'owner-continuity trigger permits privileged parent cascade mechanics');
 
 set local role authenticated;
 select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-000000000104', true);
@@ -247,7 +224,7 @@ select throws_ok(
   $$,
   '42501',
   'new row violates row-level security policy for table "repository_user_grants"',
-  'repository manager cannot create an admin grant'
+  'raw Data API cannot bypass the Repository Grant command boundary'
 );
 
 with changed as (
@@ -257,22 +234,17 @@ with changed as (
     and user_id = '00000000-0000-0000-0000-000000000104'
   returning 1
 )
-select is(
-  (select count(*)::integer from changed),
-  0,
-  'repository manager cannot promote its own manager grant'
-);
+select is((select count(*)::integer from changed), 0, 'repository manager cannot promote its own manager grant');
 
-select throws_ok(
-  $$
-    update public.repository_user_grants
-    set role = 'admin'
-    where repository_id = '20000000-0000-0000-0000-000000000101'
-      and user_id = '00000000-0000-0000-0000-000000000105'
-  $$,
-  '42501',
-  'new row violates row-level security policy for table "repository_user_grants"',
-  'repository manager cannot promote a viewer to admin'
+select is(
+  public.execute_repository_grant_command(
+    '20000000-0000-0000-0000-000000000101',
+    '00000000-0000-0000-0000-000000000109',
+    null,
+    'admin'
+  ),
+  'forbidden',
+  'repository manager cannot create an admin grant through the accepted command'
 );
 
 with changed as (
@@ -281,36 +253,28 @@ with changed as (
     and user_id = '00000000-0000-0000-0000-000000000102'
   returning 1
 )
+select is((select count(*)::integer from changed), 0, 'repository manager cannot delete an admin grant');
+
 select is(
-  (select count(*)::integer from changed),
-  0,
-  'repository manager cannot delete an admin grant'
+  public.execute_repository_grant_command(
+    '20000000-0000-0000-0000-000000000101',
+    '00000000-0000-0000-0000-000000000107',
+    null,
+    'contributor'
+  ),
+  'applied',
+  'repository manager can create a contributor grant through the accepted command'
 );
 
-select lives_ok(
-  $$
-    insert into public.repository_user_grants (repository_id, user_id, role, granted_by)
-    values (
-      '20000000-0000-0000-0000-000000000101',
-      '00000000-0000-0000-0000-000000000107',
-      'contributor',
-      '00000000-0000-0000-0000-000000000104'
-    )
-  $$,
-  'repository manager can create a contributor grant'
-);
-
-select lives_ok(
-  $$
-    insert into public.repository_user_grants (repository_id, user_id, role, granted_by)
-    values (
-      '20000000-0000-0000-0000-000000000101',
-      '00000000-0000-0000-0000-000000000108',
-      'viewer',
-      '00000000-0000-0000-0000-000000000104'
-    )
-  $$,
-  'repository manager can create a viewer grant'
+select is(
+  public.execute_repository_grant_command(
+    '20000000-0000-0000-0000-000000000101',
+    '00000000-0000-0000-0000-000000000108',
+    null,
+    'viewer'
+  ),
+  'applied',
+  'repository manager can create a viewer grant through the accepted command'
 );
 
 select throws_ok(
@@ -325,22 +289,20 @@ select throws_ok(
   $$,
   '42501',
   'new row violates row-level security policy for table "repository_user_grants"',
-  'repository grant attribution cannot be forged'
+  'raw Repository Grant mutation cannot forge attribution or skip Activity Evidence'
 );
 
 select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-000000000101', true);
 
-select lives_ok(
-  $$
-    insert into public.repository_user_grants (repository_id, user_id, role, granted_by)
-    values (
-      '20000000-0000-0000-0000-000000000101',
-      '00000000-0000-0000-0000-000000000109',
-      'admin',
-      '00000000-0000-0000-0000-000000000101'
-    )
-  $$,
-  'repository admin can create an admin grant'
+select is(
+  public.execute_repository_grant_command(
+    '20000000-0000-0000-0000-000000000101',
+    '00000000-0000-0000-0000-000000000109',
+    null,
+    'admin'
+  ),
+  'applied',
+  'repository admin can create an admin grant through the accepted command'
 );
 
 select * from finish();

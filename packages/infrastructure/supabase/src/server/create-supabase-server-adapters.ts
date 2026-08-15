@@ -16,6 +16,7 @@ import type {
   ProjectReader,
   RepositoryAccessReader,
   RepositoryCreationAccessReader,
+  RepositoryGrantRepository,
   RepositoryReader,
   RepositoryRouteReader,
   RepositoryWriter
@@ -24,6 +25,7 @@ import { createServerClient, type CookieMethodsServer } from '@supabase/ssr';
 
 import { SupabaseRepositoryAccessReader } from '../access/supabase-repository-access-reader';
 import { SupabaseRepositoryCreationAccessReader } from '../access/supabase-repository-creation-access-reader';
+import { SupabaseRepositoryGrantRepository } from '../access/supabase-repository-grant-repository';
 import { SupabaseActivityEventReader } from '../activity/supabase-activity-event-reader';
 import type { Database } from '../generated/database.types';
 import { SupabaseIdentityProvider } from '../identity/supabase-identity-provider';
@@ -61,6 +63,7 @@ export interface SupabaseServerAdapters {
   readonly projectReader: ProjectReader;
   readonly repositoryAccessReader: RepositoryAccessReader;
   readonly repositoryCreationAccessReader: RepositoryCreationAccessReader;
+  readonly repositoryGrantRepository: RepositoryGrantRepository;
   readonly repositoryReader: RepositoryReader;
   readonly repositoryRouteReader: RepositoryRouteReader;
   readonly repositoryWriter: RepositoryWriter;
@@ -100,6 +103,7 @@ export function createSupabaseServerAdapters(
     projectReader: collaborationProjections,
     repositoryAccessReader: new SupabaseRepositoryAccessReader(client),
     repositoryCreationAccessReader: new SupabaseRepositoryCreationAccessReader(client),
+    repositoryGrantRepository: new SupabaseRepositoryGrantRepository(client),
     repositoryReader: new SupabaseRepositoryReader(client),
     repositoryRouteReader: new SupabaseOwnerRepositoryRouteReader(client),
     repositoryWriter

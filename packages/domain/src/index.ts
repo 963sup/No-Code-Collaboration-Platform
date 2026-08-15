@@ -10,6 +10,7 @@ export {
   organizationRoles,
   canMutateOrganizationMembership,
   canMutateRepositoryGrant,
+  canMutateRepositoryGrantForPrincipal,
   preservesOrganizationOwnership,
   type OrganizationRole
 } from './access/delegation';

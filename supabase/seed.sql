@@ -21,23 +21,41 @@ insert into auth.users (
   created_at,
   updated_at
 )
-values (
-  '00000000-0000-0000-0000-000000000000',
-  '00000000-0000-0000-0000-00000000d001',
-  'authenticated',
-  'authenticated',
-  'sup@a-i.tw',
-  extensions.crypt('Aa12341234', extensions.gen_salt('bf')),
-  timezone('utc', now()),
-  '',
-  '',
-  '',
-  '',
-  '{"provider": "email", "providers": ["email"]}'::jsonb,
-  '{"name": "Sup Demo", "username": "sup-demo"}'::jsonb,
-  timezone('utc', now()),
-  timezone('utc', now())
-);
+values
+  (
+    '00000000-0000-0000-0000-000000000000',
+    '00000000-0000-0000-0000-00000000d001',
+    'authenticated',
+    'authenticated',
+    'sup@a-i.tw',
+    extensions.crypt('Aa12341234', extensions.gen_salt('bf')),
+    timezone('utc', now()),
+    '',
+    '',
+    '',
+    '',
+    '{"provider": "email", "providers": ["email"]}'::jsonb,
+    '{"name": "Sup Demo", "username": "sup-demo"}'::jsonb,
+    timezone('utc', now()),
+    timezone('utc', now())
+  ),
+  (
+    '00000000-0000-0000-0000-000000000000',
+    '00000000-0000-0000-0000-00000000d010',
+    'authenticated',
+    'authenticated',
+    'collaborator@a-i.tw',
+    extensions.crypt('Bb12341234', extensions.gen_salt('bf')),
+    timezone('utc', now()),
+    '',
+    '',
+    '',
+    '',
+    '{"provider": "email", "providers": ["email"]}'::jsonb,
+    '{"name": "Collaborator Demo", "username": "collaborator-demo"}'::jsonb,
+    timezone('utc', now()),
+    timezone('utc', now())
+  );
 
 insert into auth.identities (
   id,
@@ -48,24 +66,43 @@ insert into auth.identities (
   created_at,
   updated_at
 )
-values (
-  '00000000-0000-0000-0000-00000000d002',
-  '00000000-0000-0000-0000-00000000d001',
-  '00000000-0000-0000-0000-00000000d001',
-  jsonb_build_object(
-    'sub', '00000000-0000-0000-0000-00000000d001',
-    'email', 'sup@a-i.tw',
-    'email_verified', true,
-    'phone_verified', false
+values
+  (
+    '00000000-0000-0000-0000-00000000d002',
+    '00000000-0000-0000-0000-00000000d001',
+    '00000000-0000-0000-0000-00000000d001',
+    jsonb_build_object(
+      'sub', '00000000-0000-0000-0000-00000000d001',
+      'email', 'sup@a-i.tw',
+      'email_verified', true,
+      'phone_verified', false
+    ),
+    'email',
+    timezone('utc', now()),
+    timezone('utc', now())
   ),
-  'email',
-  timezone('utc', now()),
-  timezone('utc', now())
-);
+  (
+    '00000000-0000-0000-0000-00000000d011',
+    '00000000-0000-0000-0000-00000000d010',
+    '00000000-0000-0000-0000-00000000d010',
+    jsonb_build_object(
+      'sub', '00000000-0000-0000-0000-00000000d010',
+      'email', 'collaborator@a-i.tw',
+      'email_verified', true,
+      'phone_verified', false
+    ),
+    'email',
+    timezone('utc', now()),
+    timezone('utc', now())
+  );
 
 update public.profiles
 set display_name = 'Sup Demo'
 where id = '00000000-0000-0000-0000-00000000d001';
+
+update public.profiles
+set display_name = 'Collaborator Demo'
+where id = '00000000-0000-0000-0000-00000000d010';
 
 -- Activity Evidence keeps the same Actor attribution contract in fixtures as in Product commands.
 select set_config(

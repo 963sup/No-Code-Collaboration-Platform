@@ -55,6 +55,16 @@ export function canMutateRepositoryGrant(
   );
 }
 
+export function canMutateRepositoryGrantForPrincipal(
+  actorRole: RepositoryRole,
+  currentRole: RepositoryRole | null,
+  proposedRole: RepositoryRole | null,
+  actorId: string,
+  targetUserId: string
+): boolean {
+  return actorId !== targetUserId && canMutateRepositoryGrant(actorRole, currentRole, proposedRole);
+}
+
 export function preservesOrganizationOwnership(ownerCountAfterMutation: number): boolean {
   return Number.isInteger(ownerCountAfterMutation) && ownerCountAfterMutation >= 1;
 }

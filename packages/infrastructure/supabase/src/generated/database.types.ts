@@ -1033,6 +1033,15 @@ export type Database = {
           isSetofReturn: true
         }
       }
+      execute_repository_grant_command: {
+        Args: {
+          expected_role: Database["public"]["Enums"]["repository_role"]
+          proposed_role: Database["public"]["Enums"]["repository_role"]
+          target_repository_id: string
+          target_user_id: string
+        }
+        Returns: string
+      }
       explore_public_repositories: {
         Args: {
           requested_artifact_type?: string
@@ -1051,6 +1060,15 @@ export type Database = {
           owner_type: string
           slug: string
           total_count: number
+        }[]
+      }
+      find_repository_grant_target_by_username: {
+        Args: { target_repository_id: string; target_username: string }
+        Returns: {
+          avatar_url: string
+          display_name: string
+          user_id: string
+          username: string
         }[]
       }
       get_accessible_repository_route_by_id: {
@@ -1159,6 +1177,16 @@ export type Database = {
           title: string
           total_count: number
           updated_at: string
+        }[]
+      }
+      list_repository_direct_grants: {
+        Args: { target_repository_id: string }
+        Returns: {
+          avatar_url: string
+          display_name: string
+          role: Database["public"]["Enums"]["repository_role"]
+          user_id: string
+          username: string
         }[]
       }
       mark_all_notifications_read: { Args: never; Returns: number }

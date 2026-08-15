@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest';
 import {
   canMutateOrganizationMembership,
   canMutateRepositoryGrant,
+  canMutateRepositoryGrantForPrincipal,
   preservesOrganizationOwnership
 } from '../src/index';
 
@@ -56,5 +57,14 @@ describe('repository delegation policy', () => {
   it('does not treat read or contribution capabilities as delegation authority', () => {
     expect(canMutateRepositoryGrant('viewer', null, 'viewer')).toBe(false);
     expect(canMutateRepositoryGrant('contributor', null, 'viewer')).toBe(false);
+  });
+
+  it('rejects self-target direct Grant mutation even when the Actor can delegate', () => {
+    expect(canMutateRepositoryGrantForPrincipal('admin', null, 'admin', 'actor-1', 'actor-1')).toBe(
+      false
+    );
+    expect(canMutateRepositoryGrantForPrincipal('admin', null, 'admin', 'actor-1', 'user-2')).toBe(
+      true
+    );
   });
 });
