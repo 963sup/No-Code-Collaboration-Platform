@@ -12,8 +12,7 @@ type DirectGrantRow =
   Database['public']['Functions']['list_repository_direct_grants']['Returns'][number];
 type GrantTargetRow =
   Database['public']['Functions']['find_repository_grant_target_by_username']['Returns'][number];
-type GrantCommandArgs =
-  Database['public']['Functions']['execute_repository_grant_command']['Args'];
+type GrantCommandArgs = Database['public']['Functions']['execute_repository_grant_command']['Args'];
 
 const accessDeniedCodes = new Set(['42501', 'PGRST301']);
 
@@ -75,10 +74,7 @@ export class SupabaseRepositoryGrantRepository implements RepositoryGrantReposit
       target_repository_id: input.repositoryId,
       target_user_id: input.targetUserId
     } as unknown as GrantCommandArgs;
-    const { data, error } = await this.client.rpc(
-      'execute_repository_grant_command',
-      commandArgs
-    );
+    const { data, error } = await this.client.rpc('execute_repository_grant_command', commandArgs);
 
     if (error) {
       if (accessDeniedCodes.has(error.code)) return { ok: false, reason: 'forbidden' };
