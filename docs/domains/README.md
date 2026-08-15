@@ -41,12 +41,17 @@ A Candidate contract may intentionally lead executable behavior, but every obser
 ### Candidate contracts
 
 - [`identity-lifecycle.md`](./identity-lifecycle.md): Anonymous Human, verified provider identity, Session, Product Actor readiness, and identity-lifecycle invariants.
-- [`repository-collaboration.md`](./repository-collaboration.md): typed User/Organization Repository ownership, Owner namespace, Resource containment, and collaboration-boundary invariants.
 - [`access-authority.md`](./access-authority.md): Principal Grants, Role bundles, Capabilities, delegation, ownership/governance sources, and authorization explanation.
 - [`page-resource.md`](./page-resource.md): first Page work unit, create/update transitions, optimistic concurrency, and required historical evidence.
 - [`issue-resource.md`](./issue-resource.md): Repository-scoped actionable work identity, lifecycle, responsibility, classification, conversation, optimistic concurrency, and Activity Evidence.
 - [`discussion-resource.md`](./discussion-resource.md): Repository-scoped shared-understanding lifecycle, fixed categories, moderation, flat conversation, and question Answer semantics.
 - [`collaboration-projections.md`](./collaboration-projections.md): planning, notification, search, explore, integration-catalog, availability, and explicitly deferred governance projections.
+
+### Accepted contracts
+
+- [`repository-collaboration.md`](./repository-collaboration.md): the accepted primary no-code collaboration/authorization Container boundary, typed User/Organization ownership, canonical Owner namespace, collaborative Artifact containment, Repository identity, and shared authorization/Evidence invariants. Page, Issue, and Discussion prove reuse without creating a second primary Container.
+
+Acceptance of Repository Collaboration is semantic/domain reuse permission, not permission to add a microservice, generic persistence supertype, speculative lifecycle, or provider-specific boundary.
 
 ### Accepted semantic envelopes with Candidate concrete lifecycles
 
@@ -54,10 +59,6 @@ A Candidate contract may intentionally lead executable behavior, but every obser
 - [`data-exchange.md`](./data-exchange.md): accepted meanings and safety boundary for Data Transfer and Data Capsule; endpoint, connector, lifecycle, Capability, persistence, route, API, and UI remain Candidate.
 
 `Commit`, `Branch`, `Diff`, `Pull Request`, `Actions`, `Gist`, `Fork`, `Pull`, and `Push` are external benchmark aliases only. Source Code, Git mechanics, arbitrary execution, and a generic version-control or automation engine remain rejected.
-
-### Accepted contracts
-
-No bounded-context map or executable Data lifecycle is accepted by this catalog.
 
 ## Acceptance gate
 
