@@ -76,70 +76,6 @@ Close only after the same exact change set proves:
 10. Next DevTools reports no build, type, runtime, hydration, browser-log, or server-log errors for each implemented slice.
 11. Playwright validates GitHub-aligned local behavior at `1440x900`, `1280x800`, `768x1024`, and `390x844` without credentials or private request material.
 
-### GAP-OWNERSHIP-001 — Repository ownership and creation are implemented; latest exact-head closure evidence remains incomplete
-
-- Status: Open
-- Affected contracts: [`PRODUCT.md`](./PRODUCT.md), [`ONTOLOGY.md`](./ONTOLOGY.md), [`domains/repository-collaboration.md`](./domains/repository-collaboration.md), [`domains/access-authority.md`](./domains/access-authority.md), [`architecture/README.md`](./architecture/README.md), [ADR-010](./architecture/ADR-010-repository-owner-namespace.md)
-- Affected invariants: `Repository Owner = User | Organization`, owner-neutral authorization, globally unambiguous Owner namespace, canonical `/{owner}/{repository}` routing, visibility vocabulary
-- Risk class: incomplete exact-head integration evidence, not a known ownership-semantic defect
-
-#### Direct evidence
-
-The corrected target is implemented in current `main`:
-
-- `packages/domain/src/repository/ownership.ts` defines typed User/Organization Repository Owner.
-- `packages/domain/src/repository/repository.ts` exposes typed `owner` and `private | public` visibility with no Organization-only compatibility field.
-- `packages/domain/src/access/authority.ts` resolves only `directRole + governanceRole`; the Organization-only authority fallback is removed.
-- `packages/application/src/ports/repository-access-reader.ts` accepts stable `actorId + repositoryId`; the old Organization-specific authority Port is removed.
-- `packages/infrastructure/supabase/src/access/supabase-repository-access-reader.ts` reads owner-neutral direct/governance sources.
-- `supabase/schemas/30_repository.sql` models exactly one `owner_user_id XOR owner_organization_id`; the legacy `organization_id` ownership column is absent from current desired state.
-- `packages/domain/src/access/repository-creation-policy.ts` defines the pre-identity, Owner-scoped `repository.create` decision independently of Repository Role bundles.
-- `packages/application/src/policies/repository-creation-access-policy.ts` authorizes a requested typed Owner before the Repository command validates creation mechanics.
-- `supabase/schemas/91_repository_access_projection.sql` declares owner-neutral authority-source projection and the database projection of the Owner-scoped creation policy.
-- `supabase/schemas/95_repository_routing.sql` resolves one global User/Organization Owner namespace.
-- `supabase/schemas/26_repository_owner_namespace_guardrails.sql` reserves command-route segments, including `organizations`, so canonical Repository identity cannot collide with `/organizations/new`.
-- `supabase/schemas/99_rls.sql` permits creation only for the matching personal Owner or an Organization owner/admin, rejects an ordinary member, and preserves Actor attribution.
-- `apps/web/src/app/(repository)/[ownerSlug]/[repositorySlug]/**` is the canonical Repository UI tree; the obsolete Organization-only tree is absent.
-- `/new` supports personal ownership and eligible Organization ownership; `/organizations/new` establishes founder ownership through the accepted Organization creation path.
-- PR [#27](https://github.com/963sup/No-Code-Collaboration-Platform/pull/27) is merged; its old Draft wording is historical and is not a current containment condition.
-- Commit `108ccfc6ac546dcfa653105f6174d98618f93bee` passed Verify #438 with Workflow guardrails, Repository contracts, Supabase contracts, and Browser contracts; its Vercel status also succeeded.
-- Current `main` commit `7423d82d558c904ba12cb6a1d83a5eb4941e6bfd` changes Serena tooling documentation rather than ownership/runtime behavior. Verify #439 passed Repository contracts and Workflow guardrails; local Supabase reset, lint, and all 10 pgTAP files / 183 assertions passed, but generated-type verification was interrupted by external ECR `toomanyrequests` while pulling `postgres-meta:v0.96.6`, so Browser contracts were skipped.
-
-The latest failure is classified as environment evidence rather than ownership-regression evidence, but the project closure protocol still requires one latest exact head to complete the full required matrix before this gap moves to history.
-
-#### Root cause
-
-An early Organization-only executable shortcut was promoted into Product, Domain, authorization, persistence, and URL assumptions. Those assumptions then cited one another as evidence.
-
-The invalid Product/Domain/Architecture/executable boundaries have been replaced. The remaining gap is evidence closure only.
-
-#### Predicted failure
-
-Until closure, a later non-ownership change could still hide an integration regression if no current exact SHA completes Repository, Supabase, Browser, and deployment evidence together.
-
-#### Temporary containment
-
-- Treat the typed User/Organization ownership model as current Product/Domain truth; do not reintroduce Organization-only compatibility semantics merely because this evidence gap is Open.
-- Keep generated database types as projections; stale checked-in output remains a verification failure, never Product truth.
-- Do not classify an external registry failure as permission to weaken database verification or to push the repository baseline to a hosted Supabase project.
-- Do not claim production validation from prior local/CI evidence; ownership semantics and production readiness are separate questions.
-
-#### Closure evidence
-
-Close only after the same latest branch/main SHA proves all of the following:
-
-1. Domain models typed `RepositoryOwner = User | Organization` and `private | public` visibility.
-2. Application authority lookup accepts `actorId + repositoryId` without caller-supplied Organization ownership.
-3. Supabase desired state and replay history end with typed XOR Owner FKs plus one globally unambiguous User/Organization Owner namespace and no legacy ownership column.
-4. Personal Owner derives Repository admin without fabricated Grant; Organization admin/owner derives admin only for Organization-owned Repository; ordinary member does not.
-5. Route RPCs/adapters resolve `ownerSlug + repositorySlug` for both Owner kinds.
-6. Web canonical Repository URL is `/{ownerSlug}/{repositorySlug}`; `/app` is dashboard only; stable-ID compatibility routes redirect safely; no Organization-only Repository UI tree remains.
-7. `/new` supports personal ownership and authorized Organization ownership through the Domain Owner-scoped `repository.create` policy and same-semantics RLS.
-8. `/organizations/new` creates an Actor-attributed Organization, atomically establishes founder ownership, and exposes it as a valid Repository Owner without treating Organization Membership as Repository access.
-9. Playwright explicitly navigates from `/app` to the canonical Repository route and completes accepted collaboration behavior through that route.
-10. pgTAP proves Organization bootstrap, namespace collision rejection, typed ownership, creation/authorization matrix, legacy-column absence, and visibility semantics.
-11. Generated DB types match the replayed desired schema, Repository verification succeeds, Supabase verification succeeds, Browser contracts succeed, and deployment status succeeds for the same latest SHA.
-
 ### GAP-IDENTITY-001 — Identity lifecycle remains incomplete after verified Session and recovery establishment
 
 - Status: Open
@@ -180,6 +116,7 @@ Close only after:
 
 ## Closed gap index
 
+- `GAP-OWNERSHIP-001` — Closed by exact-head verification on `7423d82d558c904ba12cb6a1d83a5eb4941e6bfd`; see [`history/CLOSED_GAPS.md`](./history/CLOSED_GAPS.md#gap-ownership-001--repository-ownership-and-creation-required-owner-neutral-executable-alignment).
 - `GAP-PAGE-001` — Closed by PR #23; see [`history/CLOSED_GAPS.md`](./history/CLOSED_GAPS.md#gap-page-001--generic-data-api-mutation-bypassed-accepted-page-commands).
 - `GAP-LIFECYCLE-002` — Closed by PR #22; see [`history/CLOSED_GAPS.md`](./history/CLOSED_GAPS.md#gap-lifecycle-002--resource-destructive-lifecycle-was-not-accepted).
 - `GAP-LIFECYCLE-001` — Closed by PR #16; see [`history/CLOSED_GAPS.md`](./history/CLOSED_GAPS.md#gap-lifecycle-001--destructive-organization-and-repository-lifecycle-was-not-accepted).

@@ -2,9 +2,39 @@
 
 - Status: Historical closure evidence
 - Current register: [`../IMPLEMENTATION_GAPS.md`](../IMPLEMENTATION_GAPS.md)
-- Last consolidated: 2026-08-13
+- Last consolidated: 2026-08-15
 
 This file preserves evidence for gaps that no longer describe the current executable mismatch set. It is an audit and regression-archaeology source, not a current product, architecture, or implementation authority.
+
+### GAP-OWNERSHIP-001 — Repository ownership and creation required owner-neutral executable alignment
+
+- Status: Closed
+- Affected contracts: [`../PRODUCT.md`](../PRODUCT.md), [`../ONTOLOGY.md`](../ONTOLOGY.md), [`../domains/repository-collaboration.md`](../domains/repository-collaboration.md), [`../domains/access-authority.md`](../domains/access-authority.md), [`../architecture/README.md`](../architecture/README.md), and [`../architecture/ADR-010-repository-owner-namespace.md`](../architecture/ADR-010-repository-owner-namespace.md)
+- Risk class: Product/Domain ownership drift, authorization ambiguity, routing identity mismatch, and incomplete integration evidence
+- Originating correction: Pull request [#27](https://github.com/963sup/No-Code-Collaboration-Platform/pull/27), followed by the authenticated Repository/Organization creation and creation-policy slices
+
+#### Historical failure
+
+An early Organization-only executable shortcut was promoted into Product, Domain, authorization, persistence, and URL assumptions. Repository ownership was treated as though Organization were a mandatory parent rather than one possible Owner, and current documentation later retained stale evidence wording after the corrected implementation and PR had already merged.
+
+#### Resolution
+
+The corrected executable model makes `Repository Owner = User | Organization` first-class truth, keeps ownership separate from explicit Grants, resolves Repository authority from stable Actor + Repository facts, gives personal Owners and Organization owner/admin governance the accepted authority without granting ordinary Organization Members Repository access, and uses one globally unambiguous human Owner namespace with canonical `/{ownerSlug}/{repositorySlug}` routing. `/new` supports personal and eligible Organization ownership, while `/organizations/new` establishes founder ownership without making Organization Membership a Repository Grant.
+
+The gap remained Open after implementation solely because its closure protocol required one latest exact SHA to prove Repository, Supabase, Browser, workflow, generated-type, and deployment evidence together.
+
+#### Closure evidence
+
+- Verified implementation head: [`7423d82d558c904ba12cb6a1d83a5eb4941e6bfd`](https://github.com/963sup/No-Code-Collaboration-Platform/commit/7423d82d558c904ba12cb6a1d83a5eb4941e6bfd)
+- Ownership correction: Pull request [#27](https://github.com/963sup/No-Code-Collaboration-Platform/pull/27), merged on 2026-08-14; subsequent current-main creation slices include commits `b808a94f0d57f424da156effb57f67f231a24a14` and `5edc67c84b3e636ddb7fca1a651f7b1e42d379ae`
+- Exact-head verification: [GitHub Actions Verify #439](https://github.com/963sup/No-Code-Collaboration-Platform/actions/runs/31883206522), re-run after an external ECR rate-limit interruption
+- Passed gates on the verified SHA: Workflow guardrails, Repository contracts, Supabase contracts, and Browser contracts
+- Supabase contracts on the successful attempt include local migration replay/reset, database lint, pgTAP authorization/invariant tests, and generated database-type consistency
+- Browser contracts build the Web application and pass the accepted browser behavior suite on the same SHA
+- Deployment evidence: Vercel status succeeded for the same verified SHA
+- Remote boundary: no hosted Supabase project was linked or mutated to close this gap; hosted-provider existence remains distinct from an accepted persistent database environment and Applied migration state
+
+Closing this gap does not claim production validation, accept Repository ownership transfer/destructive lifecycle, make ordinary Organization Membership a Repository permission, or turn Owner/Organization into a second collaboration Container.
 
 ### GAP-PAGE-001 — Generic Data API mutation bypassed accepted Page commands
 
