@@ -5,7 +5,12 @@
   "type": "module",
   "sideEffects": false,
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./access": "./src/access/index.ts",
+    "./activity": "./src/activity/index.ts",
+    "./organization": "./src/organization/index.ts",
+    "./repository": "./src/repository/index.ts",
+    "./resource": "./src/resource/index.ts"
   },
   "scripts": {
     "lint": "oxlint src tests",
