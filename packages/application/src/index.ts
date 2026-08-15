@@ -80,7 +80,7 @@ export type {
   IssueDetail,
   IssueStatus,
   IssueSummary
-} from '@no-code-collaboration-platform/domain';
+} from '@no-code-collaboration-platform/domain/resource';
 export type { ActivityEventReader } from './ports/activity-event-reader';
 export type {
   AccessibleIssueQuery,
