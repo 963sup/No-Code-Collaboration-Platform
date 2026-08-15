@@ -1,4 +1,4 @@
-import { isIssueStatus } from '@no-code-collaboration-platform/domain';
+import { isIssueStatus } from '@no-code-collaboration-platform/domain/resource';
 
 import type { IssueCollectionQuery, IssueReader, IssueStatusFilter } from '../ports/issue-reader';
 

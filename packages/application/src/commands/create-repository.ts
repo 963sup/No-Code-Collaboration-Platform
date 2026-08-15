@@ -2,7 +2,7 @@ import {
   createRepositoryDraft,
   type RepositoryOwner,
   type RepositorySummary
-} from '@no-code-collaboration-platform/domain';
+} from '@no-code-collaboration-platform/domain/repository';
 
 import type { IdentityProvider } from '../ports/identity-provider';
 import type { RepositoryWriter } from '../ports/repository-creation';

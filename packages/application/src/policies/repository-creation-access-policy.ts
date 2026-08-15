@@ -1,7 +1,5 @@
-import {
-  canCreateRepositoryForOwner,
-  type RepositoryOwner
-} from '@no-code-collaboration-platform/domain';
+import { canCreateRepositoryForOwner } from '@no-code-collaboration-platform/domain/access';
+import type { RepositoryOwner } from '@no-code-collaboration-platform/domain/repository';
 
 import type {
   RepositoryCreationAccessReader,

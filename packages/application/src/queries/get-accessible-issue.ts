@@ -1,4 +1,4 @@
-import { isIssueNumber } from '@no-code-collaboration-platform/domain';
+import { isIssueNumber } from '@no-code-collaboration-platform/domain/resource';
 
 import type { AccessibleIssueQuery, IssueReader } from '../ports/issue-reader';
 

@@ -1,4 +1,4 @@
-import { isDiscussionNumber } from '@no-code-collaboration-platform/domain';
+import { isDiscussionNumber } from '@no-code-collaboration-platform/domain/resource';
 
 import type { AccessibleDiscussionQuery, DiscussionReader } from '../ports/discussion-repository';
 

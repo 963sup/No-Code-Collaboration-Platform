@@ -1,7 +1,7 @@
 import {
   createOrganizationDraft,
   type OrganizationSummary
-} from '@no-code-collaboration-platform/domain';
+} from '@no-code-collaboration-platform/domain/organization';
 
 import type { IdentityProvider } from '../ports/identity-provider';
 import type { OrganizationWriter } from '../ports/organization-creation';

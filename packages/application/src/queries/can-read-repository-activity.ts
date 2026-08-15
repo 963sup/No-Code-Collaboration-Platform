@@ -1,7 +1,7 @@
 import {
   effectiveRepositoryRole,
   hasRepositoryCapability
-} from '@no-code-collaboration-platform/domain';
+} from '@no-code-collaboration-platform/domain/access';
 
 import type { RepositoryAccessReader } from '../ports/repository-access-reader';
 

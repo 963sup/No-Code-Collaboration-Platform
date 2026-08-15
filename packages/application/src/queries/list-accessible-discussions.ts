@@ -1,4 +1,7 @@
-import { isDiscussionCategory, isDiscussionStatus } from '@no-code-collaboration-platform/domain';
+import {
+  isDiscussionCategory,
+  isDiscussionStatus
+} from '@no-code-collaboration-platform/domain/resource';
 
 import type { DiscussionReader } from '../ports/discussion-repository';
 
