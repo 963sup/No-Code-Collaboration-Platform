@@ -152,7 +152,14 @@ for (const [pattern, message] of [
     /migration ledger.*prove.*applied/is,
     'environment-specific applied migration evidence is missing'
   ],
-  [/Persistent database provisioning gate/i, 'persistent database provisioning gate is missing']
+  [
+    /Persistent database acceptance and application gate/i,
+    'persistent database acceptance/application gate is missing'
+  ],
+  [
+    /provider resource.*accepted persistent|hosted provider resource.*accepted environment/is,
+    'provider-resource/accepted-environment distinction is missing'
+  ]
 ]) {
   requireMatch(runbookPath, runbook, pattern, message);
 }
