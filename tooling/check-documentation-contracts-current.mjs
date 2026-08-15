@@ -18,7 +18,8 @@ try {
 
 const supersededLegacyFailures = new Set([
   'docs/IMPLEMENTATION_GAPS.md: GAP-OWNERSHIP-001 is missing',
-  'docs/IMPLEMENTATION_GAPS.md: GAP-OWNERSHIP-001 must remain open until its closure evidence is complete'
+  'docs/IMPLEMENTATION_GAPS.md: GAP-OWNERSHIP-001 must remain open until its closure evidence is complete',
+  'docs/domains/repository-collaboration.md: destructive Repository lifecycle rule is missing'
 ]);
 
 for (const failure of legacyResult?.failures ?? []) {
@@ -27,6 +28,10 @@ for (const failure of legacyResult?.failures ?? []) {
 
 const gapRegister = readFileSync(resolve(root, 'docs/IMPLEMENTATION_GAPS.md'), 'utf8');
 const closedGapArchive = readFileSync(resolve(root, 'docs/history/CLOSED_GAPS.md'), 'utf8');
+const repositoryCollaboration = readFileSync(
+  resolve(root, 'docs/domains/repository-collaboration.md'),
+  'utf8'
+);
 
 if (/^### GAP-OWNERSHIP-001\b/m.test(gapRegister)) {
   failures.push(
@@ -52,6 +57,15 @@ if (
 ) {
   failures.push(
     'docs/history/CLOSED_GAPS.md: GAP-OWNERSHIP-001 exact implementation and CI closure evidence is missing'
+  );
+}
+if (
+  !/Repository deletion remains unavailable[\s\S]*(?:Resources|Artifacts)[\s\S]*Grants[\s\S]*history[\s\S]*recovery/iu.test(
+    repositoryCollaboration
+  )
+) {
+  failures.push(
+    'docs/domains/repository-collaboration.md: destructive Repository lifecycle fail-closed invariant is missing'
   );
 }
 
