@@ -31,3 +31,14 @@ Do not add: quick-read facts; generic language/framework knowledge; one-off task
 
 - Renaming memories: References are updated automatically if handled via Serena's memory rename tool.
 - Checking for stale memories (e.g. after deletion): Call `serena memories check` for a report.
+
+## Ownership and Scope
+
+- Global memories are only for durable cross-project conventions. Project memories are only for durable, expensive-to-reconstruct facts owned by this repository.
+- Keep repository truth in current contracts and executable evidence; memories are routing and continuity aids, never a competing source of truth.
+- Never store secrets, credentials, private content, transient logs, branch/task status, or speculative conclusions.
+
+## Worktree Discipline
+
+- Tracked project memories and `.serena/project.yml` are shared through Git; `.serena/project.local.yml`, cache, and logs remain worktree-local and untracked.
+- In every worktree, resolve the nearest `.git`/`.serena` boundary and revalidate the current contracts before relying on memory.

@@ -1,7 +1,7 @@
 interface:
   display_name: "Serena JetBrains"
-  short_description: "Navigate and refactor code with Serena and JetBrains."
-  default_prompt: "Use $serena-jetbrains to trace this behavior by symbols and references, then make the smallest safe change."
+  short_description: "Verify exposed tools; choose Serena or built-ins."
+  default_prompt: "Use $serena-jetbrains to verify the exposed Serena tools, choose the semantic or built-in path, and make the smallest safe change."
 dependencies:
   tools:
     - type: "mcp"

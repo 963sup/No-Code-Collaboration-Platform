@@ -110,7 +110,9 @@ included_optional_tools:
 - jet_brains_find_referencing_symbols
 - jet_brains_find_symbol
 - jet_brains_get_symbols_overview
+- jet_brains_inline_symbol
 - jet_brains_list_inspections
+- jet_brains_move
 - jet_brains_rename
 - jet_brains_run_inspections
 - jet_brains_safe_delete
@@ -158,7 +160,8 @@ symbol_info_budget:
 
 # list of regex patterns which, when matched, mark a memory entry as read‑only.
 # Extends the list from the global configuration, merging the two lists.
-read_only_memory_patterns: []
+read_only_memory_patterns:
+- "^memory_maintenance$"
 
 # advanced configuration option allowing to configure language server-specific options.
 # Maps the language key to the options.
