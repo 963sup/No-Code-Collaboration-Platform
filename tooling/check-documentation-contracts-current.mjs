@@ -70,7 +70,7 @@ if (
 }
 
 const result = {
-  ...(legacyResult ?? {}),
+  ...legacyResult,
   ok: failures.length === 0,
   currentGaps: 2,
   archivedClosedGaps: 5,
