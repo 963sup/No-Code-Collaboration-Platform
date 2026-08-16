@@ -25,6 +25,9 @@ describe('Issue queries', () => {
     const findAccessibleIssue = vi.fn().mockResolvedValue(issue);
     const reader: IssueReader = {
       findAccessibleIssue,
+      async findAccessibleIssueById() {
+        return null;
+      },
       async listAccessibleIssues() {
         return { issues: [], total: 0 };
       }
@@ -46,6 +49,9 @@ describe('Issue queries', () => {
     const listAccessibleIssues = vi.fn().mockResolvedValue({ issues: [issue], total: 1 });
     const reader: IssueReader = {
       async findAccessibleIssue() {
+        return null;
+      },
+      async findAccessibleIssueById() {
         return null;
       },
       listAccessibleIssues

@@ -72,14 +72,14 @@ const input = {
 };
 
 describe('UpdatePage', () => {
-  it('rejects a Viewer before persistence', async () => {
+  it('rejects Read before persistence', async () => {
     const updatePage = vi.fn();
     const useCase = new UpdatePage(
       identityProvider(),
       repositoryReader(),
       {
         async readRepositoryAccess() {
-          return { directRole: 'viewer', governanceRole: null };
+          return { directRole: 'read', governanceRole: null };
         }
       },
       { createPage: vi.fn(), updatePage }
@@ -89,7 +89,7 @@ describe('UpdatePage', () => {
     expect(updatePage).not.toHaveBeenCalled();
   });
 
-  it('updates a Page for a Contributor with optimistic concurrency evidence', async () => {
+  it('updates a Page for Write with optimistic concurrency evidence', async () => {
     const page = {
       content: { body: input.body },
       createdAt: '2026-08-12T00:00:00.000Z',
@@ -107,7 +107,7 @@ describe('UpdatePage', () => {
       repositoryReader(),
       {
         async readRepositoryAccess() {
-          return { directRole: 'contributor', governanceRole: null };
+          return { directRole: 'write', governanceRole: null };
         }
       },
       pageWriter
@@ -129,7 +129,7 @@ describe('UpdatePage', () => {
       repositoryReader(),
       {
         async readRepositoryAccess() {
-          return { directRole: 'contributor', governanceRole: null };
+          return { directRole: 'write', governanceRole: null };
         }
       },
       { createPage: vi.fn(), updatePage: vi.fn().mockResolvedValue(null) }
@@ -148,7 +148,7 @@ describe('UpdatePage', () => {
       repositoryReader(),
       {
         async readRepositoryAccess() {
-          return { directRole: 'contributor', governanceRole: null };
+          return { directRole: 'write', governanceRole: null };
         }
       },
       { createPage: vi.fn(), updatePage }

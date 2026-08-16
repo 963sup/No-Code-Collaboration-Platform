@@ -84,11 +84,11 @@ describe('CreatePage', () => {
     expect(createPage).not.toHaveBeenCalled();
   });
 
-  it('rejects a Viewer through the Domain capability decision', async () => {
+  it('rejects Read through the Domain capability decision', async () => {
     const createPage = vi.fn();
     const accessReader: RepositoryAccessReader = {
       async readRepositoryAccess() {
-        return { directRole: 'viewer', governanceRole: null };
+        return { directRole: 'read', governanceRole: null };
       }
     };
     const pageWriter: PageWriter = { createPage, updatePage: vi.fn() };
@@ -135,7 +135,7 @@ describe('CreatePage', () => {
     expect(createPage).toHaveBeenCalledTimes(1);
   });
 
-  it('creates a normalized blank Page for a Contributor', async () => {
+  it('creates a normalized blank Page for Write', async () => {
     const page = {
       content: { body: '' },
       createdAt: '2026-08-12T00:00:00.000Z',
@@ -152,7 +152,7 @@ describe('CreatePage', () => {
       createRepositoryReader(),
       {
         async readRepositoryAccess() {
-          return { directRole: 'contributor', governanceRole: null };
+          return { directRole: 'write', governanceRole: null };
         }
       },
       { createPage, updatePage: vi.fn() }
@@ -176,7 +176,7 @@ describe('CreatePage', () => {
       createRepositoryReader(),
       {
         async readRepositoryAccess() {
-          return { directRole: 'contributor', governanceRole: null };
+          return { directRole: 'write', governanceRole: null };
         }
       },
       { createPage: vi.fn().mockResolvedValue(null), updatePage: vi.fn() }
@@ -195,7 +195,7 @@ describe('CreatePage', () => {
       createRepositoryReader(),
       {
         async readRepositoryAccess() {
-          return { directRole: 'contributor', governanceRole: null };
+          return { directRole: 'write', governanceRole: null };
         }
       },
       { createPage, updatePage: vi.fn() }

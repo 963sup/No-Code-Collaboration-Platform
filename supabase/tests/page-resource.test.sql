@@ -77,7 +77,7 @@ select is(
 select is(
   (select private.has_repository_capability(
     '20000000-0000-0000-0000-000000000301',
-    'resource.create'
+    'page.create'
   )),
   true,
   'Organization admin governance authority expands to Repository capabilities'

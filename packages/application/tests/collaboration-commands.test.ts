@@ -9,9 +9,10 @@ import {
   type RepositoryReader
 } from '../src/index';
 import type { RepositoryRole } from '@no-code-collaboration-platform/domain/access';
+import type { RepositorySummary } from '@no-code-collaboration-platform/domain/repository';
 import type { IssueDetail } from '@no-code-collaboration-platform/domain/resource';
 
-const privateRepository = {
+const privateRepository: RepositorySummary = {
   description: null,
   id: 'repository-1',
   name: 'Platform',
@@ -20,7 +21,7 @@ const privateRepository = {
   visibility: 'private' as const
 };
 
-const publicRepository = {
+const publicRepository: RepositorySummary = {
   ...privateRepository,
   id: 'repository-public',
   visibility: 'public' as const
@@ -59,7 +60,7 @@ function identityProvider(actorId: string | null): IdentityProvider {
   };
 }
 
-function repositoryReader(repository = privateRepository): RepositoryReader {
+function repositoryReader(repository: RepositorySummary = privateRepository): RepositoryReader {
   return {
     async findAccessibleRepositoryById() {
       return repository;

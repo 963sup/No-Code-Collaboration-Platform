@@ -47,7 +47,12 @@ function normalizeCommand(command: IssueCommand): IssueCommand | null {
   return command;
 }
 
-function needsAuthorState(command: IssueCommand): boolean {
+type IssueCommandRequiringAuthorState = Extract<
+  IssueCommand,
+  { readonly type: 'edit' | 'close' | 'reopen' }
+>;
+
+function needsAuthorState(command: IssueCommand): command is IssueCommandRequiringAuthorState {
   return command.type === 'edit' || command.type === 'close' || command.type === 'reopen';
 }
 

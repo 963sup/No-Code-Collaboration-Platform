@@ -14,9 +14,17 @@ values
 update public.profiles set username = 'collaboration-owner'
 where id = '00000000-0000-0000-0000-000000000501';
 
+insert into public.organizations (id, slug, name, created_by)
+values (
+  '10000000-0000-0000-0000-000000000501',
+  'collaboration-organization',
+  'Collaboration Organization',
+  '00000000-0000-0000-0000-000000000501'
+);
+
 insert into public.repositories (
   id,
-  owner_user_id,
+  owner_organization_id,
   slug,
   name,
   visibility,
@@ -25,7 +33,7 @@ insert into public.repositories (
 values
   (
     '20000000-0000-0000-0000-000000000501',
-    '00000000-0000-0000-0000-000000000501',
+    '10000000-0000-0000-0000-000000000501',
     'private-collaboration',
     'Private Collaboration',
     'private',
@@ -33,7 +41,7 @@ values
   ),
   (
     '20000000-0000-0000-0000-000000000502',
-    '00000000-0000-0000-0000-000000000501',
+    '10000000-0000-0000-0000-000000000501',
     'public-collaboration',
     'Public Collaboration',
     'public',
@@ -439,7 +447,14 @@ select is(
 select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-000000000501', true);
 
 select is(
-  (select count(*) from public.list_notifications('all', 1)),
+  (
+    select count(*)
+    from public.notification_threads as notification
+    join public.activity_events as evidence
+      on evidence.id = notification.source_evidence_id
+    where notification.recipient_id = (select auth.uid())
+      and evidence.actor_id = (select auth.uid())
+  ),
   0::bigint,
   'the triggering Actor never receives a self-notification'
 );
