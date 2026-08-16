@@ -110,8 +110,8 @@ export default async function RepositoryAccessPage({
           <Badge variant='outline'>live</Badge>
         </div>
         <p className='max-w-3xl text-muted-foreground'>
-          Effective authority is derived from ownership/governance, Direct Grants, and the public
-          read baseline. Direct Grant changes use the same Domain delegation policy and independent
+          Effective authority is derived from ownership/governance, Direct User Grants, and the
+          public read baseline. Grant changes use the same Domain delegation policy and independent
           database enforcement.
         </p>
       </header>
@@ -196,10 +196,12 @@ export default async function RepositoryAccessPage({
       {management.ok ? (
         <Card>
           <CardHeader>
-            <CardTitle>Direct collaborators</CardTitle>
+            <CardTitle>Direct User grants</CardTitle>
             <CardDescription>
-              Direct Grants are explicit User → Repository authority relationships. They are
-              independent from Organization Membership and cannot target the acting User itself.
+              A Direct User Grant is an explicit User → Repository authority relationship.
+              Collaborator is derived only after effective access is resolved; it is not the stored
+              relationship. Grants remain independent from Organization Membership and cannot
+              target the acting User itself.
             </CardDescription>
           </CardHeader>
           <CardContent className='space-y-6'>
@@ -220,7 +222,7 @@ export default async function RepositoryAccessPage({
                   id='grant-username'
                   name='username'
                   pattern='[a-z0-9]+(?:-[a-z0-9]+)*'
-                  placeholder='collaborator-name'
+                  placeholder='user-name'
                   required
                   spellCheck={false}
                 />
@@ -241,7 +243,7 @@ export default async function RepositoryAccessPage({
                 </select>
               </div>
               <Button disabled={management.grantableRoles.length === 0} type='submit'>
-                Add collaborator
+                Grant access
               </Button>
             </form>
 

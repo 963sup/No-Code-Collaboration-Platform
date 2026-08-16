@@ -56,7 +56,7 @@ export function IssueDetailView({ issue, showMetadata = false }: IssueDetailProp
 
       <Card>
         <CardHeader className='border-b py-3 text-xs text-muted-foreground'>
-          Collaborator opened this Issue
+          Opened by {issue.createdBy}
         </CardHeader>
         <CardContent className='min-h-40 whitespace-pre-wrap py-5 text-sm leading-6'>
           {issue.body || 'No description was provided.'}
