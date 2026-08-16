@@ -51,7 +51,7 @@ export class UpdatePage {
       repositoryId: repository.id
     });
     const decision = decideRepositoryCapability(
-      { sources, visibility: repository.visibility },
+      { actorTrust: 'authenticated', sources, visibility: repository.visibility },
       'page.update'
     );
 
