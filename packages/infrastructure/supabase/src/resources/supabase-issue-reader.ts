@@ -1,4 +1,5 @@
 import type {
+  AccessibleIssueByIdQuery,
   AccessibleIssueQuery,
   IssueCollection,
   IssueCollectionQuery,
@@ -70,6 +71,17 @@ export class SupabaseIssueReader implements IssueReader, IssueWriter {
       .eq('issue_number', query.issueNumber)
       .maybeSingle();
     if (error) throw new Error('Unable to load the accessible Issue.', { cause: error });
+    return data ? this.hydrate(data) : null;
+  }
+
+  public async findAccessibleIssueById(query: AccessibleIssueByIdQuery): Promise<IssueDetail | null> {
+    const { data, error } = await this.client
+      .from('issues')
+      .select(issueDetailProjection)
+      .eq('repository_id', query.repositoryId)
+      .eq('id', query.issueId)
+      .maybeSingle();
+    if (error) throw new Error('Unable to load the accessible Issue command target.', { cause: error });
     return data ? this.hydrate(data) : null;
   }
 
