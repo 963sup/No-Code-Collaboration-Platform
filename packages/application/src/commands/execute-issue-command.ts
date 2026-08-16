@@ -27,9 +27,21 @@ export type ExecuteIssueCommandResult =
   | { readonly ok: false; readonly reason: ExecuteIssueCommandFailureReason };
 
 function requiredCapability(command: IssueCommand): RepositoryCapability {
-  return command.type === 'create' || command.type === 'comment'
-    ? 'resource.create'
-    : 'resource.update';
+  switch (command.type) {
+    case 'create':
+      return 'issue.create';
+    case 'comment':
+      return 'issue.comment';
+    case 'edit':
+      return 'issue.edit';
+    case 'assign':
+    case 'unassign':
+    case 'label':
+    case 'unlabel':
+    case 'close':
+    case 'reopen':
+      return 'issue.manage';
+  }
 }
 
 function normalizeCommand(command: IssueCommand): IssueCommand | null {
