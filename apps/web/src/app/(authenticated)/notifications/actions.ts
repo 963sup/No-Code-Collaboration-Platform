@@ -5,11 +5,12 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { z } from 'zod';
 
+import { databaseUuidSchema } from '@/app/_validation/database-id';
 import { createRequestServices } from '@/composition/create-request-services';
 
 const notificationCommandSchema = z.object({
   intent: z.enum(['archive', 'mark-read', 'mark-unread']),
-  notificationId: z.string().uuid()
+  notificationId: databaseUuidSchema
 });
 
 async function executeNotification(command: Parameters<ExecuteNotificationCommand['execute']>[0]) {
