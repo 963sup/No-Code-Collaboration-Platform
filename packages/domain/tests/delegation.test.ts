@@ -35,31 +35,26 @@ describe('organization delegation policy', () => {
 });
 
 describe('repository delegation policy', () => {
-  it('allows managers to manage viewer and contributor grants', () => {
-    expect(canMutateRepositoryGrant('manager', null, 'viewer')).toBe(true);
-    expect(canMutateRepositoryGrant('manager', 'viewer', 'contributor')).toBe(true);
-    expect(canMutateRepositoryGrant('manager', 'contributor', null)).toBe(true);
-  });
+  it.each(['read', 'triage', 'write', 'maintain'] as const)(
+    'does not let %s manage Direct Repository Grants',
+    (role) => {
+      expect(canMutateRepositoryGrant(role, null, 'read')).toBe(false);
+      expect(canMutateRepositoryGrant(role, 'write', 'maintain')).toBe(false);
+      expect(canMutateRepositoryGrant(role, 'admin', null)).toBe(false);
+    }
+  );
 
-  it('prevents managers from creating or managing manager and admin grants', () => {
-    expect(canMutateRepositoryGrant('manager', null, 'manager')).toBe(false);
-    expect(canMutateRepositoryGrant('manager', null, 'admin')).toBe(false);
-    expect(canMutateRepositoryGrant('manager', 'manager', 'admin')).toBe(false);
-    expect(canMutateRepositoryGrant('manager', 'admin', null)).toBe(false);
-  });
-
-  it('allows repository administrators to manage every repository role', () => {
-    expect(canMutateRepositoryGrant('admin', null, 'admin')).toBe(true);
-    expect(canMutateRepositoryGrant('admin', 'manager', 'admin')).toBe(true);
+  it('allows repository administrators to manage every accepted repository role', () => {
+    expect(canMutateRepositoryGrant('admin', null, 'read')).toBe(true);
+    expect(canMutateRepositoryGrant('admin', 'read', 'triage')).toBe(true);
+    expect(canMutateRepositoryGrant('admin', 'triage', 'write')).toBe(true);
+    expect(canMutateRepositoryGrant('admin', 'write', 'maintain')).toBe(true);
+    expect(canMutateRepositoryGrant('admin', 'maintain', 'admin')).toBe(true);
     expect(canMutateRepositoryGrant('admin', 'admin', null)).toBe(true);
   });
 
-  it('does not treat read or contribution capabilities as delegation authority', () => {
-    expect(canMutateRepositoryGrant('viewer', null, 'viewer')).toBe(false);
-    expect(canMutateRepositoryGrant('contributor', null, 'viewer')).toBe(false);
-  });
-
-  it('rejects self-target direct Grant mutation even when the Actor can delegate', () => {
+  it('rejects empty transitions and self-target Direct Grant mutation', () => {
+    expect(canMutateRepositoryGrant('admin', null, null)).toBe(false);
     expect(canMutateRepositoryGrantForPrincipal('admin', null, 'admin', 'actor-1', 'actor-1')).toBe(
       false
     );
