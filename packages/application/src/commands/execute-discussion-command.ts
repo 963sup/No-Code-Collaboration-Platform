@@ -82,7 +82,7 @@ export class ExecuteDiscussionCommand {
       repositoryId: repository.id
     });
     const decision = decideRepositoryCapability(
-      { sources, visibility: repository.visibility },
+      { actorTrust: 'authenticated', sources, visibility: repository.visibility },
       requiredCapability(normalized)
     );
     if (!decision.allowed) return { ok: false as const, reason: 'forbidden' as const };
