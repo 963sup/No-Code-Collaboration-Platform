@@ -64,7 +64,7 @@ const repositoryReader: RepositoryReader = {
   }
 };
 
-function accessReader(role: 'admin' | 'manager'): RepositoryAccessReader {
+function accessReader(role: 'admin' | 'maintain'): RepositoryAccessReader {
   return {
     async readRepositoryAccess() {
       return { directRole: null, governanceRole: role };
@@ -75,6 +75,7 @@ function accessReader(role: 'admin' | 'manager'): RepositoryAccessReader {
 function grantRepository(
   grants: Awaited<ReturnType<RepositoryGrantRepository['listDirectRepositoryGrants']>> = []
 ) {
+  const listDirectRepositoryGrants = vi.fn().mockResolvedValue(grants);
   const mutateDirectRepositoryGrant = vi.fn().mockResolvedValue({ ok: true, changed: true });
   const repositoryGrantRepository: RepositoryGrantRepository = {
     async findGrantTargetByUsername(_repositoryId, username) {
@@ -89,61 +90,75 @@ function grantRepository(
           ? { avatarUrl: null, displayName: 'Actor', id: 'actor-1', username }
           : null;
     },
-    async listDirectRepositoryGrants() {
-      return grants;
-    },
+    listDirectRepositoryGrants,
     mutateDirectRepositoryGrant
   };
-  return { mutateDirectRepositoryGrant, repositoryGrantRepository };
+  return { listDirectRepositoryGrants, mutateDirectRepositoryGrant, repositoryGrantRepository };
 }
 
 describe('Repository Grant management', () => {
-  it('projects only delegation transitions the Actor may perform', async () => {
+  it('does not expose the management projection to Maintain', async () => {
+    const { listDirectRepositoryGrants, repositoryGrantRepository } = grantRepository();
+    const useCase = new GetRepositoryGrantManagement(
+      identityProvider('actor-1'),
+      repositoryReader,
+      accessReader('maintain'),
+      repositoryGrantRepository
+    );
+
+    await expect(useCase.execute(repository.id)).resolves.toEqual({
+      ok: false,
+      reason: 'forbidden'
+    });
+    expect(listDirectRepositoryGrants).not.toHaveBeenCalled();
+  });
+
+  it('projects every accepted Repository Role only for Admin', async () => {
     const { repositoryGrantRepository } = grantRepository([
       {
         avatarUrl: null,
-        displayName: 'Viewer',
-        id: 'user-viewer',
-        role: 'viewer',
-        username: 'viewer'
+        displayName: 'Reader',
+        id: 'user-read',
+        role: 'read',
+        username: 'reader'
       },
       {
         avatarUrl: null,
-        displayName: 'Manager',
-        id: 'user-manager',
-        role: 'manager',
-        username: 'manager'
+        displayName: 'Maintainer',
+        id: 'user-maintain',
+        role: 'maintain',
+        username: 'maintainer'
       }
     ]);
     const useCase = new GetRepositoryGrantManagement(
       identityProvider('actor-1'),
       repositoryReader,
-      accessReader('manager'),
+      accessReader('admin'),
       repositoryGrantRepository
     );
 
-    await expect(useCase.execute(repository.id)).resolves.toEqual({
-      actorRole: 'manager',
-      grantableRoles: ['viewer', 'contributor'],
-      grants: [
-        expect.objectContaining({
-          allowedRoles: ['contributor'],
-          canRevoke: true,
-          id: 'user-viewer',
-          role: 'viewer'
-        }),
-        expect.objectContaining({
-          allowedRoles: [],
-          canRevoke: false,
-          id: 'user-manager',
-          role: 'manager'
-        })
-      ],
-      ok: true
-    });
+    const result = await useCase.execute(repository.id);
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.actorRole).toBe('admin');
+    expect(result.grantableRoles).toEqual(['read', 'triage', 'write', 'maintain', 'admin']);
+    expect(result.grants).toEqual([
+      expect.objectContaining({
+        allowedRoles: ['triage', 'write', 'maintain', 'admin'],
+        canRevoke: true,
+        id: 'user-read',
+        role: 'read'
+      }),
+      expect.objectContaining({
+        allowedRoles: ['read', 'triage', 'write', 'admin'],
+        canRevoke: true,
+        id: 'user-maintain',
+        role: 'maintain'
+      })
+    ]);
   });
 
-  it('creates a direct Grant only after Domain delegation accepts another Principal', async () => {
+  it('creates a Direct Grant only after Admin delegation accepts another Principal', async () => {
     const { mutateDirectRepositoryGrant, repositoryGrantRepository } = grantRepository();
     const useCase = new ExecuteRepositoryGrantCommand(
       identityProvider('actor-1'),
@@ -155,14 +170,14 @@ describe('Repository Grant management', () => {
     await expect(
       useCase.execute({
         repositoryId: repository.id,
-        role: 'contributor',
+        role: 'write',
         type: 'grant',
         username: 'collaborator'
       })
     ).resolves.toEqual({ ok: true, changed: true });
     expect(mutateDirectRepositoryGrant).toHaveBeenCalledWith({
       expectedRole: null,
-      proposedRole: 'contributor',
+      proposedRole: 'write',
       repositoryId: repository.id,
       targetUserId: 'user-2'
     });
@@ -188,13 +203,13 @@ describe('Repository Grant management', () => {
     expect(mutateDirectRepositoryGrant).not.toHaveBeenCalled();
   });
 
-  it('passes the observed current Role as an optimistic concurrency precondition', async () => {
+  it('passes the observed current Role as the persistence CAS precondition', async () => {
     const { mutateDirectRepositoryGrant, repositoryGrantRepository } = grantRepository([
       {
         avatarUrl: null,
         displayName: 'Collaborator',
         id: 'user-2',
-        role: 'contributor',
+        role: 'write',
         username: 'collaborator'
       }
     ]);
@@ -208,14 +223,14 @@ describe('Repository Grant management', () => {
     await expect(
       useCase.execute({
         repositoryId: repository.id,
-        role: 'viewer',
+        role: 'read',
         targetUserId: 'user-2',
         type: 'change-role'
       })
     ).resolves.toEqual({ ok: true, changed: true });
     expect(mutateDirectRepositoryGrant).toHaveBeenCalledWith({
-      expectedRole: 'contributor',
-      proposedRole: 'viewer',
+      expectedRole: 'write',
+      proposedRole: 'read',
       repositoryId: repository.id,
       targetUserId: 'user-2'
     });
