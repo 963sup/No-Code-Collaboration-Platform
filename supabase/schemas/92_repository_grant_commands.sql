@@ -51,20 +51,14 @@ begin
 end;
 $$;
 
-create function private.repository_grant_target_exists(
-  target_repository_id uuid,
-  target_user_id uuid
-)
+create function private.repository_grant_target_exists(target_user_id uuid)
 returns boolean
 language sql
 stable
 security definer
 set search_path = ''
 as $$
-  select private.has_repository_capability(
-    target_repository_id,
-    'repository.access.manage'
-  ) and exists (
+  select exists (
     select 1
     from auth.users as target_user
     where target_user.id = target_user_id
@@ -148,7 +142,7 @@ revoke all on function private.record_repository_grant_event(
   public.repository_role,
   public.repository_role
 ) from public, anon, authenticated;
-revoke all on function private.repository_grant_target_exists(uuid, uuid)
+revoke all on function private.repository_grant_target_exists(uuid)
   from public, anon, authenticated;
 revoke all on function private.list_repository_direct_grants(uuid)
   from public, anon, authenticated;
@@ -162,7 +156,7 @@ grant execute on function private.record_repository_grant_event(
   public.repository_role,
   public.repository_role
 ) to authenticated;
-grant execute on function private.repository_grant_target_exists(uuid, uuid) to authenticated;
+grant execute on function private.repository_grant_target_exists(uuid) to authenticated;
 grant execute on function private.list_repository_direct_grants(uuid) to authenticated;
 grant execute on function private.find_repository_grant_target_by_username(uuid, text)
   to authenticated;
@@ -240,7 +234,7 @@ begin
     return 'forbidden';
   end if;
 
-  if not private.repository_grant_target_exists(target_repository_id, target_user_id) then
+  if not private.repository_grant_target_exists(target_user_id) then
     return 'target-unavailable';
   end if;
 
@@ -248,13 +242,8 @@ begin
     return 'target-unavailable';
   end if;
 
-  if expected_role is not null
-    and not private.can_manage_repository_grant(target_repository_id, expected_role) then
-    return 'forbidden';
-  end if;
-
   if proposed_role is not null
-    and not private.can_manage_repository_grant(target_repository_id, proposed_role) then
+    and not private.is_repository_grant_role_allowed(target_repository_id, proposed_role) then
     return 'forbidden';
   end if;
 
@@ -360,4 +349,4 @@ comment on function public.execute_repository_grant_command(
   public.repository_role,
   public.repository_role
 ) is
-  'Admin-only compare-and-swap Direct Repository Grant command; Activity Evidence is written only after exactly one accepted state transition.';
+  'Admin-only compare-and-swap Direct Repository Grant command; owner-kind role policy and Activity Evidence are enforced inside the command transaction.';
