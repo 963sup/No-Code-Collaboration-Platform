@@ -61,7 +61,7 @@ const repositoryReader: RepositoryReader = {
   }
 };
 
-function accessReader(role: 'admin' | 'contributor' | 'viewer'): RepositoryAccessReader {
+function accessReader(role: 'admin' | 'write' | 'read'): RepositoryAccessReader {
   return {
     async readRepositoryAccess() {
       return { directRole: role, governanceRole: null };
@@ -76,7 +76,7 @@ describe('collaboration commands', () => {
     const useCase = new ExecuteIssueCommand(
       identityProvider('actor-1'),
       repositoryReader,
-      accessReader('viewer'),
+      accessReader('read'),
       writer
     );
 
@@ -96,7 +96,7 @@ describe('collaboration commands', () => {
     const useCase = new ExecuteIssueCommand(
       identityProvider('actor-1'),
       repositoryReader,
-      accessReader('contributor'),
+      accessReader('write'),
       { executeIssueCommand }
     );
     const command = {
@@ -117,7 +117,7 @@ describe('collaboration commands', () => {
     const useCase = new ExecuteDiscussionCommand(
       identityProvider('actor-1'),
       repositoryReader,
-      accessReader('contributor'),
+      accessReader('write'),
       writer
     );
 
@@ -140,7 +140,7 @@ describe('collaboration commands', () => {
     const useCase = new ExecuteDiscussionCommand(
       identityProvider('actor-1'),
       repositoryReader,
-      accessReader('contributor'),
+      accessReader('write'),
       { executeDiscussionCommand }
     );
 

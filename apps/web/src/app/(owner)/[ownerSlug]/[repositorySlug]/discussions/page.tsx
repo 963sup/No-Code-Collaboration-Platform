@@ -113,7 +113,7 @@ export default async function RepositoryDiscussionsPage({
                 >
                   <option value='general'>General</option>
                   <option value='question'>Question</option>
-                  <option value='announcement'>Announcement (Repository manager only)</option>
+                  <option value='announcement'>Announcement (Maintain or Admin only)</option>
                 </select>
               </label>
               <textarea

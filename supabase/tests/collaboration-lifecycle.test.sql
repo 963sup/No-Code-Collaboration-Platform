@@ -44,7 +44,7 @@ insert into public.repository_user_grants (repository_id, user_id, role, granted
 values (
   '20000000-0000-0000-0000-000000000501',
   '00000000-0000-0000-0000-000000000502',
-  'contributor',
+  'write',
   '00000000-0000-0000-0000-000000000501'
 );
 

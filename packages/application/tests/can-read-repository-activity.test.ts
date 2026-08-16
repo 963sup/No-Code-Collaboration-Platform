@@ -3,8 +3,8 @@ import { describe, expect, it } from 'vitest';
 import { CanReadRepositoryActivity, type RepositoryAccessReader } from '../src/index';
 
 function reader(
-  directRole: 'viewer' | 'contributor' | 'manager' | 'admin' | null,
-  governanceRole: 'viewer' | 'contributor' | 'manager' | 'admin' | null
+  directRole: 'read' | 'write' | 'maintain' | 'admin' | null,
+  governanceRole: 'read' | 'write' | 'maintain' | 'admin' | null
 ): RepositoryAccessReader {
   return {
     async readRepositoryAccess() {
@@ -20,9 +20,9 @@ const input = {
 
 describe('CanReadRepositoryActivity', () => {
   it('allows a direct Viewer because repository.view is an accepted authority capability', async () => {
-    await expect(
-      new CanReadRepositoryActivity(reader('viewer', null)).execute(input)
-    ).resolves.toBe(true);
+    await expect(new CanReadRepositoryActivity(reader('read', null)).execute(input)).resolves.toBe(
+      true
+    );
   });
 
   it('allows ownership or governance-derived admin authority without fabricating a direct Grant', async () => {

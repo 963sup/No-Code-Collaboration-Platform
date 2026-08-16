@@ -28,13 +28,13 @@ describe('effective Repository authority', () => {
   it('selects the highest direct and governance-derived Repository role', () => {
     expect(
       effectiveRepositoryRole({
-        directRole: 'manager',
+        directRole: 'maintain',
         governanceRole: null
       })
-    ).toBe('manager');
+    ).toBe('maintain');
     expect(
       effectiveRepositoryRole({
-        directRole: 'contributor',
+        directRole: 'write',
         governanceRole: 'admin'
       })
     ).toBe('admin');
@@ -46,7 +46,7 @@ describe('Repository access explanation', () => {
     expect(
       explainRepositoryAccess({
         sources: {
-          directRole: 'contributor',
+          directRole: 'write',
           governanceRole: 'admin'
         },
         visibility: 'private'
@@ -62,7 +62,7 @@ describe('Repository access explanation', () => {
       ],
       effectiveRole: 'admin',
       sources: [
-        { kind: 'direct-grant', role: 'contributor' },
+        { kind: 'direct-grant', role: 'write' },
         { kind: 'governance-derived', role: 'admin' }
       ],
       visibility: 'private'

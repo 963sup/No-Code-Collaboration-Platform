@@ -49,7 +49,7 @@ insert into public.repository_user_grants (repository_id, user_id, role, granted
 values (
   '20000000-0000-0000-0000-000000000401',
   '00000000-0000-0000-0000-000000000402',
-  'viewer',
+  'read',
   '00000000-0000-0000-0000-000000000401'
 );
 

@@ -1450,7 +1450,7 @@ export type Database = {
         | "participating"
       notification_state: "unread" | "read" | "archived"
       organization_role: "member" | "admin" | "owner"
-      repository_role: "viewer" | "contributor" | "manager" | "admin"
+      repository_role: "read" | "triage" | "write" | "maintain" | "admin"
       repository_visibility: "private" | "public"
       resource_kind: "page"
     }
@@ -1596,7 +1596,7 @@ export const Constants = {
       ],
       notification_state: ["unread", "read", "archived"],
       organization_role: ["member", "admin", "owner"],
-      repository_role: ["viewer", "contributor", "manager", "admin"],
+      repository_role: ["read", "triage", "write", "maintain", "admin"],
       repository_visibility: ["private", "public"],
       resource_kind: ["page"],
     },

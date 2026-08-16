@@ -188,18 +188,18 @@ with check (
   )
 );
 
-create policy repositories_update_manager
+create policy repositories_update_admin
 on public.repositories
 for update
 to authenticated
 using ((select private.has_repository_capability(id, 'repository.manage')))
 with check ((select private.has_repository_capability(id, 'repository.manage')));
 
-create policy repository_user_grants_select_viewer
+create policy repository_user_grants_select_admin
 on public.repository_user_grants
 for select
 to authenticated
-using ((select private.has_repository_capability(repository_id, 'repository.view')));
+using ((select private.has_repository_capability(repository_id, 'repository.access.manage')));
 
 create policy repository_user_grants_insert_delegated
 on public.repository_user_grants
@@ -235,27 +235,27 @@ for select
 to anon, authenticated
 using ((select private.can_view_repository(repository_id)));
 
-create policy resources_insert_contributor
+create policy resources_insert_write
 on public.resources
 for insert
 to authenticated
 with check (
   (select pg_catalog.current_setting('app.page_command', true)) = 'create'
   and (select auth.uid()) = created_by
-  and (select private.has_repository_capability(repository_id, 'resource.create'))
+  and (select private.has_repository_capability(repository_id, 'page.create'))
 );
 
-create policy resources_update_contributor
+create policy resources_update_write
 on public.resources
 for update
 to authenticated
 using (
   (select pg_catalog.current_setting('app.page_command', true)) = 'update'
-  and (select private.has_repository_capability(repository_id, 'resource.update'))
+  and (select private.has_repository_capability(repository_id, 'page.update'))
 )
 with check (
   (select pg_catalog.current_setting('app.page_command', true)) = 'update'
-  and (select private.has_repository_capability(repository_id, 'resource.update'))
+  and (select private.has_repository_capability(repository_id, 'page.update'))
 );
 
 create policy repository_labels_select_visible
@@ -277,7 +277,7 @@ to authenticated
 with check (
   (select pg_catalog.current_setting('app.issue_command', true)) = 'create'
   and (select auth.uid()) = created_by
-  and (select private.has_repository_capability(repository_id, 'resource.create'))
+  and (select private.has_repository_capability(repository_id, 'issue.create'))
 );
 
 create policy issues_update_command
@@ -286,21 +286,21 @@ for update
 to authenticated
 using (
   case (select pg_catalog.current_setting('app.issue_command', true))
-    when 'comment' then (select private.has_repository_capability(repository_id, 'resource.create'))
-    when 'edit' then (select private.has_repository_capability(repository_id, 'resource.update'))
-    when 'assign' then (select private.has_repository_capability(repository_id, 'resource.update'))
-    when 'label' then (select private.has_repository_capability(repository_id, 'resource.update'))
-    when 'transition' then (select private.has_repository_capability(repository_id, 'resource.update'))
+    when 'comment' then (select private.has_repository_capability(repository_id, 'issue.comment'))
+    when 'edit' then (select private.has_repository_capability(repository_id, 'issue.edit'))
+    when 'assign' then (select private.has_repository_capability(repository_id, 'issue.manage'))
+    when 'label' then (select private.has_repository_capability(repository_id, 'issue.manage'))
+    when 'transition' then (select private.has_repository_capability(repository_id, 'issue.manage'))
     else false
   end
 )
 with check (
   case (select pg_catalog.current_setting('app.issue_command', true))
-    when 'comment' then (select private.has_repository_capability(repository_id, 'resource.create'))
-    when 'edit' then (select private.has_repository_capability(repository_id, 'resource.update'))
-    when 'assign' then (select private.has_repository_capability(repository_id, 'resource.update'))
-    when 'label' then (select private.has_repository_capability(repository_id, 'resource.update'))
-    when 'transition' then (select private.has_repository_capability(repository_id, 'resource.update'))
+    when 'comment' then (select private.has_repository_capability(repository_id, 'issue.comment'))
+    when 'edit' then (select private.has_repository_capability(repository_id, 'issue.edit'))
+    when 'assign' then (select private.has_repository_capability(repository_id, 'issue.manage'))
+    when 'label' then (select private.has_repository_capability(repository_id, 'issue.manage'))
+    when 'transition' then (select private.has_repository_capability(repository_id, 'issue.manage'))
     else false
   end
 );
@@ -318,7 +318,7 @@ to authenticated
 with check (
   (select pg_catalog.current_setting('app.issue_command', true)) = 'assign'
   and (select auth.uid()) = assigned_by
-  and (select private.has_repository_capability(repository_id, 'resource.update'))
+  and (select private.has_repository_capability(repository_id, 'issue.manage'))
   and (select private.user_can_view_repository(user_id, repository_id))
 );
 
@@ -328,7 +328,7 @@ for delete
 to authenticated
 using (
   (select pg_catalog.current_setting('app.issue_command', true)) = 'assign'
-  and (select private.has_repository_capability(repository_id, 'resource.update'))
+  and (select private.has_repository_capability(repository_id, 'issue.manage'))
 );
 
 create policy issue_labels_select_visible
@@ -344,7 +344,7 @@ to authenticated
 with check (
   (select pg_catalog.current_setting('app.issue_command', true)) = 'label'
   and (select auth.uid()) = applied_by
-  and (select private.has_repository_capability(repository_id, 'resource.update'))
+  and (select private.has_repository_capability(repository_id, 'issue.manage'))
 );
 
 create policy issue_labels_delete_command
@@ -353,7 +353,7 @@ for delete
 to authenticated
 using (
   (select pg_catalog.current_setting('app.issue_command', true)) = 'label'
-  and (select private.has_repository_capability(repository_id, 'resource.update'))
+  and (select private.has_repository_capability(repository_id, 'issue.manage'))
 );
 
 create policy issue_comments_select_visible
@@ -369,7 +369,7 @@ to authenticated
 with check (
   (select pg_catalog.current_setting('app.issue_command', true)) = 'comment'
   and (select auth.uid()) = created_by
-  and (select private.has_repository_capability(repository_id, 'resource.create'))
+  and (select private.has_repository_capability(repository_id, 'issue.comment'))
 );
 
 create policy discussions_select_visible
@@ -386,8 +386,8 @@ with check (
   (select pg_catalog.current_setting('app.discussion_command', true)) = 'create'
   and (select auth.uid()) = created_by
   and (
-    (category <> 'announcement' and (select private.has_repository_capability(repository_id, 'resource.create')))
-    or (category = 'announcement' and (select private.has_repository_capability(repository_id, 'repository.manage')))
+    (category <> 'announcement' and (select private.has_repository_capability(repository_id, 'discussion.create')))
+    or (category = 'announcement' and (select private.has_repository_capability(repository_id, 'discussion.announce')))
   )
 );
 
@@ -397,21 +397,21 @@ for update
 to authenticated
 using (
   case (select pg_catalog.current_setting('app.discussion_command', true))
-    when 'comment' then (select private.has_repository_capability(repository_id, 'resource.create'))
-    when 'moderate' then (select private.has_repository_capability(repository_id, 'repository.manage'))
-    when 'edit' then (select private.has_repository_capability(repository_id, 'resource.update'))
-    when 'transition' then (select private.has_repository_capability(repository_id, 'resource.update'))
-    when 'answer' then (select private.has_repository_capability(repository_id, 'resource.update'))
+    when 'comment' then (select private.has_repository_capability(repository_id, 'discussion.comment'))
+    when 'moderate' then (select private.has_repository_capability(repository_id, 'discussion.moderate'))
+    when 'edit' then (select private.has_repository_capability(repository_id, 'discussion.edit'))
+    when 'transition' then (select private.has_repository_capability(repository_id, 'discussion.moderate'))
+    when 'answer' then (select private.has_repository_capability(repository_id, 'discussion.moderate'))
     else false
   end
 )
 with check (
   case (select pg_catalog.current_setting('app.discussion_command', true))
-    when 'comment' then (select private.has_repository_capability(repository_id, 'resource.create'))
-    when 'moderate' then (select private.has_repository_capability(repository_id, 'repository.manage'))
-    when 'edit' then (select private.has_repository_capability(repository_id, 'resource.update'))
-    when 'transition' then (select private.has_repository_capability(repository_id, 'resource.update'))
-    when 'answer' then (select private.has_repository_capability(repository_id, 'resource.update'))
+    when 'comment' then (select private.has_repository_capability(repository_id, 'discussion.comment'))
+    when 'moderate' then (select private.has_repository_capability(repository_id, 'discussion.moderate'))
+    when 'edit' then (select private.has_repository_capability(repository_id, 'discussion.edit'))
+    when 'transition' then (select private.has_repository_capability(repository_id, 'discussion.moderate'))
+    when 'answer' then (select private.has_repository_capability(repository_id, 'discussion.moderate'))
     else false
   end
 );
@@ -429,13 +429,16 @@ to authenticated
 with check (
   (select pg_catalog.current_setting('app.discussion_command', true)) = 'comment'
   and (select auth.uid()) = created_by
-  and (select private.has_repository_capability(repository_id, 'resource.create'))
+  and (select private.has_repository_capability(repository_id, 'discussion.comment'))
   and exists (
     select 1
     from public.discussions as discussion
     where discussion.id = discussion_id
       and discussion.status = 'open'
-      and not discussion.is_locked
+      and (
+        not discussion.is_locked
+        or (select private.has_repository_capability(repository_id, 'discussion.comment.locked'))
+      )
   )
 );
 

@@ -44,7 +44,7 @@ insert into public.repository_user_grants (repository_id, user_id, role, granted
 values (
   '20000000-0000-0000-0000-000000000201',
   '00000000-0000-0000-0000-000000000203',
-  'manager',
+  'maintain',
   '00000000-0000-0000-0000-000000000201'
 );
 
@@ -74,7 +74,7 @@ select is(
     '20000000-0000-0000-0000-000000000201',
     '00000000-0000-0000-0000-000000000202',
     null,
-    'contributor'
+    'write'
   ),
   'applied',
   'Repository admin creates a contributor Grant'
@@ -87,7 +87,7 @@ select is(
     where repository_id = '20000000-0000-0000-0000-000000000201'
       and user_id = '00000000-0000-0000-0000-000000000202'
   ),
-  'contributor',
+  'write',
   'accepted command persists the contributor Grant'
 );
 
@@ -107,7 +107,7 @@ select is(
   public.execute_repository_grant_command(
     '20000000-0000-0000-0000-000000000201',
     '00000000-0000-0000-0000-000000000202',
-    'viewer',
+    'read',
     'admin'
   ),
   'state-changed',
@@ -129,8 +129,8 @@ select is(
   public.execute_repository_grant_command(
     '20000000-0000-0000-0000-000000000201',
     '00000000-0000-0000-0000-000000000202',
-    'contributor',
-    'viewer'
+    'write',
+    'read'
   ),
   'applied',
   'Repository admin changes contributor to viewer'
@@ -181,7 +181,7 @@ select is(
   public.execute_repository_grant_command(
     '20000000-0000-0000-0000-000000000201',
     '00000000-0000-0000-0000-000000000202',
-    'viewer',
+    'read',
     null
   ),
   'applied',

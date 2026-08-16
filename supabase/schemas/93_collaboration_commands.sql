@@ -542,7 +542,13 @@ begin
     and discussion.repository_id = target_repository_id
     and discussion.version = expected_version
     and discussion.status = 'open'
-    and not discussion.is_locked
+    and (
+      not discussion.is_locked
+      or private.has_repository_capability(
+        target_repository_id,
+        'discussion.comment.locked'
+      )
+    )
   returning discussion.* into changed_discussion;
   if not found then
     perform pg_catalog.set_config('app.discussion_command', coalesce(previous_command, ''), true);

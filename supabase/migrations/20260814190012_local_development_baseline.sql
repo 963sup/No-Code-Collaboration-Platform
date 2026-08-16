@@ -167,7 +167,7 @@ comment on table public.repositories is
 
 -- Source: supabase/schemas/40_access.sql
 
-create type public.repository_role as enum ('viewer', 'contributor', 'manager', 'admin');
+create type public.repository_role as enum ('read', 'triage', 'write', 'maintain', 'admin');
 
 create table public.repository_user_grants (
   repository_id uuid not null references public.repositories (id) on delete cascade,
@@ -182,7 +182,7 @@ create index repository_user_grants_user_id_idx
   on public.repository_user_grants (user_id, repository_id);
 
 comment on table public.repository_user_grants is
-  'Direct principal-to-repository grants. Collaborator is derived from this relationship.';
+  'Direct User-to-Repository access grants using the accepted GitHub-derived Repository Role vocabulary.';
 
 -- Source: supabase/schemas/50_resource.sql
 
@@ -946,10 +946,11 @@ security invoker
 set search_path = ''
 as $$
   select case role
-    when 'viewer' then 10
-    when 'contributor' then 20
-    when 'manager' then 30
-    when 'admin' then 40
+    when 'read' then 10
+    when 'triage' then 20
+    when 'write' then 30
+    when 'maintain' then 40
+    when 'admin' then 50
   end;
 $$;
 
@@ -1008,30 +1009,73 @@ begin
   effective_role := private.current_repository_role(target_repository_id);
 
   return case effective_role
-    when 'viewer' then requested_capability in (
-      'repository.view',
-      'resource.view'
-    )
-    when 'contributor' then requested_capability in (
+    when 'read' then requested_capability in (
       'repository.view',
       'resource.view',
-      'resource.create',
-      'resource.update'
+      'issue.create',
+      'issue.comment',
+      'discussion.create',
+      'discussion.comment'
     )
-    when 'manager' then requested_capability in (
+    when 'triage' then requested_capability in (
       'repository.view',
       'resource.view',
-      'resource.create',
-      'resource.update',
-      'member.manage'
+      'issue.create',
+      'issue.comment',
+      'issue.manage',
+      'discussion.create',
+      'discussion.comment',
+      'discussion.edit',
+      'discussion.moderate'
+    )
+    when 'write' then requested_capability in (
+      'repository.view',
+      'resource.view',
+      'page.create',
+      'page.update',
+      'issue.create',
+      'issue.comment',
+      'issue.edit',
+      'issue.manage',
+      'discussion.create',
+      'discussion.comment',
+      'discussion.comment.locked',
+      'discussion.edit',
+      'discussion.moderate'
+    )
+    when 'maintain' then requested_capability in (
+      'repository.view',
+      'resource.view',
+      'page.create',
+      'page.update',
+      'issue.create',
+      'issue.comment',
+      'issue.edit',
+      'issue.manage',
+      'discussion.create',
+      'discussion.comment',
+      'discussion.comment.locked',
+      'discussion.edit',
+      'discussion.moderate',
+      'discussion.announce'
     )
     when 'admin' then requested_capability in (
       'repository.view',
       'repository.manage',
+      'repository.access.manage',
       'resource.view',
-      'resource.create',
-      'resource.update',
-      'member.manage'
+      'page.create',
+      'page.update',
+      'issue.create',
+      'issue.comment',
+      'issue.edit',
+      'issue.manage',
+      'discussion.create',
+      'discussion.comment',
+      'discussion.comment.locked',
+      'discussion.edit',
+      'discussion.moderate',
+      'discussion.announce'
     )
     else false
   end;
@@ -1048,24 +1092,15 @@ stable
 security definer
 set search_path = ''
 as $$
-declare
-  actor_role public.repository_role;
 begin
   if (select auth.uid()) is null or target_role is null then
     return false;
   end if;
 
-  actor_role := private.current_repository_role(target_repository_id);
-
-  if not private.has_repository_capability(target_repository_id, 'member.manage') then
-    return false;
-  end if;
-
-  return case actor_role
-    when 'admin' then true
-    when 'manager' then target_role in ('viewer', 'contributor')
-    else false
-  end;
+  return private.has_repository_capability(
+    target_repository_id,
+    'repository.access.manage'
+  );
 end;
 $$;
 
@@ -1625,14 +1660,20 @@ begin
 end;
 $$;
 
-create function private.repository_grant_target_exists(target_user_id uuid)
+create function private.repository_grant_target_exists(
+  target_repository_id uuid,
+  target_user_id uuid
+)
 returns boolean
 language sql
 stable
 security definer
 set search_path = ''
 as $$
-  select exists (
+  select private.has_repository_capability(
+    target_repository_id,
+    'repository.access.manage'
+  ) and exists (
     select 1
     from auth.users as target_user
     where target_user.id = target_user_id
@@ -1653,7 +1694,10 @@ security definer
 set search_path = ''
 as $$
 begin
-  if not private.has_repository_capability(target_repository_id, 'member.manage') then
+  if not private.has_repository_capability(
+    target_repository_id,
+    'repository.access.manage'
+  ) then
     raise exception 'Repository Grant management is unavailable' using errcode = '42501';
   end if;
 
@@ -1687,7 +1731,10 @@ security definer
 set search_path = ''
 as $$
 begin
-  if not private.has_repository_capability(target_repository_id, 'member.manage') then
+  if not private.has_repository_capability(
+    target_repository_id,
+    'repository.access.manage'
+  ) then
     raise exception 'Repository Grant management is unavailable' using errcode = '42501';
   end if;
 
@@ -1710,7 +1757,7 @@ revoke all on function private.record_repository_grant_event(
   public.repository_role,
   public.repository_role
 ) from public, anon, authenticated;
-revoke all on function private.repository_grant_target_exists(uuid)
+revoke all on function private.repository_grant_target_exists(uuid, uuid)
   from public, anon, authenticated;
 revoke all on function private.list_repository_direct_grants(uuid)
   from public, anon, authenticated;
@@ -1724,7 +1771,7 @@ grant execute on function private.record_repository_grant_event(
   public.repository_role,
   public.repository_role
 ) to authenticated;
-grant execute on function private.repository_grant_target_exists(uuid) to authenticated;
+grant execute on function private.repository_grant_target_exists(uuid, uuid) to authenticated;
 grant execute on function private.list_repository_direct_grants(uuid) to authenticated;
 grant execute on function private.find_repository_grant_target_by_username(uuid, text)
   to authenticated;
@@ -1782,7 +1829,7 @@ set search_path = ''
 as $$
 declare
   actor_id uuid;
-  stored_role public.repository_role;
+  changed_rows integer;
   previous_command text;
 begin
   actor_id := (select auth.uid());
@@ -1791,30 +1838,27 @@ begin
       using errcode = '42501';
   end if;
 
+  if not private.has_repository_capability(
+    target_repository_id,
+    'repository.access.manage'
+  ) then
+    return 'forbidden';
+  end if;
+
   if actor_id = target_user_id then
     return 'forbidden';
   end if;
 
-  if not private.repository_grant_target_exists(target_user_id) then
+  if not private.repository_grant_target_exists(target_repository_id, target_user_id) then
     return 'target-unavailable';
   end if;
 
-  select direct_grant.role
-  into stored_role
-  from public.repository_user_grants as direct_grant
-  where direct_grant.repository_id = target_repository_id
-    and direct_grant.user_id = target_user_id;
-
-  if stored_role is distinct from expected_role then
-    return 'state-changed';
-  end if;
-
-  if stored_role is null and proposed_role is null then
+  if expected_role is null and proposed_role is null then
     return 'target-unavailable';
   end if;
 
-  if stored_role is not null
-    and not private.can_manage_repository_grant(target_repository_id, stored_role) then
+  if expected_role is not null
+    and not private.can_manage_repository_grant(target_repository_id, expected_role) then
     return 'forbidden';
   end if;
 
@@ -1823,14 +1867,23 @@ begin
     return 'forbidden';
   end if;
 
-  if stored_role is not distinct from proposed_role then
-    return 'unchanged';
+  if expected_role is not distinct from proposed_role then
+    if exists (
+      select 1
+      from public.repository_user_grants as direct_grant
+      where direct_grant.repository_id = target_repository_id
+        and direct_grant.user_id = target_user_id
+        and direct_grant.role = expected_role
+    ) then
+      return 'unchanged';
+    end if;
+    return 'state-changed';
   end if;
 
   previous_command := pg_catalog.current_setting('app.repository_grant_command', true);
   perform pg_catalog.set_config('app.repository_grant_command', 'mutate', true);
 
-  if stored_role is null then
+  if expected_role is null then
     insert into public.repository_user_grants (
       repository_id,
       user_id,
@@ -1842,23 +1895,38 @@ begin
       target_user_id,
       proposed_role,
       actor_id
-    );
+    )
+    on conflict (repository_id, user_id) do nothing;
+    get diagnostics changed_rows = row_count;
   elsif proposed_role is null then
     delete from public.repository_user_grants as direct_grant
     where direct_grant.repository_id = target_repository_id
-      and direct_grant.user_id = target_user_id;
+      and direct_grant.user_id = target_user_id
+      and direct_grant.role = expected_role;
+    get diagnostics changed_rows = row_count;
   else
     update public.repository_user_grants as direct_grant
     set role = proposed_role
     where direct_grant.repository_id = target_repository_id
-      and direct_grant.user_id = target_user_id;
+      and direct_grant.user_id = target_user_id
+      and direct_grant.role = expected_role;
+    get diagnostics changed_rows = row_count;
+  end if;
+
+  if changed_rows <> 1 then
+    perform pg_catalog.set_config(
+      'app.repository_grant_command',
+      coalesce(previous_command, ''),
+      true
+    );
+    return 'state-changed';
   end if;
 
   perform private.record_repository_grant_event(
     target_repository_id,
     actor_id,
     target_user_id,
-    stored_role,
+    expected_role,
     proposed_role
   );
 
@@ -1883,8 +1951,7 @@ revoke all on function public.execute_repository_grant_command(
 ) from public, anon, authenticated;
 
 grant execute on function public.list_repository_direct_grants(uuid) to authenticated;
-grant execute on function public.find_repository_grant_target_by_username(uuid, text)
-  to authenticated;
+grant execute on function public.find_repository_grant_target_by_username(uuid, text) to authenticated;
 grant execute on function public.execute_repository_grant_command(
   uuid,
   uuid,
@@ -1893,16 +1960,16 @@ grant execute on function public.execute_repository_grant_command(
 ) to authenticated;
 
 comment on function public.list_repository_direct_grants(uuid) is
-  'Direct User Grant management projection, available only to an Actor with member.manage on the Repository.';
+  'Direct User Grant management projection, available only to a Repository Admin.';
 comment on function public.find_repository_grant_target_by_username(uuid, text) is
-  'Exact User-username resolution for Repository Grant management; returns only public-safe profile fields.';
+  'Admin-only exact User-username resolution for Repository Grant management; returns only public-safe profile fields.';
 comment on function public.execute_repository_grant_command(
   uuid,
   uuid,
   public.repository_role,
   public.repository_role
 ) is
-  'Optimistic create/change/revoke Direct Repository Grant command with independent delegation enforcement and same-transaction Activity Evidence.';
+  'Admin-only compare-and-swap Direct Repository Grant command; Activity Evidence is written only after exactly one accepted state transition.';
 
 -- Source: supabase/schemas/93_collaboration_commands.sql
 
@@ -2450,7 +2517,13 @@ begin
     and discussion.repository_id = target_repository_id
     and discussion.version = expected_version
     and discussion.status = 'open'
-    and not discussion.is_locked
+    and (
+      not discussion.is_locked
+      or private.has_repository_capability(
+        target_repository_id,
+        'discussion.comment.locked'
+      )
+    )
   returning discussion.* into changed_discussion;
   if not found then
     perform pg_catalog.set_config('app.discussion_command', coalesce(previous_command, ''), true);
@@ -3781,18 +3854,18 @@ with check (
   )
 );
 
-create policy repositories_update_manager
+create policy repositories_update_admin
 on public.repositories
 for update
 to authenticated
 using ((select private.has_repository_capability(id, 'repository.manage')))
 with check ((select private.has_repository_capability(id, 'repository.manage')));
 
-create policy repository_user_grants_select_viewer
+create policy repository_user_grants_select_admin
 on public.repository_user_grants
 for select
 to authenticated
-using ((select private.has_repository_capability(repository_id, 'repository.view')));
+using ((select private.has_repository_capability(repository_id, 'repository.access.manage')));
 
 create policy repository_user_grants_insert_delegated
 on public.repository_user_grants
@@ -3828,27 +3901,27 @@ for select
 to anon, authenticated
 using ((select private.can_view_repository(repository_id)));
 
-create policy resources_insert_contributor
+create policy resources_insert_write
 on public.resources
 for insert
 to authenticated
 with check (
   (select pg_catalog.current_setting('app.page_command', true)) = 'create'
   and (select auth.uid()) = created_by
-  and (select private.has_repository_capability(repository_id, 'resource.create'))
+  and (select private.has_repository_capability(repository_id, 'page.create'))
 );
 
-create policy resources_update_contributor
+create policy resources_update_write
 on public.resources
 for update
 to authenticated
 using (
   (select pg_catalog.current_setting('app.page_command', true)) = 'update'
-  and (select private.has_repository_capability(repository_id, 'resource.update'))
+  and (select private.has_repository_capability(repository_id, 'page.update'))
 )
 with check (
   (select pg_catalog.current_setting('app.page_command', true)) = 'update'
-  and (select private.has_repository_capability(repository_id, 'resource.update'))
+  and (select private.has_repository_capability(repository_id, 'page.update'))
 );
 
 create policy repository_labels_select_visible
@@ -3870,7 +3943,7 @@ to authenticated
 with check (
   (select pg_catalog.current_setting('app.issue_command', true)) = 'create'
   and (select auth.uid()) = created_by
-  and (select private.has_repository_capability(repository_id, 'resource.create'))
+  and (select private.has_repository_capability(repository_id, 'issue.create'))
 );
 
 create policy issues_update_command
@@ -3879,21 +3952,21 @@ for update
 to authenticated
 using (
   case (select pg_catalog.current_setting('app.issue_command', true))
-    when 'comment' then (select private.has_repository_capability(repository_id, 'resource.create'))
-    when 'edit' then (select private.has_repository_capability(repository_id, 'resource.update'))
-    when 'assign' then (select private.has_repository_capability(repository_id, 'resource.update'))
-    when 'label' then (select private.has_repository_capability(repository_id, 'resource.update'))
-    when 'transition' then (select private.has_repository_capability(repository_id, 'resource.update'))
+    when 'comment' then (select private.has_repository_capability(repository_id, 'issue.comment'))
+    when 'edit' then (select private.has_repository_capability(repository_id, 'issue.edit'))
+    when 'assign' then (select private.has_repository_capability(repository_id, 'issue.manage'))
+    when 'label' then (select private.has_repository_capability(repository_id, 'issue.manage'))
+    when 'transition' then (select private.has_repository_capability(repository_id, 'issue.manage'))
     else false
   end
 )
 with check (
   case (select pg_catalog.current_setting('app.issue_command', true))
-    when 'comment' then (select private.has_repository_capability(repository_id, 'resource.create'))
-    when 'edit' then (select private.has_repository_capability(repository_id, 'resource.update'))
-    when 'assign' then (select private.has_repository_capability(repository_id, 'resource.update'))
-    when 'label' then (select private.has_repository_capability(repository_id, 'resource.update'))
-    when 'transition' then (select private.has_repository_capability(repository_id, 'resource.update'))
+    when 'comment' then (select private.has_repository_capability(repository_id, 'issue.comment'))
+    when 'edit' then (select private.has_repository_capability(repository_id, 'issue.edit'))
+    when 'assign' then (select private.has_repository_capability(repository_id, 'issue.manage'))
+    when 'label' then (select private.has_repository_capability(repository_id, 'issue.manage'))
+    when 'transition' then (select private.has_repository_capability(repository_id, 'issue.manage'))
     else false
   end
 );
@@ -3911,7 +3984,7 @@ to authenticated
 with check (
   (select pg_catalog.current_setting('app.issue_command', true)) = 'assign'
   and (select auth.uid()) = assigned_by
-  and (select private.has_repository_capability(repository_id, 'resource.update'))
+  and (select private.has_repository_capability(repository_id, 'issue.manage'))
   and (select private.user_can_view_repository(user_id, repository_id))
 );
 
@@ -3921,7 +3994,7 @@ for delete
 to authenticated
 using (
   (select pg_catalog.current_setting('app.issue_command', true)) = 'assign'
-  and (select private.has_repository_capability(repository_id, 'resource.update'))
+  and (select private.has_repository_capability(repository_id, 'issue.manage'))
 );
 
 create policy issue_labels_select_visible
@@ -3937,7 +4010,7 @@ to authenticated
 with check (
   (select pg_catalog.current_setting('app.issue_command', true)) = 'label'
   and (select auth.uid()) = applied_by
-  and (select private.has_repository_capability(repository_id, 'resource.update'))
+  and (select private.has_repository_capability(repository_id, 'issue.manage'))
 );
 
 create policy issue_labels_delete_command
@@ -3946,7 +4019,7 @@ for delete
 to authenticated
 using (
   (select pg_catalog.current_setting('app.issue_command', true)) = 'label'
-  and (select private.has_repository_capability(repository_id, 'resource.update'))
+  and (select private.has_repository_capability(repository_id, 'issue.manage'))
 );
 
 create policy issue_comments_select_visible
@@ -3962,7 +4035,7 @@ to authenticated
 with check (
   (select pg_catalog.current_setting('app.issue_command', true)) = 'comment'
   and (select auth.uid()) = created_by
-  and (select private.has_repository_capability(repository_id, 'resource.create'))
+  and (select private.has_repository_capability(repository_id, 'issue.comment'))
 );
 
 create policy discussions_select_visible
@@ -3979,8 +4052,8 @@ with check (
   (select pg_catalog.current_setting('app.discussion_command', true)) = 'create'
   and (select auth.uid()) = created_by
   and (
-    (category <> 'announcement' and (select private.has_repository_capability(repository_id, 'resource.create')))
-    or (category = 'announcement' and (select private.has_repository_capability(repository_id, 'repository.manage')))
+    (category <> 'announcement' and (select private.has_repository_capability(repository_id, 'discussion.create')))
+    or (category = 'announcement' and (select private.has_repository_capability(repository_id, 'discussion.announce')))
   )
 );
 
@@ -3990,21 +4063,21 @@ for update
 to authenticated
 using (
   case (select pg_catalog.current_setting('app.discussion_command', true))
-    when 'comment' then (select private.has_repository_capability(repository_id, 'resource.create'))
-    when 'moderate' then (select private.has_repository_capability(repository_id, 'repository.manage'))
-    when 'edit' then (select private.has_repository_capability(repository_id, 'resource.update'))
-    when 'transition' then (select private.has_repository_capability(repository_id, 'resource.update'))
-    when 'answer' then (select private.has_repository_capability(repository_id, 'resource.update'))
+    when 'comment' then (select private.has_repository_capability(repository_id, 'discussion.comment'))
+    when 'moderate' then (select private.has_repository_capability(repository_id, 'discussion.moderate'))
+    when 'edit' then (select private.has_repository_capability(repository_id, 'discussion.edit'))
+    when 'transition' then (select private.has_repository_capability(repository_id, 'discussion.moderate'))
+    when 'answer' then (select private.has_repository_capability(repository_id, 'discussion.moderate'))
     else false
   end
 )
 with check (
   case (select pg_catalog.current_setting('app.discussion_command', true))
-    when 'comment' then (select private.has_repository_capability(repository_id, 'resource.create'))
-    when 'moderate' then (select private.has_repository_capability(repository_id, 'repository.manage'))
-    when 'edit' then (select private.has_repository_capability(repository_id, 'resource.update'))
-    when 'transition' then (select private.has_repository_capability(repository_id, 'resource.update'))
-    when 'answer' then (select private.has_repository_capability(repository_id, 'resource.update'))
+    when 'comment' then (select private.has_repository_capability(repository_id, 'discussion.comment'))
+    when 'moderate' then (select private.has_repository_capability(repository_id, 'discussion.moderate'))
+    when 'edit' then (select private.has_repository_capability(repository_id, 'discussion.edit'))
+    when 'transition' then (select private.has_repository_capability(repository_id, 'discussion.moderate'))
+    when 'answer' then (select private.has_repository_capability(repository_id, 'discussion.moderate'))
     else false
   end
 );
@@ -4022,13 +4095,16 @@ to authenticated
 with check (
   (select pg_catalog.current_setting('app.discussion_command', true)) = 'comment'
   and (select auth.uid()) = created_by
-  and (select private.has_repository_capability(repository_id, 'resource.create'))
+  and (select private.has_repository_capability(repository_id, 'discussion.comment'))
   and exists (
     select 1
     from public.discussions as discussion
     where discussion.id = discussion_id
       and discussion.status = 'open'
-      and not discussion.is_locked
+      and (
+        not discussion.is_locked
+        or (select private.has_repository_capability(repository_id, 'discussion.comment.locked'))
+      )
   )
 );
 

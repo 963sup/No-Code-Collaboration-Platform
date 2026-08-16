@@ -1,5 +1,7 @@
 import { expect, test, type Page } from '@playwright/test';
 
+test.describe.configure({ retries: 0 });
+
 const repositoryPath = '/demo-organization/demo-repository';
 const accessPath = `${repositoryPath}/settings/access`;
 const wikiPath = `${repositoryPath}/wiki`;
@@ -32,11 +34,11 @@ test('Direct Repository Grant create, role change, and revoke form one complete 
 
   await signIn(page, 'sup@a-i.tw', 'Aa12341234', accessPath);
   await page.getByLabel('User username').fill('collaborator-demo');
-  await page.getByLabel('Role').selectOption('contributor');
+  await page.getByLabel('Role').selectOption('write');
   await page.getByRole('button', { name: 'Add collaborator' }).click();
   await expect(page).toHaveURL(`${accessPath}?saved=1`);
   await expect(page.getByText('@collaborator-demo', { exact: true })).toBeVisible();
-  await expect(page.getByText('contributor', { exact: true }).last()).toBeVisible();
+  await expect(page.getByText('write', { exact: true }).last()).toBeVisible();
   await signOut(page);
 
   await signIn(page, 'collaborator@a-i.tw', 'Bb12341234');
@@ -52,10 +54,10 @@ test('Direct Repository Grant create, role change, and revoke form one complete 
   await signOut(page);
 
   await signIn(page, 'sup@a-i.tw', 'Aa12341234', accessPath);
-  await page.getByLabel('New role for collaborator-demo').selectOption('viewer');
+  await page.getByLabel('New role for collaborator-demo').selectOption('read');
   await page.getByRole('button', { name: 'Change role' }).click();
   await expect(page).toHaveURL(`${accessPath}?saved=1`);
-  await expect(page.getByText('viewer', { exact: true }).last()).toBeVisible();
+  await expect(page.getByText('read', { exact: true }).last()).toBeVisible();
   await signOut(page);
 
   await signIn(page, 'collaborator@a-i.tw', 'Bb12341234', createdPagePath);
