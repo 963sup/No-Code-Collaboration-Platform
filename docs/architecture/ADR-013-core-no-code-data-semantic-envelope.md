@@ -1,56 +1,48 @@
 # ADR-013: Core no-code data semantic envelope
 
-- Status: Accepted
-- Date: 2026-08-15
+- Status: Superseded by ADR-014
+- Original date: 2026-08-15
+- Superseded: 2026-08-16
 
-## Context
+## Historical context
 
-The Product Contract simultaneously named Data Commit, Data Branch, Data Diff, Change Proposal, Data Transfer, and Data Capsule while later prose rejected their benchmark aliases as if the underlying no-code problems were also rejected. ADR-011 treated the same concepts as conditional candidates, and ADR-012 required a future decision. Those statements allowed evidence, target semantics, and implementation status to be read as competing truth.
+This decision attempted to resolve contradictory terminology by accepting a seven-part no-code data envelope derived from source-control and code-product benchmark concepts. It separated semantic acceptance from implementation and correctly preserved Repository authorization and no-execution constraints.
 
-The problems survive removal of Source Code and Git: grouping typed changes, isolating data state, comparing authorized states, reviewing a bounded change set, transferring typed data, packaging finite typed data, and deriving a new Repository with provenance. Accepting those meanings does not prove a concrete lifecycle or authorize implementation.
+The decision nevertheless made an invalid first-principles leap:
 
-## Decision
+```text
+real need to change, compare, review, move, or copy data
+≠
+proof that source-control-shaped Product primitives are necessary
+```
 
-The Product accepts this semantic envelope:
+Renaming external mechanics with generic or Data-prefixed vocabulary preserved their mental model: history nodes, alternate state lines, comparison objects, proposal convergence, packaged payload Artifacts, and continuing source provenance.
 
-1. Data Commit is an immutable, Actor-attributed batch of typed structured-data changes inside one Repository.
-2. Data Branch is an isolated data-state line inside one Repository and never an authority Scope.
-3. Data Diff is a derived comparison filtered by current read authority.
-4. Change Proposal is a Process for proposing, reviewing, deciding, and applying typed data changes; participation and approval create no Capability.
-5. Data Transfer moves typed data through allowlisted connectors/endpoints and never executes arbitrary code.
-6. Data Capsule is a finite typed-data Artifact contained by one Repository.
-7. Repository Derivation creates a distinct Repository with provenance, independent Owner and authority, and no default copy of secrets, Sessions, or Grants.
+## Superseding decision
 
-`Commit`, `Branch`, `Diff`, `Pull Request`, `Actions`, `Gist`, `Fork`, `Pull`, and `Push` remain external benchmark aliases only. Canonical target vocabulary uses the names above. `Pull` and `Push` may describe transfer direction, not Product entities.
+[ADR-014](./ADR-014-current-state-collaboration-kernel.md) replaces this current Product conclusion with the minimum sufficient model:
 
-This decision authorizes no Domain entity, schema, migration, Capability, API, route, UI, generic version-control engine, or automation runtime. Concrete lifecycles remain Candidate in the narrow Domain contracts.
+- concrete Resource commands;
+- optional Expected Revision concurrency precondition;
+- accepted State Transition;
+- authoritative Current State;
+- separate Activity Event Evidence;
+- optional derived State Comparison only after independent retention evidence;
+- future typed transfer and Repository duplication only through separate admission.
 
-## Non-confusion invariants
+## Historical value retained
 
-- Structural containment does not create another collaboration Container.
-- Branch selection, Proposal participation or approval, Project filters, Notification state, Context, and Projection do not change effective authority.
-- Each typed operation reuses the target Resource's validation, concurrency, authorization, and Evidence requirements.
-- Script, shell, expression, Git ref/merge, source file, executable payload, secret value, and cross-Repository authority bypass are rejected.
-- Governance constrains future action; Audit and Activity Evidence explain or prove past action.
+The following constraints remain valid and are carried forward by ADR-014:
 
-## Supersession
+- Repository remains the only primary collaboration and authorization Container.
+- Presentation, participation, approval, filters, and selected Context create no authority.
+- Resource validation and authorization cannot be bypassed.
+- Secrets, credentials, Sessions, and Grants cannot be copied as ordinary content.
+- Arbitrary code, script, expression, CI/CD, and generic automation remain excluded.
+- Product semantic acceptance never follows from benchmark naming alone.
 
-- ADR-011 is refined: its conditional Data-semantics admission is now an accepted Product envelope, while its presentation decision and requirement for independent concrete Domain proof remain current.
-- ADR-012 Decision item 10 is superseded only where it rejected or deferred the no-code Data semantic envelope. Its rejection of Source Code, Git mechanics, code review, arbitrary execution, and CI/CD remains current. All other ADR-012 decisions remain current.
+## Current effect
 
-## Alternatives rejected
+None. This ADR is decision history only. It cannot define current Product, Domain, architecture, persistence, route, Capability, API, or UI truth.
 
-- Reject all benchmark-named concepts: loses valid no-code collaboration problems and leaves contradictory canonical vocabulary.
-- Admit GitHub mechanics through renamed wrappers: imports Source Code, Git, execution, and authority assumptions that fail the Product axiom.
-- Implement a generic version-control or automation engine now: conflates distinct semantics before identity, lifecycle, and Capability evidence exists.
-- Treat semantic acceptance as executable acceptance: erases the target-to-executable gap and bypasses Domain discrimination.
-
-## Consequences and verification
-
-Current contracts must distinguish accepted meaning from unavailable implementation. The gap register records the intentional executable absence. Documentation checks verify the envelope, aliases, supersession, relative links, and benchmark manifest consistency.
-
-The minimum discriminating fixtures reject script, expression, Git ref, code payload, secret material, and cross-Repository authority bypass. They also prove that Branch selection, Proposal approval, Project filtering, and Notification state leave effective authority unchanged.
-
-## Falsification
-
-Revisit this decision only if direct no-code workflows show that one accepted meaning has no independent value, requires a second primary collaboration Container, cannot preserve Resource-level authorization and validation, or necessarily executes user-provided code. Rejection of one concrete lifecycle does not by itself reject the semantic envelope.
+Current readers must use `docs/PRODUCT.md`, `docs/ONTOLOGY.md`, [ADR-014](./ADR-014-current-state-collaboration-kernel.md), and `docs/architecture/README.md`.

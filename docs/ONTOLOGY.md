@@ -9,52 +9,34 @@
 
 ## 1. Axiom and admission rule
 
-> **Repository = No-Code Collaboration Container**
+Repository is the only accepted primary no-code collaboration and authorization Container.
 
-Repository is the only accepted primary collaboration Container.
+GitHub supplies evidence for mature collaboration and enterprise-organization semantics. A benchmark concept is admitted only when its underlying problem, identity, ownership, lifecycle, relationships, authorization effect, URL/IA, and interaction remain meaningful for arbitrary no-code collaboration.
 
-GitHub is used as evidence for mature collaboration and enterprise-organization semantics. A benchmark concept is admitted only when its collaboration problem, ownership/lifecycle, relationships, authorization meaning, URL/IA, and interaction semantics remain meaningful for arbitrary no-code collaboration.
+A feature whose usefulness depends on Source Code, source-control, arbitrary execution, CI/CD, build, test, or deployment assumptions is rejected rather than translated, renamed, or generalized.
 
-A benchmark feature whose usefulness depends on excluded software-development implementation assumptions is not translated, renamed, or retained as a target candidate. It is simply outside this Product ontology.
+The only repository-wide mapping authority is the [canonical glossary](../.agents/skills/github-semantic-reverse/GLOSSARY.md).
 
 ## 2. Core semantic roles
 
 ```text
-Actor
-= who performs an action
-
-Scope
-= which ownership, administration, or governance boundary applies
-
-Principal
-= who may receive explicit authority
-
-Container
-= where collaboration has one stable boundary
-
-Relationship
-= how identities, owners, principals, scopes, and containers connect
-
-Artifact
-= collaborative work inside a Container
-
-Process
-= how an Artifact or Relationship may validly change
+Actor        = who performs an action
+Scope        = which ownership, administration, or governance boundary applies
+Principal    = who may receive explicit authority
+Container    = where collaboration has one stable boundary
+Relationship = how identities, owners, principals, scopes, and containers connect
+Artifact     = collaborative work inside a Container
+Process      = how an Artifact or Relationship may validly change
 ```
 
-These are admission roles, not generic entities, packages, or tables.
+These are admission roles, not generic entities, packages, tables, or bounded contexts.
 
 Cross-cutting semantics:
 
 ```text
-Authorization
-= Role / Capability / Policy / Delegation / Effective Authorization
-
-Presentation
-= Context / Projection
-
-Evidence
-= Activity Event / future stronger Historical Evidence when independently proven
+Authorization = Role / Capability / Policy / Delegation / Effective Authorization
+Presentation  = Context / Projection
+Evidence      = Activity Event / future stronger Evidence when independently proven
 ```
 
 ## 3. User — persistent human identity
@@ -63,38 +45,23 @@ Status: **Canonical.**
 
 ```text
 User
-= persistent human product identity
+= persistent human Product identity
 ```
 
-A User may independently be:
-
-```text
-request Actor
-explicit-grant Principal
-Repository Owner
-Organization Member
-Repository Collaborator (derived)
-```
-
-Therefore:
+A User may independently be a request Actor, explicit-grant Principal, Repository Owner, Organization Member, or derived Repository Collaborator.
 
 ```text
 User ≠ Member
 User ≠ Collaborator
 User ≠ Role
-User ≠ Context
+User ≠ selected Context
 ```
 
-`Account` is the product-surface family through which a User or Organization manages identity, settings, administration, and commercial concerns. Account is not a generic Entity and never replaces User, Organization, Actor, Owner, Principal, or Scope.
+`Account` is the surface family through which a User or Organization manages settings and administration. It is not a generic Entity and never replaces User, Organization, Actor, Owner, Principal, or Scope.
 
-```text
-Identity establishes a trusted User Actor.
-Access resolves effective Capability for that Actor and target.
-```
+Identity establishes a trusted User Actor. Access resolves effective Capability for that Actor and target. An authenticated Session is identity evidence, not Repository authorization.
 
-An authenticated Session is Identity evidence, not Repository authorization.
-
-## 4. Organization — organizational identity and administration Scope
+## 4. Organization — identity and administration Scope
 
 Status: **Canonical.**
 
@@ -106,16 +73,14 @@ Organization
 + possible Repository Owner
 ```
 
-Organization may own zero or more Repositories.
-
 ```text
 Organization ≠ Actor
 Organization ≠ mandatory Repository parent
-Organization ≠ primary collaboration Container
+Organization ≠ collaboration Container
 Organization ≠ selected UI Context
 ```
 
-Ordinary Organization Membership does not create Repository access.
+Ordinary Organization Membership creates no Repository access.
 
 ## 5. Repository Owner — typed ownership Relationship
 
@@ -132,17 +97,17 @@ User ──────────┐
 Organization ──┘
 ```
 
-Ownership is a Relationship fact, not a generic Principal subtype and not a fabricated direct Grant.
+Ownership is a Relationship fact, not a fabricated direct Grant.
 
 Invariants:
 
 1. Exactly one Owner exists per Repository.
 2. Accepted Owner kinds are User and Organization.
-3. Ownership can contribute governance-derived Repository authority.
-4. User-owned and Organization-owned Repositories use the same collaboration semantics.
-5. A future transfer lifecycle must preserve stable Repository and contained Resource identities.
+3. Ownership may contribute governance-derived Repository authority.
+4. Both ownership modes use the same collaboration semantics.
+5. A future transfer must preserve stable Repository and Resource identities.
 
-## 6. Owner Namespace — shared User/Organization routing identity
+## 6. Owner Namespace
 
 Status: **Canonical routing requirement.**
 
@@ -161,35 +126,37 @@ or
 → Organization slug
 ```
 
-User and Organization intentionally share one globally unambiguous top-level URL grammar. The URL shape never determines kind; Owner Namespace Resolution returns `kind: user | organization` plus stable identity. Bare `/{ownerSlug}` is Overview. The `tab` query changes Presentation Context only and never changes identity, ownership, Principal resolution, Membership, or authorization.
+URL shape never determines kind. Resolution returns `kind: user | organization` plus stable identity. Query tabs change Presentation Context only.
+
+Repository slug is unique inside one Owner namespace. Stable IDs remain authorization and relationship targets.
 
 ```text
 ownerSlug
 ≠ Owner stable ID
 ≠ Repository stable ID
 ≠ Principal
-≠ authorization fact
+≠ authority fact
 ```
 
-Repository slug is unique within one Owner namespace. `/orgs/{slug}/...` and `/organizations/{slug}/settings/...` are operational/governance surfaces for an Organization, not alternative Organization profile identities.
+`/orgs/{organizationSlug}/...` and `/organizations/{organizationSlug}/settings/...` are operational and governance surfaces, not alternative Organization identities.
 
-## 7. Repository — primary No-Code Collaboration Container
+## 7. Repository — primary collaboration Container
 
-Status: **Canonical axiom.**
+Status: **Canonical.**
 
 ```text
 Repository
 = stable identity boundary
-+ owner-scoped human namespace
++ typed Owner Relationship
 + collaboration boundary
-+ authorization target boundary
++ primary authorization target
 + Artifact containment boundary
 + Process scope
 + historical Evidence boundary
-+ product workspace identity
++ human workspace identity
 ```
 
-Current executable Artifact family:
+Current accepted Artifact family:
 
 ```text
 Repository
@@ -198,24 +165,16 @@ Repository
 └─ Discussion
 ```
 
-A future capability must live inside Repository, project Repository-scoped facts, or first prove why Repository is insufficient. It cannot become a competing collaboration Container merely because GitHub exposes a separate surface for a similar concern.
+A future capability must live inside Repository, project Repository-scoped facts, or prove why Repository is insufficient. It cannot become a competing Container because a benchmark exposes a separate surface.
 
 ## 8. Membership and Member — belonging Relationship
 
 Status: **Canonical.**
 
 ```text
-User
-↕ Organization Membership
-Organization
-```
-
-```text
 Member(user, organization)
 = EXISTS OrganizationMembership(user, organization)
 ```
-
-Therefore:
 
 ```text
 Member ≠ User subtype
@@ -223,42 +182,19 @@ Member ≠ Repository Collaborator
 Membership ≠ Repository Grant
 ```
 
-Organization Membership Roles describe Organization-scope administration. They are not Repository Roles.
+Organization Membership Roles describe Organization-scope administration, not Repository Roles.
 
-## 9. Team — excluded milestone concept
+## 9. Team — deferred group Principal
 
-Status: **Explicitly not established in this milestone.**
+Status: **Not established.**
 
-If a second shared authority source is proven necessary:
+Team may be reconsidered only when a real workflow must grant the same durable group of Users authority across Repositories.
 
-```text
-Organization
-└─ Team
-   ├─ Team Membership → User
-   └─ Repository Team Grant → Repository
-```
+A future Team would be an Organization-scoped Principal. It would not be an authenticated Actor, Repository Owner, Repository parent, tenant, or collaboration Container.
 
-Team would mean:
-
-```text
-Team
-= Organization-scoped group Principal
-```
-
-No Team identity, Membership, Repository Grant, detail route, or table exists. Organization Teams presentation shows an explicit deferred state only. Team may be reconsidered only when a real workflow must grant the same durable group of Users authority across Repositories. Team is never an authenticated Actor, Repository Owner, Repository parent, Tenant, or collaboration Container.
-
-Critical invariant:
-
-```text
-Selected Team
-≠ persisted Team Principal resolution
-```
-
-Changing a UI Team filter cannot alter authorization when Actor, Repository, and persisted relationships are unchanged.
+Selected Team Context never supplies authority.
 
 ## 10. Collaborator and Outside collaborator — derived classifications
-
-Status: **Derived.**
 
 ```text
 Collaborator(user, repository)
@@ -273,20 +209,16 @@ OutsideCollaborator(user, organization)
 AND NOT Member(user, organization)
 ```
 
-For a User-owned Repository there is no Organization Membership axis, so the outside-collaborator classification does not apply merely because another User has access.
+Neither classification creates an identity subtype or persistence table.
 
-No Collaborator or ExternalUser identity table follows from these labels.
-
-## 11. Principal and Grant — explicit authority semantics
-
-Status: **Canonical primitives; implemented Principal minimum = User.**
+## 11. Principal and Grant — explicit authority
 
 ```text
 Principal
 = subject that may receive explicit authority
 ```
 
-Current:
+Current persisted Principal:
 
 ```text
 Principal → User
@@ -303,29 +235,25 @@ Grant
 = Principal receives one Repository Role for one Repository
 ```
 
-Ownership and Grant remain independent causal facts.
+Ownership and Grant remain independent causal facts. A Domain Principal abstraction does not justify generic polymorphic persistence.
 
-A Domain Principal abstraction does not justify a generic polymorphic persistence table.
-
-## 12. Role and Capability — bundle vs decision primitive
-
-Status: **Canonical.**
+## 12. Role and Capability — bundle versus decision
 
 ```text
 Role
-= GitHub-derived named Capability bundle
+= named Capability bundle
 
 Capability
 = atomic authorization action on a defined target
 ```
 
-Current Repository Roles are preserved from GitHub after removing Code/Git-specific permissions:
+Current Repository Roles:
 
 ```text
 read | triage | write | maintain | admin
 ```
 
-Current no-code Capability vocabulary is surface-specific:
+Current Capability families remain surface-specific:
 
 ```text
 Repository
@@ -353,60 +281,38 @@ discussion.moderate
 discussion.announce
 ```
 
-Current Role meaning:
+Direct Repository access management is Admin-only. Role rank supports explanation and selection; it never grants delegation authority.
 
-| Role | Surviving no-code responsibility |
-| --- | --- |
-| Read | Repository/content read plus ordinary Issue/Discussion participation |
-| Triage | Read + Issue management and Discussion editing/moderation |
-| Write | Triage + Page mutation, Issue content editing, locked-Discussion comment authority |
-| Maintain | Write + accepted non-sensitive maintenance, currently Announcement creation |
-| Admin | all current Capabilities including sensitive Repository settings and Direct Repository access management |
+## 13. Effective Authorization
 
-Direct Repository Grant management is Admin-only. Role rank is explanation/selection support and never creates delegation authority.
-
-Generic `resource.create`, `resource.update`, and `member.manage` are not current authorization vocabulary. They previously hid materially different Page/Issue/Discussion/access actions and produced target-only Role semantics.
-
-An operation not accepted by Product lifecycle is absent from Capability vocabulary. Resource hard deletion remains unavailable. Capability decides authorization; Role supports assignment and explanation.
-
-## 13. Effective Authorization — owner-neutral derived decision
-
-Status: **Canonical.**
-
-Accepted current authority sources:
+Accepted authority sources:
 
 1. User ownership of the target Repository.
 2. Organization owner/admin relationship when that Organization owns the target Repository.
 3. Direct User Repository Grant.
-4. Public Repository visibility for accepted read semantics.
-
-Ordinary Organization Membership contributes no Repository Role.
+4. Public visibility for accepted read semantics.
 
 ```text
 Actor
 → stable Repository target
-→ inspect Owner relationship
-→ collect accepted governance authority
-→ collect Principal Grants
-→ add accepted visibility baseline
+→ inspect typed Owner
+→ collect ownership/governance authority
+→ collect explicit Grants
+→ add visibility baseline
 → apply governance constraints
 → apply target-state preconditions
 → Capability decision
 ```
 
-Application callers supply stable Actor and Repository identity. They do not inject an Organization ownership assumption.
+Ordinary Membership contributes no Repository Role. Application callers supply stable Actor and Repository identity, not an Organization assumption.
 
-Current visibility vocabulary:
+Current visibility:
 
 ```text
 private | public
 ```
 
-A future Organization-wide visibility/base-access mode requires an explicit effective-access contract before it can exist.
-
-## 14. Resource and Page — accepted work Artifact
-
-Status: **Resource canonical; Page, Issue, and Discussion are accepted concrete kinds.**
+## 14. Resource, Page, Issue, and Discussion
 
 ```text
 Repository
@@ -416,177 +322,37 @@ Repository
    └─ Discussion
 ```
 
-A Resource has one stable Repository boundary. It cannot independently redefine ownership, authority, or history semantics.
+Every Resource has one stable Repository boundary and cannot redefine ownership, authority, or Evidence semantics.
 
-Page currently proves:
+Page proves create/read/update, Capability decision, optimistic concurrency, same-transaction Activity Event, and user-visible Projection.
 
-```text
-Create
-Read
-Update
-Capability decision
-optimistic concurrency
-same-transaction historical evidence
-user-visible projection
-```
+Issue is actionable work with Repository-local number, assignment, classification, flat conversation, and explicit completion state. Assignment is responsibility, not authority.
 
-Issue and Discussion are admitted because their no-code problems, stable identities, and lifecycles are distinct from Page. Their v1 lifecycle, authorization, concurrency, relationship, and Evidence semantics are decision-complete and executable through the same Repository boundary; current surface readiness still belongs to the gap/code/test evidence rather than this ontology. No additional Resource family is accepted from benchmark vocabulary alone.
+Discussion is shared understanding with Repository-local number, fixed categories, flat conversation, independent closed/locked state, and optional question Answer. Participation is not authority.
 
-GitHub Knowledge and Wiki semantics map to Page as the Repository knowledge surface. They do not create a Git-backed history model, second Artifact family, or separate collaboration Container.
+GitHub Wiki presentation remains `/wiki` while Page/Knowledge remains the Domain family. No Git-backed history model or second Artifact family is introduced.
 
-## 15. Issue — accepted actionable Artifact
+## 15. State Transition — authoritative current-state mutation
 
-Status: **Accepted target semantic and lifecycle.**
-
-Durable benchmark problem:
-
-> track a Repository-scoped item that should be acted on, assigned, discussed, and completed.
+Status: **Canonical Process.**
 
 ```text
-Issue
-= Repository-scoped actionable Artifact
-stable identity = Repository ID + issue number
+Actor + Authority + Concrete Command + Expected Revision
+↓
+Accepted State Transition
+↓
+Current Resource State + Activity Event
 ```
 
-Issue owns `open | closed` state, `completed | cancelled` close reason, Repository-scoped labels, access-eligible User assignees, and flat chronological comments. Assignment is responsibility, never authority.
+A Resource command owns validation and transition semantics. Expected Revision is an optional concurrency precondition, not an Artifact or history identity.
 
-GitHub-derived action split survives the no-code subtraction test:
+A failed command produces neither a successful state change nor a success event.
 
-```text
-Read
-→ issue.create + issue.comment
+Concurrency is solved through transaction serialization, real-time coauthoring, or stale-command rejection. It does not create named alternate state lines, a default mainline, later convergence, or a generic history graph.
 
-Triage
-→ Read + issue.manage
+## 16. Activity Event — historical Evidence
 
-Write / Maintain / Admin
-→ Triage + issue.edit
-```
-
-Every meaningful mutation uses expected version and same-transaction Activity Evidence. Hard delete, nested replies, milestones, reactions, Source Code, and Git semantics remain excluded from v1.
-
-Issue is never a collaboration Container.
-
-## 16. Discussion — accepted conversation Artifact
-
-Status: **Accepted target semantic and lifecycle.**
-
-Durable benchmark problem:
-
-> create a Repository-scoped conversation whose primary goal is shared understanding rather than committed execution.
-
-```text
-Discussion
-= Repository-scoped conversation/shared-understanding Artifact
-stable identity = Repository ID + discussion number
-```
-
-Categories are fixed to `general | question | announcement`; status is `open | closed`; locked is an independent moderation state; comments are flat and chronological. A `question` may select one of its own comments as Answer.
-
-GitHub-derived action split:
-
-```text
-Read
-→ create ordinary Discussion + comment while open/unlocked
-
-Triage
-→ Read + edit/moderate/lock/answer
-
-Write
-→ Triage + comment while open/locked
-
-Maintain
-→ Write + create Announcement
-
-Admin
-→ all current Discussion capabilities
-```
-
-Closed Discussion rejects new comments for every Role. Lock blocks ordinary Read/Triage comment participation but Write/Maintain/Admin carry `discussion.comment.locked` and may continue commenting while the Discussion remains open.
-
-Announcement creation uses `discussion.announce`; moderation uses `discussion.moderate`. Neither is Repository access management. Every meaningful mutation uses expected version and same-transaction Activity Evidence. Hard delete, nested replies, reactions, Source Code, and Git semantics remain excluded from v1.
-
-## 17. Project-style planning view — Projection
-
-Status: **Accepted derived Projection; persistence as an independent ownership boundary is rejected.**
-
-Durable benchmark problem:
-
-> group, filter, prioritize, and plan already-existing work across one or more Repository sources.
-
-```text
-Project-style planning view
-= Projection over accepted Repository-scoped Artifacts
-```
-
-It does not own the underlying Artifacts, become a Repository parent, or create an authorization boundary by itself.
-
-Cross-Repository presentation does not create cross-Repository ownership.
-
-v1 creates no Project entity, table, command, saved view, or detail identity. Global and Repository planning screens derive rows from already-authorized Issue, Discussion, and Page state; URL filters cannot mutate their sources.
-
-## 18. No-code Data Change, Exchange, and Derivation
-
-Status: **Accepted semantic envelope; concrete lifecycles and implementation deferred.**
-
-| Canonical concept | Semantic role | Repository relationship | Authority rule |
-| --- | --- | --- | --- |
-| Data Commit | immutable historical Evidence for one typed change batch | belongs to exactly one Repository | Actor attribution records action; it grants nothing |
-| Data Branch | isolated data-state line and selectable Context | exists inside one Repository | selection cannot change Membership, Grant, Role, or Capability |
-| Data Diff | derived Projection | compares read-authorized states in one Repository | filters fields and records before comparison output |
-| Change Proposal | propose/review/decide/apply Process | applies only to typed changes in one Repository | participation, review, and approval grant no Capability; apply reauthorizes |
-| Data Transfer | typed transfer Process | source and destination authority are checked independently | only allowlisted connectors/endpoints and mappings are permitted |
-| Data Capsule | finite typed-data Artifact | contained by exactly one Repository | visibility cannot exceed Repository authority |
-| Repository Derivation | provenance-preserving creation Process | creates a distinct Repository from a source Repository | destination has independent Owner and authority |
-
-Repository Derivation copies only explicitly admitted data. Secrets, Sessions, and Grants are excluded by default. Provenance does not make the source an Owner, Principal, Container parent, or continuing authority source for the derived Repository.
-
-`Commit`, `Branch`, `Diff`, `Pull Request`, `Actions`, `Gist`, `Fork`, `Pull`, and `Push` are external benchmark aliases only. `Pull` and `Push` may describe Data Transfer direction; no alias creates a canonical route, Entity, Capability, or generic version-control/automation engine.
-
-The shared envelope does not prove one generic `version_control` or `automation` aggregate. Source Code, file trees, Git refs/merge, code review, executable payloads, arbitrary expressions, CI/CD, build, test, deploy, Package, and Release remain rejected.
-
-Concrete identity, lifecycle, persistence, Capability, URL, API, and UI remain unavailable until the narrowest Domain contract and discriminating tests accept them.
-
-## 19. App and Installation — machine identity and access Relationship
-
-Status: **Explicitly not established in this milestone.**
-
-If integrations require non-human authority:
-
-```text
-App
-= machine identity
-= possible Actor and/or Principal
-
-Installation
-= explicit App access Relationship to accepted scopes/Repositories
-```
-
-No App identity, Installation, OAuth, credential store, Repository binding, arbitrary endpoint, or connector execution exists. Reconsider only when an external machine must act as a typed Principal on a Repository.
-
-`Workflow` and `Run` may later describe an admitted orchestration definition and one execution record. They do not imply a script runtime, arbitrary execution, authority, persistence, or route; those concrete decisions remain deferred.
-
-## 20. Enterprise — future cross-Organization Governance Scope
-
-Status: **Explicitly not established in this milestone.**
-
-```text
-Enterprise
-→ governs Organizations
-→ constrains allowed organizational behavior
-```
-
-Enterprise does not become Repository Owner, Repository parent, collaboration Container, or implicit Repository Principal by implication.
-
-A future Enterprise Policy may restrict Organization-owned Repository behavior. It must not silently grant Repository content authority.
-
-`Enterprise-grade` is a product-quality goal, not evidence that an Enterprise Entity is required. `/settings/enterprises` is explanatory governance Projection only. Reconsider Enterprise only for a real constraint spanning multiple Organizations that grants no Repository content access.
-
-Billing and Licensing describe commercial offerings, entitlements, and administration. They never imply Repository ownership or content authority, and their concrete identity, persistence, routes, Capabilities, and lifecycle remain deferred.
-
-## 21. Activity Event and projections — historical Evidence
-
-Status: **Canonical Evidence/Projection boundary.**
+Status: **Canonical Evidence.**
 
 ```text
 Accepted action
@@ -602,17 +368,80 @@ Activity Event = historical Evidence
 Feed / Notification / Audit / Analytics = Projections
 ```
 
-Governance constrains future actions through Policy and accepted authority rules. Audit explains or proves past actions from sufficient historical Evidence. Governance is not Audit; Audit is not an authority source.
+An Activity Event records sufficient actor, action, target, and time evidence for its accepted contract. It is not current Resource state, a mutable status, a notification, or a user-authored history object.
 
-Notification recipients are limited to explicit watch, Issue assignment, mention, or unmuted prior participation; the initiating Actor is excluded. Threads aggregate by recipient + Repository + Artifact, revalidate Repository access before any content/count/URL, and keep `unread | read | archived` delivery state independent from source Evidence.
+Governance constrains future actions. Audit explains or proves past actions. Neither creates Repository authority.
 
-Search authorizes before ranking/count/snippet and covers only Repository metadata, Page, Issue, Discussion, and planning projections through PostgreSQL full-text search. Explore uses public Repository metadata only. Integration discovery is a reviewed catalog Projection with no connection success controls. Full query and ranking contracts live in [`domains/collaboration-projections.md`](./domains/collaboration-projections.md).
+## 17. Project-style planning and collaboration projections
 
-The current Activity Event envelope is not automatically a complete enterprise audit store. Stronger completeness, retention, causality, rebuild, or regulatory guarantees require an independently accepted evidence contract.
+Project-style planning is a Projection over accepted Repository-scoped work. It owns no underlying Artifact, Repository, Principal, Grant, or authority boundary.
 
-Public Repository visibility does not automatically publish the raw historical-evidence envelope. Current raw Activity access requires authenticated Repository read authority; a future anonymous Activity surface requires an explicit privacy/redaction projection contract.
+Notification is Actor-specific delivery state derived from source Evidence and explicit recipient relationships. Every read revalidates Repository access.
 
-## 22. Product relationship architecture and invariants
+Search authorizes before ranking, count, or snippet. Explore reads public Repository metadata only. Marketplace is a reviewed catalog Projection with no installation authority.
+
+Changing planning filters, Notification state, tabs, selected Context, or comparison inputs never changes effective authorization.
+
+## 18. State Comparison — optional derived presentation
+
+Status: **Deferred; no standalone Product capability.**
+
+A State Comparison may be admitted only when a concrete workflow independently requires two retained states and both are already addressable under an accepted retention/evidence contract.
+
+If admitted:
+
+```text
+State Comparison
+= derived read Projection(state A, state B, Actor authority)
+```
+
+It owns no lifecycle, mutation, authority, patch language, or source truth. It cannot reveal a field inaccessible in either compared state.
+
+A comparison need does not imply a version-control model.
+
+## 19. Typed data movement — deferred
+
+Status: **No accepted Domain or lifecycle.**
+
+A future typed transfer must independently prove:
+
+- one explicit source and destination contract;
+- source-read and destination-write authorization;
+- fixed schema validation;
+- idempotency and retry ownership;
+- secret references instead of secret values;
+- redacted Evidence; and
+- no arbitrary URL, script, expression, or user-defined executable transformation.
+
+Until then, import, export, migration, delivery, endpoint, connector, and payload semantics remain unaccepted and unavailable.
+
+## 20. Repository duplication — deferred independent creation
+
+Status: **No accepted lifecycle.**
+
+A future duplication use case may create a new independent Repository from an explicitly selected safe source state.
+
+```text
+Selected safe source state
++ explicit destination Owner
++ destination authorization
+↓
+Independent Repository
+```
+
+The destination has its own stable identity, Owner, Grants, lifecycle, current state, and Evidence. It never inherits authority, credentials, Sessions, secrets, installation tokens, automatic synchronization, or a continuing upstream relationship.
+
+Origin Evidence, if later retained, explains creation only and grants nothing.
+
+## 21. App, Installation, Enterprise, Billing, and Licensing
+
+App and Installation remain unaccepted until an external machine must act as a typed Principal on a Repository. No OAuth, credential store, binding, arbitrary endpoint, or connector execution exists by implication.
+
+Enterprise remains unaccepted until a real constraint spans multiple Organizations without granting Repository content access. It never becomes Repository Owner or content Principal by implication.
+
+Billing and Licensing describe commercial entitlement and administration, never Repository ownership or content authority.
+
+## 22. Product relationship architecture
 
 ```text
                          future Enterprise
@@ -628,101 +457,60 @@ User identity ───────────┼──────────
 Repository Owner ─────> Repository <──────────┘ authority
 (User or Organization)   Container
                              │
-             ┌───────────────┼───────────────────────┐
-             ▼               ▼                       ▼
-          Resource        Processes                Evidence
-       ┌─────┼─────┐      commands/change/transfer Activity Event + Data Commit
-       ▼     ▼     ▼                                    │
-     Page  Issue Discussion                         Projections
+                ┌────────────┼─────────────┐
+                ▼            ▼             ▼
+              Page         Issue       Discussion
+                │            │             │
+                └──── commands / State Transitions ────┐
+                                                       ▼
+                                                Activity Event
+                                                       │
+                                                read Projections
 ```
 
-The system is not one containment tree. Governance, membership, ownership, group authority, Artifact containment, and presentation are different relationships.
+The system is not one containment tree. Membership, ownership, governance, authority, Artifact containment, mutation, and presentation are distinct relationships.
 
-Canonical invariants:
-
-1. Repository is the only accepted primary No-Code Collaboration Container.
-2. Repository Owner is exactly one User or Organization.
-3. Personal Repository ownership is first-class.
-4. Organization is a Membership/administration Scope and possible Owner, not mandatory Repository parent.
-5. Enterprise, if accepted, governs Organizations without becoming Repository Owner by implication.
-6. User identity is distinct from Actor, Membership, Collaborator, Role, Principal, and Context meanings.
-7. Membership is Relationship; Member is derived.
-8. Team, if accepted, is Organization-scoped Principal; selected Team is never authority input by itself.
-9. Collaborator and Outside collaborator remain derived.
-10. Authentication establishes Actor identity only.
-11. Ownership and explicit Grant remain separate authority facts.
-12. Capability is the authorization decision primitive; Role is a bundle.
-13. Policy may restrict authority but must not silently create content authority.
-14. Every accepted collaborative Artifact belongs to exactly one Repository unless a future use case falsifies that rule.
-15. Planning views, Workspace, Feed, Notification, Audit, and Analytics are Projections unless independent lifecycle proves otherwise.
-16. Historical Evidence is append-oriented; Projection changes cannot rewrite source semantics.
-17. Canonical Repository routing uses Owner namespace + Repository slug; stable IDs remain authorization/relationship targets.
-18. A new benchmark surface cannot become a second Repository-equivalent Container without falsifying evidence.
-19. Provider, framework, database, generated output, and UI composition project Product truth; they do not define it.
-20. A benchmark capability is excluded when its value depends on implementation assumptions that do not survive the no-code collaboration model.
-21. Data Commit, Data Branch, Data Diff, Change Proposal, Data Transfer, Data Capsule, and Repository Derivation are admitted only inside the accepted typed-data envelope and cannot introduce code execution, secrets, independent authority, or another Container.
-22. Structural containment, Branch selection, Proposal participation or approval, Project filters, and Notification state cannot change effective authority.
-23. A derived Repository has independent ownership and authority; provenance cannot copy secrets, Sessions, or Grants by default.
-
-## 23. Domain, persistence, URL, UI, and validation projection rules
-
-Do not mechanically create generic semantic-role persistence such as:
-
-```text
-actors
-scopes
-containers
-relationships
-artifacts
-processes
-principals(type,id)
-```
-
-Concrete rules:
+## 23. Projection rules
 
 - Model Repository ownership with typed User/Organization references.
-- Maintain one globally unambiguous User/Organization owner namespace for `/{ownerSlug}` and `/{ownerSlug}/{repositorySlug}`.
-- Use `/{ownerSlug}` as the canonical User-or-Organization identity projection. Preserve `/orgs/{organizationSlug}/...` for Organization operational presentation and `/organizations/{organizationSlug}/settings/...` for Organization administration/governance; URL shape never determines Owner kind or authority.
-- Model cross-Repository assigned Issues at `/issues/assigned`; `/issues` is an entry alias. Assignment is a projection of responsibility, never an authority source.
-- Keep command/process entry routes such as `/new` and `/organizations/new` outside canonical resource identity; sign-out is a command rather than a bookmarkable resource.
-- Keep authorization targets on stable IDs rather than URL names or UI selections.
-- Derive Collaborator and Member classifications rather than creating identity subtypes.
+- Maintain one globally unambiguous Owner namespace for `/{ownerSlug}` and `/{ownerSlug}/{repositorySlug}`.
+- URL shape never determines Owner kind or authority.
+- Model cross-Repository assigned Issues at `/issues/assigned`; assignment is responsibility, not authority.
+- `/dashboard` is authenticated personal discovery; `/repos` is Repository discovery.
+- Keep command entry routes outside stable resource identity.
+- Authorize by stable IDs rather than URL names or UI selection.
+- Derive Member, Collaborator, and Outside collaborator classifications.
 - Keep User Grant persistence typed while User is the only accepted persisted Principal.
-- Add Team only when a real second group authority source is required.
-- Add Enterprise only when a real cross-Organization governance constraint is required.
-- Add or change Issue/Discussion persistence only through their accepted lifecycle, invariant, authorization, Evidence, and Repository-reuse contracts; executable status remains a gap/code/test fact.
-- Keep Project-style planning as a Projection unless independent lifecycle proves otherwise.
-- Add App/Installation only when a real machine authority use case exists.
-- Do not infer a generic version-control or automation engine from benchmark feature catalogs. Data Change/Transfer semantics require explicit schema, Repository authorization, no-execution, endpoint, secret, conflict, retention, and Evidence contracts.
-- Keep Repository as authorization and containment boundary for accepted Artifacts unless a real counterexample proves insufficient.
+- Keep Project-style planning as a Projection.
 - Keep Role/Capability meaning under one Domain owner; SQL and UI project it.
-- Keep Context out of authorization inputs unless the selected value resolves a persisted fact that would be used independently of selection.
-- Keep historical Evidence semantics distinct from presentation Projections.
-- After semantic admission, preserve the sanitized public and read-only authenticated GitHub URL/IA, navigation, responsive composition, and interaction behavior in `.playwright-mcp/github/` unless an explicit target Product reason and discriminating test justify a deviation. Domain renaming is not a reason to rewrite an admitted URL.
-- `/dashboard` is authenticated discovery; `/repos` is Repository discovery. Neither is part of Repository identity.
-- GitHub Wiki presentation remains `/wiki` while the Domain concept remains Page/Knowledge; URL terminology and Domain terminology are independent.
-- Canonical Repository presentation is owner/Repository header + primary navigation + one active child resource surface. Route-specific supporting navigation, metadata, activity, or modal composition may render beside that surface without becoming a Container, Artifact, authority source, or URL identity.
-- There is no public stable-ID Repository compatibility namespace without a demonstrated backward-compatibility obligation.
-- A green browser suite is evidence only for journeys it explicitly covers.
+- Keep Context out of authorization inputs.
+- Keep historical Evidence distinct from current state and delivery Projections.
+- There is no public stable-ID Repository compatibility namespace.
+- Repository reads cannot inherit an authenticated-only wrapper while public visibility exists.
+- GitHub URL vocabulary may survive Product admission independently from Domain vocabulary.
+- Current-state mutation belongs to concrete Resource commands; do not create a generic history or patch aggregate.
+- No data-movement or Repository-copy model exists until a concrete use case passes admission.
+- A green browser suite is evidence only for journeys it covers.
 
-Minimum discriminating tests:
+## 24. Minimum discriminating tests
 
 1. User-owned and Organization-owned Repositories use the same collaboration semantics.
-2. User and Organization owner slugs cannot collide.
+2. User and Organization Owner slugs cannot collide.
 3. The same Repository slug may exist under different Owner namespaces.
-4. `/dashboard` Repository card lands on `/{owner}/{repository}`.
-5. Personal Owner gets Repository admin without a fabricated Grant.
-6. Organization owner/admin authority applies only to Repositories owned by that Organization; ordinary members gain no Repository Role.
-7. Changing UI Context does not change authorization for identical Actor/Repository/persisted relationships.
-8. Direct User Grant independently contributes its Role/Capabilities.
-9. Page create/update produces the expected state and historical Evidence in one accepted transaction boundary.
-10. Issue and Discussion reuse Repository containment/authorization while keeping subtype lifecycle rules isolated; any later Resource kind must pass the same test.
-11. Future Team must add a second Principal authority source without changing Actor/Context semantics.
-12. Future Enterprise constraint must limit Organization behavior without owning Repository or granting Repository content access.
-13. Feed/Notification/Audit/Planning projections may change without rewriting Artifact, authority, ownership, or source Evidence truth.
-14. A Data Change/Transfer flow rejects executable or untyped payloads, rechecks source/target Repository Capabilities, filters Diff by read authority, never exposes secret values, and cannot execute user-provided code.
-15. Repository Derivation retains provenance while establishing an independent Owner/authority boundary and excluding secrets, Sessions, and Grants by default.
+4. `/dashboard` Repository cards land on `/{ownerSlug}/{repositorySlug}`.
+5. Personal Owner receives admin authority without a fabricated Grant.
+6. Organization owner/admin authority applies only to Repositories owned by that Organization.
+7. Ordinary Membership creates no Repository Role.
+8. Changing UI Context does not change authorization for identical Actor, Repository, and persisted relationships.
+9. Direct User Grant independently contributes its Role and Capabilities.
+10. A Resource command with a stale Expected Revision fails without state or success Evidence.
+11. An accepted Resource command changes current state and records required Activity Event atomically.
+12. Issue and Discussion reuse Repository containment and authorization while retaining subtype invariants.
+13. Feed, Notification, Audit, Search, Explore, and planning Projections cannot rewrite source state or Evidence.
+14. A future State Comparison reveals only independently authorized retained states and owns no authority.
+15. A future typed transfer rejects executable transformation, secret material, and authority bypass.
+16. A future Repository duplication creates independent ownership and excludes inherited Grants, credentials, Sessions, secrets, and synchronization.
 
 Compact semantic law:
 
-> **User acts, User or Organization owns, Principal receives explicit authority, Repository contains collaboration, Relationship connects belonging and authority, Capability decides access, Artifact carries work, Process changes state, and Evidence records what happened.**
+> **User acts, User or Organization owns, Principal receives explicit authority, Repository contains collaboration, Capability decides access, concrete commands transition current state, Activity Event records accepted action, and Projection presents authorized truth.**

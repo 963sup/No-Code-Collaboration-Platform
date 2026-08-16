@@ -1,77 +1,67 @@
 # Domains
 
-A Domain exists only when a coherent business problem, vocabulary, ownership boundary, invariants, and lifecycle justify it. This directory is not a mirror of GitHub page names, package names, database tables, or the semantic-role lens itself.
+A Domain exists only when a coherent business problem, vocabulary, ownership boundary, invariants, lifecycle, and failure behavior justify it. This directory is not a mirror of GitHub pages, packages, database tables, or semantic roles.
 
-Use [`DOMAIN_TEMPLATE.md`](./DOMAIN_TEMPLATE.md) when evidence supports a candidate contract.
+Use [`DOMAIN_TEMPLATE.md`](./DOMAIN_TEMPLATE.md) only after benchmark admission succeeds.
 
 ## Benchmark admission before Domain admission
 
-Before classifying a GitHub benchmark concept, prove that its collaboration or organizational problem remains meaningful for an arbitrary no-code Repository.
+For a GitHub-derived concept:
 
-If the candidate's value depends on software-development-specific implementation assumptions rather than that durable problem, reject the candidate entirely. Do not create a renamed or generalized Domain candidate for it.
+1. identify the durable collaboration or organizational problem;
+2. remove Source Code, source-control, arbitrary execution, CI/CD, build, test, and deployment assumptions;
+3. reject the candidate if its value disappears;
+4. classify the surviving Actor, Scope, Principal, Container, Relationship, Artifact, and Process roles;
+5. keep Authorization, Presentation, and Evidence cross-cutting; and
+6. prove independent owner, lifecycle, invariants, failure behavior, and removal cost.
 
-Only surviving semantics enter the role lens:
-
-```text
-Actor        = who acts
-Scope        = which ownership or governance boundary applies
-Principal    = who may receive authority
-Container    = where collaboration has one stable boundary
-Relationship = how actors, principals, scopes, owners, and containers connect
-Artifact     = what collaborative work exists inside a container
-Process      = how artifacts or relationships validly change
-```
-
-These roles are decomposition vocabulary, not bounded contexts. A single Domain contract may own several roles, and one product concept may play more than one role. Authorization (`Role`, `Capability`, `Policy`), presentation (`Context`, `Projection`), and historical evidence (`Activity Event`) remain explicit cross-cutting semantics.
-
-A proposed Domain must still prove independent business ownership, lifecycle, invariants, failure behavior, and removal cost. Classification alone is not evidence for creating a package, schema, route, table, service, or bounded context.
+Classification alone creates no package, schema, route, table, service, or bounded context.
 
 ## Contract states
 
-- **Candidate**: falsifiable semantic model under validation. It does not create an architectural boundary by itself.
-- **Accepted**: contract whose ownership, invariants, dependencies, and executable evidence have passed the applicable acceptance process.
+- **Candidate**: falsifiable semantic model under validation; not architecture by itself.
+- **Accepted**: ownership, invariants, dependencies, and executable evidence passed acceptance.
+- **Deferred**: a possible problem exists, but evidence is insufficient to define Product or Domain semantics.
 - **Superseded**: historical contract that no longer defines current truth.
 
-A package, schema file, route, or UI section does not prove a bounded context. Conversely, one accepted Domain may span several implementation boundaries.
-
-A Candidate contract may intentionally lead executable behavior, but every observed mismatch must be recorded in [`../IMPLEMENTATION_GAPS.md`](../IMPLEMENTATION_GAPS.md). Candidate status is not permission to describe target behavior as already enforced.
+Implementation may trail a Candidate only through an explicit current gap. Candidate status is not permission to claim unsupported behavior.
 
 ## Catalog
 
-### Candidate contracts
+### Accepted contract
 
-- [`identity-lifecycle.md`](./identity-lifecycle.md): Anonymous Human, verified provider identity, Session, Product Actor readiness, and identity-lifecycle invariants.
-- [`access-authority.md`](./access-authority.md): Principal Grants, Role bundles, Capabilities, delegation, ownership/governance sources, and authorization explanation.
-- [`page-resource.md`](./page-resource.md): first Page work unit, create/update transitions, optimistic concurrency, and required historical evidence.
-- [`issue-resource.md`](./issue-resource.md): Repository-scoped actionable work identity, lifecycle, responsibility, classification, conversation, optimistic concurrency, and Activity Evidence.
-- [`discussion-resource.md`](./discussion-resource.md): Repository-scoped shared-understanding lifecycle, fixed categories, moderation, flat conversation, and question Answer semantics.
-- [`collaboration-projections.md`](./collaboration-projections.md): planning, notification, search, explore, integration-catalog, availability, and explicitly deferred governance projections.
+- [`repository-collaboration.md`](./repository-collaboration.md): primary collaboration and authorization Container, typed User/Organization ownership, Owner namespace, Artifact containment, identity, and shared authorization/Evidence invariants.
 
-### Accepted contracts
+Acceptance does not imply a microservice, generic persistence supertype, or speculative lifecycle.
 
-- [`repository-collaboration.md`](./repository-collaboration.md): the accepted primary no-code collaboration/authorization Container boundary, typed User/Organization ownership, canonical Owner namespace, collaborative Artifact containment, Repository identity, and shared authorization/Evidence invariants. Page, Issue, and Discussion prove reuse without creating a second primary Container.
+### Current Resource and cross-cutting candidates
 
-Acceptance of Repository Collaboration is semantic/domain reuse permission, not permission to add a microservice, generic persistence supertype, speculative lifecycle, or provider-specific boundary.
+- [`identity-lifecycle.md`](./identity-lifecycle.md): provider identity, Session, Product Actor readiness, and identity transitions.
+- [`access-authority.md`](./access-authority.md): Principal Grants, Roles, Capabilities, delegation, ownership/governance sources, and authorization explanation.
+- [`page-resource.md`](./page-resource.md): Page commands, concurrency, and Activity Event Evidence.
+- [`issue-resource.md`](./issue-resource.md): actionable work identity, lifecycle, responsibility, classification, conversation, concurrency, and Evidence.
+- [`discussion-resource.md`](./discussion-resource.md): shared-understanding lifecycle, categories, moderation, conversation, and Answer semantics.
+- [`collaboration-projections.md`](./collaboration-projections.md): planning, Notification, Search, Explore, Marketplace, availability, and governance projections.
 
-### Accepted semantic envelopes with Candidate concrete lifecycles
+### Historical or deferred boundaries
 
-- [`structured-data-change.md`](./structured-data-change.md): accepted meanings and safety boundary for Data Commit, Data Branch, Data Diff, and Change Proposal; identity, lifecycle, Capability, persistence, route, API, and UI remain Candidate.
-- [`data-exchange.md`](./data-exchange.md): accepted meanings and safety boundary for Data Transfer and Data Capsule; endpoint, connector, lifecycle, Capability, persistence, route, API, and UI remain Candidate.
+- [`structured-data-change.md`](./structured-data-change.md): superseded historical candidate. Safe mutation is owned by concrete Resource commands, Expected Revision, State Transition, Current State, and Activity Event.
+- [`data-exchange.md`](./data-exchange.md): deferred problem boundary only. No transfer, connector, endpoint, payload, credential-binding, lifecycle, or automation capability is accepted.
 
-`Commit`, `Branch`, `Diff`, `Pull Request`, `Actions`, `Gist`, `Fork`, `Pull`, and `Push` are external benchmark aliases only. Source Code, Git mechanics, arbitrary execution, and a generic version-control or automation engine remain rejected.
+The external source-control concepts listed in the [canonical glossary](../../.agents/skills/github-semantic-reverse/GLOSSARY.md) remain benchmark or engineering vocabulary only and create no target Domain.
 
 ## Acceptance gate
 
 Promote a candidate only when:
 
-1. the owned problem and outcome are coherent and survive benchmark-admission rules;
-2. canonical vocabulary removes rather than adds ambiguity;
-3. semantic-role classification does not substitute for actual ownership/lifecycle evidence;
-4. entities, relationships, states, invariants, and failure behavior are explicit;
+1. the owned problem survives benchmark subtraction;
+2. canonical vocabulary reduces ambiguity rather than hiding an external mental model;
+3. semantic classification does not substitute for ownership and lifecycle evidence;
+4. entities, relationships, states, invariants, authority, and failure behavior are explicit;
 5. dependencies have one-way ownership and translation boundaries;
-6. known implementation gaps are registered, contained, and have explicit closure evidence;
-7. at least one authorization-sensitive vertical slice proves the contract;
-8. a second real use case can reuse the boundary without duplicated decisions or circular dependencies; and
-9. an accepted ADR records any resulting major architecture boundary.
+6. implementation gaps are registered and contained;
+7. one authorization-sensitive vertical slice proves the contract;
+8. a second real use case reuses the boundary without duplicated decisions; and
+9. a major architecture boundary has an accepted ADR and removal test.
 
 Domain acceptance does not require a microservice, independent datastore, or separate deployment.

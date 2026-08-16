@@ -6,7 +6,7 @@
 
 This is the single non-negotiable Product axiom. Benchmark vocabulary, framework behavior, provider constraints, persistence, and existing implementation cannot reinterpret it.
 
-GitHub is evidence for mature collaboration mechanisms, not implementation authority. Admit a GitHub-derived concept only when the same collaboration or organizational problem remains valid for an arbitrary no-code Repository. Reject concepts whose value depends on software-development-specific assumptions; do not preserve them through renaming or generic wrappers.
+GitHub is evidence for mature collaboration mechanisms, not implementation authority. Admit a GitHub-derived concept only when the same collaboration or organizational problem remains valid for an arbitrary no-code Repository. Reject concepts whose value depends on software-development-specific assumptions; do not preserve them through renaming, a Data-prefixed alias, metaphor, or a generic wrapper.
 
 Semantic roles are a reasoning lens, not an entity, package, table, service, or bounded-context taxonomy:
 
@@ -31,15 +31,15 @@ Authorization (`Role`, `Capability`, `Policy`), presentation (`Context`, `Projec
 5. Direct provider/production observation and current official external documentation.
 6. Generated projections and transient context.
 
-Use `docs/README.md` as the question-specific truth router. Current implementation status belongs to executable evidence and the gap register, not to `AGENTS.md` snapshots.
+Use `docs/README.md` as the question-specific truth router. Current implementation status belongs to executable evidence and the gap register, not to instruction snapshots.
 
 ## Context continuity and skill routing
 
 Preserve task/session context and established decisions. Ground them against the current task, applicable `AGENTS.md` chain, `docs/README.md`, the narrowest current contract, then executable evidence. This does not require discarding context or simulating a fresh start. Prior conversation, summaries, project memory, and history are evidence, not current truth by themselves.
 
-Select skills by narrowest ownership. Explicit user-named skills win. `github-semantic-reverse` owns GitHub-derived Product decisions; `first-principles` owns broader or non-GitHub decisions. Skills route work and never replace current repository contracts. Combine decision skills only for genuinely separate decisions. `plugin-development-workflow` routes only necessary external tools/evidence. Operational skills compose only for distinct responsibilities.
+Select skills by narrowest ownership. Explicit user-named skills win. `github-semantic-reverse` owns GitHub-derived Product decisions and repository-wide GitHub semantic repair; `first-principles` owns broader or non-GitHub decisions. Skills route work and never replace current repository contracts. Do not create overlapping Skills for the same decision merely to obtain consensus.
 
-Do not recursively reconstruct current state from broad history. When required context is missing or authorities disagree, do not invent the missing architecture; resolve the nearest current contract and executable evidence or register the mismatch.
+When required context is missing or authorities disagree, do not invent the missing architecture. Resolve the nearest current contract and executable evidence or register the mismatch.
 
 ## Architecture boundaries
 
@@ -64,17 +64,21 @@ RLS is independent database enforcement; it does not replace Domain/Application 
 ## Cross-cutting invariants
 
 - Repository Owner is a typed User/Organization ownership Relationship, not a synthetic Grant.
-- Repository is the only primary collaboration/authorization Container; structural containment or an isolated state line inside it does not create another Container.
+- Repository is the only primary collaboration/authorization Container; structural containment does not create another Container.
 - Organization may own Repository but never acts as the authenticated request Actor.
 - Membership answers belonging; it does not imply Repository access.
 - Principal receives explicit authority; selected Context does not.
 - Role bundles Capabilities; Capability is the authorization decision primitive.
 - Authentication is not authorization. UI visibility is not enforcement.
-- Identity establishes a trusted Actor; Access resolves effective authority. Account is a settings/administration surface family, not a generic entity.
-- Context, Projection, Branch selection, Proposal participation or approval, Project filters, and Notification state never create or change authority.
-- Governance constrains future action; Audit and historical Evidence explain or prove past action.
+- Identity establishes a trusted Actor; Access resolves effective authority.
+- Account is a settings/administration surface family, not a generic entity.
+- Context, Projection, comparison selection, planning filters, and Notification state never create or change authority.
+- Governance constrains future action; Audit explains past action.
 - Historical Evidence is distinct from Feed, Notification, Audit, and Analytics projections.
-- The accepted Data Change/Exchange/Repository Derivation semantic envelope grants no schema, route, Capability, Git/code surface, arbitrary execution, or generic version-control/automation engine.
+- Collaboration mutation uses concrete Resource commands, an expected current revision when concurrency requires it, an accepted State Transition, and separate Activity Event evidence.
+- Current-state law: `Concrete Resource Command + Expected Revision → State Transition → Current State + Activity Event`.
+- No source-control-shaped Data Change, alternate state-line, history-graph, proposal-merge, or upstream-derived Repository envelope is accepted as Product semantics.
+- A future typed transfer or independent Repository duplication requires a separately accepted user problem, authority model, lifecycle, and discriminating test.
 - Secrets, credentials, `.env` files, project references, private production data, and raw private Repository content must not be published or captured for convenience.
 
 ## Working rules
@@ -92,6 +96,7 @@ RLS is independent database enforcement; it does not replace Domain/Application 
 - **Product semantic drift:** flag weakening of the Repository axiom, mandatory Organization ownership, Context-derived authority, or a benchmark feature that failed no-code admission.
 - **Architecture truth-boundary violations:** flag provider/framework leakage into Domain/Application, reversed workspace dependencies, or obsolete adapters/routes that preserve superseded truth.
 - **Authorization enforcement bypass:** flag authentication treated as authorization, UI-only enforcement, browser service credentials, weakened RLS, or authority derived from presentation/provider metadata.
+- **Source-control mental-model drift:** flag any target primitive that introduces change-history nodes, alternate state lines, merge-like convergence, movable state pointers, or continuing upstream authority without an independently proven no-code problem.
 
 ## Verification
 

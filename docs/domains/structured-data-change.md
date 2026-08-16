@@ -1,184 +1,53 @@
-# Domain Contract: Structured Data Change
+# Historical Domain Candidate: Structured Data Change
 
-- Status: Accepted semantic envelope; Candidate concrete lifecycle
-- Contract owner: Product and Domain
-- Last reviewed: 2026-08-15
+- Status: Superseded by the current-state Resource command kernel
+- Contract owner: `docs/PRODUCT.md`, concrete Resource contracts, and ADR-014
+- Last reviewed: 2026-08-16
 
-## Problem owned and success condition
+## Why this candidate is superseded
 
-Repository collaborators may need to group related structured-data changes, compare them with an accepted state, isolate unfinished work, and request review before applying it. Those needs remain valid without Source Code or Git mechanics.
+This file previously grouped several source-control-shaped concepts into an admitted Product envelope. The underlying needs were real—safe mutation, concurrency, accountability, review, and comparison—but the proposed Domain boundary was not necessary.
 
-This contract owns the meaning and safety boundary of Data Commit, Data Branch, Data Diff, and Change Proposal. It succeeds only when every change is typed, attributable, Repository-scoped, authorization-equivalent to the direct Resource commands it represents, and incapable of executing code or creating a second collaboration Container.
-
-## Evidence ledger
-
-### Observations
-
-- Page already has typed create/update transitions, optimistic-concurrency evidence, and actor-attributed immutable Activity Events.
-- GitHub demonstrates mature names and interaction patterns for grouped change evidence, isolated state, comparison, and review, but its Source Code and Git implementation is not target authority.
-- The Product Contract and ADR-013 accept Data Commit, Data Branch, Data Diff, and Change Proposal as no-code semantics while withholding concrete implementation authority.
-
-### Constraints
-
-- `Repository = No-Code Collaboration Container` remains absolute.
-- Source Code, git refs/merge, code review, Code Search, executable payloads, shell/script/expression runtimes, CI/CD, build, test, deploy, Package, and Release source capabilities remain excluded.
-- A structured change may affect only Resources already authorized inside one Repository.
-- A grouped or proposed change cannot bypass the Capability, Policy, validation, concurrency, or evidence rules of its constituent Resource commands.
-- Opaque text remains data and is never parsed or executed as code.
-
-### Assumptions
-
-- At least one future Resource workflow will need multiple related changes to be reviewed or applied together.
-- A named isolated data-state line can be useful without Git ancestry or merge semantics.
-- A field/record comparison can be derived without becoming an independently mutable Artifact.
-
-### Unknowns
-
-- Whether the first real use case needs Data Branch, Change Proposal, or only grouped Data Commit evidence.
-- Identity, retention, conflict, rebase-equivalent, approval, cancellation, rollback, and archival rules.
-- Whether change application must be atomic across several Resource kinds.
-- Which Capabilities govern creation, review, approval, and application.
-- Whether numeric, UUID, or Repository-local sequence identity best serves each concept.
-
-### Value choices
-
-- Prefer explicit typed operations over a generic patch language.
-- Prefer the target Resource's existing command contract over a parallel mutation API.
-- Prefer derived comparison over stored mutable Diff state.
-- Prefer a small, reversible concrete model only after a real multi-change workflow proves the lifecycle.
-
-## Boundary and owner
-
-This contract owns:
-
-- grouping accepted structured-data operations into one immutable Data Commit;
-- naming an isolated Repository-scoped Data Branch when independently justified;
-- deriving a Data Diff between authorized structured states; and
-- reviewing and applying a bounded Change Proposal.
-
-It does not own Resource subtype invariants, Repository ownership, Membership, Grants, Roles, Capabilities, connector delivery, secrets, persistence technology, routes, or UI composition. Each target Resource remains the owner of its own valid commands and state transitions.
-
-## Vocabulary
-
-| Canonical term | External alias | Meaning |
-| --- | --- | --- |
-| Data Commit | Commit | Immutable Actor-attributed batch of accepted structured-data operations and their evidence |
-| Data Branch | Branch | Named isolated line of Repository data state; never an authority Scope or Container |
-| Data Diff | Diff | Authorization-filtered derived comparison of typed fields or records |
-| Change Proposal | Pull Request | Process to propose, review, decide, and apply one bounded structured-data change set |
-| Change operation | — | Typed reference to a Resource command and its validated input, never executable code |
-| Base evidence | — | Stable concurrency/version evidence against which a change was prepared |
-
-## Entities, relationships, and derived concepts
+The minimum sufficient model is:
 
 ```text
-Repository 1 ── contains ── * Data Commit
-Repository 1 ── may name ── * Data Branch
-Data Branch 1 ── orders ── * Data Commit
-Change Proposal 1 ── proposes ── 1 bounded change set
-Data Diff = derived comparison(base evidence, proposed state, Actor authority)
+Actor + Repository Authority + Concrete Resource Command + Expected Revision
+↓
+Accepted State Transition
+↓
+Authoritative Current State + Activity Event
 ```
 
-The four semantic meanings above are accepted. Data Commit and Change Proposal persistent identity, Data Branch state-line identity, and every concrete lifecycle remain Candidate. Data Diff is always derived and cannot own lifecycle, authority, or content. None is a Repository, Resource owner, Membership Scope, Principal, Grant, or independent visibility boundary.
+Concrete Resource contracts already own valid commands, invariants, authorization, and concurrency. Activity Event owns historical Evidence. A generic structured-change Domain would duplicate those owners and preserve an unnecessary history/alternate-state mental model.
 
-## States and transitions
+## Current ownership
 
-The following lifecycle is a Candidate used to make unknowns falsifiable; it is not implementation authority:
+- **Resource contract**: command vocabulary, input validation, transition, target-state preconditions, and concurrency strategy.
+- **Access Authority**: Capability decision for Actor and Repository.
+- **Application**: command orchestration and provider-neutral Ports.
+- **Infrastructure**: transaction, Expected Revision enforcement, RLS, constraints, and atomic Evidence persistence.
+- **Activity Event**: accepted action Evidence.
+- **Projection**: optional read-authorized comparison only after retained states are independently justified.
 
-```text
-Prepared change set
-  └── RecordDataCommit ──> Immutable Data Commit
+## Current invariants
 
-Open Change Proposal
-  ├── ApproveProposal ──> Approved
-  ├── RejectProposal ───> Rejected
-  ├── CloseProposal ────> Closed
-  └── ApplyProposal ────> Applied, only if every target command remains valid and authorized
-```
+1. Every mutation targets one stable Repository and concrete Resource.
+2. No generic patch, script, expression, executable payload, or unbounded operation language is accepted.
+3. Expected Revision is a concurrency precondition, not a Product history identity.
+4. A stale command changes neither state nor success Evidence.
+5. An accepted transition and required Activity Event commit atomically.
+6. Context, participation, review, approval, comparison selection, or UI mode creates no Capability.
+7. A future multi-Resource transaction must preserve every constituent Resource invariant and authorization decision.
+8. Secret values, credentials, tokens, and private provider configuration never enter command payloads or broad Evidence projections.
 
-Approval never substitutes for apply authorization. Applying a proposal revalidates Actor identity, effective authority, target Resource state, schema, concurrency evidence, and every constituent invariant. Concrete Data Branch creation/archive and conflict-resolution transitions remain unknown and therefore unavailable.
+## Optional review or comparison
 
-## Invariants
+A future review workflow must first prove an independently owned Process that cannot be expressed through existing commands and ordinary collaboration. It cannot import alternate state lines, ancestry, convergence, or process-derived authority.
 
-1. Every Data Commit, Data Branch, and Change Proposal belongs to exactly one Repository.
-2. A change set cannot reference or mutate a Resource outside that Repository.
-3. Every operation uses a known typed Resource command; no generic script, expression, executable payload, or unbounded patch language is accepted.
-4. Applying through a Change Proposal yields the same authorization and validation result as issuing the equivalent direct commands at the same state.
-5. Approval is historical/process evidence, not a Capability Grant.
-6. Data Diff reveals only fields and records the requesting Actor may read in both compared states.
-7. Data Diff is derived, immutable to clients, and never a source of authority or truth.
-8. Branch selection is Context; it cannot alter Membership, Grant, Role, Capability, visibility, or Repository ownership.
-9. A Data Commit is immutable historical evidence; correction occurs through a later authorized change, not mutation of prior evidence.
-10. Secret values, credentials, tokens, authorization headers, and private connector configuration never enter change payloads, Data Diff, or historical evidence.
+A future State Comparison is a derived read Projection over independently retained states. It owns no lifecycle, mutation, authority, or source truth.
 
-## Actors, principals, contexts, and permissions
+## Removal test
 
-- The authenticated User is the Actor who prepares, proposes, reviews, or applies a change.
-- Authority-bearing Principals and effective Capabilities come from Access Authority, not from proposal participation or selected Branch Context.
-- Data Branch is presentation/work-state Context only.
-- The server resolves target Repository and Resources from stable identity and reauthorizes each operation at apply time.
-- Review, approval, and apply are distinct operations; their exact Capabilities remain unresolved until a concrete workflow supplies discriminating evidence.
+Removing this candidate creates no executable gap. Current Resource commands, Expected Revision, State Transition, Current State, and Activity Event remain complete for accepted Page, Issue, and Discussion lifecycles.
 
-## Events and workflows
-
-Candidate facts include `data_commit.recorded`, `change_proposal.opened`, `change_proposal.reviewed`, `change_proposal.applied`, and `change_proposal.closed`. Exact event names and payloads are not accepted.
-
-Any eventual workflow must be idempotent by stable command/proposal identity, preserve actor attribution, avoid copying sensitive Resource content into broad Activity projections, and commit required Resource state plus historical evidence atomically.
-
-## Dependencies and failure behavior
-
-- **Repository Collaboration**: missing or mismatched Repository identity fails closed.
-- **Access Authority**: unresolved or insufficient authority prevents read, review, or apply; selected UI Context never fills the gap.
-- **Target Resource contract**: unknown command kind, invalid schema, stale concurrency evidence, or failed invariant rejects the affected apply operation.
-- **Historical Evidence**: required evidence failure aborts the state transition.
-- **Persistence**: cannot introduce an opaque executable patch store or provider-specific Git model into Domain.
-- **Delivery**: routes and dialogs may project the same stable proposal identity but never define it.
-
-Atomicity across multiple Resources remains an unresolved requirement. Until it is specified, no partial-apply behavior is accepted.
-
-## Known implementation gaps
-
-The semantic envelope is accepted, while Product explicitly defers its concrete lifecycle, identity, Capability, persistence, URL, conflict, and atomicity contracts. Their executable absence is recorded as intentional containment in [`../IMPLEMENTATION_GAPS.md`](../IMPLEMENTATION_GAPS.md), not treated as Product rejection.
-
-If a concrete slice is accepted, any partial implementation must be registered in [`../IMPLEMENTATION_GAPS.md`](../IMPLEMENTATION_GAPS.md) before it is presented as supported.
-
-## Alternatives and removal test
-
-### Keep only direct Resource commands
-
-This remains the default and is sufficient until a real workflow proves the need for grouped, isolated, or reviewed changes.
-
-### Reuse Git directly
-
-Rejected because Git identity, refs, merge, textual patch, and code-history assumptions would redefine the Product boundary.
-
-### Add one generic version-control engine
-
-Rejected because it would hide Resource-specific invariants behind an unbounded patch model and prematurely couple four distinct semantics.
-
-### Treat proposal approval as authority
-
-Rejected because process participation cannot create Capability.
-
-Removing the Candidate lifecycle changes nothing executable today. Removing the accepted envelope would reopen Product meaning and could force inconsistent rules into UI or provider adapters.
-
-## Falsification conditions
-
-Reopen or split this boundary when:
-
-- no real no-code workflow needs grouped or isolated structured-data changes;
-- one of the four concepts has an independent owner/lifecycle that cannot remain in this contract;
-- atomic multi-Resource change is impossible or unsafe;
-- Resource-specific validation cannot be preserved through a shared proposal process; or
-- the only useful implementation requires Source Code, executable expressions, Git refs/merge, or CI/CD.
-
-## Minimum discriminating tests
-
-1. A real non-code Resource workflow proves why one direct command is insufficient.
-2. A Data Commit contains only known typed operations for one Repository and is immutable after recording.
-3. Cross-Repository and unauthorized operations fail before state or evidence changes.
-4. Applying a Change Proposal produces the same validation and authorization result as equivalent direct commands.
-5. Concurrent authority revocation or Resource change causes apply to fail closed.
-6. Data Diff redacts fields unavailable to the requesting Actor and cannot be client-authored.
-7. Branch selection changes work-state projection but never effective authority.
-8. Script, shell, executable expression, source file, git ref/merge, and secret-bearing payload fixtures are rejected.
+Any future use case must enter through a new Product/Domain decision rather than reviving this historical envelope.

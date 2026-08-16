@@ -1,77 +1,60 @@
 # Documentation Map
 
-This directory separates current Product/Domain/Architecture truth from historical evidence so normal development does not need to interpret obsolete decisions.
+This directory separates current Product/Domain/Architecture truth from benchmark evidence, implementation status, and decision history.
 
 ## Durable contract set
 
-- [`PRODUCT.md`](./PRODUCT.md): canonical root Product axiom, meanings, invariants, deferred concepts, and falsification conditions.
-- [`ONTOLOGY.md`](./ONTOLOGY.md): canonical semantic expansion and GitHub benchmark-admission rules. It does not replace `PRODUCT.md` as the root Product Contract.
-- [`IMPLEMENTATION_GAPS.md`](./IMPLEMENTATION_GAPS.md): current Open or Contained differences between target contracts and executable behavior, including risk, containment, and required closure evidence.
-- [`history/CLOSED_GAPS.md`](./history/CLOSED_GAPS.md): historical closure evidence for Closed or Superseded gaps; never current implementation truth by itself.
-- [`architecture/README.md`](./architecture/README.md): current target architecture, ownership/dependency boundaries, owner-neutral authorization, and canonical `/{owner}/{repository}` Web architecture.
-- [`architecture/ADR_INDEX.md`](./architecture/ADR_INDEX.md): decision-history router showing Accepted, Historical, and Superseded architecture decisions.
-- [`architecture/ADR-013-core-no-code-data-semantic-envelope.md`](./architecture/ADR-013-core-no-code-data-semantic-envelope.md): accepted no-code Data Change, Exchange, and Repository Derivation semantic envelope and its precise ADR-011/012 supersession boundary; it authorizes no implementation.
-- [`domains/issue-resource.md`](./domains/issue-resource.md), [`domains/discussion-resource.md`](./domains/discussion-resource.md), and [`domains/collaboration-projections.md`](./domains/collaboration-projections.md): decision-complete v1 work, conversation, planning, delivery, search, discovery, catalog, and availability semantics.
-- [`domains/structured-data-change.md`](./domains/structured-data-change.md) and [`domains/data-exchange.md`](./domains/data-exchange.md): accepted semantic envelopes with Candidate concrete lifecycles and explicit no-execution/authority boundaries.
-- [`benchmarks/GITHUB_PUBLIC_URL_UI_UX.md`](./benchmarks/GITHUB_PUBLIC_URL_UI_UX.md): dated external evidence for the GitHub public and read-only authenticated test-account URL/IA/UI/UX benchmark, indexed by `.playwright-mcp/`; not Product or implementation truth.
-- [`domains/`](./domains/README.md): candidate and accepted business problem contracts. A document here does not create a package, service, or bounded context by itself.
-- [`PLUGIN_DEVELOPMENT_WORKFLOW.md`](./PLUGIN_DEVELOPMENT_WORKFLOW.md): development-agent orchestration contract for Linear, GitHub, Notion, Context7, Codex Security, Vercel, and Supabase. It routes tools by truth class without creating another source of truth.
-- [`operations/RUNBOOK.md`](./operations/RUNBOOK.md): production release, recovery, incident, data-protection, environment-provisioning, and validation procedures.
-- [`DEVELOPMENT_ENVIRONMENT.md`](./DEVELOPMENT_ENVIRONMENT.md): workstation bootstrap and deterministic local verification entry points.
-- [`CODEX_DESKTOP.md`](./CODEX_DESKTOP.md): Codex Desktop project configuration, MCP context routing, trust boundaries, and verification.
+- [`PRODUCT.md`](./PRODUCT.md): root Product axiom, canonical meanings, invariants, deferred concepts, and falsification conditions.
+- [`ONTOLOGY.md`](./ONTOLOGY.md): canonical semantic expansion and GitHub benchmark-admission rules.
+- [`IMPLEMENTATION_GAPS.md`](./IMPLEMENTATION_GAPS.md): current Open or Contained target-to-executable mismatches.
+- [`history/CLOSED_GAPS.md`](./history/CLOSED_GAPS.md): historical closure evidence only.
+- [`architecture/README.md`](./architecture/README.md): current ownership, dependency, authorization, mutation, persistence, and Web boundaries.
+- [`architecture/ADR_INDEX.md`](./architecture/ADR_INDEX.md): decision-history router.
+- [`architecture/ADR-014-current-state-collaboration-kernel.md`](./architecture/ADR-014-current-state-collaboration-kernel.md): accepted current-state mutation and Evidence kernel.
+- [`architecture/ADR-013-core-no-code-data-semantic-envelope.md`](./architecture/ADR-013-core-no-code-data-semantic-envelope.md): superseded decision history with no current effect.
+- [`domains/`](./domains/README.md): accepted, candidate, deferred, and superseded business-problem contracts.
+- [`benchmarks/GITHUB_PUBLIC_URL_UI_UX.md`](./benchmarks/GITHUB_PUBLIC_URL_UI_UX.md): dated external URL/IA/UI/UX evidence, not Product truth.
+- [`PLUGIN_DEVELOPMENT_WORKFLOW.md`](./PLUGIN_DEVELOPMENT_WORKFLOW.md): connected-tool routing by truth class.
+- [`operations/RUNBOOK.md`](./operations/RUNBOOK.md): environment, release, recovery, and incident procedures.
+- [`DEVELOPMENT_ENVIRONMENT.md`](./DEVELOPMENT_ENVIRONMENT.md): deterministic workstation bootstrap and verification.
+- [`CODEX_DESKTOP.md`](./CODEX_DESKTOP.md): Codex context, trust, Skill routing, and verification.
 
-## Design-to-production truth model
+## Truth model
 
-```mermaid
-flowchart TB
-  product["Product Contract<br/>Repository axiom and canonical meaning"]
-  ontology["Product Ontology<br/>semantic admission and non-confusion"]
-  domain["Domain Contracts<br/>relationships, states, invariants"]
-  architecture["Current Architecture Contract<br/>ownership, authorization, delivery, persistence boundaries"]
-  executable["Executable Contracts<br/>schema, code, policies, tests, CI"]
-  production["Production Reality<br/>observations, telemetry, incidents"]
-  gaps["Current Gap Register<br/>Open / Contained prediction error"]
-  history["Historical Evidence<br/>closed gaps and superseded decisions"]
-  runbook["Operations Runbook<br/>release, recover, restore"]
+```text
+Product
+↓
+Ontology
+↓
+Narrow Domain contract
+↓
+Current Architecture
+↓
+Executable code / schema / policies / tests
+↓
+Environment and production observation
 
-  product --> ontology
-  ontology --> domain
-  domain --> architecture
-  architecture --> executable
-  executable --> production
-  executable -->|"prediction error"| gaps
-  production -->|"observed drift"| gaps
-  gaps -->|"verified closure"| history
-  history -.->|"why / regression evidence"| executable
-  production -->|"evidence and prediction error"| product
-  runbook --> production
-  production -->|"operational learning"| runbook
+Mismatch → IMPLEMENTATION_GAPS
+Verified closure → history/CLOSED_GAPS
 ```
 
-The diagram is a projection of the written contracts, not an independent source of truth.
+Generated diagrams, types, snapshots, agent output, and session context are projections or evidence. They cannot silently redefine target truth.
+
+A selected provider is not proof of a provisioned environment. A migration file is not proof of an applied migration. Local or CI verification is not production validation.
 
 ## Question-specific authority
 
 | Question | Primary authority |
 | --- | --- |
 | What does the Product mean? | `docs/PRODUCT.md` |
-| How should a GitHub-inspired concept be admitted/classified before implementation? | `docs/ONTOLOGY.md`, constrained by `docs/PRODUCT.md` |
-| What business problem, vocabulary, and invariants does a Domain own? | Narrowest relevant Domain contract plus Domain tests as executable evidence |
-| What are current ownership, dependency, authorization, URL, and Repository presentation boundaries? | `docs/architecture/README.md` and executable route/checker contracts |
-| Why was an architecture decision made, and is it still current? | `docs/architecture/ADR_INDEX.md`, then only the relevant ADR |
-| Where does current executable behavior differ from target? | `docs/IMPLEMENTATION_GAPS.md`, backed by exact executable/provider evidence |
-| How should development agents select Skills or route connected external tools? | `docs/CODEX_DESKTOP.md` Skill routing, then `docs/PLUGIN_DEVELOPMENT_WORKFLOW.md` only when external tools or evidence are needed |
-| What is current desired database structure? | `supabase/schemas/*.sql` |
-| How can an empty database be rebuilt? | Reviewed replayable migrations plus deterministic seed data |
-| Which migrations are applied in a persistent environment? | That environment's migration ledger and direct provider evidence |
-| What does current implementation do? | Executable code, policies, and tests |
-| What is actually happening in production? | Direct observation, provider telemetry, deployment evidence, and incident records |
-| How should an operator provision, release, or recover an environment? | `docs/operations/RUNBOOK.md` after verifying its preconditions |
-| How does an external dependency behave? | Current official documentation for that external system |
-
-Generated diagrams, generated types, snapshots, agent output, and session context are projections or evidence. They cannot silently redefine the target model.
-
-A selected provider is not proof of a provisioned environment. A migration file is not proof of an applied migration. Local or CI verification is not production validation.
+| How is a GitHub-derived concept admitted? | `docs/ONTOLOGY.md` plus the locked semantic Skill evidence |
+| What business problem and lifecycle does a Domain own? | Narrowest current Domain contract |
+| What are current ownership, mutation, dependency, authorization, URL, and presentation boundaries? | `docs/architecture/README.md` |
+| Why was a decision made, and is it still current? | `docs/architecture/ADR_INDEX.md`, then the relevant ADR |
+| Where does executable behavior differ from target? | `docs/IMPLEMENTATION_GAPS.md` plus exact evidence |
+| What is current implementation behavior? | Code, schema, policies, and tests |
+| What is actually happening in an environment? | Direct provider/deployment observation |
+| How should connected tools be routed? | `docs/CODEX_DESKTOP.md` then `docs/PLUGIN_DEVELOPMENT_WORKFLOW.md` |
 
 ## Current Repository truth
 
@@ -84,24 +67,22 @@ Authenticated discovery = /dashboard
 Repository discovery = /repos
 Assigned Issue inbox = /issues/assigned
 Repository knowledge = /{ownerSlug}/{repositorySlug}/wiki
+Mutation = concrete Resource command + Expected Revision when required
+Accepted result = Current State + Activity Event
 ```
 
-Canonical Repository presentation is one Owner/Repository header, primary navigation, one active child resource surface, and only proven route-specific supporting regions. See ADR-011 for responsive Parallel/Intercepting Route composition.
+Canonical Repository presentation is one Owner/Repository header, primary navigation, one active child resource surface, and only proven route-specific supporting regions.
 
-There is currently no public stable-ID Repository compatibility namespace. Stable Repository UUIDs remain internal authorization/data identities. A future compatibility obligation must be proven before adding any redirect namespace, and an Organization-only Repository UI tree is never a valid compatibility representation.
+There is currently no public stable-ID Repository compatibility namespace. Stable UUIDs remain internal authorization and data identities.
 
-## Repository work instruction order
+## Work instruction order
 
-1. Current explicit task and the applicable `AGENTS.md` chain.
-2. Canonical Product/Ontology, then the narrowest relevant Domain/current Architecture contract.
-3. Current Open/Contained implementation gaps and their containment requirements.
-4. Executable code, schema, policies, migrations, and tests for current behavior.
+1. Current task and applicable `AGENTS.md` chain.
+2. Product/Ontology, then the narrowest Domain and current Architecture contract.
+3. Current Open/Contained gaps and containment.
+4. Executable code, schema, policies, migrations, and tests.
 5. Direct observations and current official external documentation.
-6. For decision history, read `architecture/ADR_INDEX.md` first and open only the relevant historical record when the task asks why or investigates a regression.
+6. Decision history only when the task asks why or investigates regression.
 7. Generated projections and transient context.
 
-When target contracts and executable behavior disagree, do not hide the difference. Determine whether the earliest invalid boundary is Product, Domain, Architecture, executable projection, or environment evidence, then correct that boundary and every affected downstream projection.
-
-An open authorization or data-integrity gap is not a roadmap note. It blocks claims that the affected capability is production-validated until required closure evidence exists.
-
-OpenAI Developer Docs, Context7, GitHub documentation, Supabase documentation, and other official sources answer questions about their respective external systems. They do not silently redefine this platform.
+When target and executable behavior disagree, identify the earliest wrong boundary and correct every downstream projection. An open authorization or data-integrity gap blocks production-validation claims.

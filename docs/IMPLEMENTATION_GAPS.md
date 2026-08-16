@@ -6,127 +6,126 @@
 
 ## Purpose
 
-This register records current observed differences between accepted or candidate target contracts and the executable baseline.
+This register records current observed differences between accepted or Candidate target contracts and executable behavior.
 
-It contains detailed entries only for **Open** or **Contained** gaps. Closed and Superseded gap evidence is historical and lives in [`history/CLOSED_GAPS.md`](./history/CLOSED_GAPS.md), so historical failure states do not compete with current truth during normal development.
+It contains detail only for **Open** or **Contained** gaps. Closed and Superseded evidence lives in [`history/CLOSED_GAPS.md`](./history/CLOSED_GAPS.md).
 
-A gap is not permission to redefine the target model, postpone an invariant silently, or treat unsafe behavior as supported. It is a bounded statement of prediction error with explicit containment and closure evidence.
+A gap cannot redefine the target model, silently postpone an invariant, or present unsafe behavior as supported.
 
 ## Register rules
 
 1. Every current gap has a stable identifier, status, affected contract, direct evidence, risk, containment, owner, and closure evidence.
-2. Evidence must name exact code, schema, policy, test, provider observation, or incident. Inference must be labeled.
-3. Open authorization or data-integrity gaps block production-validation claims for the affected capability.
-4. Temporary containment must fail closed where identity, authority, ownership, or data integrity is uncertain.
-5. A merged implementation does not close a gap by itself. Required tests/runtime evidence must pass for the exact change.
-6. Once a gap is Closed or Superseded, move detailed evidence to `history/CLOSED_GAPS.md` and retain only an index entry here.
-7. If a gap proves target contract wrong, update the earliest invalid Product/Domain/Architecture boundary rather than weakening executable enforcement silently.
-8. External CI/provider failure is evidence about the execution environment, not automatically a Product/Domain regression. Classify the failing boundary before changing a gap's semantic status.
+2. Evidence names exact code, schema, policy, test, provider observation, or incident; inference is labeled.
+3. Open authorization or data-integrity gaps block production-validation claims.
+4. Temporary containment fails closed where identity, authority, ownership, or integrity is uncertain.
+5. A merged change does not close a gap without exact verification evidence.
+6. Closed or Superseded detail moves to history.
+7. If evidence proves the target wrong, correct the earliest Product/Domain/Architecture boundary.
+8. External CI/provider failure is environment evidence, not automatically Product regression.
 
 ## Status model
 
 - **Open**: mismatch exists and closure evidence is incomplete.
-- **Contained**: mismatch exists, but verified control prevents unsafe/supported claims.
-- **Closed**: executable behavior and required evidence match target contract; detail belongs in history.
-- **Superseded**: another gap/contract replaces the framing; detail belongs in history.
+- **Contained**: mismatch exists, but verified control prevents unsafe or misleading claims.
+- **Closed**: executable behavior and evidence match target; detail belongs in history.
+- **Superseded**: another gap or contract replaces the framing; detail belongs in history.
 
-## Open gaps
+## Current gaps
 
 ### GAP-COLLABORATION-SURFACES-001 — Accepted collaboration surfaces have truthful breadth while selected delivery remains Preview or Deferred
 
 - Status: Contained
-- Affected contracts: [`PRODUCT.md`](./PRODUCT.md), [`ONTOLOGY.md`](./ONTOLOGY.md), [`domains/repository-collaboration.md`](./domains/repository-collaboration.md), [`architecture/README.md`](./architecture/README.md), [ADR-011](./architecture/ADR-011-github-surface-parallel-composition.md)
-- Affected invariants: Repository remains the only collaboration Container; Issue/Discussion stable identity and lifecycle are Repository-scoped; Project/Notification/Search/Explore/Marketplace are non-owning Projections; availability is honest; code-product surfaces are absent
-- Risk class: target/executable mismatch and misleading feature-readiness claims
+- Affected contracts: [`PRODUCT.md`](./PRODUCT.md), [`ONTOLOGY.md`](./ONTOLOGY.md), [`domains/repository-collaboration.md`](./domains/repository-collaboration.md), [`architecture/README.md`](./architecture/README.md), [ADR-011](./architecture/ADR-011-github-surface-parallel-composition.md), [ADR-014](./architecture/ADR-014-current-state-collaboration-kernel.md)
+- Risk class: target/executable mismatch and misleading readiness claims
 
 #### Direct evidence
 
-- [`.playwright-mcp/github-urls.json`](../.playwright-mcp/github-urls.json) indexes the sanitized URL-resource and component inventories plus retained responsive screenshots, including the target Issue comparison set.
-- [`.playwright-mcp/github-ui-ux.md`](../.playwright-mcp/github-ui-ux.md) records canonical redirects, Dashboard/account context switching, Repository navigation, Issues, Projects attachment behavior, Discussions availability, Wiki/Page behavior, Activity, Security posture, Settings, Notifications, and governance surfaces.
-- The accepted target URL set includes Repository Issues, Projects attachment list, Discussions, Wiki/Page knowledge, Activity, Security posture, and Settings; actor-level Repository/Issue/Project/Discussion discovery, Notifications, Search, Organization governance, and personal Settings are separate resource/projection families rather than Repository children.
-- The executable App Router exposes GitHub-aligned `/dashboard`, `/repos`, `/issues/assigned`, shared `/{ownerSlug}` identity, canonical `/{ownerSlug}/{repositorySlug}` Repository routes, `/wiki`, split Organization operational/settings URL families, and explicit `live | preview | deferred` availability. Source Code, Git, Pull Request, Gist, Actions, and arbitrary execution surfaces are absent.
-- Issue and Discussion have executable Domain/Application/schema/adapter/Web command lifecycles with Repository-local numbering, optimistic concurrency, flat comments, Activity Evidence, question-only Answer selection, and independent Discussion moderation state. Notifications, Search, Explore, and Repository Projects are authorized read projections; Notification preference and inbox-state commands are live.
-- The remaining delivery mismatch is explicit rather than product-semantic uncertainty: `/issues/assigned`, `/discussions`, selected account/Organization/settings surfaces, and the provider-neutral Marketplace catalog remain Preview; Team, Enterprise, and connector installation/connection remain Deferred by Product decision.
+- [`.playwright-mcp/github-urls.json`](../.playwright-mcp/github-urls.json) indexes sanitized benchmark URL/component inventories and responsive screenshots.
+- The executable App Router exposes GitHub-aligned `/dashboard`, `/repos`, `/issues/assigned`, shared `/{ownerSlug}` identity, canonical `/{ownerSlug}/{repositorySlug}`, `/wiki`, split Organization route families, and `live | preview | deferred` availability.
+- Issue and Discussion have typed Domain/Application/schema/adapter/Web command lifecycles with Repository-local numbering, concurrency preconditions, flat comments, and Activity Event Evidence.
+- Notifications, Search, Explore, and Repository Projects are authorized read Projections; selected routes remain Preview and Team, Enterprise, and connector installation remain Deferred.
+- Source Code, arbitrary execution, and source-control-shaped Product surfaces are absent.
 
 #### Predicted failure
 
-Without containment, documentation or UI work could present target-only surfaces as available, normalize admitted GitHub URLs into invented target aliases, invent Issue/Discussion state in React components, create Repository-owned Project detail identity, duplicate Page/Knowledge identity, or add Parallel slots without independent loading/recovery value.
+Without containment, documentation or UI could fabricate availability, invent state in React components, create Repository-owned Project detail identity, duplicate Page/Knowledge identity, leak inaccessible projection data, or restore a rejected data-history mental model.
 
 #### Temporary containment
 
-- Product admission is explicitly separated from implementation status in Product, Architecture, and Web instruction contracts.
-- Every surface must declare `live | preview | deferred`; Preview may render routing, layout, query state, form shape, and control intent but cannot fabricate data, authorization, persistence, or success.
-- Preview and Deferred surfaces expose no fabricated records, authority, persistence, installation, or successful controls. Raw Issue and Discussion table mutation paths fail closed; live changes pass through typed commands.
-- Project remains a read/planning Projection; Repository `/projects` cannot establish Project ownership or independent authority.
-- Source Code, Git refs/merge, code review, Code Search, executable payloads, CI/CD, and Git-backed Wiki history remain excluded even when visible in benchmark screenshots. Product/Ontology and ADR-013 accept the Data Commit, Data Branch, Data Diff, Change Proposal, Data Transfer, Data Capsule, and Repository Derivation semantic envelope, but no concrete identity, lifecycle, Capability, schema, API, route, or UI is thereby accepted. Executable behavior remains absent and fails closed until the Candidate concrete Domain lifecycles and discriminating tests are separately accepted.
+- Product admission and implementation status remain separate.
+- Every surface declares `live | preview | deferred`.
+- Preview and Deferred surfaces create no fabricated records, authority, persistence, installation, or success.
+- Project remains a read/planning Projection.
+- `/wiki` remains Page/Knowledge presentation without a second aggregate or history model.
+- Current mutation is limited to concrete Resource commands, Expected Revision where required, authoritative Current State, and separate Activity Event Evidence.
+- No alternate state line, generic history graph, proposal-convergence process, data capsule, Repository ancestry, typed transfer, or copying lifecycle is accepted or implemented.
+- Any future State Comparison, typed transfer, or Repository duplication requires a separate Product decision and discriminating tests.
 
 #### Closure evidence
 
 Close only after the same exact change set proves:
 
-1. Issue and Discussion executable Domain/Application/schema/adapters prove the already accepted stable Repository-scoped lifecycle, authorization, comments/relationships, optimistic concurrency, and Activity Evidence without code-domain dependencies.
-2. Application use cases and provider adapters preserve Repository authorization and do not place Domain decisions in React components.
-3. The App Router implements accepted target routes with Server Components by default and only minimal interaction islands.
-4. Every retained `@sidebar`, `@activity`, and `@modal` slot has explicit unmatched soft-navigation behavior and a removal test proving independent responsibility.
-5. Issue and Discussion modal/full-page modes, where retained, share canonical URL and authorization; refresh, Back, and Forward behave identically for stable resource identity.
-6. Projects stays an attachment/list Projection and owner-scoped Project detail does not appear under a Repository-owned detail path.
-7. `/wiki` remains one presentation identity over Page/Knowledge with no Git-backed history semantics.
-8. GitHub `/dashboard`, `/repos`, `/issues/assigned`, split Organization namespaces, and command paths remain the admitted presentation baseline without Domain vocabulary being used to rename them.
-9. Notification access revocation leaks no title/snippet/count/URL; Search authorization precedes ranking/count/snippet; Project filters do not mutate Artifacts; Discussion Answer is question-only; Context switching does not change effective authorization.
-10. Production build and browser logs report no build, type, runtime, or hydration regression for each implemented slice.
-11. Playwright validates GitHub-aligned local behavior at the accepted responsive viewports without credentials or private request material.
+1. Issue and Discussion executable lifecycles remain Repository-scoped and authorization-equivalent across presentation modes.
+2. Application use cases and adapters keep Domain decisions out of React components.
+3. accepted routes use Server Components by default and minimal interaction islands;
+4. every retained supporting slot has independent responsibility and safe unmatched behavior;
+5. modal/full-page modes share canonical identity and authorization;
+6. Project remains a Projection with no Repository-owned detail identity;
+7. `/wiki` remains Page/Knowledge presentation without another aggregate or history model;
+8. benchmark URLs remain stable without Domain-driven renaming;
+9. Notification, Search, planning, Discussion Answer, and Context invariants pass adversarial tests;
+10. build and browser logs report no type, runtime, or hydration regression; and
+11. Playwright validates accepted responsive behavior without credentials or private request material.
 
 ### GAP-IDENTITY-001 — Identity lifecycle remains incomplete after verified Session and recovery establishment
 
 - Status: Open
 - Affected contract: [`domains/identity-lifecycle.md`](./domains/identity-lifecycle.md)
-- Affected invariants: Product Actor readiness, invitation continuity, credential/session security, and production provider evidence
-- Risk class: Incomplete product entry, identity governance, and operational readiness
+- Risk class: incomplete product entry, identity governance, and hosted-provider readiness
 
 #### Direct evidence
 
-- The executable slice implements password registration, email verification, ordinary Session establishment, current-Session sign-out, Profile creation through the existing `auth.users` trigger, password-recovery request, provider recovery proof, Recovery Session discrimination, and password reset.
-- Recovery is intentionally single-purpose: `GetCurrentIdentity` excludes signed Sessions whose `amr` contains `recovery`; `/reset-password` requires recovery evidence; an ordinary password Session cannot use recovery reset; recovery creates no Membership, Grant, Capability, or Activity facts.
-- `apps/web/e2e/auth.spec.ts` carries a local Mailpit path from registration/verification through recovery proof, recovery-only routing, reset, fresh ordinary sign-in, and rejection of ordinary Sessions from recovery page.
-- No Application use case or human-facing route currently implements Organization invitation acceptance, email change, MFA, Session listing, selective revocation UI, or enterprise identity policy.
-- Direct provider discovery on 2026-08-15 found a hosted Supabase project, but no repository application schema or migration ledger is established there and it is not accepted as Preview, Staging, or Production. Hosted Auth redirect, SMTP, CAPTCHA/abuse protection, notification, and Session settings remain unverified.
-- Open registration intentionally creates no Organization Membership or Repository Grant.
+- The executable slice implements password registration, verification, ordinary Session establishment, sign-out, Profile creation, password recovery, Recovery Session discrimination, and password reset.
+- Recovery is single-purpose and does not create Membership, Grant, Capability, or Activity authority.
+- No Application use case or human route implements Organization invitation acceptance, email change, MFA, Session listing, selective revocation, or enterprise identity policy.
+- A hosted Supabase project was observed, but its application schema, migration ledger, Auth delivery, SMTP, abuse protection, templates, and Session settings are not accepted environment evidence.
+- Open registration creates no Organization Membership or Repository Grant.
 
 #### Predicted failure
 
-A User can establish/recover the current local email/password credential flow, but cannot accept an Organization invitation or manage stronger account-security lifecycle operations through the product. Local success may not match hosted Auth delivery/security behavior.
+A User can establish and recover the local email/password flow but cannot complete invitation or stronger account-security lifecycles. Hosted behavior may differ from local evidence.
 
 #### Temporary containment
 
-- Recovery is exposed only through the accepted single-purpose Recovery Session path; a recovery-authenticated request is not accepted as ordinary `/dashboard` identity.
-- Unsupported invitation, MFA, OAuth, SSO, Session-management, and broader account-security behavior is not described as available.
-- Registration/recovery do not create collaboration authority; authenticated Users without persisted authority remain unauthorized by RLS.
-- A hosted provider project is not treated as an accepted identity environment merely because it exists. Production identity readiness remains blocked until hosted configuration/delivery are directly verified.
+- Recovery Session cannot enter `/dashboard` as an ordinary Product Session.
+- Unsupported invitation, MFA, OAuth, SSO, Session-management, and enterprise identity behavior is not described as available.
+- Registration and recovery create no collaboration authority.
+- Provider existence is not accepted as Preview, Staging, or Production readiness.
 
 #### Closure evidence
 
 Close only after:
 
-1. password recovery/reset are exact-head verified without account enumeration, ordinary-Session bypass, or Recovery-Session product access;
-2. Product Actor readiness has one authoritative minimal model and does not manufacture an unnecessary onboarding state;
-3. Organization invitations survive sign-in/registration/verification/recovery without implicit invalid Membership;
-4. credential/Session security operations have explicit scope/reauthentication rules;
-5. hosted Supabase redirect, SMTP, abuse-protection, template, notification, and Session settings are verified in an accepted environment; and
-6. Application, adapter, browser, provider, and operational tests produce consistent evidence.
+1. recovery/reset is exact-head verified without enumeration, ordinary-Session bypass, or Recovery-Session Product access;
+2. Product Actor readiness has one authoritative minimum model;
+3. Organization invitations survive identity transitions without invalid implicit Membership;
+4. credential and Session operations have explicit reauthentication and scope;
+5. hosted redirect, SMTP, abuse, template, notification, and Session settings are verified in an accepted environment; and
+6. Application, adapter, browser, provider, and operational evidence agree.
 
 ## Closed gap index
 
-- `GAP-OWNERSHIP-001` — Closed by exact-head verification on `7423d82d558c904ba12cb6a1d83a5eb4941e6bfd`; see [`history/CLOSED_GAPS.md`](./history/CLOSED_GAPS.md#gap-ownership-001--repository-ownership-and-creation-required-owner-neutral-executable-alignment).
-- `GAP-PAGE-001` — Closed by PR #23; see [`history/CLOSED_GAPS.md`](./history/CLOSED_GAPS.md#gap-page-001--generic-data-api-mutation-bypassed-accepted-page-commands).
-- `GAP-LIFECYCLE-002` — Closed by PR #22; see [`history/CLOSED_GAPS.md`](./history/CLOSED_GAPS.md#gap-lifecycle-002--resource-destructive-lifecycle-was-not-accepted).
-- `GAP-LIFECYCLE-001` — Closed by PR #16; see [`history/CLOSED_GAPS.md`](./history/CLOSED_GAPS.md#gap-lifecycle-001--destructive-organization-and-repository-lifecycle-was-not-accepted).
-- `GAP-AUTH-001` — Closed by PR #13; see [`history/CLOSED_GAPS.md`](./history/CLOSED_GAPS.md#gap-auth-001--authority-mutation-conflated-operation-capability-and-delegation-authority).
+- `GAP-OWNERSHIP-001` — Closed; see [`history/CLOSED_GAPS.md`](./history/CLOSED_GAPS.md#gap-ownership-001--repository-ownership-and-creation-required-owner-neutral-executable-alignment).
+- `GAP-PAGE-001` — Closed; see [`history/CLOSED_GAPS.md`](./history/CLOSED_GAPS.md#gap-page-001--generic-data-api-mutation-bypassed-accepted-page-commands).
+- `GAP-LIFECYCLE-002` — Closed; see [`history/CLOSED_GAPS.md`](./history/CLOSED_GAPS.md#gap-lifecycle-002--resource-destructive-lifecycle-was-not-accepted).
+- `GAP-LIFECYCLE-001` — Closed; see [`history/CLOSED_GAPS.md`](./history/CLOSED_GAPS.md#gap-lifecycle-001--destructive-organization-and-repository-lifecycle-was-not-accepted).
+- `GAP-AUTH-001` — Closed; see [`history/CLOSED_GAPS.md`](./history/CLOSED_GAPS.md#gap-auth-001--authority-mutation-conflated-operation-capability-and-delegation-authority).
 
 ## Closure protocol
 
-1. Reproduce mismatch with minimum discriminating test.
-2. Fix earliest invalid target/executable boundary.
+1. Reproduce the mismatch with the minimum discriminating test.
+2. Fix the earliest invalid target or executable boundary.
 3. Add regression evidence at every independently permissive enforcement layer.
-4. Record closing commit/PR/CI/migration/operational evidence when applicable.
-5. Distinguish Product/regression failure from external CI/provider failure before changing semantic status.
-6. Change status only after evidence review, then move detailed entry to historical archive.
+4. Record exact commit, PR, CI, migration, and operational evidence when applicable.
+5. Classify Product regression separately from external CI/provider failure.
+6. Change status only after evidence review, then move detail to history.
