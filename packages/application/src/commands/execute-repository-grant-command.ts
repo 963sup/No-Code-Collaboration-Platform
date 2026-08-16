@@ -1,6 +1,7 @@
 import {
   canMutateRepositoryGrantForPrincipal,
   effectiveRepositoryRole,
+  isRepositoryGrantRoleAllowed,
   type RepositoryRole
 } from '@no-code-collaboration-platform/domain/access';
 
@@ -98,6 +99,7 @@ export class ExecuteRepositoryGrantCommand {
     }
 
     if (
+      (proposedRole !== null && !isRepositoryGrantRoleAllowed(repository.owner.kind, proposedRole)) ||
       !canMutateRepositoryGrantForPrincipal(
         actorRole,
         expectedRole,
