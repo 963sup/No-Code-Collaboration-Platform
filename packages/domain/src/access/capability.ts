@@ -51,7 +51,7 @@ const maintainCapabilities = [
   'discussion.announce'
 ] as const satisfies readonly RepositoryCapability[];
 
-export const repositoryCapabilitiesByRole: Readonly<
+const repositoryCapabilitiesByRole: Readonly<
   Record<RepositoryRole, readonly RepositoryCapability[]>
 > = {
   read: readCapabilities,
