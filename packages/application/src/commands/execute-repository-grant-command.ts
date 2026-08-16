@@ -99,7 +99,8 @@ export class ExecuteRepositoryGrantCommand {
     }
 
     if (
-      (proposedRole !== null && !isRepositoryGrantRoleAllowed(repository.owner.kind, proposedRole)) ||
+      (proposedRole !== null &&
+        !isRepositoryGrantRoleAllowed(repository.owner.kind, proposedRole)) ||
       !canMutateRepositoryGrantForPrincipal(
         actorRole,
         expectedRole,

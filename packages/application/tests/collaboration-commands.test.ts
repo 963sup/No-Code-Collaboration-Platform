@@ -20,7 +20,11 @@ const privateRepository = {
   visibility: 'private' as const
 };
 
-const publicRepository = { ...privateRepository, id: 'repository-public', visibility: 'public' as const };
+const publicRepository = {
+  ...privateRepository,
+  id: 'repository-public',
+  visibility: 'public' as const
+};
 
 function identityProvider(actorId: string | null): IdentityProvider {
   return {
@@ -106,7 +110,7 @@ function issueReader(createdBy = 'issue-author'): IssueReader {
 }
 
 describe('collaboration commands', () => {
-  it('lets Read create/comment but denies editing somebody else\'s private Issue', async () => {
+  it("lets Read create/comment but denies editing somebody else's private Issue", async () => {
     const executeIssueCommand = vi.fn().mockResolvedValue({ ok: false, reason: 'state-changed' });
     const useCase = new ExecuteIssueCommand(
       identityProvider('actor-1'),
@@ -213,7 +217,9 @@ describe('collaboration commands', () => {
     });
     expect(executeIssueCommand).toHaveBeenCalledWith(createIssue);
 
-    const executeDiscussionCommand = vi.fn().mockResolvedValue({ ok: false, reason: 'state-changed' });
+    const executeDiscussionCommand = vi
+      .fn()
+      .mockResolvedValue({ ok: false, reason: 'state-changed' });
     const discussionUseCase = new ExecuteDiscussionCommand(
       identityProvider('actor-1'),
       repositoryReader(publicRepository),
@@ -235,7 +241,9 @@ describe('collaboration commands', () => {
   });
 
   it('reserves Announcement creation to Maintain or Admin', async () => {
-    const executeDiscussionCommand = vi.fn().mockResolvedValue({ ok: false, reason: 'state-changed' });
+    const executeDiscussionCommand = vi
+      .fn()
+      .mockResolvedValue({ ok: false, reason: 'state-changed' });
     const command = {
       body: '',
       category: 'announcement' as const,
@@ -250,7 +258,10 @@ describe('collaboration commands', () => {
       accessReader('write'),
       { executeDiscussionCommand }
     );
-    await expect(writeUseCase.execute(command)).resolves.toEqual({ ok: false, reason: 'forbidden' });
+    await expect(writeUseCase.execute(command)).resolves.toEqual({
+      ok: false,
+      reason: 'forbidden'
+    });
     expect(executeDiscussionCommand).not.toHaveBeenCalled();
 
     const maintainUseCase = new ExecuteDiscussionCommand(
@@ -267,7 +278,9 @@ describe('collaboration commands', () => {
   });
 
   it('lets Triage moderate a Discussion while Read cannot', async () => {
-    const executeDiscussionCommand = vi.fn().mockResolvedValue({ ok: false, reason: 'state-changed' });
+    const executeDiscussionCommand = vi
+      .fn()
+      .mockResolvedValue({ ok: false, reason: 'state-changed' });
     const command = {
       expectedVersion: 1,
       discussionId: 'discussion-1',

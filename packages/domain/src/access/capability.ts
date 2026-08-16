@@ -76,9 +76,7 @@ export function hasRepositoryCapability(
   return repositoryCapabilitiesByRole[role].includes(capability);
 }
 
-export function highestRepositoryRole(
-  roles: readonly RepositoryRole[]
-): RepositoryRole | null {
+export function highestRepositoryRole(roles: readonly RepositoryRole[]): RepositoryRole | null {
   return roles.reduce<RepositoryRole | null>((highest, role) => {
     if (highest === null || repositoryRoleRank[role] > repositoryRoleRank[highest]) return role;
     return highest;

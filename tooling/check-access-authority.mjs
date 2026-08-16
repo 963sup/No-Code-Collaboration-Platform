@@ -195,8 +195,18 @@ for (const role of ['read', 'triage', 'write', 'maintain']) {
   );
 }
 
-for (const symbol of ['requiredIssueCapability', 'issueAuthorMayExecute', "command.type === 'edit'", "command.type === 'close'"]) {
-  requireText(paths.issueDomain, documents.issueDomain, symbol, `${symbol} Issue authority rule is missing`);
+for (const symbol of [
+  'requiredIssueCapability',
+  'issueAuthorMayExecute',
+  "command.type === 'edit'",
+  "command.type === 'close'"
+]) {
+  requireText(
+    paths.issueDomain,
+    documents.issueDomain,
+    symbol,
+    `${symbol} Issue authority rule is missing`
+  );
 }
 requireText(
   paths.issueCommand,
@@ -211,8 +221,18 @@ requireText(
   'Issue author rule must remain a Domain decision'
 );
 
-for (const path of [paths.pageCreate, paths.pageUpdate, paths.issueCommand, paths.discussionCommand]) {
-  requireText(path, documents[Object.keys(paths).find((key) => paths[key] === path)], "actorTrust: 'authenticated'", `${path} must distinguish authenticated participation from anonymous visibility`);
+for (const path of [
+  paths.pageCreate,
+  paths.pageUpdate,
+  paths.issueCommand,
+  paths.discussionCommand
+]) {
+  requireText(
+    path,
+    documents[Object.keys(paths).find((key) => paths[key] === path)],
+    "actorTrust: 'authenticated'",
+    `${path} must distinguish authenticated participation from anonymous visibility`
+  );
 }
 
 for (const symbol of [
@@ -222,7 +242,12 @@ for (const symbol of [
   'expectedRole',
   'proposedRole'
 ]) {
-  requireText(paths.applicationPort, documents.applicationPort, symbol, `${symbol} Port contract is missing`);
+  requireText(
+    paths.applicationPort,
+    documents.applicationPort,
+    symbol,
+    `${symbol} Port contract is missing`
+  );
 }
 for (const symbol of [
   'canMutateRepositoryGrantForPrincipal',
@@ -259,7 +284,12 @@ for (const symbol of [
   "rpc('list_repository_direct_grants'",
   "'execute_repository_grant_command'"
 ]) {
-  requireText(paths.adapter, documents.adapter, symbol, `${symbol} Supabase adapter mapping is missing`);
+  requireText(
+    paths.adapter,
+    documents.adapter,
+    symbol,
+    `${symbol} Supabase adapter mapping is missing`
+  );
 }
 
 requireText(
@@ -287,7 +317,12 @@ for (const symbol of [
   'revokeRepositoryGrant',
   'databaseUuidSchema'
 ]) {
-  requireText(paths.webPage, webBoundary, symbol, `${symbol} Web/Application composition is missing`);
+  requireText(
+    paths.webPage,
+    webBoundary,
+    symbol,
+    `${symbol} Web/Application composition is missing`
+  );
 }
 for (const forbidden of ['@supabase/', 'repository_user_grants']) {
   forbidText(
@@ -377,7 +412,12 @@ for (const symbol of [
   'private.can_manage_repository_grant',
   'private.is_repository_grant_role_allowed'
 ]) {
-  requireText(paths.rls, documents.rls, symbol, `${symbol} canonical Direct Grant RLS guard is missing`);
+  requireText(
+    paths.rls,
+    documents.rls,
+    symbol,
+    `${symbol} canonical Direct Grant RLS guard is missing`
+  );
 }
 for (const symbol of [
   "when 'edit' then (",
@@ -426,15 +466,24 @@ for (const [path, content] of [
   }
 }
 for (const [path, content, phrases] of [
-  [paths.pageContract, documents.pageContract, ['page.create', 'page.update', 'public Repository', 'collaborator']],
-  [paths.issueContract, documents.issueContract, ['issue.create', 'issue.manage', 'Issue author', 'Triage']],
+  [
+    paths.pageContract,
+    documents.pageContract,
+    ['page.create', 'page.update', 'public Repository', 'collaborator']
+  ],
+  [
+    paths.issueContract,
+    documents.issueContract,
+    ['issue.create', 'issue.manage', 'Issue author', 'Triage']
+  ],
   [
     paths.discussionContract,
     documents.discussionContract,
     ['discussion.comment.locked', 'discussion.announce', 'Read', 'Triage', 'Maintain']
   ]
 ]) {
-  for (const phrase of phrases) requireText(path, content, phrase, `${phrase} current Resource authority truth is missing`);
+  for (const phrase of phrases)
+    requireText(path, content, phrase, `${phrase} current Resource authority truth is missing`);
 }
 
 for (const phrase of [
@@ -442,7 +491,12 @@ for (const phrase of [
   'Read cannot enumerate raw Direct Grant rows through RLS',
   'Maintain cannot manage Direct Repository Grants'
 ]) {
-  requireText(paths.databaseTest, documents.databaseTest, phrase, `${phrase} database regression evidence is missing`);
+  requireText(
+    paths.databaseTest,
+    documents.databaseTest,
+    phrase,
+    `${phrase} database regression evidence is missing`
+  );
 }
 for (const phrase of [
   'Maintain cannot create a Write Direct Grant',
@@ -479,7 +533,12 @@ for (const symbol of [
   "selectOption('read')",
   'repository_grant.revoked'
 ]) {
-  requireText(paths.browserTest, documents.browserTest, symbol, `${symbol} two-User browser journey is missing`);
+  requireText(
+    paths.browserTest,
+    documents.browserTest,
+    symbol,
+    `${symbol} two-User browser journey is missing`
+  );
 }
 
 const result = {

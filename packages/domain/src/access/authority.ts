@@ -38,7 +38,10 @@ export interface RepositoryCapabilityDecision extends RepositoryAccessExplanatio
   readonly requestedCapability: RepositoryCapability;
 }
 
-const publicReadCapabilities = ['repository.view', 'resource.view'] as const satisfies readonly RepositoryCapability[];
+const publicReadCapabilities = [
+  'repository.view',
+  'resource.view'
+] as const satisfies readonly RepositoryCapability[];
 
 const authenticatedPublicParticipationCapabilities = [
   'issue.create',

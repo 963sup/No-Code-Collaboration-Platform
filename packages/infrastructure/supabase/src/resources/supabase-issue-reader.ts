@@ -74,14 +74,17 @@ export class SupabaseIssueReader implements IssueReader, IssueWriter {
     return data ? this.hydrate(data) : null;
   }
 
-  public async findAccessibleIssueById(query: AccessibleIssueByIdQuery): Promise<IssueDetail | null> {
+  public async findAccessibleIssueById(
+    query: AccessibleIssueByIdQuery
+  ): Promise<IssueDetail | null> {
     const { data, error } = await this.client
       .from('issues')
       .select(issueDetailProjection)
       .eq('repository_id', query.repositoryId)
       .eq('id', query.issueId)
       .maybeSingle();
-    if (error) throw new Error('Unable to load the accessible Issue command target.', { cause: error });
+    if (error)
+      throw new Error('Unable to load the accessible Issue command target.', { cause: error });
     return data ? this.hydrate(data) : null;
   }
 

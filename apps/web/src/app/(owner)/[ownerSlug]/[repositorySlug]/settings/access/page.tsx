@@ -200,8 +200,8 @@ export default async function RepositoryAccessPage({
             <CardDescription>
               A Direct User Grant is an explicit User → Repository authority relationship.
               Collaborator is derived only after effective access is resolved; it is not the stored
-              relationship. Grants remain independent from Organization Membership and cannot
-              target the acting User itself.
+              relationship. Grants remain independent from Organization Membership and cannot target
+              the acting User itself.
             </CardDescription>
           </CardHeader>
           <CardContent className='space-y-6'>

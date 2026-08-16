@@ -88,26 +88,50 @@ const invariantContracts = {
   'apps/web/AGENTS.md': [
     [/Web -> Application -> Domain/i, 'Web dependency direction is missing'],
     [/Authentication is not authorization/i, 'authentication/authorization separation is missing'],
-    [/Supabase implementations enter Web only through `src\/composition`/i, 'composition boundary is missing']
+    [
+      /Supabase implementations enter Web only through `src\/composition`/i,
+      'composition boundary is missing'
+    ]
   ],
   'apps/web/src/app/AGENTS.md': [
-    [/Route Groups.*never become Product URL semantics/is, 'Route Group/Product boundary is missing'],
-    [/Hard navigation and soft navigation.*same stable identity and authorization/is, 'navigation identity invariant is missing']
+    [
+      /Route Groups.*never become Product URL semantics/is,
+      'Route Group/Product boundary is missing'
+    ],
+    [
+      /Hard navigation and soft navigation.*same stable identity and authorization/is,
+      'navigation identity invariant is missing'
+    ]
   ],
   'apps/web/src/app/(owner)/AGENTS.md': [
     [/\/\{ownerSlug\}.*shared.*User.*Organization/is, 'shared Owner namespace is missing'],
     [/URL shape never determines Owner kind/i, 'Owner-kind resolution boundary is missing'],
-    [/\/\{ownerSlug\}\/\{repositorySlug\}.*canonical Repository identity/is, 'Repository URL is missing'],
+    [
+      /\/\{ownerSlug\}\/\{repositorySlug\}.*canonical Repository identity/is,
+      'Repository URL is missing'
+    ],
     [/query state never changes identity.*authorization/is, 'Owner Context boundary is missing'],
-    [/Presentation Context and slot state never become authorization inputs/i, 'presentation boundary is missing']
+    [
+      /Presentation Context and slot state never become authorization inputs/i,
+      'presentation boundary is missing'
+    ]
   ],
   'apps/web/src/app/(auth)/AGENTS.md': [
-    [/never grant Organization Membership.*Capability/is, 'authentication authority boundary is missing'],
-    [/known same-application routes.*open redirect/is, 'safe authentication redirect boundary is missing']
+    [
+      /never grant Organization Membership.*Capability/is,
+      'authentication authority boundary is missing'
+    ],
+    [
+      /known same-application routes.*open redirect/is,
+      'safe authentication redirect boundary is missing'
+    ]
   ],
   'apps/web/src/composition/AGENTS.md': [
     [/only Web-owned provider construction boundary/i, 'provider-construction owner is missing'],
-    [/Service-role or admin credentials.*server-only/is, 'server-only credential boundary is missing']
+    [
+      /Service-role or admin credentials.*server-only/is,
+      'server-only credential boundary is missing'
+    ]
   ],
   'docs/benchmarks/AGENTS.md': [
     [/Benchmarks are evidence, not Product admission/i, 'benchmark/Product boundary is missing'],
@@ -115,54 +139,105 @@ const invariantContracts = {
   ],
   'docs/history/AGENTS.md': [
     [/never the current truth router/i, 'history/current-truth boundary is missing'],
-    [/closed gap must point to the executable evidence/i, 'gap closure evidence requirement is missing']
+    [
+      /closed gap must point to the executable evidence/i,
+      'gap closure evidence requirement is missing'
+    ]
   ],
   'docs/operations/AGENTS.md': [
-    [/Never present an untested command or provider assumption as operational truth/i, 'operational truth boundary is missing'],
-    [/selected adapter is not a provisioned environment/i, 'adapter/provisioning distinction is missing'],
+    [
+      /Never present an untested command or provider assumption as operational truth/i,
+      'operational truth boundary is missing'
+    ],
+    [
+      /selected adapter is not a provisioned environment/i,
+      'adapter/provisioning distinction is missing'
+    ],
     [/migration file is not an applied deployment/i, 'migration/deployment distinction is missing'],
-    [/Direct production mutation requires explicit user intent/i, 'production mutation boundary is missing']
+    [
+      /Direct production mutation requires explicit user intent/i,
+      'production mutation boundary is missing'
+    ]
   ],
   'packages/domain/src/AGENTS.md': [
-    [/Owner is exactly a typed User or Organization relationship/i, 'typed Repository owner invariant is missing'],
+    [
+      /Owner is exactly a typed User or Organization relationship/i,
+      'typed Repository owner invariant is missing'
+    ],
     [/undefined transitions explicitly/i, 'undefined transition boundary is missing']
   ],
   'packages/domain/src/access/AGENTS.md': [
-    [/Role.*named bundle[\s\S]*Capability.*authorization decision vocabulary/i, 'Role/Capability boundary is missing'],
-    [/Every Grant mutation evaluates[\s\S]*actor Role[\s\S]*current target Role[\s\S]*proposed Role/i, 'Grant transition invariant is missing'],
+    [
+      /Role.*named bundle[\s\S]*Capability.*authorization decision vocabulary/i,
+      'Role/Capability boundary is missing'
+    ],
+    [
+      /Every Grant mutation evaluates[\s\S]*actor Role[\s\S]*current target Role[\s\S]*proposed Role/i,
+      'Grant transition invariant is missing'
+    ],
     [/retain at least one owner/i, 'ownership continuity invariant is missing']
   ],
   'packages/domain/tests/AGENTS.md': [
     [/adversarial negative cases/i, 'negative authorization tests are missing'],
-    [/actor role.*current target role.*proposed target role/is, 'transition matrix test invariant is missing']
+    [
+      /actor role.*current target role.*proposed target role/is,
+      'transition matrix test invariant is missing'
+    ]
   ],
   'packages/infrastructure/supabase/AGENTS.md': [
     [/A database row is not a Domain entity/i, 'row/Domain boundary is missing'],
-    [/Authentication establishes actor identity only/i, 'provider authentication boundary is missing']
+    [
+      /Authentication establishes actor identity only/i,
+      'provider authentication boundary is missing'
+    ]
   ],
   'packages/infrastructure/supabase/src/generated/AGENTS.md': [
     [/Never hand-edit generated database types/i, 'generated-type authoring boundary is missing'],
-    [/must not leak into Domain, Application, or UI APIs/i, 'generated-type reachability boundary is missing']
+    [
+      /must not leak into Domain, Application, or UI APIs/i,
+      'generated-type reachability boundary is missing'
+    ]
   ],
   'supabase/AGENTS.md': [
     [/no Supabase Cloud project is provisioned/i, 'provisioning status is missing'],
-    [/File presence.*MUST NOT.*remote deployment/is, 'migration/deployment evidence boundary is missing'],
-    [/Default package scripts and ordinary CI MUST NOT.*remote/is, 'ordinary verification remote boundary is missing']
+    [
+      /File presence.*MUST NOT.*remote deployment/is,
+      'migration/deployment evidence boundary is missing'
+    ],
+    [
+      /Default package scripts and ordinary CI MUST NOT.*remote/is,
+      'ordinary verification remote boundary is missing'
+    ]
   ],
   'supabase/migrations/AGENTS.md': [
-    [/single replaceable local-development baseline.*append-only/is, 'migration lifecycle is missing'],
+    [
+      /single replaceable local-development baseline.*append-only/is,
+      'migration lifecycle is missing'
+    ],
     [/migration ledger.*provider evidence/is, 'applied-state evidence is missing'],
     [/remote Supabase project/i, 'remote mutation boundary is missing']
   ],
   'supabase/schemas/AGENTS.md': [
-    [/RLS, command-specific RPCs, and database constraints determine whether a concrete row transition is permitted/i, 'RLS transition boundary is missing'],
+    [
+      /RLS, command-specific RPCs, and database constraints determine whether a concrete row transition is permitted/i,
+      'RLS transition boundary is missing'
+    ],
     [/Direct Repository Grant management is Admin-only/i, 'Admin-only access boundary is missing'],
     [/retain at least one owner/i, 'database owner continuity is missing'],
-    [/hard deletion remain unavailable[\s\S]*lifecycle contracts define retention, restore, redaction[\s\S]*historical continuity/i, 'destructive lifecycle boundary is missing'],
-    [/Schema\/migration files, a hosted provider project, or successful local replay are not evidence of remote deployment/i, 'schema/deployment boundary is missing']
+    [
+      /hard deletion remain unavailable[\s\S]*lifecycle contracts define retention, restore, redaction[\s\S]*historical continuity/i,
+      'destructive lifecycle boundary is missing'
+    ],
+    [
+      /Schema\/migration files, a hosted provider project, or successful local replay are not evidence of remote deployment/i,
+      'schema/deployment boundary is missing'
+    ]
   ],
   'supabase/templates/AGENTS.md': [
-    [/do not decide Repository access.*capability/is, 'Auth template authorization boundary is missing'],
+    [
+      /do not decide Repository access.*capability/is,
+      'Auth template authorization boundary is missing'
+    ],
     [/confirmation, recovery, and redirect tokens as secrets/i, 'Auth token boundary is missing']
   ],
   'supabase/tests/AGENTS.md': [
@@ -190,7 +265,15 @@ function discoverInstructionScopes(directory = root) {
   for (const entry of readdirSync(directory, { withFileTypes: true })) {
     if (
       entry.isDirectory() &&
-      ['.git', '.next', '.turbo', 'coverage', 'node_modules', 'playwright-report', 'test-results'].includes(entry.name)
+      [
+        '.git',
+        '.next',
+        '.turbo',
+        'coverage',
+        'node_modules',
+        'playwright-report',
+        'test-results'
+      ].includes(entry.name)
     ) {
       continue;
     }
@@ -209,7 +292,8 @@ for (const path of discoveredScopes) {
   if (!scopeSet.has(path)) failures.push(`${path}: instruction scope is not registered`);
 }
 for (const path of instructionScopes) {
-  if (!discoveredScopes.includes(path)) failures.push(`${path}: registered instruction scope is missing`);
+  if (!discoveredScopes.includes(path))
+    failures.push(`${path}: registered instruction scope is missing`);
 }
 
 for (const path of instructionScopes) {
@@ -225,7 +309,9 @@ for (const path of instructionScopes) {
 
   if (!content.trim()) failures.push(`${path}: instruction scope is empty`);
   if (bytes > INSTRUCTION_MAX_BYTES) {
-    failures.push(`${path}: ${bytes} bytes exceeds ${INSTRUCTION_MAX_BYTES}-byte instruction budget`);
+    failures.push(
+      `${path}: ${bytes} bytes exceeds ${INSTRUCTION_MAX_BYTES}-byte instruction budget`
+    );
   }
 
   for (const [pattern, message] of invariantContracts[path] ?? []) {
@@ -256,7 +342,9 @@ for (const path of instructionScopes) {
   );
   maxActiveChainBytes = Math.max(maxActiveChainBytes, bytes);
   if (bytes > ACTIVE_CHAIN_MAX_BYTES) {
-    failures.push(`${path}: active instruction chain is ${bytes} bytes; limit is ${ACTIVE_CHAIN_MAX_BYTES}`);
+    failures.push(
+      `${path}: active instruction chain is ${bytes} bytes; limit is ${ACTIVE_CHAIN_MAX_BYTES}`
+    );
   }
 }
 

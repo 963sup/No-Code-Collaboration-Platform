@@ -2,10 +2,7 @@ import { spawnSync } from 'node:child_process';
 import { resolve } from 'node:path';
 
 const root = process.cwd();
-const checks = [
-  'check-documentation-contracts-current.mjs',
-  'check-github-semantic-contract.mjs'
-];
+const checks = ['check-documentation-contracts-current.mjs', 'check-github-semantic-contract.mjs'];
 const failures = [];
 const results = [];
 

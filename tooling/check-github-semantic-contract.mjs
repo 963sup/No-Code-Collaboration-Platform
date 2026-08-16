@@ -27,8 +27,7 @@ const section = (content, heading) => {
   const next = content.indexOf('\n### `', start + marker.length);
   return next < 0 ? content.slice(start) : content.slice(start, next);
 };
-const answer = (content) =>
-  content.match(/\*\*Required answer:\*\*\s*`([^`]+)`/)?.[1] ?? '';
+const answer = (content) => content.match(/\*\*Required answer:\*\*\s*`([^`]+)`/)?.[1] ?? '';
 
 const skillRoot = '.agents/skills/github-semantic-reverse';
 const files = {
@@ -47,14 +46,13 @@ const files = {
   accessDomain: 'docs/domains/access-authority.md',
   structuredChange: 'docs/domains/structured-data-change.md',
   dataMovement: 'docs/domains/data-exchange.md',
-  accessPage:
-    'apps/web/src/app/(owner)/[ownerSlug]/[repositorySlug]/settings/access/page.tsx',
-  issueDetail:
-    'apps/web/src/app/(owner)/[ownerSlug]/[repositorySlug]/_components/issue-detail.tsx'
+  accessPage: 'apps/web/src/app/(owner)/[ownerSlug]/[repositorySlug]/settings/access/page.tsx',
+  issueDetail: 'apps/web/src/app/(owner)/[ownerSlug]/[repositorySlug]/_components/issue-detail.tsx'
 };
 
 for (const path of Object.values(files)) {
-  if (!existsSync(resolve(root, path))) failures.push(`${path}: required semantic contract is missing`);
+  if (!existsSync(resolve(root, path)))
+    failures.push(`${path}: required semantic contract is missing`);
 }
 const contents = Object.fromEntries(Object.entries(files).map(([key, path]) => [key, read(path)]));
 
@@ -65,7 +63,12 @@ for (const expected of [
   'must not move during the cycle',
   'enumerates eight names'
 ]) {
-  requireText(files.snapshot, contents.snapshot, expected, `locked snapshot boundary is missing: ${expected}`);
+  requireText(
+    files.snapshot,
+    contents.snapshot,
+    expected,
+    `locked snapshot boundary is missing: ${expected}`
+  );
 }
 
 for (const concept of [
@@ -86,7 +89,17 @@ for (const concept of [
   );
 }
 
-const excluded = ['commit', 'branch', 'diff', 'merge', 'fork', 'rebase', 'cherry-pick', 'tag', 'HEAD'];
+const excluded = [
+  'commit',
+  'branch',
+  'diff',
+  'merge',
+  'fork',
+  'rebase',
+  'cherry-pick',
+  'tag',
+  'HEAD'
+];
 for (const concept of excluded) {
   const conceptSection = section(contents.glossary, concept);
   if (!conceptSection) {
@@ -109,7 +122,10 @@ for (const concept of excluded) {
 
 const commitSection = section(contents.glossary, 'commit');
 const commitAnswer = answer(commitSection);
-if (commitAnswer !== 'The Page Current State now contains the accepted title and body at State Revision 12.') {
+if (
+  commitAnswer !==
+  'The Page Current State now contains the accepted title and body at State Revision 12.'
+) {
   failures.push(`${files.glossary}: commit answer is not the state-only criterion`);
 }
 if (/Activity Event|who|when|changed|history|snapshot|author|message/i.test(commitAnswer)) {
@@ -125,7 +141,10 @@ requireText(
 for (const [pattern, message] of [
   [/Repository = No-Code Collaboration Container/i, 'Repository axiom is missing'],
   [/^## Current-state collaboration kernel$/m, 'current-state kernel is missing'],
-  [/No source-control-shaped Product primitive may be recovered through renaming/i, 'renaming rejection is missing']
+  [
+    /No source-control-shaped Product primitive may be recovered through renaming/i,
+    'renaming rejection is missing'
+  ]
 ]) {
   requireMatch(files.product, contents.product, pattern, message);
 }
@@ -136,8 +155,18 @@ for (const [pattern, message] of [
 ]) {
   requireMatch(files.ontology, contents.ontology, pattern, message);
 }
-requireMatch(files.adr013, contents.adr013, /^- Status: Superseded by ADR-014$/m, 'ADR-013 must remain superseded');
-requireMatch(files.adr014, contents.adr014, /^- Status: Accepted$/m, 'ADR-014 must remain accepted');
+requireMatch(
+  files.adr013,
+  contents.adr013,
+  /^- Status: Superseded by ADR-014$/m,
+  'ADR-013 must remain superseded'
+);
+requireMatch(
+  files.adr014,
+  contents.adr014,
+  /^- Status: Accepted$/m,
+  'ADR-014 must remain accepted'
+);
 requireMatch(
   files.structuredChange,
   contents.structuredChange,
@@ -158,7 +187,12 @@ for (const expected of [
   'Collaborator ≠ Direct User Grant',
   'Assignment / mention / participation ≠ authority'
 ]) {
-  requireText(files.accessDomain, contents.accessDomain, expected, `Access Authority boundary is missing: ${expected}`);
+  requireText(
+    files.accessDomain,
+    contents.accessDomain,
+    expected,
+    `Access Authority boundary is missing: ${expected}`
+  );
 }
 forbidMatch(
   files.accessDomain,
@@ -173,7 +207,12 @@ for (const expected of [
   'Grant access',
   "placeholder='user-name'"
 ]) {
-  requireText(files.accessPage, contents.accessPage, expected, `access UI correction is missing: ${expected}`);
+  requireText(
+    files.accessPage,
+    contents.accessPage,
+    expected,
+    `access UI correction is missing: ${expected}`
+  );
 }
 for (const [pattern, message] of [
   [/Direct collaborators/i, 'access UI still labels Grants as collaborators'],
@@ -204,11 +243,21 @@ for (const expected of [
   'Opened by {issue.createdBy}',
   'authorization/history boundary'
 ]) {
-  requireText(files.executableAudit, contents.executableAudit, expected, `executable audit evidence is missing: ${expected}`);
+  requireText(
+    files.executableAudit,
+    contents.executableAudit,
+    expected,
+    `executable audit evidence is missing: ${expected}`
+  );
 }
 
 for (const category of ['## newly_passed', '## maintained_passed', '## revoked', '## not_passed']) {
-  requireText(files.report, contents.report, category, `round-3 audit category is missing: ${category}`);
+  requireText(
+    files.report,
+    contents.report,
+    category,
+    `round-3 audit category is missing: ${category}`
+  );
 }
 for (const expected of [
   'Audit round: **3 — executable revalidation and causal-label repair**',
@@ -219,7 +268,12 @@ for (const expected of [
   'Full repository commands not executed',
   'Schema comment normalization pending'
 ]) {
-  requireText(files.report, contents.report, expected, `round-3 audit evidence is missing: ${expected}`);
+  requireText(
+    files.report,
+    contents.report,
+    expected,
+    `round-3 audit evidence is missing: ${expected}`
+  );
 }
 forbidMatch(
   files.report,
@@ -233,7 +287,12 @@ for (const expected of [
   'Repository code and documentation are authoritative',
   'Linear and Notion are mirrors'
 ]) {
-  requireText(files.resolution, contents.resolution, expected, `execution resolution is missing: ${expected}`);
+  requireText(
+    files.resolution,
+    contents.resolution,
+    expected,
+    `execution resolution is missing: ${expected}`
+  );
 }
 
 const inputRoot = '.codex/tasks/collaboration-relationship-kernel-repair/input';
@@ -249,7 +308,8 @@ for (const path of [
   '.codex/agents/collaboration-relationship-kernel-repair-v2.toml',
   '.codex/agents/collaboration-relationship-kernel-repair-v2.md'
 ]) {
-  if (existsSync(resolve(root, path))) failures.push(`${path}: task input remains in executable agent discovery`);
+  if (existsSync(resolve(root, path)))
+    failures.push(`${path}: task input remains in executable agent discovery`);
 }
 
 const result = {
