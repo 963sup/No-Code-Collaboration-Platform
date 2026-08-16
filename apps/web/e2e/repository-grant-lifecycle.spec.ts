@@ -27,6 +27,7 @@ test('Direct Repository Grant create, role change, and revoke form one complete 
   await expect(page.getByText('Demo Repository', { exact: true })).toHaveCount(0);
   let response = await page.goto(repositoryPath);
   expect(response?.status()).toBe(404);
+  await page.goto('/dashboard');
   await signOut(page);
 
   await signIn(page, 'sup@a-i.tw', 'Aa12341234', accessPath);
