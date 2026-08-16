@@ -191,7 +191,7 @@ begin
   if actor_id is null then
     raise exception 'Issue assignment requires an authenticated Actor' using errcode = '42501';
   end if;
-  if not private.has_repository_capability(target_repository_id, 'resource.update')
+  if not private.has_repository_capability(target_repository_id, 'issue.manage')
     or not exists (
       select 1
       from public.issues as issue
