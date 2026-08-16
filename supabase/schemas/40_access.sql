@@ -1,4 +1,4 @@
-create type public.repository_role as enum ('viewer', 'contributor', 'manager', 'admin');
+create type public.repository_role as enum ('read', 'triage', 'write', 'maintain', 'admin');
 
 create table public.repository_user_grants (
   repository_id uuid not null references public.repositories (id) on delete cascade,
@@ -13,4 +13,4 @@ create index repository_user_grants_user_id_idx
   on public.repository_user_grants (user_id, repository_id);
 
 comment on table public.repository_user_grants is
-  'Direct principal-to-repository grants. Collaborator is derived from this relationship.';
+  'Direct User-to-Repository access grants using the accepted GitHub-derived Repository Role vocabulary.';
