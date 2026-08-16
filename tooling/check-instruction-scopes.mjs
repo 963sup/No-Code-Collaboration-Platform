@@ -179,10 +179,13 @@ const invariantContracts = {
   ],
   'packages/domain/src/access/AGENTS.md': [
     [
-      /capability.*never implies unlimited authority to delegate/is,
-      'capability/delegation split is missing'
+      /Role.*named bundle[\s\S]*Capability.*authorization decision vocabulary/i,
+      'Role/Capability decision boundary is missing'
     ],
-    [/current role.*proposed role/is, 'dual-sided role transition invariant is missing'],
+    [
+      /Every Grant mutation evaluates[\s\S]*actor Role[\s\S]*current target Role[\s\S]*proposed Role/i,
+      'full Grant transition decision invariant is missing'
+    ],
     [/retain at least one owner/i, 'ownership continuity invariant is missing']
   ],
   'packages/domain/tests/AGENTS.md': [
@@ -227,20 +230,20 @@ const invariantContracts = {
   ],
   'supabase/schemas/AGENTS.md': [
     [
-      /`USING` protects the existing row.*`WITH CHECK` protects the proposed row/is,
-      'RLS transition invariant is missing'
+      /RLS, command-specific RPCs, and database constraints determine whether a concrete row transition is permitted/i,
+      'RLS concrete-transition enforcement boundary is missing'
     ],
     [
-      /Direct Repository Grant management is Admin-only/is,
+      /Direct Repository Grant management is Admin-only/i,
       'Admin-only Repository access-management boundary is missing'
     ],
     [/retain at least one owner/i, 'database owner continuity invariant is missing'],
     [
-      /Undefined archive, restore, retention, purge, redaction[\s\S]*fail closed/i,
+      /hard deletion remain unavailable[\s\S]*lifecycle contracts define retention, restore, redaction[\s\S]*historical continuity/i,
       'undefined destructive lifecycle boundary is missing'
     ],
     [
-      /MUST NOT be used as evidence.*remote deployment/is,
+      /Schema\/migration files, a hosted provider project, or successful local replay are not evidence of remote deployment/i,
       'schema/deployment evidence boundary is missing'
     ]
   ],
