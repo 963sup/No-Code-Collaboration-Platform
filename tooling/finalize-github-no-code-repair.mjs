@@ -25,9 +25,38 @@ replaceOnce(
 );
 
 replaceOnce(
+  'supabase/schemas/93_collaboration_commands.sql',
+  `  if not private.has_repository_capability(target_repository_id, 'resource.update')\n    or not exists (`,
+  `  if not private.has_repository_capability(target_repository_id, 'issue.manage')\n    or not exists (`
+);
+
+replaceOnce(
   'supabase/tests/page-resource.test.sql',
   `'resource.create'\n  )),\n  true,\n  'Organization admin governance authority expands to Repository capabilities'`,
   `'page.create'\n  )),\n  true,\n  'Organization admin governance authority expands to Page creation capability'`
+);
+
+const lifecycle = 'supabase/tests/collaboration-lifecycle.test.sql';
+replaceOnce(lifecycle, 'select plan(57);', 'select plan(56);');
+replaceOnce(
+  lifecycle,
+  `  ('00000000-0000-0000-0000-000000000502', 'collaboration-contributor@example.com', '{}'::jsonb),\n  ('00000000-0000-0000-0000-000000000503', 'collaboration-outsider@example.com', '{}'::jsonb);`,
+  `  ('00000000-0000-0000-0000-000000000502', 'collaboration-write@example.com', '{}'::jsonb),\n  ('00000000-0000-0000-0000-000000000503', 'collaboration-outsider@example.com', '{}'::jsonb),\n  ('00000000-0000-0000-0000-000000000504', 'collaboration-triage@example.com', '{}'::jsonb);`
+);
+replaceOnce(
+  lifecycle,
+  `insert into public.repository_user_grants (repository_id, user_id, role, granted_by)\nvalues (\n  '20000000-0000-0000-0000-000000000501',\n  '00000000-0000-0000-0000-000000000502',\n  'write',\n  '00000000-0000-0000-0000-000000000501'\n);`,
+  `insert into public.repository_user_grants (repository_id, user_id, role, granted_by)\nvalues\n  (\n    '20000000-0000-0000-0000-000000000501',\n    '00000000-0000-0000-0000-000000000502',\n    'write',\n    '00000000-0000-0000-0000-000000000501'\n  ),\n  (\n    '20000000-0000-0000-0000-000000000501',\n    '00000000-0000-0000-0000-000000000504',\n    'triage',\n    '00000000-0000-0000-0000-000000000501'\n  );`
+);
+replaceOnce(
+  lifecycle,
+  `select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-000000000501', true);\n\nselect is(\n  public.execute_repository_grant_command(\n    '20000000-0000-0000-0000-000000000501',\n    '00000000-0000-0000-0000-000000000502',\n    'write',\n    'triage'\n  ),\n  'applied',\n  'Admin can change the collaborator from Write to Triage'\n);\n\nselect set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-000000000502', true);\n\nselect is(\n  (select count(*) from public.add_discussion_comment(\n    '20000000-0000-0000-0000-000000000501',\n    (select id from public.discussions where repository_id = '20000000-0000-0000-0000-000000000501' and discussion_number = 2),\n    'Triage must remain blocked while locked',\n    4\n  )),\n  0::bigint,\n  'Triage cannot comment on an open locked Discussion'\n);\n\nselect set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-000000000502', true);`,
+  `select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-000000000504', true);\n\nselect is(\n  (select count(*) from public.add_discussion_comment(\n    '20000000-0000-0000-0000-000000000501',\n    (select id from public.discussions where repository_id = '20000000-0000-0000-0000-000000000501' and discussion_number = 2),\n    'Triage must remain blocked while locked',\n    4\n  )),\n  0::bigint,\n  'Triage cannot comment on an open locked Discussion'\n);`
+);
+replaceOnce(
+  lifecycle,
+  `  'Triage cannot create an announcement Discussion'\n);\n\nselect is(\n  public.set_notification_preference(`,
+  `  'Triage cannot create an announcement Discussion'\n);\n\nselect set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-000000000502', true);\n\nselect is(\n  public.set_notification_preference(`
 );
 
 replaceOnce(
