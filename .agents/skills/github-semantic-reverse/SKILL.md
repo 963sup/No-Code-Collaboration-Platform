@@ -1,36 +1,73 @@
 ---
 name: github-semantic-reverse
-description: Use whenever reverse-engineering, adapting, naming, designing, or reviewing a GitHub-derived Product concept for this no-code platform. This Skill applies first-principles reasoning under the immutable Repository axiom and excludes every code, source-control, arbitrary-execution, CI/CD, build, test, and deployment capability.
+description: Use whenever reverse-engineering, adapting, naming, designing, reviewing, auditing, or repairing GitHub-derived Product semantics for this no-code platform under a locked evidence snapshot and canonical glossary.
 ---
 
 # GitHub Semantic Reverse
 
 ## Role boundary
 
-This is the task workflow for reverse-engineering GitHub Product semantics into this platform. It embeds the necessary first-principles method; do not also invoke `first-principles` unless the task contains a separate broader or non-GitHub decision.
+This is the single task workflow for GitHub-derived Product semantics. It owns both one-concept admission decisions and repository-wide semantic audits or repairs. Do not create a second overlapping Skill for the same responsibility.
 
 Apply the root `AGENTS.md` Absolute Product axiom without reinterpretation. Read `docs/PRODUCT.md` and `docs/ONTOLOGY.md` for current admission outcomes, semantic boundaries, and exclusions; this Skill routes the decision workflow and never replaces those contracts.
 
+This workflow embeds the necessary first-principles method; do not also invoke `first-principles` unless the task contains a separate broader or non-GitHub decision.
+
+## Mandatory evidence files
+
+For a one-concept decision, read the narrowest relevant canonical contract and current official GitHub evidence.
+
+For a repository-wide audit or repair, read in this order before changing Product semantics:
+
+1. `REFERENCE_SNAPSHOT.md`
+2. `GLOSSARY.md`
+3. the latest file in `audit-reports/`
+4. `docs/PRODUCT.md`, `docs/ONTOLOGY.md`, the narrowest Domain contract, and `docs/architecture/README.md`
+5. executable evidence and `docs/IMPLEMENTATION_GAPS.md`
+
+If the snapshot file is absent, overwritten, or unlocked, repair it first and pause all other semantic edits.
+
 ## Mandatory no-code boundary
 
-Reject a candidate entirely when its value depends on code, source-control, arbitrary execution, CI/CD, build, test, deployment, or a second Repository-equivalent Container. Do not preserve a rejected capability through renaming, metaphor, analogy, or a generic wrapper. Apply the complete current exclusions and non-confusion boundaries from the canonical Product and Ontology contracts.
+Reject a candidate entirely when its value depends on code, source-control, arbitrary execution, CI/CD, build, test, deployment, or a second Repository-equivalent Container. Do not preserve a rejected capability through renaming, metaphor, analogy, a Data-prefixed alias, or a generic wrapper.
+
+The exclusion boundary is semantic rather than a raw string ban:
+
+- Product, Domain, Application, API, persistence, URL/IA, and user-facing UI may not admit excluded source-control concepts as target capabilities or mental models.
+- Benchmark evidence, exclusion rules, repair specifications, audit reports, and Git/GitHub engineering workflow may name external concepts only to identify, reject, or operate the engineering repository.
+- Historical Evidence remains `Activity Event`; it must not be turned into a disguised version-control object.
+
+Use `GLOSSARY.md` as the only mapping authority. Individual files may not invent local aliases.
 
 ## Admission workflow
 
-1. State the exact GitHub-derived concept and the target decision.
-2. Identify the underlying collaboration or organizational problem. Use current official GitHub evidence or direct observation when the benchmark fact is uncertain; label inference separately.
-3. Remove every software-development, code, source-control, and execution assumption. If the problem no longer exists, reject the entire candidate.
-4. Restate the surviving problem for an arbitrary no-code Repository and classify it with the ontology lens: Actor, Scope, Principal, Container, Relationship, Artifact, or Process. Keep Authorization, Presentation, and Evidence cross-cutting.
-5. Map the candidate back to Repository as the only primary collaboration Container. Prove ownership, authority, lifecycle, URL/IA, and visibility without creating a second Container or authority source.
-6. Check `docs/PRODUCT.md`, `docs/ONTOLOGY.md`, the narrowest Domain contract, and `docs/architecture/README.md`. Current repository contracts decide target acceptance.
-7. Reject generic semantic-role persistence, taxonomy-driven packages/tables, or speculative capability frameworks. Semantic classification alone creates no entity, package, table, route, or feature.
+1. State the exact GitHub-derived concept and target decision.
+2. Identify the underlying collaboration or organizational problem. Separate current GitHub evidence from inference.
+3. Remove every software-development, code, source-control, and execution assumption. If the problem disappears, reject the candidate.
+4. Restate the surviving problem for an arbitrary no-code Repository and classify it with Actor, Scope, Principal, Container, Relationship, Artifact, or Process. Keep Authorization, Presentation, and Evidence cross-cutting.
+5. Map the candidate back to Repository as the only primary collaboration and authorization boundary. Prove ownership, authority, lifecycle, URL/IA, and visibility without creating a second boundary or authority source.
+6. Check canonical Product, Ontology, Domain, and Architecture contracts. Current repository contracts decide target acceptance until formally corrected.
+7. Reject generic semantic-role persistence, taxonomy-driven packages/tables, speculative capability frameworks, or source-control-shaped data models.
 8. Define the smallest discriminating test that could falsify the adaptation before persistence or architecture is introduced.
+
+## Repository-wide repair workflow
+
+1. Lock one `github/docs` reference commit for the whole repair cycle.
+2. Audit semantic contexts, not raw word counts.
+3. Record every finding in the dated audit report before repair.
+4. Treat code and repository documentation as authority. Linear and Notion are mirrors and must follow authority, never reverse it.
+5. Fix the earliest incorrect truth boundary first: Product/Ontology before architecture, implementation, UI, tests, and mirrors.
+6. Classify each audited item as `newly_passed`, `maintained_passed`, `revoked`, or `not_passed`.
+7. If `revoked` is empty, iterate only over `not_passed`. If an item is revoked, correct its acceptance scenario before changing implementation.
+8. Stop automatic redefinition after two consecutive revocations of the same item and request an explicit product decision.
+9. The cycle passes only when every audited concept is covered and both `revoked` and `not_passed` are empty.
 
 ## Required output
 
 - Target decision and underlying GitHub collaboration problem
-- GitHub evidence versus inference
-- No-code and source-control exclusion result
-- Surviving target semantics and ontology classification, or explicit rejection
+- Locked GitHub evidence versus inference
+- No-code/source-control exclusion result
+- Canonical target semantics or explicit rejection
 - Repository ownership, authorization, containment, and non-confusion checks
 - Smallest discriminating test and remaining unknowns
+- Audit classification and source-of-truth synchronization record when repository-wide work is performed

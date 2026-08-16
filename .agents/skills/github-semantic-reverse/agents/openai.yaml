@@ -1,6 +1,6 @@
 interface:
   display_name: "GitHub Semantic Reverse"
-  short_description: "Reverse GitHub semantics without code capabilities."
-  default_prompt: "Use $github-semantic-reverse to adapt this GitHub-derived Product concept under the immutable no-code Repository axiom and reject every code or source-control capability."
+  short_description: "Reverse and audit GitHub semantics without source-control product models."
+  default_prompt: "Use $github-semantic-reverse to adapt or audit GitHub-derived Product semantics under the immutable no-code Repository axiom, locked evidence snapshot, and canonical glossary."
 policy:
   allow_implicit_invocation: true
