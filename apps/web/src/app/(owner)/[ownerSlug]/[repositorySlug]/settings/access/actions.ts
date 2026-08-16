@@ -11,13 +11,17 @@ import { z } from 'zod';
 import { createRequestServices } from '@/composition/create-request-services';
 import { repositoryPath, repositorySettingsAccessPath } from '@/routing/repository-routes';
 
+const databaseUuidSchema = z
+  .string()
+  .regex(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/iu);
+
 const routeSchema = z.object({
   ownerSlug: z
     .string()
     .min(2)
     .max(64)
     .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/u),
-  repositoryId: z.string().uuid(),
+  repositoryId: databaseUuidSchema,
   repositorySlug: z
     .string()
     .min(2)
@@ -93,10 +97,7 @@ export async function changeRepositoryGrantRole(formData: FormData) {
     repositorySlug: String(formData.get('repositorySlug') ?? '')
   });
   const role = roleSchema.safeParse(String(formData.get('role') ?? ''));
-  const targetUserId = z
-    .string()
-    .uuid()
-    .safeParse(String(formData.get('targetUserId') ?? ''));
+  const targetUserId = databaseUuidSchema.safeParse(String(formData.get('targetUserId') ?? ''));
   if (!route.success || !role.success || !targetUserId.success) {
     redirect('/dashboard?error=invalid-grant-input');
   }
@@ -115,10 +116,7 @@ export async function revokeRepositoryGrant(formData: FormData) {
     repositoryId: String(formData.get('repositoryId') ?? ''),
     repositorySlug: String(formData.get('repositorySlug') ?? '')
   });
-  const targetUserId = z
-    .string()
-    .uuid()
-    .safeParse(String(formData.get('targetUserId') ?? ''));
+  const targetUserId = databaseUuidSchema.safeParse(String(formData.get('targetUserId') ?? ''));
   if (!route.success || !targetUserId.success) {
     redirect('/dashboard?error=invalid-grant-input');
   }
