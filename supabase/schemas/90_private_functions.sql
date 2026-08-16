@@ -117,10 +117,11 @@ security invoker
 set search_path = ''
 as $$
   select case role
-    when 'viewer' then 10
-    when 'contributor' then 20
-    when 'manager' then 30
-    when 'admin' then 40
+    when 'read' then 10
+    when 'triage' then 20
+    when 'write' then 30
+    when 'maintain' then 40
+    when 'admin' then 50
   end;
 $$;
 
@@ -179,30 +180,73 @@ begin
   effective_role := private.current_repository_role(target_repository_id);
 
   return case effective_role
-    when 'viewer' then requested_capability in (
-      'repository.view',
-      'resource.view'
-    )
-    when 'contributor' then requested_capability in (
+    when 'read' then requested_capability in (
       'repository.view',
       'resource.view',
-      'resource.create',
-      'resource.update'
+      'issue.create',
+      'issue.comment',
+      'discussion.create',
+      'discussion.comment'
     )
-    when 'manager' then requested_capability in (
+    when 'triage' then requested_capability in (
       'repository.view',
       'resource.view',
-      'resource.create',
-      'resource.update',
-      'member.manage'
+      'issue.create',
+      'issue.comment',
+      'issue.manage',
+      'discussion.create',
+      'discussion.comment',
+      'discussion.edit',
+      'discussion.moderate'
+    )
+    when 'write' then requested_capability in (
+      'repository.view',
+      'resource.view',
+      'page.create',
+      'page.update',
+      'issue.create',
+      'issue.comment',
+      'issue.edit',
+      'issue.manage',
+      'discussion.create',
+      'discussion.comment',
+      'discussion.comment.locked',
+      'discussion.edit',
+      'discussion.moderate'
+    )
+    when 'maintain' then requested_capability in (
+      'repository.view',
+      'resource.view',
+      'page.create',
+      'page.update',
+      'issue.create',
+      'issue.comment',
+      'issue.edit',
+      'issue.manage',
+      'discussion.create',
+      'discussion.comment',
+      'discussion.comment.locked',
+      'discussion.edit',
+      'discussion.moderate',
+      'discussion.announce'
     )
     when 'admin' then requested_capability in (
       'repository.view',
       'repository.manage',
+      'repository.access.manage',
       'resource.view',
-      'resource.create',
-      'resource.update',
-      'member.manage'
+      'page.create',
+      'page.update',
+      'issue.create',
+      'issue.comment',
+      'issue.edit',
+      'issue.manage',
+      'discussion.create',
+      'discussion.comment',
+      'discussion.comment.locked',
+      'discussion.edit',
+      'discussion.moderate',
+      'discussion.announce'
     )
     else false
   end;
@@ -219,24 +263,15 @@ stable
 security definer
 set search_path = ''
 as $$
-declare
-  actor_role public.repository_role;
 begin
   if (select auth.uid()) is null or target_role is null then
     return false;
   end if;
 
-  actor_role := private.current_repository_role(target_repository_id);
-
-  if not private.has_repository_capability(target_repository_id, 'member.manage') then
-    return false;
-  end if;
-
-  return case actor_role
-    when 'admin' then true
-    when 'manager' then target_role in ('viewer', 'contributor')
-    else false
-  end;
+  return private.has_repository_capability(
+    target_repository_id,
+    'repository.access.manage'
+  );
 end;
 $$;
 
