@@ -13,9 +13,10 @@ const organizationDelegationByRole: Readonly<
 };
 
 const repositoryDelegationByRole: Readonly<Record<RepositoryRole, readonly RepositoryRole[]>> = {
-  viewer: [],
-  contributor: [],
-  manager: ['viewer', 'contributor'],
+  read: [],
+  triage: [],
+  write: [],
+  maintain: [],
   admin: repositoryRoles
 };
 
@@ -50,7 +51,7 @@ export function canMutateRepositoryGrant(
   proposedRole: RepositoryRole | null
 ): boolean {
   return (
-    hasRepositoryCapability(actorRole, 'member.manage') &&
+    hasRepositoryCapability(actorRole, 'repository.access.manage') &&
     canMutateRoleWithinScope(currentRole, proposedRole, repositoryDelegationByRole[actorRole])
   );
 }
