@@ -52,6 +52,16 @@ jobs:
           persona: regular
           version: '1.29.0'
 
+      - name: Upload short-lived source snapshot
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: source-${{ github.sha }}
+          path: |
+            .
+            !.git/**
+          include-hidden-files: true
+          retention-days: 1
+
   repository:
     name: Repository contracts
     runs-on: ubuntu-latest
