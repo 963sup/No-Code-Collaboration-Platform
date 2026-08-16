@@ -45,4 +45,4 @@ create index repositories_owner_organization_id_idx
 create index repositories_search_vector_idx on public.repositories using gin (search_vector);
 
 comment on table public.repositories is
-  'No-code collaboration containers and the primary Resource/authorization/history boundary; each Repository is owned by exactly one User or Organization.';
+  'No-code collaboration containers and the primary Resource/authorization/Evidence boundary; each Repository is owned by exactly one User or Organization.';

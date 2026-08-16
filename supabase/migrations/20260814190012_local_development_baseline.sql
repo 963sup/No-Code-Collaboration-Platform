@@ -163,7 +163,7 @@ create index repositories_owner_organization_id_idx
 create index repositories_search_vector_idx on public.repositories using gin (search_vector);
 
 comment on table public.repositories is
-  'No-code collaboration containers and the primary Resource/authorization/history boundary; each Repository is owned by exactly one User or Organization.';
+  'No-code collaboration containers and the primary Resource/authorization/Evidence boundary; each Repository is owned by exactly one User or Organization.';
 
 -- Source: supabase/schemas/40_access.sql
 
@@ -563,9 +563,20 @@ declare
   next_number bigint;
 begin
   if (select auth.uid()) is null
-    or target_artifact_type not in ('issue', 'discussion')
-    or not private.has_repository_capability(target_repository_id, 'resource.create') then
-    raise exception 'artifact numbering requires resource.create'
+    or target_artifact_type not in ('issue', 'discussion') then
+    raise exception 'artifact numbering requires an authenticated accepted artifact type'
+      using errcode = '42501';
+  end if;
+
+  if target_artifact_type = 'issue'
+    and not private.has_repository_capability(target_repository_id, 'issue.create') then
+    raise exception 'Issue numbering requires issue.create'
+      using errcode = '42501';
+  end if;
+
+  if target_artifact_type = 'discussion'
+    and not private.has_repository_capability(target_repository_id, 'discussion.create') then
+    raise exception 'Discussion numbering requires discussion.create'
       using errcode = '42501';
   end if;
 
@@ -1001,12 +1012,44 @@ set search_path = ''
 as $$
 declare
   effective_role public.repository_role;
+  repository_visibility public.repository_visibility;
 begin
   if (select auth.uid()) is null then
     return false;
   end if;
 
+  select repository.visibility
+  into repository_visibility
+  from public.repositories as repository
+  where repository.id = target_repository_id;
+
+  if not found then
+    return false;
+  end if;
+
+  -- GitHub public repositories expose read/discovery plus authenticated Issue/Discussion
+  -- participation without fabricating a stored Repository Role.
+  if repository_visibility = 'public'
+    and requested_capability in (
+      'repository.view',
+      'resource.view',
+      'issue.create',
+      'issue.comment',
+      'discussion.create',
+      'discussion.comment'
+    ) then
+    return true;
+  end if;
+
   effective_role := private.current_repository_role(target_repository_id);
+
+  -- Public Wiki editing is collaborator-scoped by default. Any persisted/derived Repository Role
+  -- establishes that collaborator relationship; public visibility by itself does not.
+  if repository_visibility = 'public'
+    and effective_role is not null
+    and requested_capability in ('page.create', 'page.update') then
+    return true;
+  end if;
 
   return case effective_role
     when 'read' then requested_capability in (
@@ -1101,6 +1144,42 @@ begin
     target_repository_id,
     'repository.access.manage'
   );
+end;
+$$;
+
+create function private.is_repository_grant_role_allowed(
+  target_repository_id uuid,
+  target_role public.repository_role
+)
+returns boolean
+language sql
+stable
+security definer
+set search_path = ''
+as $$
+  select coalesce((
+    select case
+      when repository.owner_user_id is not null then target_role = 'write'::public.repository_role
+      when repository.owner_organization_id is not null then true
+      else false
+    end
+    from public.repositories as repository
+    where repository.id = target_repository_id
+  ), false);
+$$;
+
+create function private.enforce_repository_grant_owner_role()
+returns trigger
+language plpgsql
+security definer
+set search_path = ''
+as $$
+begin
+  if not private.is_repository_grant_role_allowed(new.repository_id, new.role) then
+    raise exception 'Repository owner kind does not allow this Direct Grant role'
+      using errcode = '23514';
+  end if;
+  return new;
 end;
 $$;
 
@@ -1331,6 +1410,10 @@ for each row
 when (old.title is distinct from new.title or old.content is distinct from new.content)
 execute function private.touch_resource_updated_at();
 
+create trigger repository_user_grants_owner_role_guard
+before insert or update of repository_id, role on public.repository_user_grants
+for each row execute function private.enforce_repository_grant_owner_role();
+
 create trigger repository_created_activity
 after insert on public.repositories
 for each row execute function private.record_repository_created();
@@ -1351,6 +1434,10 @@ grant execute on function private.can_manage_organization_membership(
 grant execute on function private.current_repository_role(uuid) to authenticated;
 grant execute on function private.has_repository_capability(uuid, text) to authenticated;
 grant execute on function private.can_manage_repository_grant(
+  uuid,
+  public.repository_role
+) to authenticated;
+grant execute on function private.is_repository_grant_role_allowed(
   uuid,
   public.repository_role
 ) to authenticated;
@@ -1660,20 +1747,14 @@ begin
 end;
 $$;
 
-create function private.repository_grant_target_exists(
-  target_repository_id uuid,
-  target_user_id uuid
-)
+create function private.repository_grant_target_exists(target_user_id uuid)
 returns boolean
 language sql
 stable
 security definer
 set search_path = ''
 as $$
-  select private.has_repository_capability(
-    target_repository_id,
-    'repository.access.manage'
-  ) and exists (
+  select exists (
     select 1
     from auth.users as target_user
     where target_user.id = target_user_id
@@ -1757,7 +1838,7 @@ revoke all on function private.record_repository_grant_event(
   public.repository_role,
   public.repository_role
 ) from public, anon, authenticated;
-revoke all on function private.repository_grant_target_exists(uuid, uuid)
+revoke all on function private.repository_grant_target_exists(uuid)
   from public, anon, authenticated;
 revoke all on function private.list_repository_direct_grants(uuid)
   from public, anon, authenticated;
@@ -1771,7 +1852,7 @@ grant execute on function private.record_repository_grant_event(
   public.repository_role,
   public.repository_role
 ) to authenticated;
-grant execute on function private.repository_grant_target_exists(uuid, uuid) to authenticated;
+grant execute on function private.repository_grant_target_exists(uuid) to authenticated;
 grant execute on function private.list_repository_direct_grants(uuid) to authenticated;
 grant execute on function private.find_repository_grant_target_by_username(uuid, text)
   to authenticated;
@@ -1849,7 +1930,7 @@ begin
     return 'forbidden';
   end if;
 
-  if not private.repository_grant_target_exists(target_repository_id, target_user_id) then
+  if not private.repository_grant_target_exists(target_user_id) then
     return 'target-unavailable';
   end if;
 
@@ -1857,13 +1938,8 @@ begin
     return 'target-unavailable';
   end if;
 
-  if expected_role is not null
-    and not private.can_manage_repository_grant(target_repository_id, expected_role) then
-    return 'forbidden';
-  end if;
-
   if proposed_role is not null
-    and not private.can_manage_repository_grant(target_repository_id, proposed_role) then
+    and not private.is_repository_grant_role_allowed(target_repository_id, proposed_role) then
     return 'forbidden';
   end if;
 
@@ -1969,7 +2045,7 @@ comment on function public.execute_repository_grant_command(
   public.repository_role,
   public.repository_role
 ) is
-  'Admin-only compare-and-swap Direct Repository Grant command; Activity Evidence is written only after exactly one accepted state transition.';
+  'Admin-only compare-and-swap Direct Repository Grant command; owner-kind role policy and Activity Evidence are enforced inside the command transaction.';
 
 -- Source: supabase/schemas/93_collaboration_commands.sql
 
@@ -2166,7 +2242,7 @@ begin
   if actor_id is null then
     raise exception 'Issue assignment requires an authenticated Actor' using errcode = '42501';
   end if;
-  if not private.has_repository_capability(target_repository_id, 'resource.update')
+  if not private.has_repository_capability(target_repository_id, 'issue.manage')
     or not exists (
       select 1
       from public.issues as issue
@@ -3872,8 +3948,11 @@ on public.repository_user_grants
 for insert
 to authenticated
 with check (
-  (select auth.uid()) = granted_by
+  (select pg_catalog.current_setting('app.repository_grant_command', true)) = 'mutate'
+  and (select auth.uid()) = granted_by
+  and user_id <> (select auth.uid())
   and (select private.can_manage_repository_grant(repository_id, role))
+  and (select private.is_repository_grant_role_allowed(repository_id, role))
 );
 
 create policy repository_user_grants_update_delegated
@@ -3881,10 +3960,15 @@ on public.repository_user_grants
 for update
 to authenticated
 using (
-  (select private.can_manage_repository_grant(repository_id, role))
+  (select pg_catalog.current_setting('app.repository_grant_command', true)) = 'mutate'
+  and user_id <> (select auth.uid())
+  and (select private.can_manage_repository_grant(repository_id, role))
 )
 with check (
-  (select private.can_manage_repository_grant(repository_id, role))
+  (select pg_catalog.current_setting('app.repository_grant_command', true)) = 'mutate'
+  and user_id <> (select auth.uid())
+  and (select private.can_manage_repository_grant(repository_id, role))
+  and (select private.is_repository_grant_role_allowed(repository_id, role))
 );
 
 create policy repository_user_grants_delete_delegated
@@ -3892,7 +3976,9 @@ on public.repository_user_grants
 for delete
 to authenticated
 using (
-  (select private.can_manage_repository_grant(repository_id, role))
+  (select pg_catalog.current_setting('app.repository_grant_command', true)) = 'mutate'
+  and user_id <> (select auth.uid())
+  and (select private.can_manage_repository_grant(repository_id, role))
 );
 
 create policy resources_select_visible
@@ -3953,20 +4039,32 @@ to authenticated
 using (
   case (select pg_catalog.current_setting('app.issue_command', true))
     when 'comment' then (select private.has_repository_capability(repository_id, 'issue.comment'))
-    when 'edit' then (select private.has_repository_capability(repository_id, 'issue.edit'))
+    when 'edit' then (
+      (select private.has_repository_capability(repository_id, 'issue.edit'))
+      or created_by = (select auth.uid())
+    )
     when 'assign' then (select private.has_repository_capability(repository_id, 'issue.manage'))
     when 'label' then (select private.has_repository_capability(repository_id, 'issue.manage'))
-    when 'transition' then (select private.has_repository_capability(repository_id, 'issue.manage'))
+    when 'transition' then (
+      (select private.has_repository_capability(repository_id, 'issue.manage'))
+      or created_by = (select auth.uid())
+    )
     else false
   end
 )
 with check (
   case (select pg_catalog.current_setting('app.issue_command', true))
     when 'comment' then (select private.has_repository_capability(repository_id, 'issue.comment'))
-    when 'edit' then (select private.has_repository_capability(repository_id, 'issue.edit'))
+    when 'edit' then (
+      (select private.has_repository_capability(repository_id, 'issue.edit'))
+      or created_by = (select auth.uid())
+    )
     when 'assign' then (select private.has_repository_capability(repository_id, 'issue.manage'))
     when 'label' then (select private.has_repository_capability(repository_id, 'issue.manage'))
-    when 'transition' then (select private.has_repository_capability(repository_id, 'issue.manage'))
+    when 'transition' then (
+      (select private.has_repository_capability(repository_id, 'issue.manage'))
+      or created_by = (select auth.uid())
+    )
     else false
   end
 );
@@ -4174,56 +4272,11 @@ with check (
   and (select private.user_can_view_repository(recipient_id, repository_id))
 );
 
--- Activity Event payload is historical Evidence, not part of the anonymous public-read baseline.
--- A future public Activity projection requires its own privacy/redaction contract instead of
--- exposing the raw evidence envelope through public Repository visibility.
+-- Activity Event payload is historical Evidence, not part of the anonymous/authenticated public
+-- participation baseline. Public Repository visibility never exposes raw evidence without an
+-- independently assigned/derived Repository Role.
 create policy activity_events_select_authorized_viewer
 on public.activity_events
 for select
 to authenticated
-using ((select private.has_repository_capability(repository_id, 'repository.view')));
-
--- Source: supabase/schemas/99_zz_repository_grant_command_guardrails.sql
-
-drop policy if exists repository_user_grants_insert_delegated
-on public.repository_user_grants;
-drop policy if exists repository_user_grants_update_delegated
-on public.repository_user_grants;
-drop policy if exists repository_user_grants_delete_delegated
-on public.repository_user_grants;
-
-create policy repository_user_grants_insert_delegated
-on public.repository_user_grants
-for insert
-to authenticated
-with check (
-  (select pg_catalog.current_setting('app.repository_grant_command', true)) = 'mutate'
-  and (select auth.uid()) = granted_by
-  and user_id <> (select auth.uid())
-  and (select private.can_manage_repository_grant(repository_id, role))
-);
-
-create policy repository_user_grants_update_delegated
-on public.repository_user_grants
-for update
-to authenticated
-using (
-  (select pg_catalog.current_setting('app.repository_grant_command', true)) = 'mutate'
-  and user_id <> (select auth.uid())
-  and (select private.can_manage_repository_grant(repository_id, role))
-)
-with check (
-  (select pg_catalog.current_setting('app.repository_grant_command', true)) = 'mutate'
-  and user_id <> (select auth.uid())
-  and (select private.can_manage_repository_grant(repository_id, role))
-);
-
-create policy repository_user_grants_delete_delegated
-on public.repository_user_grants
-for delete
-to authenticated
-using (
-  (select pg_catalog.current_setting('app.repository_grant_command', true)) = 'mutate'
-  and user_id <> (select auth.uid())
-  and (select private.can_manage_repository_grant(repository_id, role))
-);
+using ((select private.current_repository_role(repository_id)) is not null);

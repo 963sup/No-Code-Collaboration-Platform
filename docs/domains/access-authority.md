@@ -77,7 +77,7 @@ Current Repository Roles:
 read | triage | write | maintain | admin
 ```
 
-Capability is the decision truth. Role rank may explain nested bundles but does not authorize delegation.
+Capability is the decision truth. Direct Repository access management is Admin-only. Role rank never grants delegation authority.
 
 Current Capability families include:
 
