@@ -52,7 +52,7 @@ export class UpdatePage {
     });
     const decision = decideRepositoryCapability(
       { sources, visibility: repository.visibility },
-      'resource.update'
+      'page.update'
     );
 
     if (!decision.allowed) return { ok: false, reason: 'forbidden' };
