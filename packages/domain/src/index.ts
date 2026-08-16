@@ -11,8 +11,11 @@ export {
   canMutateOrganizationMembership,
   canMutateRepositoryGrant,
   canMutateRepositoryGrantForPrincipal,
+  isRepositoryGrantRoleAllowed,
   preservesOrganizationOwnership,
-  type OrganizationRole
+  repositoryGrantRolesForOwner,
+  type OrganizationRole,
+  type RepositoryGrantOwnerKind
 } from './access/delegation';
 export { effectiveRepositoryRole, type RepositoryAuthoritySources } from './access/authority';
 export {
