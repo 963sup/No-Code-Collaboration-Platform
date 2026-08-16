@@ -109,10 +109,11 @@ export function normalizeDiscussionTitle(value: string): string | null {
 }
 
 export function canCommentOnDiscussion(input: {
+  readonly canCommentWhenLocked: boolean;
   readonly isLocked: boolean;
   readonly status: DiscussionStatus;
 }): boolean {
-  return input.status === 'open' && !input.isLocked;
+  return input.status === 'open' && (!input.isLocked || input.canCommentWhenLocked);
 }
 
 export function canSelectDiscussionAnswer(
