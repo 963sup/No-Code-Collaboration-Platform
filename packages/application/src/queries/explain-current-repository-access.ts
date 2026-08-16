@@ -45,6 +45,7 @@ export class ExplainCurrentRepositoryAccess {
     return {
       actorId: actor.id,
       explanation: explainRepositoryAccess({
+        actorTrust: 'authenticated',
         sources,
         visibility: repository.visibility
       }),
