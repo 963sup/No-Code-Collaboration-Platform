@@ -3,7 +3,7 @@ begin;
 create extension if not exists pgtap with schema extensions;
 set local search_path = extensions, public, pg_catalog;
 
-select plan(55);
+select plan(57);
 
 insert into auth.users (id, email, raw_user_meta_data)
 values
@@ -319,18 +319,47 @@ select lives_ok(
       2
     )
   $$,
-  'Repository manager can apply independent Discussion moderation lock state'
+  'Admin can apply independent Discussion moderation lock state'
 );
+
+select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-000000000502', true);
+
+select lives_ok(
+  $$
+    select * from public.add_discussion_comment(
+      '20000000-0000-0000-0000-000000000501',
+      (select id from public.discussions where repository_id = '20000000-0000-0000-0000-000000000501' and discussion_number = 2),
+      'Write may continue participating while locked',
+      3
+    )
+  $$,
+  'Write can comment on an open locked Discussion'
+);
+
+select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-000000000501', true);
+
+select is(
+  public.execute_repository_grant_command(
+    '20000000-0000-0000-0000-000000000501',
+    '00000000-0000-0000-0000-000000000502',
+    'write',
+    'triage'
+  ),
+  'applied',
+  'Admin can change the collaborator from Write to Triage'
+);
+
+select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-000000000502', true);
 
 select is(
   (select count(*) from public.add_discussion_comment(
     '20000000-0000-0000-0000-000000000501',
     (select id from public.discussions where repository_id = '20000000-0000-0000-0000-000000000501' and discussion_number = 2),
-    'Rejected locked comment',
-    3
+    'Triage must remain blocked while locked',
+    4
   )),
   0::bigint,
-  'a locked Discussion rejects new comments independently of open status'
+  'Triage cannot comment on an open locked Discussion'
 );
 
 select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-000000000502', true);
@@ -346,7 +375,7 @@ select throws_ok(
   $$,
   '42501',
   'new row violates row-level security policy for table "discussions"',
-  'a Contributor cannot create an announcement Discussion'
+  'Triage cannot create an announcement Discussion'
 );
 
 select is(

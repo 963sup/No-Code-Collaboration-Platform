@@ -313,26 +313,61 @@ Status: **Canonical.**
 
 ```text
 Role
-= named Capability bundle
+= GitHub-derived named Capability bundle
 
 Capability
 = atomic authorization action on a defined target
 ```
 
-Current Repository capabilities:
+Current Repository Roles are preserved from GitHub after removing Code/Git-specific permissions:
 
 ```text
-repository.view
-repository.manage
-resource.view
-resource.create
-resource.update
-member.manage
+read | triage | write | maintain | admin
 ```
 
-An operation that is not accepted by the Product lifecycle is not carried as a latent Capability. Resource hard deletion is currently unavailable and therefore absent from the authorization vocabulary.
+Current no-code Capability vocabulary is surface-specific:
 
-Capability decides authorization. Role supports assignment and explanation.
+```text
+Repository
+repository.view
+repository.manage
+repository.access.manage
+
+Page / Knowledge
+resource.view
+page.create
+page.update
+
+Issue
+issue.create
+issue.comment
+issue.edit
+issue.manage
+
+Discussion
+discussion.create
+discussion.comment
+discussion.comment.locked
+discussion.edit
+discussion.moderate
+discussion.announce
+```
+
+Current Role meaning:
+
+| Role | Surviving no-code responsibility |
+| --- | --- |
+| Read | Repository/content read plus ordinary Issue/Discussion participation |
+| Triage | Read + Issue management and Discussion editing/moderation |
+| Write | Triage + Page mutation, Issue content editing, locked-Discussion comment authority |
+| Maintain | Write + accepted non-sensitive maintenance, currently Announcement creation |
+| Admin | all current Capabilities including sensitive Repository settings and Direct Repository access management |
+
+Direct Repository Grant management is Admin-only. Role rank is explanation/selection support and never creates delegation authority.
+
+Generic `resource.create`, `resource.update`, and `member.manage` are not current authorization vocabulary. They previously hid materially different Page/Issue/Discussion/access actions and produced target-only Role semantics.
+
+An operation not accepted by Product lifecycle is absent from Capability vocabulary. Resource hard deletion remains unavailable. Capability decides authorization; Role supports assignment and explanation.
 
 ## 13. Effective Authorization — owner-neutral derived decision
 
@@ -413,9 +448,24 @@ Issue
 stable identity = Repository ID + issue number
 ```
 
-Issue owns `open | closed` state, `completed | cancelled` close reason, Repository-scoped labels, access-eligible User assignees, and flat chronological comments. Assignment is responsibility, not authority. Create/edit/comment/assign/label/close/reopen use Repository Capabilities, expected version, and same-transaction Activity Evidence. Hard delete, nested replies, milestones, and reactions are excluded from v1.
+Issue owns `open | closed` state, `completed | cancelled` close reason, Repository-scoped labels, access-eligible User assignees, and flat chronological comments. Assignment is responsibility, never authority.
 
-It is never a collaboration Container.
+GitHub-derived action split survives the no-code subtraction test:
+
+```text
+Read
+→ issue.create + issue.comment
+
+Triage
+→ Read + issue.manage
+
+Write / Maintain / Admin
+→ Triage + issue.edit
+```
+
+Every meaningful mutation uses expected version and same-transaction Activity Evidence. Hard delete, nested replies, milestones, reactions, Source Code, and Git semantics remain excluded from v1.
+
+Issue is never a collaboration Container.
 
 ## 16. Discussion — accepted conversation Artifact
 
@@ -431,7 +481,30 @@ Discussion
 stable identity = Repository ID + discussion number
 ```
 
-It is distinct from actionable Issue work and remains contained by Repository. Categories are fixed to `general | question | announcement`; status is `open | closed`; locked is an independent moderation state. Comments are flat and chronological. A `question` may select one of its own comments as Answer; other categories cannot. Announcement creation and lock moderation require `repository.manage`. Every mutation uses expected version and same-transaction Activity Evidence. Hard delete, nested replies, and reactions are excluded from v1.
+Categories are fixed to `general | question | announcement`; status is `open | closed`; locked is an independent moderation state; comments are flat and chronological. A `question` may select one of its own comments as Answer.
+
+GitHub-derived action split:
+
+```text
+Read
+→ create ordinary Discussion + comment while open/unlocked
+
+Triage
+→ Read + edit/moderate/lock/answer
+
+Write
+→ Triage + comment while open/locked
+
+Maintain
+→ Write + create Announcement
+
+Admin
+→ all current Discussion capabilities
+```
+
+Closed Discussion rejects new comments for every Role. Lock blocks ordinary Read/Triage comment participation but Write/Maintain/Admin carry `discussion.comment.locked` and may continue commenting while the Discussion remains open.
+
+Announcement creation uses `discussion.announce`; moderation uses `discussion.moderate`. Neither is Repository access management. Every meaningful mutation uses expected version and same-transaction Activity Evidence. Hard delete, nested replies, reactions, Source Code, and Git semantics remain excluded from v1.
 
 ## 17. Project-style planning view — Projection
 

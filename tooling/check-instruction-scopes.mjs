@@ -231,8 +231,8 @@ const invariantContracts = {
       'RLS transition invariant is missing'
     ],
     [
-      /Repository managers MUST NOT.*manager or admin grants/is,
-      'Repository delegation ceiling is missing'
+      /Direct Repository Grant management is Admin-only/is,
+      'Admin-only Repository access-management boundary is missing'
     ],
     [/retain at least one owner/i, 'database owner continuity invariant is missing'],
     [
