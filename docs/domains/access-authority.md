@@ -8,196 +8,174 @@
 
 The platform must determine and explain:
 
-> Which authenticated Actor may perform which accepted no-code action on which Repository-scoped target, through which authority source, under which constraints, and why?
+> Which Actor may perform which accepted no-code action on which Repository-scoped target, through which persisted relationship or public baseline, under which target-state and governance constraints, and why?
 
-This contract succeeds when User-owned and Organization-owned Repositories use one GitHub-derived Repository Role vocabulary, action-specific Capability decisions, and independently enforced Direct Grant lifecycle without treating ownership, Membership, selected Context, Role rank, or provider metadata as interchangeable authority facts.
+This contract succeeds only when Domain, Application, PostgreSQL/RLS, Web delivery, and tests give the same answer without treating Role, public visibility, ownership, Membership, Context, or target relationships as interchangeable facts.
 
-## First-principles derivation
+## GitHub benchmark evidence boundary
 
-GitHub is evidence for mature Repository collaboration and access semantics, not an implementation template.
-
-The derivation rule for Repository authorization is:
+The benchmark is the public `github/docs` repository, but its directories do not represent the same kind of truth.
 
 ```text
-GitHub Repository access behavior
-− Source Code / Git / Pull Request / Branch / Actions / Release permissions
+github/docs/content/**
+= GitHub product-documentation source used as product-semantics evidence
+
+github/docs/src/**
+= implementation of docs.github.com content loading/rendering/testing
+≠ GitHub.com product source code
+```
+
+Therefore this project reverse-engineers product behavior from `github/docs/content` and uses `github/docs/src` only to verify how the documentation source is processed. We never infer GitHub.com implementation architecture from the docs-site source tree.
+
+The no-code derivation rule is:
+
+```text
+GitHub documented Repository behavior
+− Code / Git / Branch / Pull Request / Actions / Release mechanics
 =
-Surviving No-Code Repository authority semantics
+Surviving no-code collaboration and authorization semantics
 ```
 
-The current surviving Repository Role vocabulary is:
+Current upstream evidence establishes these surviving facts:
+
+- Organization-owned Repository roles are `read | triage | write | maintain | admin`.
+- Managing individual, team, or outside-collaborator Repository access is Admin-only.
+- Personal-account Repositories use owner/collaborator semantics; a collaborator has Write access rather than the Organization five-role assignment model.
+- Public Repository participation allows authenticated actors to create/comment on ordinary Issues and Discussions without fabricating a Repository Role.
+- Public Wiki editing is collaborator-sensitive: a public Repository collaborator may edit Wiki content even when their assigned Organization Repository role is Read; public visibility alone does not grant Wiki mutation.
+- An Issue author may edit and close/reopen their own Issue independently from the general Triage/Write role thresholds.
+- Triage can manage Issues and moderate Discussions without general Page write authority.
+- Write-or-higher may continue commenting on an open locked Discussion.
+- Announcement Discussions require Maintain or Admin.
+
+## First-principles model
+
+The central correction is:
 
 ```text
-read | triage | write | maintain | admin
+Role bundle
+≠
+complete Authorization Decision
 ```
 
-The roles remain distinct only because currently accepted no-code GitHub mechanisms remain distinct:
-
-- Read can read and participate in ordinary Issue/Discussion collaboration.
-- Triage can manage Issue work and moderate Discussions without general content write authority.
-- Write can mutate Page/content and participate in an open locked Discussion.
-- Maintain adds accepted non-sensitive Repository maintenance, currently Announcement creation.
-- Admin owns sensitive Repository settings and Direct Repository access management.
-
-Managing individual/team/outside-collaborator Repository access is Admin-only in the benchmark. The target therefore does not invent partial Direct Grant delegation for Maintain or any lower Role.
-
-The superseded target vocabulary `viewer | contributor | manager | admin` and generic mutation capabilities `resource.create | resource.update | member.manage` are not current Domain truth. They collapsed heterogeneous Repository surfaces and produced target-only delegation behavior.
-
-## Evidence ledger
-
-### Observations
-
-- Repository ownership is typed `User | Organization`.
-- Database stores Direct User-to-Repository Grant relationships.
-- Personal ownership and Organization owner/admin governance already derive Repository Admin without fabricated Grant rows.
-- Ordinary Organization Membership contributes no Repository Role.
-- Page, Issue, and Discussion are accepted no-code Repository Artifacts with distinct lifecycle semantics.
-- RLS independently enforces row access; UI visibility is not sufficient enforcement.
-- Direct Grant create/change/revoke now exists as an Application/SQL command lifecycle with same-transaction Activity Evidence.
-- GitHub's Repository Role matrix distinguishes participation, work moderation, write authority, maintenance, and sensitive access/settings administration.
-
-### Hard constraints
-
-- Authentication and authorization remain separate.
-- Repository ownership and explicit Grant remain separate Relationships.
-- UI Context cannot alter server-side authorization facts.
-- Domain/Application cannot depend on Supabase Rows/DTOs/clients/generated types.
-- Database enforcement fails closed independently from Application explanation.
-- Repository Roles cannot gain target-only permissions merely to preserve an old abstraction.
-- A benchmark permission is excluded when its value depends on rejected Code/Git mechanics.
-- Service credentials never become browser/end-user authority.
-- An unaccepted Product operation is absent from current Capability vocabulary.
-- A successful authority mutation cannot be recorded unless the actual state transition and required Evidence commit atomically.
-
-### Assumptions
-
-- GitHub's five Repository Roles are sufficient for current accepted no-code surfaces.
-- Fixed Role bundles are sufficient until real use cases prove custom roles necessary.
-- Additive authority sources are sufficient before explicit deny/policy caps are proven necessary.
-- Repository remains the primary explicit Grant scope.
-- Current Principal minimum is User.
-
-### Unknowns
-
-- Whether Team is required as a second shared Principal.
-- Whether future Enterprise/Organization policy must cap otherwise granted Capabilities.
-- Whether custom roles, temporary/conditional/resource-specific Grants, or explicit deny become necessary.
-- Whether a future self-leave Repository lifecycle is required.
-- Which additional GitHub Maintain/Admin behaviors survive once corresponding no-code Product surfaces are admitted.
-
-### Value choices
-
-- Preserve GitHub Role vocabulary when its no-code collaboration mechanism survives; do not rename it for target familiarity.
-- Prefer action-specific Capability decisions over generic mutation categories.
-- Prefer least privilege and fail closed.
-- Prefer one semantic decision projected independently into Domain/Application/PostgreSQL/UI explanation.
-- Prefer actual state transition Evidence over requested-command Evidence.
-
-## Boundary and owner
-
-This contract owns:
-
-- Repository Role definitions as bundles of accepted no-code Capabilities;
-- owner-scoped `repository.create` policy before a Repository identity exists;
-- Direct Principal-to-Repository Grant semantics;
-- ownership/governance-derived Repository authority sources;
-- effective Capability calculation;
-- Admin-only Direct Grant create/change/revoke rules;
-- authorization explanations; and
-- semantic consistency between Domain decisions and enforcement projections.
-
-This contract does not own:
-
-- authentication credential lifecycle;
-- Repository creation mechanics or ownership lifecycle;
-- Organization/Team Membership lifecycle;
-- Page/Issue/Discussion subtype transition validity;
-- Repository/Resource destructive lifecycle;
-- UI navigation/selected Context;
-- provider session transport;
-- PostgreSQL syntax; or
-- Audit/feed presentation.
-
-## Semantic role mapping
+The complete decision is:
 
 ```text
-Actor
-= authenticated User attempting action
-
-Scope
-= Repository Owner relationship + applicable Organization/future Enterprise governance scope
-
-Principal
-= subject eligible to receive explicit Repository authority; currently User
-
-Container
-= Repository
-
-Relationship
-= Repository ownership, Membership, Direct Grant; future Team/App only when proven
-
-Artifact
-= Repository-contained Page, Issue, Discussion, or future accepted work type
-
-Process
-= accepted authorization-sensitive command/transition, including Direct Grant mutation
+Actor trust state
++
+Repository visibility
++
+Repository ownership / governance-derived authority
++
+Direct Grant Role
++
+Target relationship facts
++
+Target state
++
+Future governance constraints
+↓
+Capability Decision
 ```
 
-`Role`, `Capability`, future Policy, Context, and Activity Evidence remain distinct cross-cutting semantics.
+Role is still a named Capability bundle. It is not allowed to absorb public participation, authorship, selected Context, or other target-specific facts merely to keep a one-dimensional matrix simple.
 
 ## Vocabulary
 
 | Term | Meaning |
 | --- | --- |
-| Actor | Authenticated User attempting an action |
-| Repository Owner | User or Organization owning the target Repository |
+| Actor | Request-time identity state: anonymous or authenticated User |
 | Principal | Subject eligible to receive explicit authority; currently User |
-| Direct Grant | Principal ↔ Repository Relationship assigning one Repository Role |
-| Governance authority source | Ownership/administration Relationship deriving Repository authority without a Grant |
-| Role | GitHub-derived named Capability bundle |
-| Capability | Specific accepted no-code action on a defined target |
-| Effective Capabilities | Capabilities produced from accepted authority sources after constraints/state preconditions |
-| Repository access management | Admin-only create/change/revoke/read-management of Direct Grants |
-| Context | Selected navigation/filter/view; never an authority source |
-| Collaborator | Derived User classification from effective Repository access |
-| Authorization explanation | Trace of ownership/governance/Grant/visibility/constraint facts producing a decision |
+| Repository Owner | User or Organization owning the target Repository |
+| Direct Grant | User Principal ↔ Repository relationship assigning an owner-kind-valid Repository Role |
+| Role | Named baseline Capability bundle |
+| Capability | Accepted atomic no-code action |
+| Contextual authority | Capability produced by visibility/authentication/target relationship without fabricating a Role |
+| Effective Role | Highest persisted/derived Repository Role used for assignment/explanation, never the whole decision |
+| Effective Capabilities | Final allowed action set after baseline and contextual rules |
+| Context | Navigation/query/presentation state; never an authority source |
+| Activity Evidence | Historical fact emitted only by a successful accepted transition |
 
-## Authority sources
+## Authority sources and contextual rules
 
-### Personal ownership
+### Personal owner
 
 ```text
 Repository.owner = User U
 Actor = U
-→ Repository Admin
+→ effective Repository Admin
 ```
 
-This is not a Direct Grant row.
+No Direct Grant row is fabricated.
 
 ### Organization governance
 
 ```text
 Repository.owner = Organization O
 Actor Membership in O = owner | admin
-→ Repository Admin
+→ effective Repository Admin
 ```
 
-This is not ordinary Organization-member access and not a Direct Grant row.
+Ordinary Organization Membership derives no Repository Role.
 
-### Direct User Grant
+### Organization-owned Direct Grant
 
 ```text
 User Principal
 → Direct Grant
-→ Repository Role
-→ accepted Capabilities
+→ Read | Triage | Write | Maintain | Admin
 ```
 
-### Public visibility
+### User-owned Direct collaborator
 
-Public visibility contributes accepted read baseline semantics only. It does not create a Role, Principal Grant, mutation authority, or raw historical-evidence publication rule.
+```text
+User Principal
+→ Direct collaborator relationship
+→ Write
+```
 
-## Repository Roles and Capabilities
+A personal Repository may not assign Read, Triage, Maintain, or Admin as Direct Grant roles. Its owner already derives Admin from ownership.
+
+### Public visibility and authenticated participation
+
+Anonymous public baseline:
+
+```text
+repository.view
+resource.view
+```
+
+Authenticated public baseline additionally includes ordinary participation:
+
+```text
+issue.create
+issue.comment
+discussion.create
+discussion.comment
+```
+
+These capabilities do **not** create a stored or explained Repository Role.
+
+### Public Wiki collaborator rule
+
+```text
+Repository.visibility = public
+AND Actor has any persisted/derived Repository Role
+→ page.create + page.update
+```
+
+The optional GitHub setting that lets every account edit a public Wiki is not admitted by this Product. Public visibility alone therefore remains insufficient for Page mutation.
+
+### Issue author rule
+
+```text
+Actor = Issue.createdBy
+→ may edit / close / reopen that Issue
+```
+
+This relationship-specific permission does not upgrade the Actor to Write or Triage and does not authorize assignment, labels, or moderation of other Issues.
+
+## Static Repository Role bundles
 
 Current Capability vocabulary:
 
@@ -227,9 +205,9 @@ discussion.moderate
 discussion.announce
 ```
 
-Current Role bundles:
+Static role bundles are the private/default baseline:
 
-| Role | Current no-code capabilities |
+| Role | Baseline no-code capabilities |
 | --- | --- |
 | Read | `repository.view`, `resource.view`, `issue.create`, `issue.comment`, `discussion.create`, `discussion.comment` |
 | Triage | Read + `issue.manage`, `discussion.edit`, `discussion.moderate` |
@@ -237,87 +215,67 @@ Current Role bundles:
 | Maintain | Write + `discussion.announce` |
 | Admin | all current Repository Capabilities, including `repository.manage` and `repository.access.manage` |
 
-`repository.create` remains a separate Owner-Scope Capability before a Repository identity exists. It is not inherited from any existing Repository Role.
+Contextual rules may add a Capability for a specific target without mutating this static bundle. Examples: public Read collaborator Wiki editing and Issue-author edit/transition.
 
-Resource hard deletion remains unavailable and has no Capability.
-
-Role rank may support highest-effective-role explanation. Rank does not determine delegation authority.
-
-## Effective authorization
-
-Conceptual chain:
-
-```text
-Actor
-→ stable Repository target
-→ inspect Repository Owner
-→ collect ownership/governance authority
-→ collect Direct Principal Grants
-→ add accepted visibility baseline
-→ apply governance constraints
-→ apply target-state preconditions
-→ Capability decision
-```
-
-Application authority readers accept stable `actorId + repositoryId`; callers cannot supply owner/Organization assumptions as authorization truth.
-
-Repository creation is the pre-identity exception:
-
-```text
-Actor
-→ requested typed Owner Scope
-→ personal ownership or Organization Membership facts
-→ repository.create policy
-→ authorized Owner passed to creation mechanics
-```
+`repository.create` remains an Owner-Scope decision before a Repository identity exists and is not inherited from an existing Repository Role.
 
 ## Direct Grant lifecycle
 
+Repository access management is Admin-only.
+
+Organization-owned Repository:
+
 ```text
 Absent
-  └── Admin grants Read | Triage | Write | Maintain | Admin
+→ Admin grants Read | Triage | Write | Maintain | Admin
 
-Existing Direct Grant
-  ├── Admin changes Role
-  └── Admin revokes
+Existing
+→ Admin changes to another accepted Organization Repository Role
+→ Admin revokes
+```
+
+User-owned Repository:
+
+```text
+Absent
+→ owner/Admin grants Write collaborator
+
+Existing Write
+→ owner/Admin revokes
 ```
 
 Every transition requires:
 
 1. authenticated Actor;
-2. stable target Repository;
-3. effective `repository.access.manage` Capability;
+2. stable Repository target;
+3. effective `repository.access.manage`;
 4. Actor and target User differ;
 5. target User exists;
-6. persisted target current Role equals command expected Role;
-7. proposed Role is accepted; and
-8. exactly one state transition commits with exactly one corresponding Activity Evidence fact.
+6. proposed Role is valid for the Repository owner kind;
+7. persisted current Role equals the command expected Role; and
+8. exactly one state transition commits before matching Evidence is appended.
 
-Read, Triage, Write, and Maintain cannot manage Direct Grants, regardless of relative Role rank.
+Read, Triage, Write, and Maintain cannot manage Direct Grants regardless of rank.
 
-The Direct Grant management projection is Admin-only. A non-Admin actor must not use raw table SELECT to enumerate Direct Grant Role assignments.
-
-## Compare-and-swap and historical Evidence
-
-Optimistic concurrency belongs at the write boundary.
+## Compare-and-swap and Evidence
 
 ```text
 Create
-→ insert only if Grant is absent
+→ insert only if Grant absent
 
 Change
-→ update only WHERE role = expected_role
+→ update WHERE role = expected_role
 
 Revoke
-→ delete only WHERE role = expected_role
+→ delete WHERE role = expected_role
 ```
 
-A pre-read alone is not sufficient. If the write affects zero rows because another command changed the Grant first:
+A stale write is not success:
 
 ```text
 result = state-changed
-Grant state = unchanged by stale command
-Activity Evidence = none for stale command
+Grant mutation = none
+success Evidence = none
 ```
 
 Only an actual committed transition may emit:
@@ -328,102 +286,83 @@ repository_grant.role_changed
 repository_grant.revoked
 ```
 
-Each fact records authenticated Actor, target User, Repository, actual previous/resulting Role, and timestamp without copying secrets.
+Raw Data API writes are independently constrained by command context, authenticated attribution, self-target rejection, Admin authority, owner-kind Role validity, and RLS.
 
-## Surface-specific state rules
+## Evidence privacy
 
-Authorization and target-state validity remain separate decisions.
+Public Repository visibility does not imply raw historical Evidence publication.
 
-Examples:
+```text
+Public content/participation baseline
+≠
+raw activity_events access
+```
 
-- A Read actor may comment on an ordinary open Discussion.
-- Triage may moderate/lock a Discussion but does not gain Page write authority.
-- An open locked Discussion blocks ordinary Read/Triage comments; Write/Maintain/Admin carry `discussion.comment.locked` and may continue commenting.
-- Closed Discussion rejects new comments regardless of Role.
-- Maintain may create Announcement because that GitHub maintenance responsibility survives no-code subtraction; it still cannot manage Repository access.
-- Triage may manage Issue workflow/classification/responsibility while Issue body editing remains Write+.
-
-The subtype Domain owns whether a requested transition is valid; Access Authority owns whether the Actor carries the required action Capability.
+Raw Activity Evidence currently requires a persisted/derived Repository Role. A future public Activity surface must define an explicit redaction/privacy projection instead of exposing the evidence table.
 
 ## Invariants
 
-1. Valid Session proves identity only, never Repository access.
-2. Authorization targets stable Repository/Resource IDs, not slug, tab, URL, or selected Context.
-3. UI visibility is never sole enforcement.
-4. Capability is authorization decision primitive; Role is bundle/explanation.
-5. Direct Grant connects one Principal, one Repository, one Role.
-6. Repository ownership and Direct Grants remain distinct facts.
-7. Personal owner derives Repository Admin only for that User-owned Repository.
-8. Organization owner/admin derives Repository Admin only for Repositories owned by that Organization.
-9. Ordinary Organization Membership derives no Repository Role.
-10. Public visibility grants only accepted read baseline semantics.
-11. Current Repository Role vocabulary is `read | triage | write | maintain | admin`.
-12. Current mutation Capabilities are surface-specific; generic `resource.create`, `resource.update`, and `member.manage` are not current authorization vocabulary.
-13. Direct Repository access management is Admin-only.
-14. Role rank never grants delegation authority by itself.
-15. Direct Grant delegation cannot target the acting User.
-16. Raw Data API cannot bypass the accepted Direct Grant command or fabricate `granted_by`.
-17. Direct Grant target existence is checked only after Admin access-management authority is established.
-18. Expected current Role is part of the actual DML precondition.
-19. A stale Grant command changes no authority and emits no success Evidence.
-20. A successful Grant create/change/revoke commits exactly one transition plus matching same-transaction Activity Evidence.
-21. Domain/Application and PostgreSQL enforcement must agree; either being more permissive is a security defect.
-22. Service/secret credentials never substitute for end-user authorization.
-23. Context/Projection never grants authority.
-24. Unaccepted Product operations are absent from current Capability bundles.
-25. `repository.create` is decided against an Owner Scope and never inherited from an existing Repository Role.
+1. Authentication proves identity/trust state only; it does not prove private Repository authority.
+2. Repository is the primary Collaboration / Authorization Boundary.
+3. `Context` never changes authority for identical Actor, target, and persisted relationships.
+4. Capability is the decision primitive; Role is assignment/bundle/explanation.
+5. Role bundle is not the complete Authorization Decision.
+6. Public visibility never fabricates a Repository Role.
+7. Anonymous public access is read-only.
+8. Authenticated public participation may create/comment on ordinary Issues and Discussions.
+9. Public Wiki mutation requires a Repository collaborator relationship; public visibility alone is insufficient.
+10. Issue authorship may authorize edit/close/reopen of that Issue without granting a higher Repository Role.
+11. Current Organization Repository Role vocabulary is `read | triage | write | maintain | admin`.
+12. User-owned Direct collaborator assignment is Write-only.
+13. Organization-owned Direct Grants may use all five accepted Repository Roles.
+14. Direct Repository access management is Admin-only through `repository.access.manage`.
+15. Role rank never grants delegation authority by itself.
+16. Direct Grant mutation cannot target the acting User.
+17. Expected current Role constrains the actual DML, not merely a pre-read.
+18. A stale Grant command returns `state-changed`, mutates nothing, and emits no success Evidence.
+19. Successful Grant mutation and required Evidence are atomic.
+20. Domain/Application and PostgreSQL/RLS must agree; either being more permissive is a security defect.
+21. Generic `resource.create`, `resource.update`, and `member.manage` are not current authorization vocabulary.
+22. Service credentials never substitute for end-user authority.
+23. Public Repository participation never implies raw Audit/Evidence publication.
 
 ## Rejected alternatives
 
-### Target-friendly aliases for GitHub Repository Roles
+### One five-role Direct Grant model for every owner kind
 
-Rejected. Viewer/Contributor/Manager renamed mature benchmark concepts and allowed target code to reinterpret Manager as an access delegator.
+Rejected. It erases GitHub's documented difference between personal owner/collaborator access and Organization granular Repository roles.
+
+### Role-only authorization
+
+Rejected. Public participation, public-Wiki collaborator editing, and Issue-author permissions are documented counterexamples.
 
 ### Generic Resource mutation permissions
 
-Rejected. Page, Issue, and Discussion already prove distinct action semantics; generic create/update erased Triage/Write/Maintain differences.
+Rejected. Page, Issue, and Discussion already require distinct action and relationship semantics.
 
 ### Lower-role Direct Grant delegation
 
-Rejected until an independent no-code Product problem and discriminating test prove a need. GitHub Repository access management is Admin-only.
+Rejected. GitHub Repository access management is Admin-only, and the target has no independent no-code need for partial delegation.
 
-### UI-only role filtering
+### Supplemental SQL correction files
 
-Rejected because direct requests and alternate clients bypass presentation.
+Rejected. Canonical RLS policy belongs in `99_rls.sql`; downstream correction layers create multiple executable truths.
 
-### Database-only Domain model
+### UI-only enforcement
 
-Rejected because RLS is enforcement projection, not provider-neutral Product explanation.
-
-### Pre-read optimistic concurrency
-
-Rejected because check-then-act can observe stale state under concurrency and can fabricate historical Evidence unless the expected value constrains the actual write.
-
-## Falsification conditions
-
-Reopen when:
-
-- real no-code workflows require a Role/Capability combination the GitHub-derived matrix cannot express without repeated exceptions;
-- a genuine collaboration need requires non-Admin Repository access delegation;
-- fixed Role bundles cause pervasive exceptions;
-- a second Principal type proves incompatible Grant/revocation semantics;
-- policy caps require explicit deny; or
-- Domain/Application/PostgreSQL cannot express the same decisions without contradictory logic.
+Rejected. Direct requests, RPCs, and alternative adapters must fail closed independently.
 
 ## Minimum discriminating tests
 
-1. Personal owner receives Repository Admin without fabricated Direct Grant.
-2. Organization owner/admin receives Repository Admin for Organization-owned Repository; ordinary member does not.
-3. Read can read and participate in ordinary Issue/Discussion collaboration but cannot update Page or manage Direct Grants.
-4. Triage can manage Issue/Discussion state but cannot update Page or manage Direct Grants.
-5. Write can update Page and comment on an open locked Discussion but cannot create Announcement or manage Direct Grants.
-6. Maintain can create Announcement but cannot manage Direct Grants.
-7. Admin can create/change/revoke Direct Grants to every accepted Repository Role.
-8. Non-Admin management projection and raw Grant enumeration are unavailable.
-9. Self-target Direct Grant mutation is rejected in Domain/Application and PostgreSQL.
-10. Forged raw Grant mutation/attribution fails closed.
-11. Stale expected Role changes zero rows, returns `state-changed`, and emits no success Evidence.
-12. Successful create/change/revoke each change exactly one relationship and emit exactly one matching Activity Evidence fact.
-13. Closed Discussion rejects all new comments; locked open Discussion admits only Roles carrying `discussion.comment.locked`.
-14. Changing Context cannot change authority for identical Actor/Repository/persisted facts.
-15. Any current Capability not backed by an accepted no-code action fails this contract and must be removed or independently justified.
+1. Anonymous public Actor can read public Repository content but cannot mutate collaboration artifacts.
+2. Authenticated public Actor with no Direct Grant can create/comment on ordinary Issue/Discussion without receiving a Role.
+3. Public Read collaborator can create/update Wiki/Page; private Read collaborator cannot.
+4. Issue author with Read or public-participation access can edit/close/reopen their own Issue; unrelated Read actor cannot.
+5. Triage can manage arbitrary Issue state and moderate Discussion without Page write authority.
+6. Write can comment on an open locked Discussion but cannot create Announcement.
+7. Maintain can create Announcement but cannot manage Direct Repository access.
+8. Admin can manage Direct Grants.
+9. Personal Repository accepts only Write Direct collaborator assignment; Organization Repository accepts all five roles.
+10. Self-target, forged raw Grant writes, stale expected Role, and false Evidence all fail closed.
+11. Raw Activity Evidence remains unavailable to a public actor who has no persisted/derived Repository Role.
+12. Changing selected Context cannot change any decision above.
