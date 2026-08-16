@@ -8,12 +8,9 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { z } from 'zod';
 
+import { databaseUuidSchema } from '@/app/_validation/database-id';
 import { createRequestServices } from '@/composition/create-request-services';
 import { repositoryPath, repositorySettingsAccessPath } from '@/routing/repository-routes';
-
-const databaseUuidSchema = z
-  .string()
-  .regex(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/iu);
 
 const routeSchema = z.object({
   ownerSlug: z
@@ -29,7 +26,7 @@ const routeSchema = z.object({
     .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/u)
 });
 
-const roleSchema = z.enum(['viewer', 'contributor', 'manager', 'admin']);
+const roleSchema = z.enum(['read', 'triage', 'write', 'maintain', 'admin']);
 
 function destination(route: z.infer<typeof routeSchema>) {
   return repositorySettingsAccessPath(route);
