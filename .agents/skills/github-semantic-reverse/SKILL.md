@@ -21,11 +21,12 @@ For a repository-wide audit or repair, read in this order before changing Produc
 
 1. `REFERENCE_SNAPSHOT.md`
 2. `GLOSSARY.md`
-3. the latest file in `audit-reports/`
-4. `docs/PRODUCT.md`, `docs/ONTOLOGY.md`, the narrowest Domain contract, and `docs/architecture/README.md`
-5. executable evidence and `docs/IMPLEMENTATION_GAPS.md`
+3. `BENCHMARK_CONCEPT_MATRIX.md`
+4. the latest file in `audit-reports/`
+5. `docs/PRODUCT.md`, `docs/ONTOLOGY.md`, the narrowest Domain contract, and `docs/architecture/README.md`
+6. executable evidence and `docs/IMPLEMENTATION_GAPS.md`
 
-If the snapshot file is absent, overwritten, or unlocked, repair it first and pause all other semantic edits.
+If the snapshot file is absent, overwritten, unlocked, or omits a required concept, repair it first and pause all other semantic edits.
 
 ## Mandatory no-code boundary
 
@@ -35,20 +36,37 @@ The exclusion boundary is semantic rather than a raw string ban:
 
 - Product, Domain, Application, API, persistence, URL/IA, and user-facing UI may not admit excluded source-control concepts as target capabilities or mental models.
 - Benchmark evidence, exclusion rules, repair specifications, audit reports, and Git/GitHub engineering workflow may name external concepts only to identify, reject, or operate the engineering repository.
-- Historical Evidence remains `Activity Event`; it must not be turned into a disguised version-control object.
+- Historical Evidence remains `Activity Event`; it must not be turned into a disguised version-control object or used as the Product description of a normal save.
+- Legitimate current-state revisioning is permitted only as a scalar concurrency precondition with no history identity, ancestry, alternate state line, or user-visible source-control semantics.
 
-Use `GLOSSARY.md` as the only mapping authority. Individual files may not invent local aliases.
+Use `GLOSSARY.md` as the only excluded-concept mapping authority. Individual files may not invent local aliases or verification answers.
 
 ## Admission workflow
 
 1. State the exact GitHub-derived concept and target decision.
-2. Identify the underlying collaboration or organizational problem. Separate current GitHub evidence from inference.
+2. Identify the underlying collaboration or organizational problem. Separate locked GitHub evidence from inference.
 3. Remove every software-development, code, source-control, and execution assumption. If the problem disappears, reject the candidate.
 4. Restate the surviving problem for an arbitrary no-code Repository and classify it with Actor, Scope, Principal, Container, Relationship, Artifact, or Process. Keep Authorization, Presentation, and Evidence cross-cutting.
 5. Map the candidate back to Repository as the only primary collaboration and authorization boundary. Prove ownership, authority, lifecycle, URL/IA, and visibility without creating a second boundary or authority source.
-6. Check canonical Product, Ontology, Domain, and Architecture contracts. Current repository contracts decide target acceptance until formally corrected.
+6. Check the locked benchmark matrix and canonical Product, Ontology, Domain, and Architecture contracts. Current repository contracts decide target acceptance until formally corrected.
 7. Reject generic semantic-role persistence, taxonomy-driven packages/tables, speculative capability frameworks, or source-control-shaped data models.
 8. Define the smallest discriminating test that could falsify the adaptation before persistence or architecture is introduced.
+
+## Verification-scenario rule
+
+For every excluded concept, use the exact `Verification question`, `Required answer`, and `Forbidden answer shape` from `GLOSSARY.md`.
+
+The answer fails when it still depends on:
+
+- who changed something, when, or with what history message to explain a normal save;
+- a private/default state line and later convergence;
+- line/file/patch comparison;
+- conflict markers or side selection;
+- history rewriting or history-node selection;
+- a movable current-state pointer; or
+- continuing upstream authority or automatic synchronization.
+
+`Activity Event` may satisfy a separate Evidence question. It cannot be used to make the `commit` mapping pass.
 
 ## Repository-wide repair workflow
 
@@ -58,9 +76,9 @@ Use `GLOSSARY.md` as the only mapping authority. Individual files may not invent
 4. Treat code and repository documentation as authority. Linear and Notion are mirrors and must follow authority, never reverse it.
 5. Fix the earliest incorrect truth boundary first: Product/Ontology before architecture, implementation, UI, tests, and mirrors.
 6. Classify each audited item as `newly_passed`, `maintained_passed`, `revoked`, or `not_passed`.
-7. If `revoked` is empty, iterate only over `not_passed`. If an item is revoked, correct its acceptance scenario before changing implementation.
-8. Stop automatic redefinition after two consecutive revocations of the same item and request an explicit product decision.
-9. The cycle passes only when every audited concept is covered and both `revoked` and `not_passed` are empty.
+7. If `revoked` is empty, iterate only over `not_passed`. If an item is revoked, correct its verification scenario before changing implementation, record the revocation, and revalidate the item in the next audit round.
+8. Stop automatic redefinition after two consecutive revocations of the same item and request an explicit Product decision.
+9. The cycle passes only when every audited concept is traceable to the locked snapshot and both `revoked` and `not_passed` are empty.
 
 ## Required output
 
@@ -69,5 +87,5 @@ Use `GLOSSARY.md` as the only mapping authority. Individual files may not invent
 - No-code/source-control exclusion result
 - Canonical target semantics or explicit rejection
 - Repository ownership, authorization, containment, and non-confusion checks
-- Smallest discriminating test and remaining unknowns
+- Exact verification question, required answer, forbidden answer shape, and remaining unknowns
 - Audit classification and source-of-truth synchronization record when repository-wide work is performed

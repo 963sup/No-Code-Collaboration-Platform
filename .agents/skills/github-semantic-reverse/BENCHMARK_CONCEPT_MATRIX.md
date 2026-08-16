@@ -1,0 +1,31 @@
+# Locked GitHub Product Concept Matrix
+
+## Scope and authority
+
+- Benchmark: `github/docs@81ade08c26f13325c0cde8a23cd3bfb85bd0778e`
+- Locked date: `2026-08-16`
+- Coverage: the eight names explicitly enumerated by the v2 repair input
+- Authority: benchmark evidence informs reverse engineering; `docs/PRODUCT.md` and `docs/ONTOLOGY.md` own target admission
+
+The v2 input calls this a seven-concept comparison but lists eight concepts. The only non-lossy resolution is to audit all eight.
+
+## Matrix
+
+| Benchmark concept | Locked source | Underlying GitHub problem/mechanism | Assumptions removed | Canonical target outcome | Minimum discriminating test |
+| --- | --- | --- | --- | --- | --- |
+| Enterprise | `content/get-started/learning-about-github/types-of-github-accounts.md` | Centrally manage policy and billing for multiple Organizations without directly owning their resources | GitHub plans, billing, code estate, managed-user implementation | Deferred cross-Organization governance Scope. It cannot directly own Repository content or act as a content Principal by implication. | An Enterprise policy may constrain future Organization action but cannot read a private Repository merely because it governs the Owner Organization. |
+| Organization | `content/get-started/learning-about-github/types-of-github-accounts.md` | Shared identity, resource ownership, Membership, administration, and access management | Code/package ownership, GitHub plan behavior, assumption that all collaboration must be Organization-owned | Canonical persistent organizational identity and administration Scope; may own Repository; never authenticates as the human Actor or replaces Repository. | User-owned and Organization-owned Repositories execute the same Resource and authorization semantics; ordinary Membership adds no Repository Role. |
+| Team | `content/organizations/organizing-members-into-teams/about-teams.md` | Reuse a durable group of Organization members for Repository access and mentions | CODEOWNERS, review requests, nested permission inheritance as mandatory target behavior | Deferred Organization-scoped group Principal. No Team entity, persistence, nesting, or Grant exists until repeated durable group authority is demonstrated. | A selected Team page or mention cannot grant access; only a separately accepted Team Grant could contribute Capability. |
+| Collaborator | `content/organizations/managing-user-access-to-your-organizations-repositories/managing-outside-collaborators/adding-outside-collaborators-to-repositories-in-your-organization.md` | Describe a person with Repository access, including non-members of the Owner Organization | GitHub seat accounting, fork policy, SAML/2FA product specifics | Derived classification from effective Repository access. Outside collaborator means effective access to an Organization-owned Repository plus absence of Organization Membership. | Removing the underlying Grant removes collaborator classification; changing the label alone changes no authority. |
+| User / Social | `content/get-started/learning-about-github/types-of-github-accounts.md`; `content/account-and-profile/tutorials/personalize-your-profile.md` | Human sign-in/action attribution plus public identity and profile presentation | Machine-user automation, CI, contribution graphs tied to Source Code, third-party social-provider assumptions | User is the persistent human Product identity and possible Actor/Owner/Principal. Profile, status, social links, tabs, and activity summaries are Presentation only. | Changing bio, status, profile links, selected tab, stars, or follower presentation cannot change Repository authorization. |
+| Wiki | `content/communities/documenting-your-project-with-wikis/about-wikis.md` | Host long-form Repository documentation under Repository visibility and access rules | Wiki Git Repository, local file editing, file-count limits, Git-backed history | `/wiki` is mature presentation vocabulary over Repository-contained Page/Knowledge Resources. It creates no second aggregate, Container, or Git history model. | A private Repository Wiki is unreadable without Repository access; editing a Page uses the same Resource command/State Transition kernel as other Page presentation. |
+| Projects | `content/issues/planning-and-tracking-with-projects/learning-about-projects/about-projects.md` | Plan and visualize work through views, metadata, fields, charts, templates, and status | Pull requests, code release planning, Actions/GraphQL automation, assumption that GitHub's separate project object must be copied | Current target is a Project-style planning Projection over already-authorized work. Project identity, persistence, custom fields, workflows, and cross-Repository ownership remain deferred. | Moving or filtering a planning row changes no source Artifact or authority unless it invokes the owning Resource command under normal authorization. |
+| Issues | `content/issues/tracking-your-work-with-issues/learning-about-issues/about-issues.md` | Create, discuss, classify, assign, and complete actionable work inside a Repository | Code-line creation, pull-request closing keywords, bug/developer-only framing | Canonical Repository-scoped actionable Resource with local number, explicit lifecycle, labels, assignees, comments, concurrency, and Activity Event Evidence. Assignment is responsibility, not authority. | A User without Repository Capability cannot read or mutate an Issue merely because assigned or mentioned; a stale Issue command changes neither state nor success Evidence. |
+
+## Cross-concept laws
+
+1. User acts; Organization may own; Enterprise may govern; Team may eventually receive delegated authority; none replaces Repository as collaboration Container.
+2. Membership, ownership, effective access, profile Presentation, and selected Context are different facts.
+3. Wiki, Projects, and Issues reuse Repository authorization rather than creating independent authority boundaries.
+4. Benchmark UI or URL vocabulary may survive only after Product admission; benchmark persistence and source-control mechanics never transfer automatically.
+5. A derived classification or Projection becomes an Entity only after independent identity, lifecycle, invariants, authority effects, and non-derivable behavior are proven.

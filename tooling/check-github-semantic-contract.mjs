@@ -25,9 +25,23 @@ const forbidMatch = (path, content, pattern, message) => {
   if (pattern.test(content)) failures.push(`${path}: ${message}`);
 };
 
+const extractHeadingSection = (content, heading) => {
+  const marker = `### \`${heading}\``;
+  const start = content.indexOf(marker);
+  if (start < 0) return '';
+  const next = content.indexOf('\n### `', start + marker.length);
+  return next < 0 ? content.slice(start) : content.slice(start, next);
+};
+
+const extractRequiredAnswer = (section) => {
+  const match = section.match(/\*\*Required answer:\*\*\s*`([^`]+)`/);
+  return match?.[1] ?? '';
+};
+
 const skillRoot = '.agents/skills/github-semantic-reverse';
 const snapshotPath = `${skillRoot}/REFERENCE_SNAPSHOT.md`;
 const glossaryPath = `${skillRoot}/GLOSSARY.md`;
+const matrixPath = `${skillRoot}/BENCHMARK_CONCEPT_MATRIX.md`;
 const reportPath = `${skillRoot}/audit-reports/2026-08-16.md`;
 const resolutionPath =
   '.codex/tasks/collaboration-relationship-kernel-repair/EXECUTION_RESOLUTION.md';
@@ -51,6 +65,7 @@ const currentContracts = {
 for (const path of [
   snapshotPath,
   glossaryPath,
+  matrixPath,
   reportPath,
   resolutionPath,
   ...Object.values(currentContracts)
@@ -65,33 +80,135 @@ for (const [expected, message] of [
   ['81ade08c26f13325c0cde8a23cd3bfb85bd0778e', 'locked github/docs revision is missing'],
   ['2026-08-16', 'locked date is missing'],
   ['`content/`, `src/`', 'locked coverage is missing'],
-  ['must not move during the cycle', 'mid-cycle update prohibition is missing']
+  ['must not move during the cycle', 'mid-cycle update prohibition is missing'],
+  ['The v2 repair input says “seven concepts” but enumerates eight names', 'eight-name resolution is missing']
 ]) {
   requireText(snapshotPath, snapshot, expected, message);
 }
 
-const glossary = read(glossaryPath);
-for (const concept of [
-  '`commit`',
-  '`branch`',
-  '`diff`',
-  '`merge`',
-  '`fork`',
-  '`rebase`',
-  '`cherry-pick`',
-  '`tag`',
-  '`HEAD`'
+for (const path of [
+  'content/get-started/using-git/about-git.md',
+  'content/pull-requests/reference/branches.md',
+  'content/pull-requests/how-tos/commit-changes/comparing-commits.md',
+  'content/pull-requests/how-tos/merge-and-close-pull-requests/merging-a-pull-request.md',
+  'content/pull-requests/get-started/about-forks.md',
+  'content/get-started/using-git/about-git-rebase.md',
+  'content/desktop/managing-commits/cherry-picking-a-commit-in-github-desktop.md',
+  'content/desktop/managing-commits/managing-tags-in-github-desktop.md',
+  'content/rest/guides/using-the-rest-api-to-interact-with-your-git-database.md'
 ]) {
-  requireText(glossaryPath, glossary, concept, `canonical outcome is missing for ${concept}`);
+  requireText(snapshotPath, snapshot, path, `locked exclusion source is missing: ${path}`);
+}
+
+const matrix = read(matrixPath);
+for (const concept of [
+  'Enterprise',
+  'Organization',
+  'Team',
+  'Collaborator',
+  'User / Social',
+  'Wiki',
+  'Projects',
+  'Issues'
+]) {
+  requireMatch(
+    matrixPath,
+    matrix,
+    new RegExp(`\\| ${concept.replace('/', '\\/')} \\|`),
+    `benchmark matrix row is missing: ${concept}`
+  );
 }
 for (const expected of [
-  'Product, Domain, Application, API, persistence, URL/IA, and user-facing UI',
-  'Benchmark evidence, repair specifications, audit reports, and Git/GitHub engineering workflow',
-  'State Transition',
-  'Activity Event',
-  'Repository Duplication'
+  'all eight',
+  'Minimum discriminating test',
+  'ordinary Membership adds no Repository Role',
+  'profile/social data is Presentation only',
+  'Project-style planning Projection',
+  'assignment is responsibility, not authority'
 ]) {
-  requireText(glossaryPath, glossary, expected, `semantic boundary is missing: ${expected}`);
+  requireText(matrixPath, matrix, expected, `benchmark matrix boundary is missing: ${expected}`);
+}
+
+const glossary = read(glossaryPath);
+for (const expected of [
+  'State Revision',
+  'Expected Revision',
+  'Current implementation naming boundary',
+  '`version`, `expectedVersion`, and `expected_version`',
+  'technical projections of `State Revision` and `Expected Revision`',
+  'Activity Event is orthogonal Evidence'
+]) {
+  requireText(glossaryPath, glossary, expected, `required semantic boundary is missing: ${expected}`);
+}
+
+const excludedConcepts = [
+  'commit',
+  'branch',
+  'diff',
+  'merge',
+  'fork',
+  'rebase',
+  'cherry-pick',
+  'tag',
+  'HEAD'
+];
+
+for (const concept of excludedConcepts) {
+  const section = extractHeadingSection(glossary, concept);
+  if (!section) {
+    failures.push(`${glossaryPath}: canonical section is missing for ${concept}`);
+    continue;
+  }
+
+  for (const label of [
+    '**Target outcome:**',
+    '**Data-versioning classification:**',
+    '**Verification question:**',
+    '**Required answer:**',
+    '**Forbidden answer shape:**'
+  ]) {
+    requireText(glossaryPath, section, label, `${concept} is missing ${label}`);
+  }
+
+  const answer = extractRequiredAnswer(section);
+  if (!answer) failures.push(`${glossaryPath}: ${concept} required answer is not a single backticked sentence`);
+}
+
+const commitSection = extractHeadingSection(glossary, 'commit');
+const commitAnswer = extractRequiredAnswer(commitSection);
+requireText(
+  glossaryPath,
+  commitSection,
+  'The Product description of the save is only the resulting Current State',
+  'commit mapping must define save as resulting Current State only'
+);
+requireText(
+  glossaryPath,
+  commitSection,
+  'Activity Event may be required by a separate Evidence contract, but it is orthogonal',
+  'commit mapping must separate Evidence from save description'
+);
+if (commitAnswer !== 'The Page Current State now contains the accepted title and body at State Revision 12.') {
+  failures.push(`${glossaryPath}: commit required answer does not match the corrected state-only criterion`);
+}
+if (/Activity Event|who|when|changed|history|snapshot|author|message/i.test(commitAnswer)) {
+  failures.push(`${glossaryPath}: commit required answer contains prohibited historical narration`);
+}
+forbidMatch(
+  glossaryPath,
+  commitSection,
+  /The system describes the accepted new Page state and records an Activity Event/i,
+  'revoked commit verification answer remains'
+);
+
+const branchAnswer = extractRequiredAnswer(extractHeadingSection(glossary, 'branch'));
+if (/mainline|merge back|private state line|branch/i.test(branchAnswer)) {
+  failures.push(`${glossaryPath}: branch required answer preserves an alternate-line mental model`);
+}
+
+const forkAnswer = extractRequiredAnswer(extractHeadingSection(glossary, 'fork'));
+if (/upstream|sync back|pull request|repository network/i.test(forkAnswer)) {
+  failures.push(`${glossaryPath}: fork required answer preserves continuing source relationship`);
 }
 
 const documents = Object.fromEntries(
@@ -202,9 +319,17 @@ for (const category of [
 ]) {
   requireText(reportPath, report, category, `audit category is missing: ${category}`);
 }
-requireText(reportPath, report, 'Overall status: **not passed**', 'audit status is not explicit');
-requireText(reportPath, report, 'Source-of-truth synchronization log', 'mirror arbitration log is missing');
-requireText(reportPath, report, 'Canonical Product/Ontology correction', 'second-stage correction is not recorded');
+for (const expected of [
+  'Audit round: **2 — verification-criterion correction**',
+  'Overall status: **not passed**',
+  '`commit` verification scenario — revoked once',
+  'Corrected required answer',
+  'Linear `963-7`',
+  'Source-of-truth synchronization log',
+  'Cycle convergence not reached'
+]) {
+  requireText(reportPath, report, expected, `round-2 audit evidence is missing: ${expected}`);
+}
 
 const resolution = read(resolutionPath);
 for (const expected of [
@@ -238,7 +363,10 @@ const result = {
   ok: failures.length === 0,
   snapshot: snapshotPath,
   glossary: glossaryPath,
+  matrix: matrixPath,
   report: reportPath,
+  excludedConcepts: excludedConcepts.length,
+  benchmarkConcepts: 8,
   currentContracts: Object.keys(currentContracts).length,
   failures
 };
