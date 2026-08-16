@@ -37,6 +37,19 @@ Collaborator(user, repository)
 
 Current persisted Principal support is User only. Team and App remain deferred until a real workflow proves durable group or machine authority.
 
+## GitHub benchmark evidence boundary
+
+```text
+github/docs/content
+= GitHub product-documentation source used as Product-semantics evidence
+
+github/docs/src
+= docs.github.com content-loading, rendering, and testing implementation evidence
+≠ GitHub.com Product source code
+```
+
+The benchmark may establish observable GitHub Product behavior. It never authorizes importing Code, Git, Branch, Pull Request, Actions, Release, or docs-site implementation architecture into this Product.
+
 `Collaborator` is never a Grant type, table, Role, identity subtype, or authority source. A User becomes a collaborator only after ownership, governance, explicit Grant, and visibility rules resolve to effective Repository access.
 
 For an Organization-owned Repository:
@@ -134,7 +147,7 @@ Invariants:
 2. The target is one stable User and one stable Repository.
 3. A Direct User Grant never replaces Repository ownership.
 4. The acting User cannot delegate a Direct Grant to itself.
-5. Expected current Role is a real compare-and-swap precondition; stale state changes nothing and emits no success Evidence.
+5. Expected current Role is a real compare-and-swap precondition; stale state returns `state-changed`, changes nothing, and emits no success Evidence.
 6. Target existence is not disclosed before access-management authority is established.
 7. `grantedBy` equals the authenticated Actor and cannot be client supplied.
 8. Personal-owner Repository Grants remain constrained by the accepted role policy; Organization ownership does not authorize ordinary members by implication.

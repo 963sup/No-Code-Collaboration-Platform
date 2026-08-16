@@ -3,7 +3,7 @@ begin;
 create extension if not exists pgtap with schema extensions;
 set local search_path = extensions, public, pg_catalog;
 
-select plan(57);
+select plan(59);
 
 insert into auth.users (id, email, raw_user_meta_data)
 values
@@ -586,6 +586,32 @@ select is(
 );
 
 select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-000000000503', true);
+
+select results_eq(
+  $$
+    select issue_number from public.create_issue(
+      '20000000-0000-0000-0000-000000000502',
+      'Public participant Issue',
+      'Created without a Direct Grant'
+    )
+  $$,
+  $$ values (2::bigint) $$,
+  'public authenticated Actor can create an Issue without a Direct Grant'
+);
+
+select results_eq(
+  $$
+    select version from public.edit_issue(
+      '20000000-0000-0000-0000-000000000502',
+      (select id from public.issues where repository_id = '20000000-0000-0000-0000-000000000502' and issue_number = 2),
+      'Public participant Issue updated',
+      'Author-owned update',
+      1
+    )
+  $$,
+  $$ values (2::bigint) $$,
+  'Issue author can edit their own Issue without Triage or Write'
+);
 
 select is(
   (select max(total_count) from public.search_collaboration('shared', 'issue', '', '', '', 'relevance', 1)),

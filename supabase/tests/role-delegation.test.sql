@@ -3,7 +3,7 @@ begin;
 create extension if not exists pgtap with schema extensions;
 set local search_path = extensions, public, pg_catalog;
 
-select plan(19);
+select plan(20);
 
 insert into auth.users (id, email, raw_user_meta_data)
 values
@@ -68,6 +68,15 @@ values (
   '10000000-0000-0000-0000-000000000101',
   'delegation-repository',
   'Delegation Repository',
+  '00000000-0000-0000-0000-000000000101'
+);
+
+insert into public.repositories (id, owner_user_id, slug, name, created_by)
+values (
+  '20000000-0000-0000-0000-000000000102',
+  '00000000-0000-0000-0000-000000000101',
+  'personal-delegation',
+  'Personal Delegation',
   '00000000-0000-0000-0000-000000000101'
 );
 
@@ -304,6 +313,17 @@ select is(
   ),
   'applied',
   'Repository Admin can create an Admin Direct Grant'
+);
+
+select is(
+  public.execute_repository_grant_command(
+    '20000000-0000-0000-0000-000000000102',
+    '00000000-0000-0000-0000-000000000108',
+    null,
+    'read'
+  ),
+  'forbidden',
+  'personal Repository rejects a Read Direct Grant'
 );
 
 select * from finish();
