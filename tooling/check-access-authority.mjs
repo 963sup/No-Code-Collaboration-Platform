@@ -102,7 +102,12 @@ for (const symbol of [
   "rpc('list_repository_direct_grants'",
   "'execute_repository_grant_command'"
 ]) {
-  requireText(paths.adapter, documents.adapter, symbol, `${symbol} Supabase adapter mapping is missing`);
+  requireText(
+    paths.adapter,
+    documents.adapter,
+    symbol,
+    `${symbol} Supabase adapter mapping is missing`
+  );
 }
 
 const webBoundary = `${documents.webActions}\n${documents.webPage}`;
@@ -113,7 +118,12 @@ for (const symbol of [
   'changeRepositoryGrantRole',
   'revokeRepositoryGrant'
 ]) {
-  requireText(paths.webPage, webBoundary, symbol, `${symbol} Web/Application composition is missing`);
+  requireText(
+    paths.webPage,
+    webBoundary,
+    symbol,
+    `${symbol} Web/Application composition is missing`
+  );
 }
 for (const forbidden of ['@supabase/', 'repository_user_grants']) {
   forbidText(
