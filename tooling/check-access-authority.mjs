@@ -7,7 +7,7 @@ const failures = [];
 function read(path) {
   const absolute = resolve(root, path);
   if (!existsSync(absolute)) {
-    failures.push(`${path}: required Access Authority contract is missing`);
+    failures.push(`${path}: required current-truth contract is missing`);
     return '';
   }
   return readFileSync(absolute, 'utf8');
@@ -21,12 +21,36 @@ function forbidText(path, content, text, message) {
   if (content.includes(text)) failures.push(`${path}: ${message}`);
 }
 
+function forbidPath(path, message) {
+  if (existsSync(resolve(root, path))) failures.push(`${path}: ${message}`);
+}
+
 function requireOrder(path, content, earlier, later, message) {
   const earlierIndex = content.indexOf(earlier);
   const laterIndex = content.indexOf(later);
   if (earlierIndex === -1 || laterIndex === -1 || earlierIndex >= laterIndex) {
     failures.push(`${path}: ${message}`);
   }
+}
+
+function extractSqlFunctionBody(path, content, functionStart) {
+  const functionIndex = content.indexOf(functionStart);
+  if (functionIndex === -1) {
+    failures.push(`${path}: ${functionStart} is missing`);
+    return '';
+  }
+  const bodyStartMarker = 'as $$';
+  const bodyStart = content.indexOf(bodyStartMarker, functionIndex);
+  if (bodyStart === -1) {
+    failures.push(`${path}: ${functionStart} has no SQL body`);
+    return '';
+  }
+  const bodyEnd = content.indexOf('\n$$;', bodyStart + bodyStartMarker.length);
+  if (bodyEnd === -1) {
+    failures.push(`${path}: ${functionStart} SQL body is unterminated`);
+    return '';
+  }
+  return content.slice(bodyStart + bodyStartMarker.length, bodyEnd);
 }
 
 function walkFiles(directory, extensions) {
@@ -41,7 +65,9 @@ function walkFiles(directory, extensions) {
 
 const paths = {
   domainCapability: 'packages/domain/src/access/capability.ts',
+  domainAuthority: 'packages/domain/src/access/authority.ts',
   domainDelegation: 'packages/domain/src/access/delegation.ts',
+  issueDomain: 'packages/domain/src/resource/issue.ts',
   pageCreate: 'packages/application/src/commands/create-page.ts',
   pageUpdate: 'packages/application/src/commands/update-page.ts',
   issueCommand: 'packages/application/src/commands/execute-issue-command.ts',
@@ -58,7 +84,7 @@ const paths = {
   commandSchema: 'supabase/schemas/92_repository_grant_commands.sql',
   collaborationCommands: 'supabase/schemas/93_collaboration_commands.sql',
   rls: 'supabase/schemas/99_rls.sql',
-  rlsGuardrails: 'supabase/schemas/99_zz_repository_grant_command_guardrails.sql',
+  legacyRlsOverride: 'supabase/schemas/99_zz_repository_grant_command_guardrails.sql',
   adr: 'docs/architecture/ADR-004-authority-delegation-invariants.md',
   accessContract: 'docs/domains/access-authority.md',
   pageContract: 'docs/domains/page-resource.md',
@@ -71,7 +97,14 @@ const paths = {
 };
 
 const documents = Object.fromEntries(
-  Object.entries(paths).map(([name, path]) => [name, read(path)])
+  Object.entries(paths)
+    .filter(([name]) => name !== 'legacyRlsOverride')
+    .map(([name, path]) => [name, read(path)])
+);
+
+forbidPath(
+  paths.legacyRlsOverride,
+  'supplemental RLS correction files are forbidden; canonical policy belongs in 99_rls.sql'
 );
 
 for (const role of ['read', 'triage', 'write', 'maintain', 'admin']) {
@@ -79,7 +112,7 @@ for (const role of ['read', 'triage', 'write', 'maintain', 'admin']) {
     paths.domainCapability,
     documents.domainCapability,
     `'${role}'`,
-    `GitHub-derived Repository Role ${role} is missing`
+    `GitHub organization-Repository Role ${role} is missing`
   );
 }
 for (const obsolete of ["'viewer'", "'contributor'", "'manager'"]) {
@@ -122,10 +155,29 @@ for (const obsolete of ["'resource.create'", "'resource.update'", "'member.manag
 }
 
 for (const symbol of [
+  "export type RepositoryActorTrust = 'anonymous' | 'authenticated'",
+  'authenticatedPublicParticipationCapabilities',
+  'publicCollaboratorWikiCapabilities',
+  "'issue.create'",
+  "'discussion.create'",
+  "'page.update'",
+  'effectiveRole !== null'
+]) {
+  requireText(
+    paths.domainAuthority,
+    documents.domainAuthority,
+    symbol,
+    `${symbol} contextual Repository authority rule is missing`
+  );
+}
+
+for (const symbol of [
   'canMutateRepositoryGrantForPrincipal',
   'actorId !== targetUserId',
   "hasRepositoryCapability(actorRole, 'repository.access.manage')",
-  'admin: repositoryRoles'
+  'admin: repositoryRoles',
+  'repositoryGrantRolesForOwner',
+  "ownerKind === 'user' ? ['write'] : repositoryRoles"
 ]) {
   requireText(
     paths.domainDelegation,
@@ -143,30 +195,24 @@ for (const role of ['read', 'triage', 'write', 'maintain']) {
   );
 }
 
-requireText(paths.pageCreate, documents.pageCreate, "'page.create'", 'CreatePage must require page.create');
-requireText(paths.pageUpdate, documents.pageUpdate, "'page.update'", 'UpdatePage must require page.update');
-for (const pair of [
-  ["case 'create':", "return 'issue.create';"],
-  ["case 'comment':", "return 'issue.comment';"],
-  ["case 'edit':", "return 'issue.edit';"],
-  ["case 'assign':", "return 'issue.manage';"]
-]) {
-  requireText(paths.issueCommand, documents.issueCommand, pair[0], `${pair[0]} Issue branch is missing`);
-  requireText(paths.issueCommand, documents.issueCommand, pair[1], `${pair[1]} Issue authorization is missing`);
+for (const symbol of ['requiredIssueCapability', 'issueAuthorMayExecute', "command.type === 'edit'", "command.type === 'close'"]) {
+  requireText(paths.issueDomain, documents.issueDomain, symbol, `${symbol} Issue authority rule is missing`);
 }
-for (const capability of [
-  "'discussion.announce'",
-  "'discussion.create'",
-  "'discussion.comment'",
-  "'discussion.edit'",
-  "'discussion.moderate'"
-]) {
-  requireText(
-    paths.discussionCommand,
-    documents.discussionCommand,
-    capability,
-    `${capability} Discussion authorization is missing`
-  );
+requireText(
+  paths.issueCommand,
+  documents.issueCommand,
+  'findAccessibleIssueById',
+  'Issue command orchestration must load stable target state for author-specific authority'
+);
+requireText(
+  paths.issueCommand,
+  documents.issueCommand,
+  'issueAuthorMayExecute',
+  'Issue author rule must remain a Domain decision'
+);
+
+for (const path of [paths.pageCreate, paths.pageUpdate, paths.issueCommand, paths.discussionCommand]) {
+  requireText(path, documents[Object.keys(paths).find((key) => paths[key] === path)], "actorTrust: 'authenticated'", `${path} must distinguish authenticated participation from anonymous visibility`);
 }
 
 for (const symbol of [
@@ -180,6 +226,7 @@ for (const symbol of [
 }
 for (const symbol of [
   'canMutateRepositoryGrantForPrincipal',
+  'isRepositoryGrantRoleAllowed',
   'expectedRole',
   'proposedRole',
   'findGrantTargetByUsername',
@@ -192,13 +239,13 @@ for (const symbol of [
     `${symbol} Application command boundary is missing`
   );
 }
-requireText(
-  paths.applicationQuery,
-  documents.applicationQuery,
+for (const symbol of [
   "hasRepositoryCapability(actorRole, 'repository.access.manage')",
-  'Grant management Projection must require repository.access.manage'
-);
-for (const symbol of ['grantableRoles', 'allowedRoles', 'canRevoke']) {
+  'repositoryGrantRolesForOwner(repository.owner.kind)',
+  'grantableRoles',
+  'allowedRoles',
+  'canRevoke'
+]) {
   requireText(
     paths.applicationQuery,
     documents.applicationQuery,
@@ -238,7 +285,6 @@ for (const symbol of [
   'grantRepositoryAccess',
   'changeRepositoryGrantRole',
   'revokeRepositoryGrant',
-  "z.enum(['read', 'triage', 'write', 'maintain', 'admin'])",
   'databaseUuidSchema'
 ]) {
   requireText(paths.webPage, webBoundary, symbol, `${symbol} Web/Application composition is missing`);
@@ -256,21 +302,24 @@ requireText(
   paths.accessSchema,
   documents.accessSchema,
   "enum ('read', 'triage', 'write', 'maintain', 'admin')",
-  'PostgreSQL repository_role enum must match GitHub Repository Roles'
+  'PostgreSQL organization-Repository role enum must match GitHub Repository Roles'
 );
-for (const capability of [
+for (const symbol of [
   "'repository.access.manage'",
+  'repository_visibility',
+  "'issue.create'",
+  "'discussion.create'",
   "'page.create'",
   "'page.update'",
-  "'issue.manage'",
-  "'discussion.comment.locked'",
-  "'discussion.announce'"
+  'private.is_repository_grant_role_allowed',
+  "target_role = 'write'::public.repository_role",
+  'repository_user_grants_owner_role_guard'
 ]) {
   requireText(
     paths.privateFunctions,
     documents.privateFunctions,
-    capability,
-    `${capability} PostgreSQL capability projection is missing`
+    symbol,
+    `${symbol} PostgreSQL contextual authority projection is missing`
   );
 }
 for (const obsolete of ["'resource.create'", "'resource.update'", "'member.manage'"]) {
@@ -285,6 +334,8 @@ for (const obsolete of ["'resource.create'", "'resource.update'", "'member.manag
 for (const symbol of [
   "'repository.access.manage'",
   'actor_id = target_user_id',
+  'private.repository_grant_target_exists',
+  'private.is_repository_grant_role_allowed',
   'on conflict (repository_id, user_id) do nothing',
   'and direct_grant.role = expected_role',
   'get diagnostics changed_rows = row_count',
@@ -299,16 +350,21 @@ for (const symbol of [
     `${symbol} atomic Direct Grant command invariant is missing`
   );
 }
-requireOrder(
+const grantCommandBody = extractSqlFunctionBody(
   paths.commandSchema,
   documents.commandSchema,
+  'create function public.execute_repository_grant_command('
+);
+requireOrder(
+  paths.commandSchema,
+  grantCommandBody,
   "'repository.access.manage'",
   'private.repository_grant_target_exists',
   'Repository access-management authority must be established before Auth target existence lookup'
 );
 requireOrder(
   paths.commandSchema,
-  documents.commandSchema,
+  grantCommandBody,
   'if changed_rows <> 1 then',
   'private.record_repository_grant_event',
   'Activity Evidence must be written only after exactly one Grant row transition'
@@ -318,14 +374,20 @@ for (const symbol of [
   "current_setting('app.repository_grant_command', true)",
   "= 'mutate'",
   'user_id <> (select auth.uid())',
-  'private.can_manage_repository_grant'
+  'private.can_manage_repository_grant',
+  'private.is_repository_grant_role_allowed'
 ]) {
-  requireText(
-    paths.rlsGuardrails,
-    documents.rlsGuardrails,
-    symbol,
-    `${symbol} independent Direct Grant RLS guard is missing`
-  );
+  requireText(paths.rls, documents.rls, symbol, `${symbol} canonical Direct Grant RLS guard is missing`);
+}
+for (const symbol of [
+  "when 'edit' then (",
+  'or created_by = (select auth.uid())',
+  "when 'transition' then (",
+  "private.has_repository_capability(repository_id, 'issue.manage')",
+  "private.has_repository_capability(repository_id, 'discussion.comment.locked')",
+  'private.current_repository_role(repository_id)) is not null'
+]) {
+  requireText(paths.rls, documents.rls, symbol, `${symbol} contextual RLS rule is missing`);
 }
 requireText(
   paths.rls,
@@ -333,28 +395,20 @@ requireText(
   "private.has_repository_capability(repository_id, 'repository.access.manage')",
   'raw Direct Grant SELECT must be Admin-only'
 );
-for (const capability of [
-  "'page.create'",
-  "'page.update'",
-  "'issue.create'",
-  "'issue.comment'",
-  "'issue.edit'",
-  "'issue.manage'",
-  "'discussion.create'",
-  "'discussion.comment'",
-  "'discussion.edit'",
-  "'discussion.moderate'",
-  "'discussion.announce'",
-  "'discussion.comment.locked'"
-]) {
-  requireText(paths.rls, documents.rls, capability, `${capability} RLS projection is missing`);
-}
 requireText(
   paths.collaborationCommands,
   documents.collaborationCommands,
-  "'discussion.comment.locked'",
-  'locked Discussion command must preserve Write-or-greater participation'
+  "'issue.manage'",
+  'Issue command-local authority must not fall back to generic resource.update'
 );
+for (const obsolete of ["'resource.create'", "'resource.update'"]) {
+  forbidText(
+    paths.collaborationCommands,
+    documents.collaborationCommands,
+    obsolete,
+    `generic ${obsolete} authorization remains in collaboration command SQL`
+  );
+}
 
 for (const [path, content] of [
   [paths.adr, documents.adr],
@@ -364,18 +418,20 @@ for (const [path, content] of [
     'read | triage | write | maintain | admin',
     'Admin-only',
     'repository.access.manage',
-    'state-changed'
+    'state-changed',
+    'github/docs/content',
+    'github/docs/src'
   ]) {
     requireText(path, content, phrase, `${phrase} current authority truth is missing`);
   }
 }
 for (const [path, content, phrases] of [
-  [paths.pageContract, documents.pageContract, ['page.create', 'page.update', 'Write']],
-  [paths.issueContract, documents.issueContract, ['issue.create', 'issue.manage', 'Triage']],
+  [paths.pageContract, documents.pageContract, ['page.create', 'page.update', 'public Repository', 'collaborator']],
+  [paths.issueContract, documents.issueContract, ['issue.create', 'issue.manage', 'Issue author', 'Triage']],
   [
     paths.discussionContract,
     documents.discussionContract,
-    ['discussion.comment.locked', 'discussion.announce', 'Triage', 'Maintain']
+    ['discussion.comment.locked', 'discussion.announce', 'Read', 'Triage', 'Maintain']
   ]
 ]) {
   for (const phrase of phrases) requireText(path, content, phrase, `${phrase} current Resource authority truth is missing`);
@@ -391,7 +447,8 @@ for (const phrase of [
 for (const phrase of [
   'Maintain cannot create a Write Direct Grant',
   'Maintain cannot create a Read Direct Grant',
-  'Repository Admin can create an Admin Direct Grant'
+  'Repository Admin can create an Admin Direct Grant',
+  'personal Repository rejects a Read Direct Grant'
 ]) {
   requireText(
     paths.delegationDatabaseTest,
@@ -402,13 +459,15 @@ for (const phrase of [
 }
 for (const phrase of [
   'Write can comment on an open locked Discussion',
-  'Triage cannot comment on an open locked Discussion'
+  'Triage cannot comment on an open locked Discussion',
+  'public authenticated Actor can create an Issue without a Direct Grant',
+  'Issue author can edit their own Issue without Triage or Write'
 ]) {
   requireText(
     paths.collaborationDatabaseTest,
     documents.collaborationDatabaseTest,
     phrase,
-    `${phrase} locked Discussion database evidence is missing`
+    `${phrase} contextual collaboration database evidence is missing`
   );
 }
 for (const symbol of [
