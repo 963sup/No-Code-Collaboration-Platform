@@ -48,7 +48,7 @@ export class CreatePage {
     });
     const decision = decideRepositoryCapability(
       { sources, visibility: repository.visibility },
-      'resource.create'
+      'page.create'
     );
 
     if (!decision.allowed) return { ok: false, reason: 'forbidden' };
