@@ -3,6 +3,7 @@ import { hasRepositoryCapability, repositoryRoles, type RepositoryRole } from '.
 export const organizationRoles = ['member', 'admin', 'owner'] as const;
 
 export type OrganizationRole = (typeof organizationRoles)[number];
+export type RepositoryGrantOwnerKind = 'organization' | 'user';
 
 const organizationDelegationByRole: Readonly<
   Record<OrganizationRole, readonly OrganizationRole[]>
@@ -31,6 +32,21 @@ function canMutateRoleWithinScope<Role extends string>(
     (currentRole === null || manageableRoles.includes(currentRole)) &&
     (proposedRole === null || manageableRoles.includes(proposedRole))
   );
+}
+
+export function repositoryGrantRolesForOwner(
+  ownerKind: RepositoryGrantOwnerKind
+): readonly RepositoryRole[] {
+  // GitHub organization-owned repositories use the five granular Repository roles. Personal
+  // repositories have owner/collaborator semantics; a direct collaborator carries write access.
+  return ownerKind === 'user' ? ['write'] : repositoryRoles;
+}
+
+export function isRepositoryGrantRoleAllowed(
+  ownerKind: RepositoryGrantOwnerKind,
+  role: RepositoryRole
+): boolean {
+  return repositoryGrantRolesForOwner(ownerKind).includes(role);
 }
 
 export function canMutateOrganizationMembership(
