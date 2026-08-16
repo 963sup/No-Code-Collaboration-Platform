@@ -102,9 +102,20 @@ declare
   next_number bigint;
 begin
   if (select auth.uid()) is null
-    or target_artifact_type not in ('issue', 'discussion')
-    or not private.has_repository_capability(target_repository_id, 'resource.create') then
-    raise exception 'artifact numbering requires resource.create'
+    or target_artifact_type not in ('issue', 'discussion') then
+    raise exception 'artifact numbering requires an authenticated accepted artifact type'
+      using errcode = '42501';
+  end if;
+
+  if target_artifact_type = 'issue'
+    and not private.has_repository_capability(target_repository_id, 'issue.create') then
+    raise exception 'Issue numbering requires issue.create'
+      using errcode = '42501';
+  end if;
+
+  if target_artifact_type = 'discussion'
+    and not private.has_repository_capability(target_repository_id, 'discussion.create') then
+    raise exception 'Discussion numbering requires discussion.create'
       using errcode = '42501';
   end if;
 
