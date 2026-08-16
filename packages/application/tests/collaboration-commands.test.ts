@@ -9,6 +9,7 @@ import {
   type RepositoryAccessReader,
   type RepositoryReader
 } from '../src/index';
+import type { RepositoryRole } from '@no-code-collaboration-platform/domain/access';
 
 const repository = {
   description: null,
@@ -61,7 +62,7 @@ const repositoryReader: RepositoryReader = {
   }
 };
 
-function accessReader(role: 'admin' | 'write' | 'read'): RepositoryAccessReader {
+function accessReader(role: RepositoryRole): RepositoryAccessReader {
   return {
     async readRepositoryAccess() {
       return { directRole: role, governanceRole: null };
@@ -70,36 +71,47 @@ function accessReader(role: 'admin' | 'write' | 'read'): RepositoryAccessReader 
 }
 
 describe('collaboration commands', () => {
-  it('routes Issue create through resource.create and rejects a Viewer', async () => {
-    const executeIssueCommand = vi.fn();
-    const writer: IssueWriter = { executeIssueCommand };
+  it('lets Read create and comment on Issues but denies Issue editing', async () => {
+    const executeIssueCommand = vi.fn().mockResolvedValue({ ok: false, reason: 'state-changed' });
     const useCase = new ExecuteIssueCommand(
       identityProvider('actor-1'),
       repositoryReader,
       accessReader('read'),
-      writer
+      { executeIssueCommand }
     );
 
+    const create = {
+      body: '',
+      repositoryId: repository.id,
+      title: 'Actionable work',
+      type: 'create' as const
+    };
+    await expect(useCase.execute(create)).resolves.toEqual({ ok: false, reason: 'state-changed' });
+    expect(executeIssueCommand).toHaveBeenCalledWith(create);
+
+    executeIssueCommand.mockClear();
     await expect(
       useCase.execute({
-        body: '',
+        body: 'Changed body',
+        expectedVersion: 1,
+        issueId: 'issue-1',
         repositoryId: repository.id,
-        title: 'Actionable work',
-        type: 'create'
+        title: 'Changed title',
+        type: 'edit'
       })
     ).resolves.toEqual({ ok: false, reason: 'forbidden' });
     expect(executeIssueCommand).not.toHaveBeenCalled();
   });
 
-  it('passes the expected Issue version to persistence without replacing it', async () => {
+  it('lets Triage manage Issue state without granting Page-style content editing semantics', async () => {
     const executeIssueCommand = vi.fn().mockResolvedValue({ ok: false, reason: 'state-changed' });
     const useCase = new ExecuteIssueCommand(
       identityProvider('actor-1'),
       repositoryReader,
-      accessReader('write'),
+      accessReader('triage'),
       { executeIssueCommand }
     );
-    const command = {
+    const close = {
       closeReason: 'completed' as const,
       expectedVersion: 4,
       issueId: 'issue-1',
@@ -107,58 +119,70 @@ describe('collaboration commands', () => {
       type: 'close' as const
     };
 
-    await expect(useCase.execute(command)).resolves.toEqual({ ok: false, reason: 'state-changed' });
-    expect(executeIssueCommand).toHaveBeenCalledWith(command);
+    await expect(useCase.execute(close)).resolves.toEqual({ ok: false, reason: 'state-changed' });
+    expect(executeIssueCommand).toHaveBeenCalledWith(close);
   });
 
-  it('requires repository.manage to create an announcement Discussion', async () => {
-    const executeDiscussionCommand = vi.fn();
-    const writer: DiscussionWriter = { executeDiscussionCommand };
-    const useCase = new ExecuteDiscussionCommand(
-      identityProvider('actor-1'),
-      repositoryReader,
-      accessReader('write'),
-      writer
-    );
+  it('reserves Announcement creation to Maintain or Admin', async () => {
+    const executeDiscussionCommand = vi.fn().mockResolvedValue({ ok: false, reason: 'state-changed' });
+    const command = {
+      body: '',
+      category: 'announcement' as const,
+      repositoryId: repository.id,
+      title: 'Policy update',
+      type: 'create' as const
+    };
 
-    await expect(
-      useCase.execute({
-        body: '',
-        category: 'announcement',
-        repositoryId: repository.id,
-        title: 'Policy update',
-        type: 'create'
-      })
-    ).resolves.toEqual({ ok: false, reason: 'forbidden' });
-    expect(executeDiscussionCommand).not.toHaveBeenCalled();
-  });
-
-  it('requires repository.manage for lock while permitting question create for a Contributor', async () => {
-    const executeDiscussionCommand = vi
-      .fn()
-      .mockResolvedValue({ ok: false, reason: 'state-changed' });
-    const useCase = new ExecuteDiscussionCommand(
+    const writeUseCase = new ExecuteDiscussionCommand(
       identityProvider('actor-1'),
       repositoryReader,
       accessReader('write'),
       { executeDiscussionCommand }
     );
+    await expect(writeUseCase.execute(command)).resolves.toEqual({ ok: false, reason: 'forbidden' });
+    expect(executeDiscussionCommand).not.toHaveBeenCalled();
 
-    await expect(
-      useCase.execute({
-        expectedVersion: 1,
-        discussionId: 'discussion-1',
-        repositoryId: repository.id,
-        type: 'lock'
-      })
-    ).resolves.toEqual({ ok: false, reason: 'forbidden' });
-    await useCase.execute({
-      body: '',
-      category: 'question',
-      repositoryId: repository.id,
-      title: 'What should change?',
-      type: 'create'
+    const maintainUseCase = new ExecuteDiscussionCommand(
+      identityProvider('actor-1'),
+      repositoryReader,
+      accessReader('maintain'),
+      { executeDiscussionCommand }
+    );
+    await expect(maintainUseCase.execute(command)).resolves.toEqual({
+      ok: false,
+      reason: 'state-changed'
     });
-    expect(executeDiscussionCommand).toHaveBeenCalledTimes(1);
+    expect(executeDiscussionCommand).toHaveBeenCalledWith(command);
+  });
+
+  it('lets Triage moderate a Discussion while Read cannot', async () => {
+    const executeDiscussionCommand = vi.fn().mockResolvedValue({ ok: false, reason: 'state-changed' });
+    const command = {
+      expectedVersion: 1,
+      discussionId: 'discussion-1',
+      repositoryId: repository.id,
+      type: 'lock' as const
+    };
+
+    const readUseCase = new ExecuteDiscussionCommand(
+      identityProvider('actor-1'),
+      repositoryReader,
+      accessReader('read'),
+      { executeDiscussionCommand }
+    );
+    await expect(readUseCase.execute(command)).resolves.toEqual({ ok: false, reason: 'forbidden' });
+    expect(executeDiscussionCommand).not.toHaveBeenCalled();
+
+    const triageUseCase = new ExecuteDiscussionCommand(
+      identityProvider('actor-1'),
+      repositoryReader,
+      accessReader('triage'),
+      { executeDiscussionCommand }
+    );
+    await expect(triageUseCase.execute(command)).resolves.toEqual({
+      ok: false,
+      reason: 'state-changed'
+    });
+    expect(executeDiscussionCommand).toHaveBeenCalledWith(command);
   });
 });
