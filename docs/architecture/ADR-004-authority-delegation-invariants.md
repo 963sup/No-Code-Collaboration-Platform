@@ -1,187 +1,246 @@
-# ADR-004: Authority delegation and ownership continuity
+# ADR-004: GitHub-derived Repository Roles and authority mutation
 
 - Status: Accepted
-- Date: 2026-08-11
+- Date: 2026-08-16
 - Decision owner: Repository owner
-- Affected scopes: Domain access policy, Organization membership, Repository grants, Supabase RLS, database triggers, authorization tests
+- Affected scopes: Product access semantics, Domain access policy, Application commands, Repository Grants, Supabase RLS/RPCs, Activity Evidence, authorization tests
 
 ## Decision
 
-Separate operation capability from delegation authority.
+Repository authorization uses GitHub's mature Repository Role vocabulary after removing permissions whose value depends on Source Code, Git, Pull Requests, Branches, Actions, Releases, or other rejected software-development mechanics.
 
-`member.manage` means an actor may enter the member-management use case. It does not mean the actor may assign, modify, or remove every role. Every membership or grant mutation must evaluate:
+Current Repository Roles are therefore:
 
 ```text
-Actor authority
-+
-Target current role
-+
-Target proposed role
-+
-Cross-row governance invariants
+read | triage | write | maintain | admin
 ```
 
-The accepted delegation scopes are:
+Role names are not target inventions. Their accepted no-code meaning comes only from GitHub behaviors that survive the subtraction test against current product surfaces:
 
-| Scope | Actor | Existing roles it may manage | Roles it may assign |
-|---|---|---|---|
-| Organization | owner | member, admin, owner | member, admin, owner |
-| Organization | admin | member, admin | member, admin |
-| Organization | member | none | none |
-| Repository | admin | viewer, contributor, manager, admin | viewer, contributor, manager, admin |
-| Repository | manager | viewer, contributor | viewer, contributor |
-| Repository | contributor/viewer | none | none |
+| Role | Surviving no-code responsibility in the current product |
+| --- | --- |
+| Read | read Repository content; participate in ordinary Issue/Discussion collaboration |
+| Triage | Read + manage Issue workflow/classification/responsibility and moderate Discussions |
+| Write | Triage + mutate Page/content and comment on open locked Discussions |
+| Maintain | Write + accepted non-sensitive Repository maintenance, currently Announcement creation |
+| Admin | all current capabilities + sensitive Repository settings and Direct Repository access management |
 
-Organization owner is a protected governance role. An Organization that still exists must retain at least one owner. Repository grant attribution must identify the authenticated actor.
+Direct User Repository access management is Admin-only. Read, Triage, Write, and Maintain do not create, change, revoke, or enumerate the Direct Grant management projection.
 
-ADR-006 removes Organization and Repository hard deletion from end-user authority until a separate lifecycle contract is accepted. The parent-cascade case retained by this ADR is only a privileged database-mechanics test proving that the owner-continuity trigger does not falsely block deletion of a parent row that no longer exists. It is not a product authorization path.
+The old target Roles `viewer | contributor | manager | admin` and generic `resource.create | resource.update | member.manage` authorization vocabulary are superseded as current truth. They compressed heterogeneous GitHub surfaces into one artificial hierarchy and then used `member.manage` to manufacture a difference between Contributor and Manager. That abstraction created target-only delegation behavior that GitHub does not support.
 
-## Problem and success condition
+## GitHub benchmark evidence
 
-The original capability model correctly distinguished Repository manager from admin for `repository.manage`, but it gave manager `member.manage`. Database RLS then projected that single capability as unrestricted mutation access to `repository_user_grants`. A manager could therefore change a grant to `admin` and acquire `repository.manage`.
+The decision is grounded in current GitHub Repository behavior rather than target naming preference:
 
-Organization membership policies similarly treated `admin` and `owner` as one management class. An admin could create owner authority, alter an owner relationship, or reach the then-exposed Organization DELETE path.
+- GitHub Organization repositories use the Repository roles Read, Triage, Write, Maintain, and Admin.
+- Managing individual, team, and outside-collaborator access is an Admin permission; Maintain does not manage Repository access.
+- Triage exists to manage work/conversation without general write authority, including Issue management and Discussion moderation.
+- Write or greater can edit a private Repository wiki and can continue participating in a locked Discussion where ordinary participants cannot.
+- Maintain/Admin can create Announcement-category Discussions.
 
-The decision succeeds when:
+Only those currently applicable no-code mechanisms are admitted. Code/Git-specific permissions remain rejected rather than renamed.
 
-- operation capability cannot be converted into higher authority;
-- Organization admins cannot control owners;
-- Repository managers cannot control manager or admin grants;
-- the last Organization owner cannot be removed under concurrent transactions;
-- legitimate lower-role delegation remains available;
-- Domain decisions and database enforcement return the same answers for the same transition matrix;
-- the owner-continuity trigger permits a privileged parent cascade without implying end-user deletion authority; and
-- delegation semantics remain independent from lifecycle acceptance.
+## Product semantics
 
-## Evidence ledger
-
-### Observations
-
-- Domain role bundles describe what an effective role may do but did not describe what authority it may delegate.
-- Existing RLS checked only the actor capability and did not constrain the current or proposed target role.
-- Existing tests covered read visibility and basic capability bundles but not self-escalation or higher-role mutation.
-- Organization deletion historically used the same admin-or-owner predicate as ordinary administration.
-- The product lifecycle contract does not accept destructive Organization or Repository deletion.
-
-### Constraints
-
-- Domain remains provider neutral.
-- RLS is a database enforcement boundary, not the owner of business semantics.
-- Public table privileges and RLS remain separate controls.
-- User-facing mutations must not depend on service-role bypass.
-- Schema files remain current database truth; migrations remain append-only history.
-- This authorization decision cannot define, close, or weaken destructive lifecycle semantics.
-
-### Assumptions
-
-- Fixed role bundles and explicit delegation ceilings are sufficient for the current horizon.
-- No deny-precedence engine, custom-role system, or external authorization service is required for this repair.
-
-### Unknowns
-
-- Whether future product requirements need a distinct self-leave use case.
-- Whether Enterprise policy will later cap Organization or Repository delegation.
-- Whether ownership transfer will later require approval, recovery, or multi-party controls.
-
-### Value choices
-
-- Prefer authority conservation over rank-based convenience.
-- Prefer an explicit role-transition matrix over implicit “manager can manage members” interpretation.
-- Enforce the same invariant in Domain, RLS, and database concurrency controls.
-- Keep access authority and destructive lifecycle acceptance as separate decisions.
-
-## Minimum sufficient model
+### Role is assignment; Capability is decision truth
 
 ```text
+Role
+= named bundle of accepted actions
+
 Capability
-→ may initiate an operation category
-
-Delegation policy
-→ which current and proposed roles are within scope
-
-RLS
-→ enforces old-row and new-row transition constraints
-
-Database trigger
-→ serializes and preserves cross-row owner continuity
+= one accepted authorization decision on one defined target/action
 ```
 
-The authorization predicate is:
+Current Capability families are deliberately surface-specific:
 
 ```text
-Can mutate
-=
-Has operation capability
-∩ Can manage current role
-∩ Can assign proposed role
-∩ Preserves governance invariants
+Repository
+repository.view
+repository.manage
+repository.access.manage
+
+Page / Knowledge
+resource.view
+page.create
+page.update
+
+Issue
+issue.create
+issue.comment
+issue.edit
+issue.manage
+
+Discussion
+discussion.create
+discussion.comment
+discussion.comment.locked
+discussion.edit
+discussion.moderate
+discussion.announce
 ```
 
-## Enforcement projection
+`resource.view` remains the shared read baseline for Repository-contained content. Mutation is not generic because Page, Issue, and Discussion have materially different GitHub-derived action semantics.
 
-Domain owns pure functions for Organization and Repository delegation. SQL helper functions in the private schema project those decisions for RLS.
-
-For UPDATE:
+### Direct Grant lifecycle
 
 ```text
-USING
-→ validates the existing target role
+Absent
+  └─ Admin grants Read | Triage | Write | Maintain | Admin
 
-WITH CHECK
-→ validates the proposed target role
+Existing Direct Grant
+  ├─ Admin changes Role
+  └─ Admin revokes
 ```
 
-For INSERT, `WITH CHECK` validates the proposed role and authenticated actor attribution. For DELETE, `USING` validates the existing membership or grant role when that relationship deletion is an accepted operation.
+Direct Grant delegation cannot target the acting User. A future self-leave lifecycle is a separate Product operation and is not fabricated inside delegation.
 
-Owner continuity is cross-row and concurrency sensitive. A trigger locks the owning Organization row before removing or demoting an owner, then verifies that another owner remains. Cascading membership deletion caused by a privileged database deletion of the Organization is allowed at the database mechanism boundary because the governed Organization no longer exists. That mechanism test prevents a false-positive continuity failure; ADR-006 independently denies Organization and Repository hard deletion to end-user roles.
+Organization Membership remains a belonging/governance relationship and does not become Repository access by implication.
 
-## Alternatives rejected
+### Ownership/governance authority
 
-- Remove `member.manage` from Repository manager: closes escalation but also removes legitimate viewer/contributor administration and avoids defining the real delegation problem.
-- Compare only numeric role ranks: conflates capability order with delegation policy and cannot express protected governance roles cleanly.
-- Enforce only in Application code: leaves direct Data API and alternate adapters vulnerable.
-- Enforce only in RLS: protects storage but leaves the canonical Domain model unable to explain or test the business rule.
-- Add a separate authorization service: introduces a new distributed authority without evidence that PostgreSQL plus the modular monolith is insufficient.
-- Require UI role filtering: hides dangerous choices but does not secure the mutation boundary.
-- Treat owner authority as lifecycle acceptance: confuses access delegation with retention, audit continuity, recovery, and user-visible lifecycle behavior.
+Repository ownership remains a separate causal fact:
+
+```text
+User owns Repository
+→ that User derives Repository Admin
+
+Organization owns Repository
++ Actor is Organization owner/admin
+→ Actor derives Repository Admin for that Repository
+```
+
+No synthetic Grant row is created for ownership/governance authority.
+
+## Authority mutation integrity
+
+A Direct Grant command is a state transition, not a blind row write.
+
+The accepted mutation invariant is:
+
+```text
+authenticated Actor
+∩ Repository Admin access-management authority
+∩ Actor != target User
+∩ target User exists
+∩ persisted current Role == expected Role
+∩ proposed Role is accepted
+→ exactly one Grant transition
+→ exactly one matching Activity Evidence fact
+```
+
+The expected current Role must be part of the persistence write precondition. A separate pre-read followed by unconditional UPDATE/DELETE is not optimistic concurrency.
+
+For current PostgreSQL enforcement:
+
+```text
+Create
+→ INSERT ... ON CONFLICT DO NOTHING
+→ exactly one inserted row or state-changed
+
+Change
+→ UPDATE ... WHERE role = expected_role
+→ exactly one updated row or state-changed
+
+Revoke
+→ DELETE ... WHERE role = expected_role
+→ exactly one deleted row or state-changed
+```
+
+`ROW_COUNT != 1` means no accepted transition occurred. The command returns changed state and MUST NOT emit `repository_grant.created`, `repository_grant.role_changed`, or `repository_grant.revoked`.
+
+Activity Evidence is written only after the actual transition succeeds, in the same transaction. Its previous/resulting Roles describe the transition that actually committed.
+
+## Database enforcement
+
+RLS remains an independent security boundary.
+
+- Raw authenticated `repository_user_grants` INSERT/UPDATE/DELETE is not an accepted command path.
+- Direct Grant management projection/table reads require `repository.access.manage`, so non-Admin roles cannot enumerate Direct Grant Roles through the Data API.
+- Command-local PostgreSQL settings are execution provenance only; they never replace Actor identity or Capability checks.
+- `granted_by` must equal `auth.uid()`.
+- Grant target existence is checked only after Repository access-management authority is established; the Auth user table is not an unauthorised existence oracle.
+- `SECURITY DEFINER` helpers use `search_path = ''`, fully qualified relations, caller-aware authorization, and selective grants.
+
+## Organization delegation remains separate
+
+This ADR does not collapse Organization governance roles into Repository Roles.
+
+| Organization Actor | Membership Roles it may manage/assign |
+| --- | --- |
+| owner | member, admin, owner |
+| admin | member, admin |
+| member | none |
+
+An Organization that remains present must retain at least one owner. The owner-continuity trigger serializes that cross-row invariant. ADR-006 independently keeps destructive Organization/Repository lifecycle unavailable to end users.
+
+## Rejected alternatives
+
+### Preserve `manager` by letting it manage lower Direct Grants
+
+Rejected. This behavior was introduced only to differentiate an invented target Role after heterogeneous Repository actions had been collapsed into `resource.*` and `member.manage`. GitHub reserves individual/team/outside-collaborator access management to Admin.
+
+### Rename GitHub Roles into target-friendly aliases
+
+Rejected. Renaming Read/Triage/Write/Maintain into Viewer/Contributor/Manager discards benchmark semantics and encourages target-specific reinterpretation. URL terminology and Domain terminology may differ when there is a product reason; Repository Role semantics have no such reason here.
+
+### Keep generic `resource.create` / `resource.update`
+
+Rejected for authorization. Page, Issue, and Discussion mutations are not one permission in the GitHub model and already have different accepted lifecycles. Generic mutation capabilities caused Triage/Write/Maintain distinctions to disappear.
+
+### Use Role rank as delegation policy
+
+Rejected. Rank is useful for effective-role explanation, but access management is a specific Admin capability, not “any higher Role may manage lower Roles.”
+
+### Check expected Role only before DML
+
+Rejected. Under concurrent transactions, check-then-act can observe stale state. The expected Role must constrain the actual mutation, and affected-row count must decide success before Evidence is written.
+
+### Enforce only in Application or only in RLS
+
+Rejected. Application must explain the Product decision and PostgreSQL must independently prevent alternate-client bypass.
 
 ## Consequences
 
 Benefits:
 
-- authority cannot be minted from a lower management capability;
-- owner and admin become semantically distinct;
-- database enforcement matches the Domain transition matrix;
-- negative attack-path tests become part of the authorization contract;
-- parent-cascade mechanics remain testable without exposing a product DELETE path; and
-- destructive lifecycle decisions remain independently reviewable.
+- Repository Roles now preserve GitHub's mature access vocabulary without importing Code/Git mechanics;
+- Triage, Write, Maintain, and Admin differ because of real no-code surface responsibilities rather than invented delegation;
+- Repository access management is unambiguously Admin-only;
+- Page/Issue/Discussion authorization no longer aliases heterogeneous operations through generic mutation capabilities;
+- stale concurrent Grant commands cannot fabricate immutable success Evidence; and
+- Domain, Application, RLS, Web, and tests have one falsifiable matrix.
 
 Costs:
 
-- role changes require explicit old/new-role reasoning;
-- owner continuity requires a database lock and trigger;
-- future role additions must update Domain, SQL projection, migration, and tests together; and
-- Organization and Repository hard deletion remain unavailable to end users until a separate lifecycle decision is accepted.
+- more explicit Capability names exist because materially different actions are no longer hidden behind generic `resource.*`;
+- existing stored/test Role vocabulary must be migrated together in the LocalOnly baseline; and
+- future GitHub-derived Role behavior must repeat the subtraction test instead of assuming that a Role name automatically imports all GitHub permissions.
 
 ## Falsification conditions
 
-Reopen this decision if a real use case cannot be represented without duplicated exceptions, if fixed roles cease to be sufficient, or if measured contention on Organization ownership transitions makes the row-lock strategy unacceptable.
+Reopen this ADR only when direct product evidence proves one of the following:
 
-Do not reopen merely because another product uses different role names. Reopen only when observed collaboration requirements invalidate the current delegation matrix.
+- a current no-code action cannot be represented by the GitHub-derived five-role matrix without repeated exceptions;
+- a real no-code collaboration problem requires a non-Admin actor to manage Repository access;
+- custom roles or explicit deny become necessary for observed workflows;
+- a new Principal type requires incompatible Grant/delegation behavior; or
+- PostgreSQL compare-and-swap enforcement cannot preserve the accepted authority/Evidence invariant.
 
-## Minimum discriminating test
+Do not reopen merely to preserve old target names or because an implementation already contains them.
 
-The model is accepted only if all of the following hold through the appropriate boundaries:
+## Minimum discriminating tests
 
-- Organization admin self-promotion to owner is denied.
-- Organization admin mutation or deletion of an owner relationship is denied.
-- Repository manager self-promotion or promotion of another grant to admin is denied.
-- Repository manager can still create viewer and contributor grants.
-- Repository admin can create an admin grant.
-- Removing or demoting the last owner is denied.
-- Removing an owner when another owner remains is allowed.
-- A privileged parent cascade is not falsely blocked by the continuity trigger.
-- Organization and Repository hard deletion remain denied to end-user roles under ADR-006.
-- forged `granted_by` attribution is denied.
-
-Any mismatch between Domain tests and pgTAP enforcement tests reopens the earliest inconsistent boundary.
+1. Read can participate in ordinary Issue/Discussion collaboration but cannot update Page or manage Repository access.
+2. Triage can manage Issue and Discussion state but cannot update Page or manage Repository access.
+3. Write can update Page and comment on an open locked Discussion but cannot create Announcement or manage Repository access.
+4. Maintain can create Announcement and perform current non-sensitive maintenance but cannot manage Repository access.
+5. Admin can create/change/revoke Direct Grants to every accepted Repository Role.
+6. Every non-Admin Direct Grant management attempt fails independently in Domain/Application and PostgreSQL.
+7. Self-target Direct Grant delegation fails in Domain/Application and PostgreSQL.
+8. Raw Data API Grant mutation and non-Admin Grant enumeration fail closed.
+9. A stale expected Role changes zero rows, returns `state-changed`, and emits no success Activity Evidence.
+10. A successful create/change/revoke changes exactly one relationship and emits exactly one matching same-transaction Activity Evidence fact.
+11. Organization admin cannot create/control Organization owner relationships; owner continuity remains enforced independently.
+12. Any Domain/Application/RLS disagreement reopens the earliest inconsistent boundary.
