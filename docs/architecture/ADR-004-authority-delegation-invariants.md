@@ -1,59 +1,105 @@
-# ADR-004: GitHub-derived Repository Roles and authority mutation
+# ADR-004: GitHub-derived Repository authority and Direct Grant integrity
 
 - Status: Accepted
 - Date: 2026-08-16
 - Decision owner: Repository owner
-- Affected scopes: Product access semantics, Domain access policy, Application commands, Repository Grants, Supabase RLS/RPCs, Activity Evidence, authorization tests
+- Affected scopes: Product semantics, Domain authority, Application commands, Repository Grants, Supabase RLS/RPCs, Activity Evidence, tests
 
 ## Decision
 
-Repository authorization uses GitHub's mature Repository Role vocabulary after removing permissions whose value depends on Source Code, Git, Pull Requests, Branches, Actions, Releases, or other rejected software-development mechanics.
+Repository authorization is derived from documented GitHub product behavior after subtracting Code/Git-specific mechanics. The current target does **not** treat one Role matrix as the whole decision.
 
-Current Repository Roles are therefore:
+```text
+Role-derived baseline
++
+Actor trust / Repository visibility
++
+target relationships
++
+target state
++
+future governance constraints
+↓
+Capability Decision
+```
+
+For Organization-owned Repositories, current Repository Roles are:
 
 ```text
 read | triage | write | maintain | admin
 ```
 
-Role names are not target inventions. Their accepted no-code meaning comes only from GitHub behaviors that survive the subtraction test against current product surfaces:
+Managing individual/team/outside-collaborator Repository access is Admin-only through `repository.access.manage`.
 
-| Role | Surviving no-code responsibility in the current product |
+For User-owned personal Repositories, Direct access follows GitHub owner/collaborator semantics: a Direct collaborator is assigned Write. Read/Triage/Maintain/Admin are not valid personal-Repository Direct Grant assignments; the personal owner derives Admin from ownership.
+
+## Evidence boundary: `github/docs/content` vs `github/docs/src`
+
+This ADR uses the public `github/docs` repository as benchmark evidence with a strict boundary:
+
+```text
+github/docs/content/**
+= product-documentation source
+= evidence for documented GitHub product semantics
+
+github/docs/src/**
+= docs.github.com implementation
+= content rendering/loading/testing code
+≠ GitHub.com product implementation source
+```
+
+The inspected upstream snapshot was `github/docs` commit `81ade08c26f13325c0cde8a23cd3bfb85bd0778e`.
+
+Relevant product evidence lives under `github/docs/content`, including:
+
+- Organization Repository roles and permission matrix;
+- personal-account Repository permission levels;
+- Wiki access permissions;
+- Issue creation/edit behavior;
+- Discussion participation/moderation; and
+- Organization Discussion creation policy.
+
+Relevant `github/docs/src` evidence is used only to verify that `content/**` is the documentation source processed by the docs-site render pipeline.
+
+## No-code subtraction
+
+```text
+GitHub documented Repository behavior
+− Source Code
+− Git / Branch / Pull Request
+− Actions / Releases
+− code-specific administration
+=
+surviving no-code Repository mechanism
+```
+
+Surviving current mechanisms:
+
+| Mechanism | No-code authority consequence |
 | --- | --- |
-| Read | read Repository content; participate in ordinary Issue/Discussion collaboration |
-| Triage | Read + manage Issue workflow/classification/responsibility and moderate Discussions |
-| Write | Triage + mutate Page/content and comment on open locked Discussions |
-| Maintain | Write + accepted non-sensitive Repository maintenance, currently Announcement creation |
-| Admin | all current capabilities + sensitive Repository settings and Direct Repository access management |
+| Organization Repository roles | Read/Triage/Write/Maintain/Admin baseline vocabulary |
+| Admin manages people/team/outside-collaborator access | Direct Grant management is Admin-only |
+| Personal Repository collaborator | User-owned Direct collaborator assignment is Write-only |
+| Public Repository participation | authenticated actor may create/comment ordinary Issue/Discussion without fabricated Role |
+| Public Wiki collaborator editing | public collaborator may mutate Page even with Read Role |
+| Issue author actions | author may edit/close/reopen own Issue without Role promotion |
+| Triage | arbitrary Issue management + Discussion moderation without general Page write |
+| Locked Discussion | Write+ may continue commenting while locked |
+| Announcement Discussion | Maintain/Admin may create Announcement |
 
-Direct User Repository access management is Admin-only. Read, Triage, Write, and Maintain do not create, change, revoke, or enumerate the Direct Grant management projection.
+Permissions whose meaning depends on rejected Code/Git surfaces are not renamed into target Capabilities.
 
-The old target Roles `viewer | contributor | manager | admin` and generic `resource.create | resource.update | member.manage` authorization vocabulary are superseded as current truth. They compressed heterogeneous GitHub surfaces into one artificial hierarchy and then used `member.manage` to manufacture a difference between Contributor and Manager. That abstraction created target-only delegation behavior that GitHub does not support.
-
-## GitHub benchmark evidence
-
-The decision is grounded in current GitHub Repository behavior rather than target naming preference:
-
-- GitHub Organization repositories use the Repository roles Read, Triage, Write, Maintain, and Admin.
-- Managing individual, team, and outside-collaborator access is an Admin permission; Maintain does not manage Repository access.
-- Triage exists to manage work/conversation without general write authority, including Issue management and Discussion moderation.
-- Write or greater can edit a private Repository wiki and can continue participating in a locked Discussion where ordinary participants cannot.
-- Maintain/Admin can create Announcement-category Discussions.
-
-Only those currently applicable no-code mechanisms are admitted. Code/Git-specific permissions remain rejected rather than renamed.
-
-## Product semantics
-
-### Role is assignment; Capability is decision truth
+## Role is assignment; Capability is decision truth
 
 ```text
 Role
-= named bundle of accepted actions
+= named baseline bundle
 
 Capability
-= one accepted authorization decision on one defined target/action
+= one accepted action decision
 ```
 
-Current Capability families are deliberately surface-specific:
+Current Capability families:
 
 ```text
 Repository
@@ -81,166 +127,214 @@ discussion.moderate
 discussion.announce
 ```
 
-`resource.view` remains the shared read baseline for Repository-contained content. Mutation is not generic because Page, Issue, and Discussion have materially different GitHub-derived action semantics.
+Generic `resource.create`, `resource.update`, and `member.manage` are rejected current vocabulary because they erase material differences among Page, Issue, Discussion, and access management.
 
-### Direct Grant lifecycle
+## Contextual authority
+
+Static Role bundles do not encode every documented decision.
+
+### Public trust baseline
+
+```text
+anonymous + public Repository
+→ repository.view + resource.view
+
+authenticated + public Repository
+→ public read
++ issue.create / issue.comment
++ discussion.create / discussion.comment
+```
+
+No Repository Role is fabricated by visibility or authentication.
+
+### Public Wiki collaborator rule
+
+```text
+public Repository
++ any persisted/derived Repository Role
+→ page.create + page.update
+```
+
+The optional GitHub setting allowing every account to edit a public Wiki is deferred and not accepted.
+
+### Issue author rule
+
+```text
+Actor == Issue.createdBy
+→ edit / close / reopen that Issue
+```
+
+Authorship never upgrades Role and never grants assignment/labels/access management.
+
+## Direct Grant assignment by owner kind
+
+### Organization-owned Repository
 
 ```text
 Absent
-  └─ Admin grants Read | Triage | Write | Maintain | Admin
+→ Admin grants Read | Triage | Write | Maintain | Admin
 
-Existing Direct Grant
-  ├─ Admin changes Role
-  └─ Admin revokes
+Existing
+→ Admin changes to another accepted Role
+→ Admin revokes
 ```
 
-Direct Grant delegation cannot target the acting User. A future self-leave lifecycle is a separate Product operation and is not fabricated inside delegation.
+### User-owned Repository
 
-Organization Membership remains a belonging/governance relationship and does not become Repository access by implication.
+```text
+Absent
+→ owner/Admin grants Write collaborator
 
-### Ownership/governance authority
+Existing Write
+→ owner/Admin revokes
+```
 
-Repository ownership remains a separate causal fact:
+The database protects this owner-kind invariant independently with a trigger/helper in addition to Application policy.
+
+## Ownership/governance authority
+
+Ownership remains separate from Direct Grants:
 
 ```text
 User owns Repository
-→ that User derives Repository Admin
+→ User derives Admin
 
 Organization owns Repository
-+ Actor is Organization owner/admin
-→ Actor derives Repository Admin for that Repository
++ Actor Organization role = owner | admin
+→ Actor derives Admin for that Repository
 ```
 
-No synthetic Grant row is created for ownership/governance authority.
+Ordinary Organization Membership contributes no Repository Role.
 
 ## Authority mutation integrity
 
-A Direct Grant command is a state transition, not a blind row write.
-
-The accepted mutation invariant is:
+A Direct Grant command is compare-and-swap, not a blind row write.
 
 ```text
 authenticated Actor
-∩ Repository Admin access-management authority
+∩ repository.access.manage
 ∩ Actor != target User
 ∩ target User exists
-∩ persisted current Role == expected Role
-∩ proposed Role is accepted
-→ exactly one Grant transition
+∩ proposed Role valid for owner kind
+∩ persisted Role == expected Role
+→ exactly one relationship transition
 → exactly one matching Activity Evidence fact
 ```
 
-The expected current Role must be part of the persistence write precondition. A separate pre-read followed by unconditional UPDATE/DELETE is not optimistic concurrency.
-
-For current PostgreSQL enforcement:
+Persistence rules:
 
 ```text
 Create
 → INSERT ... ON CONFLICT DO NOTHING
-→ exactly one inserted row or state-changed
 
 Change
 → UPDATE ... WHERE role = expected_role
-→ exactly one updated row or state-changed
 
 Revoke
 → DELETE ... WHERE role = expected_role
-→ exactly one deleted row or state-changed
 ```
 
-`ROW_COUNT != 1` means no accepted transition occurred. The command returns changed state and MUST NOT emit `repository_grant.created`, `repository_grant.role_changed`, or `repository_grant.revoked`.
+Affected-row count decides success. `ROW_COUNT != 1` returns `state-changed` and emits no success Evidence.
 
-Activity Evidence is written only after the actual transition succeeds, in the same transaction. Its previous/resulting Roles describe the transition that actually committed.
+Evidence is appended only after exactly one transition succeeds and remains in the same database transaction.
 
 ## Database enforcement
 
-RLS remains an independent security boundary.
+`99_rls.sql` is the single canonical RLS source. Supplemental correction policies are rejected.
 
-- Raw authenticated `repository_user_grants` INSERT/UPDATE/DELETE is not an accepted command path.
-- Direct Grant management projection/table reads require `repository.access.manage`, so non-Admin roles cannot enumerate Direct Grant Roles through the Data API.
-- Command-local PostgreSQL settings are execution provenance only; they never replace Actor identity or Capability checks.
-- `granted_by` must equal `auth.uid()`.
-- Grant target existence is checked only after Repository access-management authority is established; the Auth user table is not an unauthorised existence oracle.
-- `SECURITY DEFINER` helpers use `search_path = ''`, fully qualified relations, caller-aware authorization, and selective grants.
+- Raw authenticated Grant INSERT/UPDATE/DELETE requires command context `app.repository_grant_command = mutate`.
+- `granted_by` on create must equal `auth.uid()`.
+- Self-target Direct Grant mutation fails closed.
+- RLS independently requires Admin access-management authority.
+- INSERT/UPDATE resulting Role must satisfy Repository owner-kind policy.
+- Non-Admin raw Grant enumeration is unavailable.
+- Target existence lookup happens only after `repository.access.manage` is established.
+- `SECURITY DEFINER` helpers use an empty `search_path`, fully qualified relations, and selective execution grants.
+
+Public content participation does not expose raw Activity Evidence. `activity_events` requires a persisted/derived Repository Role until a separate public-redaction projection is accepted.
 
 ## Organization delegation remains separate
 
-This ADR does not collapse Organization governance roles into Repository Roles.
+Organization governance roles are not Repository Roles.
 
-| Organization Actor | Membership Roles it may manage/assign |
+| Organization Actor | Membership Roles it may manage |
 | --- | --- |
 | owner | member, admin, owner |
 | admin | member, admin |
 | member | none |
 
-An Organization that remains present must retain at least one owner. The owner-continuity trigger serializes that cross-row invariant. ADR-006 independently keeps destructive Organization/Repository lifecycle unavailable to end users.
+An existing Organization must retain at least one owner. Cross-row owner continuity remains independently serialized/enforced.
 
 ## Rejected alternatives
 
-### Preserve `manager` by letting it manage lower Direct Grants
+### One five-role Grant model for User and Organization owners
 
-Rejected. This behavior was introduced only to differentiate an invented target Role after heterogeneous Repository actions had been collapsed into `resource.*` and `member.manage`. GitHub reserves individual/team/outside-collaborator access management to Admin.
+Rejected. GitHub documents different personal owner/collaborator and Organization granular-role semantics.
 
-### Rename GitHub Roles into target-friendly aliases
+### Role-only authorization
 
-Rejected. Renaming Read/Triage/Write/Maintain into Viewer/Contributor/Manager discards benchmark semantics and encourages target-specific reinterpretation. URL terminology and Domain terminology may differ when there is a product reason; Repository Role semantics have no such reason here.
+Rejected. Public participation, public Wiki collaborator editing, and Issue author behavior are documented counterexamples.
 
-### Keep generic `resource.create` / `resource.update`
+### Preserve target `manager` by giving it lower-role delegation
 
-Rejected for authorization. Page, Issue, and Discussion mutations are not one permission in the GitHub model and already have different accepted lifecycles. Generic mutation capabilities caused Triage/Write/Maintain distinctions to disappear.
+Rejected. It was invented to differentiate an artificial target hierarchy and contradicts Admin-only GitHub access management.
 
-### Use Role rank as delegation policy
+### Generic Resource mutation permissions
 
-Rejected. Rank is useful for effective-role explanation, but access management is a specific Admin capability, not “any higher Role may manage lower Roles.”
+Rejected. Page, Issue, Discussion, and Direct Grant transitions have different mechanisms.
 
-### Check expected Role only before DML
+### Role rank as delegation policy
 
-Rejected. Under concurrent transactions, check-then-act can observe stale state. The expected Role must constrain the actual mutation, and affected-row count must decide success before Evidence is written.
+Rejected. Rank may summarize effective Role; it does not create `repository.access.manage`.
+
+### Pre-read-only concurrency
+
+Rejected. Expected Role must constrain actual DML before success Evidence can exist.
+
+### Supplemental RLS correction file
+
+Rejected. Current policy truth belongs in `99_rls.sql` only.
 
 ### Enforce only in Application or only in RLS
 
-Rejected. Application must explain the Product decision and PostgreSQL must independently prevent alternate-client bypass.
+Rejected. Product explanation and database defense-in-depth are both required.
 
 ## Consequences
 
 Benefits:
 
-- Repository Roles now preserve GitHub's mature access vocabulary without importing Code/Git mechanics;
-- Triage, Write, Maintain, and Admin differ because of real no-code surface responsibilities rather than invented delegation;
-- Repository access management is unambiguously Admin-only;
-- Page/Issue/Discussion authorization no longer aliases heterogeneous operations through generic mutation capabilities;
-- stale concurrent Grant commands cannot fabricate immutable success Evidence; and
-- Domain, Application, RLS, Web, and tests have one falsifiable matrix.
+- upstream GitHub semantics are traceable to actual `github/docs/content` evidence;
+- docs-site `github/docs/src` is no longer mistaken for GitHub.com implementation evidence;
+- personal and Organization Repository access no longer collapse into one invented assignment model;
+- public participation and authorship no longer force fake Role promotions;
+- Direct access remains Admin-only and concurrency-safe;
+- raw public participation cannot leak historical Evidence; and
+- Domain/Application/PostgreSQL/Web/tests share one falsifiable causal model.
 
 Costs:
 
-- more explicit Capability names exist because materially different actions are no longer hidden behind generic `resource.*`;
-- existing stored/test Role vocabulary must be migrated together in the LocalOnly baseline; and
-- future GitHub-derived Role behavior must repeat the subtraction test instead of assuming that a Role name automatically imports all GitHub permissions.
-
-## Falsification conditions
-
-Reopen this ADR only when direct product evidence proves one of the following:
-
-- a current no-code action cannot be represented by the GitHub-derived five-role matrix without repeated exceptions;
-- a real no-code collaboration problem requires a non-Admin actor to manage Repository access;
-- custom roles or explicit deny become necessary for observed workflows;
-- a new Principal type requires incompatible Grant/delegation behavior; or
-- PostgreSQL compare-and-swap enforcement cannot preserve the accepted authority/Evidence invariant.
-
-Do not reopen merely to preserve old target names or because an implementation already contains them.
+- the decision model is intentionally richer than a single role rank;
+- target-state/relationship facts must be loaded for relationship-sensitive commands such as Issue author editing; and
+- future GitHub behavior must repeat the subtraction test before being admitted.
 
 ## Minimum discriminating tests
 
-1. Read can participate in ordinary Issue/Discussion collaboration but cannot update Page or manage Repository access.
-2. Triage can manage Issue and Discussion state but cannot update Page or manage Repository access.
-3. Write can update Page and comment on an open locked Discussion but cannot create Announcement or manage Repository access.
-4. Maintain can create Announcement and perform current non-sensitive maintenance but cannot manage Repository access.
-5. Admin can create/change/revoke Direct Grants to every accepted Repository Role.
-6. Every non-Admin Direct Grant management attempt fails independently in Domain/Application and PostgreSQL.
-7. Self-target Direct Grant delegation fails in Domain/Application and PostgreSQL.
-8. Raw Data API Grant mutation and non-Admin Grant enumeration fail closed.
-9. A stale expected Role changes zero rows, returns `state-changed`, and emits no success Activity Evidence.
-10. A successful create/change/revoke changes exactly one relationship and emits exactly one matching same-transaction Activity Evidence fact.
-11. Organization admin cannot create/control Organization owner relationships; owner continuity remains enforced independently.
-12. Any Domain/Application/RLS disagreement reopens the earliest inconsistent boundary.
+1. Anonymous public Actor reads but cannot mutate.
+2. Authenticated public Actor with no Grant creates/comments ordinary Issue/Discussion without receiving a Role.
+3. Public Read collaborator edits Page; private Read collaborator cannot.
+4. Issue author edits/closes/reopens own Issue without Role promotion; unrelated Read actor cannot.
+5. Triage manages arbitrary Issue/Discussion state but cannot mutate private Page.
+6. Write comments on an open locked Discussion but cannot create Announcement.
+7. Maintain creates Announcement but cannot manage Repository access.
+8. Organization Repository Admin manages all five Direct Grant roles.
+9. Personal Repository accepts only Write Direct collaborator assignment.
+10. Every non-Admin Direct Grant management attempt fails in Application and PostgreSQL.
+11. Self-target and raw forged Grant mutations fail closed.
+12. Stale expected Role returns `state-changed`, changes zero rows, and records no success Evidence.
+13. Successful Grant create/change/revoke changes exactly one relationship and records exactly one matching same-transaction Evidence fact.
+14. Public actor without persisted/derived Role cannot query raw Activity Evidence.
+15. Context changes never change authority for identical Actor/target/relationships.
+
+## Falsification conditions
+
+Reopen only when observed no-code collaboration requires a permission relationship the documented GitHub-derived model cannot represent without repeated exceptions, or when a newly accepted Principal/policy mechanism changes the causal model. Do not reopen to preserve old target names or existing accidental implementation.
