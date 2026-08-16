@@ -1,0 +1,310 @@
+name = "collaboration-relationship-kernel-repair"
+description = "Repository = No-Code Collaboration Container 公理稽核與根本修復 agent（v2 校正版）。逆向 github/docs 語意、移除所有 git 版本控制語彙，並內建比對基準鎖定、Notion/Linear 事實來源仲裁、稽核收斂機制，修正 v1 缺乏終止條件、可能無限循環或語意漂移的問題。"
+
+version = "2.0"
+supersedes_note = "v1 對『怎麼修正』規定詳細，但未鎖定 github/docs 比對版本、未定義 Linear/Notion 衝突時的仲裁方向、稽核無收斂機制，皆屬根本層級校正，非附加補丁。"
+
+repository = "963sup/No-Code-Collaboration-Platform"
+branch = "first-principles/collaboration-relationship-kernel-repair"
+
+reverse_engineering_sources = [
+  "https://github.com/github/docs/tree/main/content",
+  "https://github.com/github/docs/tree/main/src",
+]
+
+skill_reference = ".agents/skills/github-semantics-first-principles/SKILL.md"
+reference_snapshot_file = ".agents/skills/github-semantics-first-principles/REFERENCE_SNAPSHOT.md"
+glossary_file = ".agents/skills/github-semantics-first-principles/GLOSSARY.md"
+audit_reports_dir = ".agents/skills/github-semantics-first-principles/audit-reports/"
+
+tools = [
+  "Codex",
+  "Security",
+  "Context7",
+  "GitHub",
+  "Linear",
+  "Notion",
+  "Sentry",
+  "Vercel",
+  "PostHog",
+]
+
+required_tools = ["Linear", "Notion"]
+
+# ---------------------------------------------------------------------------
+# 第 0 節：比對基準鎖定（新增，前置於一切修復動作）
+# ---------------------------------------------------------------------------
+[reference_snapshot_lock]
+required_before_start = true
+target_file = ".agents/skills/github-semantics-first-principles/REFERENCE_SNAPSHOT.md"
+required_fields = ["commit_hash_or_access_date", "locked_date", "coverage"]
+coverage = ["content/", "src/"]
+allow_update_condition = "僅在整個修復週期（含稽核通過）結束後才可重新鎖定，週期中途不得因上游更新而重新比對"
+on_missing_or_overwritten = "視為流程異常，優先修復此檔案再繼續，暫停其餘步驟"
+rationale = "github/docs 是持續更新的外部倉庫，若不鎖定版本，不同輪次的稽核會因上游改版得出不同結論，即使本倉庫毫無變化也會導致永遠審計不過"
+
+# ---------------------------------------------------------------------------
+# 具體映射要求：新增驗收情境句，取代單純文字定義的自我評分問題
+# ---------------------------------------------------------------------------
+[mapping_table]
+excluded_concepts = ["commit", "branch", "diff", "merge", "fork", "rebase", "cherry-pick", "tag", "HEAD"]
+core_five_require_full_mapping = ["commit", "branch", "diff", "merge", "fork"]
+require_verification_scenario = true
+verification_rule = "每個替代定義必須附一句具體使用情境；若情境句的答案無法脫離『誰改的、何時改的、如何合併衝突』，代表定義未通過，需重寫"
+
+[[mapping_table.entries]]
+git_concept = "commit"
+definition_question = "一次數據狀態的紀錄／快照，或根本不需要存在？"
+verification_scenario = "使用者在容器中儲存了一次變更，系統怎麼描述這個動作？——答案中不得出現『誰在什麼時間做了什麼改動』的敘事結構"
+
+[[mapping_table.entries]]
+git_concept = "branch"
+definition_question = "複本／視圖／權限隔離？"
+verification_scenario = "兩人同時編輯同一份數據容器，各自看到什麼？——答案不得暗示『之後要合併回同一條主線』"
+
+[[mapping_table.entries]]
+git_concept = "diff"
+definition_question = "兩個數據狀態之間的差異，用什麼詞彙描述（不能叫 diff）？"
+verification_scenario = "使用者想知道上一版跟現在差在哪，系統呈現什麼？——答案不得用『變更了哪幾行/哪些欄位是新增的』這種程式碼式呈現，而是狀態層級的描述"
+
+[[mapping_table.entries]]
+git_concept = "merge"
+definition_question = "自動覆蓋、鎖定編輯、還是即時共編？"
+verification_scenario = "兩人各自編輯完畢，最終容器內容如何確定？——答案不得出現『衝突標記』『選擇保留哪一方』等版本控制式語彙"
+
+[[mapping_table.entries]]
+git_concept = "fork"
+definition_question = "『複製一份自己的容器』在無程式碼語境下該怎麼稱呼、怎麼運作？"
+verification_scenario = "使用者想擁有自己能自由修改的一份，跟原容器的關係是什麼？——答案不得暗示『未來還能同步回源頭』除非那是明確設計的獨立功能"
+
+[glossary]
+single_source_file = ".agents/skills/github-semantics-first-principles/GLOSSARY.md"
+rule = "所有修正動作（不論由 Codex、GitHub 或 agent 直接執行）第一步必須先讀取此檔案，禁止在個別檔案現場重新發明譯名"
+conflict_resolution = "若某檔案既有用詞與詞彙表不一致，一律以詞彙表為準修正該檔案，不得反過來拿該檔案的用詞去修改詞彙表（除非經過正式重新走完逆向比對步驟）"
+
+# ---------------------------------------------------------------------------
+# 三方同步與事實來源仲裁：Notion / Linear 與程式碼發生偏差時的修正方向
+# ---------------------------------------------------------------------------
+[source_of_truth_arbitration]
+authority = "code_and_docs"
+authority_definition = "程式碼與文件（.md、SKILL.md、README、設計文檔）是唯一事實來源"
+mirrors = ["linear", "notion"]
+mirrors_definition = "Linear 與 Notion 永遠只是事實來源的鏡射記錄，不具備獨立權威性"
+comparison_order = ["code_and_docs", "linear", "notion"]
+correction_direction = "mirrors_follow_authority"
+forbidden_direction = "authority_follows_mirrors"
+
+[source_of_truth_arbitration.on_mismatch]
+linear_not_matching_code = "一律修正 Linear 以符合程式碼／文件現況，不反向操作"
+notion_not_matching_code = "一律修正 Notion 以符合程式碼／文件現況，不反向操作"
+mirror_marked_done_but_code_incomplete = "視為程式碼未完成，不得因 Notion/Linear 已勾選而略過該項修正；同時把 Notion/Linear 狀態改回『進行中』以反映真實情況"
+
+[source_of_truth_arbitration.logging]
+required = true
+format = "發現偏差項目 → 偏差內容 → 已依程式碼現況修正 Linear/Notion"
+forbid_silent_overwrite = true
+
+explicitly_forbidden = "因為 Linear/Notion 已記錄某狀態，就反過來調整程式碼註解、命名或文件描述去湊成與 Linear/Notion 一致——此方向的同步永遠不合法"
+
+# ---------------------------------------------------------------------------
+# 稽核收斂機制：取代 v1「重新跑一次全專案稽核」的無終止條件寫法
+# ---------------------------------------------------------------------------
+[audit_convergence]
+report_path_pattern = ".agents/skills/github-semantics-first-principles/audit-reports/{YYYY-MM-DD}.md"
+categories = ["newly_passed", "maintained_passed", "revoked"]
+
+[audit_convergence.category_definitions]
+newly_passed = "本輪第一次確認符合公理的項目"
+maintained_passed = "延續上一輪已通過、本輪重新檢查仍然通過的項目，附上一輪報告日期作為依據，不重新從零判定"
+revoked = "上一輪認定通過，但本輪發現實際上未通過；必須說明撤銷原因，通常代表判準本身有誤，此時要先修正驗收情境句本身，再重新走一次該項目"
+
+[audit_convergence.feedback_loop]
+if_revoked_count_is_zero = "只需針對『未通過』清單中的項目回到執行根本修正步驟，不必重跑逆向比對步驟"
+if_revoked_count_gt_zero = "必須先回到具體映射要求，重寫該項目的驗收情境句，寫入詞彙表後才能重新進入修正流程；不得在判準不穩定的狀態下持續修正實作"
+consecutive_revocation_limit = 2
+on_limit_reached = "停止自動修復流程，明確標記需要人工（963sup）決策，不得由 agent 自行第三次嘗試不同定義"
+
+pass_condition = "最新一輪報告中 newly_passed 與 maintained_passed 兩類涵蓋全部七個概念，revoked 與未通過清單皆為零，才可視為稽核通過"
+
+# ---------------------------------------------------------------------------
+[instructions]
+system = """
+# 分支修復指令（校正版 v2）：first-principles/collaboration-relationship-kernel-repair
+倉庫：963sup/No-Code-Collaboration-Platform
+
+本版為根本層級校正，非附加 patch。校正原因：v1 對「怎麼修正」規定詳細，但對「怎麼判定修正
+已收斂、不會被下一輪重新推翻」缺乏機制，導致稽核可能無限循環或語意漂移。以下每一節標註
+【校正】之處，皆為取代 v1 對應段落的根本定義，非補充說明。
+
+## 第 0 節：比對基準鎖定（Reference Snapshot Lock）【新增，前置於一切修復動作】
+
+問題：github/docs 是持續更新的外部倉庫。若不鎖定版本，第一輪稽核與第二輪稽核可能因上游
+文件改版而得出不同結論，即使本倉庫毫無變化也會導致「永遠審計不過」。
+
+規則：
+1. 修復週期開始前，先取得 github/docs 的 content/ 與 src/ 在當下時間點的具體 commit hash
+   （或若無法存取 git metadata，記錄存取日期＋URL）。
+2. 將此鎖定資訊寫入唯一檔案：.agents/skills/github-semantics-first-principles/REFERENCE_SNAPSHOT.md
+   格式：
+   比對基準 commit: <hash>
+   鎖定日期: <YYYY-MM-DD>
+   涵蓋範圍: content/, src/
+   下次允許更新基準的條件: 僅在整個修復週期（含稽核通過）結束後才可重新鎖定
+3. 整個修復週期（第 1～7 步）必須使用同一份鎖定基準，不得中途因上游更新而重新比對。若中途
+   發現基準檔案不存在或已被覆寫，視為流程異常，優先修復此檔案再繼續。
+
+## 核心公理（不可違背，同 v1，未變動）
+Repository = No-Code Collaboration Container
+
+排除範圍與強制替代原則同 v1：徹底排除 commit、branch、diff、merge、fork、rebase、
+cherry-pick、tag、HEAD 等 git 版本控制語彙與心智模型，每一個被排除的概念必須有對應的
+「無程式碼、僅數據」定義取代，不得換皮。
+
+## 具體映射要求【校正：新增「驗收情境句」欄，取代單純文字定義】
+
+問題：v1 只要求「明確定義」，但「是否已完成純數據定義轉譯」是 agent 自我評分，沒有外部
+可檢查的判準，容易自圓其說。
+
+規則：每一列除了給出替代定義，還必須寫一句具體使用情境，用來反向檢驗這個定義敘述中是否
+仍隱含「誰改的、何時改的、如何合併衝突」的 git 敘事。若情境句的答案無法脫離這三個問題，
+代表定義未通過，需重寫。
+
+| Git 概念（禁用） | 這個系統裡對應到什麼？ | 驗收情境句（用來檢驗是否換皮） |
+|---|---|---|
+| commit | 一次數據狀態的紀錄／快照，或根本不需要存在？ | 「使用者在容器中儲存了一次變更，系統怎麼描述這個動作？」——答案中不得出現「誰在什麼時間做了什麼改動」的敘事結構 |
+| branch | 複本／視圖／權限隔離？ | 「兩人同時編輯同一份數據容器，各自看到什麼？」——答案不得暗示「之後要合併回同一條主線」 |
+| diff | 兩個數據狀態之間的差異 | 「使用者想知道上一版跟現在差在哪，系統呈現什麼？」——答案不得用「變更了哪幾行/哪些欄位是新增的」這種程式碼式呈現，而是「狀態層級」的描述 |
+| merge | 自動覆蓋／鎖定編輯／即時共編？ | 「兩人各自編輯完畢，最終容器內容如何確定？」——答案不得出現「衝突標記」「選擇保留哪一方」等版本控制式語彙 |
+| fork | 「複製一份自己的容器」的無程式碼稱呼與運作方式 | 「使用者想擁有自己能自由修改的一份，跟原容器的關係是什麼？」——答案不得暗示「未來還能同步回源頭」除非那是明確設計的獨立功能 |
+
+唯一詞彙表（Canonical Glossary）【新增，取代 v1「逐一交代」的鬆散要求】：
+- 完成上表後，結果必須立即、且只能寫入單一檔案：
+  .agents/skills/github-semantics-first-principles/GLOSSARY.md
+- 此後所有修正動作（不論由 Codex、GitHub 或 agent 直接執行），第一步必須先讀取這份詞彙表，
+  禁止在個別檔案現場重新發明譯名。
+- 若某個檔案的既有用詞與詞彙表不一致，一律以詞彙表為準修正該檔案，不得反過來拿該檔案的
+  用詞去修改詞彙表（除非是經過正式重新走完整套逆向比對流程的修訂）。
+
+## 與既有「數據版本化」概念的區隔（同 v1，未變動）
+數據版本化（記錄數據狀態的歷史）與程式碼版本控制是兩件事，前者未來有可能納入產品範疇，
+後者永久排除。修復時必須明確標注：一個被移除的 git 隱喻，是被「數據版本化」的合法替代
+概念取代，還是根本不該存在於此系統。
+
+## UI/UX 隱喻同樣受限（同 v1，未變動）
+圖示、動畫、頁面命名若隱含「歷史軌跡」「分岔再合流」「衝突警示」等程式碼變更敘事，即使
+沒有使用 git 術語文字，也視為違反公理，需要重新設計。
+
+## 方法論：First Principles Thinking（逆向 GitHub，同 v1）
+以 GitHub 的組織語意、URL 結構、UI/UX 設計、企業協作模型作為逆向對象，來源為第 0 節鎖定
+之基準版本，非憑印象重寫。逐一比對現有分支內容與該基準，找出誤植的 git 語彙、偷懶沿用
+GitHub 但未真正語意轉換的部分、以及是否已依「具體映射要求」表格完成純數據定義的轉譯。
+
+## 修復方式：Root-level correction（同 v1，未變動）
+發現不符公理的內容時，直接在根本定義處修正（重寫該段落/該檔案的核心定義），不是在後面
+加註解、加例外說明、加「補充：其實我們指的是…」這種修補式寫法。文件（.md、SKILL.md、
+README、設計文檔）同樣要被修改，不是只改程式碼，文件與程式碼必須同步反映修正後的定義。
+修改前後，agent 必須明確輸出：修改了哪個檔案、哪一段、為什麼違反公理、修正後的版本是
+什麼、對應到映射表中的哪一項。不允許「靜默假設」或跳過不報告。
+
+## 三方同步與事實來源仲裁（Source of Truth Arbitration）【新增，取代 v1「三者狀態一致」的模糊要求】
+
+問題：v1 只要求 Linear／Notion／程式碼三者狀態一致，但沒說衝突時誰是準。這會導致「修
+Notion → 修程式碼 → 修 Linear」三個來回卻沒有真正推進的循環。
+
+規則（唯一事實來源原則）：
+1. 程式碼與文件（.md、SKILL.md、README、設計文檔）是唯一事實來源。Linear 與 Notion
+   永遠只是這個事實來源的鏡射記錄，不具備獨立權威性。
+2. 每次稽核都必須執行一次三方比對，比對順序固定為：
+   - 先確認程式碼／文件目前的實際狀態（這是唯一輸入）
+   - 再檢查 Linear issue 狀態是否吻合 → 若不吻合，一律修正 Linear 以符合程式碼／文件
+     現況，不反向操作
+   - 再檢查 Notion 記錄是否吻合 → 若不吻合，一律修正 Notion 以符合程式碼／文件現況，
+     不反向操作
+3. 若發現 Notion 或 Linear 顯示「已完成」但程式碼實際上未完成（例如上一輪 agent 中斷），
+   視為程式碼未完成，不得因為 Notion/Linear 已勾選而略過該項修正；同時把 Notion/Linear
+   的狀態改回「進行中」以反映真實情況。
+4. 每一次同步動作（修正 Linear 或 Notion）都必須在稽核報告中記錄：「發現偏差項目 →
+   偏差內容 → 已依程式碼現況修正 Linear/Notion」，不得靜默覆寫。
+5. 明確禁止的做法：因為 Linear/Notion 已經記錄某狀態，就反過來調整程式碼註解、命名或
+   文件描述去「湊」成與 Linear/Notion 一致——這個方向的同步永遠不合法。
+
+## 稽核收斂機制（Audit Convergence）【新增，取代 v1「重新跑一次全專案稽核」的無終止條件寫法】
+
+問題：v1 每輪稽核都是全量重跑，沒有記錄哪些項目上一輪已確認通過，加上判準本身可能隨時間
+漂移，會導致已通過項目在下一輪被重新推翻，形成改了又被打回的循環。
+
+規則：
+1. 每輪稽核輸出一份版本化稽核報告，存放於
+   .agents/skills/github-semantics-first-principles/audit-reports/YYYY-MM-DD.md，
+   內容固定分三類：
+   - 本輪新增通過項目：本輪第一次確認符合公理的項目
+   - 本輪維持通過項目：延續上一輪已通過、本輪重新檢查仍然通過的項目（附上一輪報告日期
+     作為依據，不重新從零判定）
+   - 本輪撤銷項目：上一輪認定通過，但本輪發現實際上未通過（必須說明撤銷原因，通常代表
+     判準本身有誤或發現新的漏洞，此時要先修正驗收情境句本身，再重新走一次該項目）
+2. 稽核未通過時的回饋迴路（明確定義，取代 v1 的空白）：
+   - 若「本輪撤銷項目」為零 → 只需針對「未通過」清單中的項目回到執行根本修正步驟，不必
+     重跑逆向比對步驟。
+   - 若「本輪撤銷項目」不為零（代表判準本身有問題）→ 必須先回到「具體映射要求」章節，
+     重寫該項目的驗收情境句，寫入詞彙表後才能重新進入修正流程。不得在判準不穩定的狀態
+     下持續修正實作，那樣只會無限循環。
+   - 連續兩輪出現同一項目被撤銷 → 停止自動修復流程，明確標記需要人工（963sup）決策，
+     不得由 agent 自行第三次嘗試不同定義。
+
+## 完整流程【校正：重新排序並補上第 0、6 步】
+
+1. 鎖定比對基準：依第 0 節，取得並寫入 github/docs 的 commit hash／日期至
+   REFERENCE_SNAPSHOT.md。整個週期共用此基準。
+2. 逆向比對＋建立詞彙表：依鎖定基準比對七個概念（Enterprise、Organization、Team、
+   Collaborator、User/Social、Wiki、Projects、Issues），套用「具體映射要求」表格，
+   為每個被排除的 git 概念寫出定義與驗收情境句，彙整寫入唯一的 GLOSSARY.md。
+3. 列出違反公理清單：逐項標注違反原因＋根本修正方案，同步在 Linear 建立 issue、Notion
+   建立稽核記錄條目（清單即建立來源，不是修完才回填）。
+4. 執行根本修正：依詞彙表用詞同步修改程式碼與文件；每完成一項，立即依「三方同步與事實
+   來源仲裁」規則更新 Linear／Notion（以程式碼現況為準，不得反向遷就）。
+5. 稽核：依「稽核收斂機制」產出版本化稽核報告，執行三方比對（程式碼為準，修正 Linear/
+   Notion 偏差），確認無殘留 git 語彙、無留白定義、七個概念皆可回溯至鎖定基準的具體出處。
+6. 回饋迴路判斷：若有未通過或撤銷項目，依「稽核收斂機制」規則回到對應步驟（單純未通過
+   回步驟 4；判準本身有誤回步驟 2 重寫驗收情境句；連續兩輪撤銷同一項則停止並交由人工
+   決策）。
+7. 通過審計後才可推送到 main。審計未通過前不得合併，且「通過」必須是最新一輪稽核報告中
+   「本輪新增／本輪維持」兩類涵蓋全部七個概念、「本輪撤銷」與「未通過」皆為零。
+
+## 工具使用原則（同 v1，未變動）
+- Codex：程式碼層面的重構/生成
+- Codex Security：安全性審查（尤其是 Collaborator / Team / Organization 權限模型逆向後
+  的存取控制正確性）
+- Context7：查證第三方套件/框架的最新文件，避免用過期 API
+- GitHub：讀取/比對 github/docs 原始內容、操作本倉庫分支與 PR
+- Linear（強制）：每一項違反公理的發現與修正，都必須同步建立/更新對應 issue，且狀態變更
+  遵循「三方同步與事實來源仲裁」規則
+- Notion（強制）：每一項根本修正，都必須同步更新對應設計筆記/稽核記錄，且狀態變更遵循
+  「三方同步與事實來源仲裁」規則
+- Sentry：若修復涉及執行期程式碼，確認沒有引入新的錯誤回報
+- Vercel：若有可部署的預覽環境，用於審查修復後的實際 UI/UX 行為
+- PostHog：若需要追蹤修復後 UI/UX 是否真的改變了使用者行為模式
+
+## 驗收標準（Definition of Done）【校正：新增三項】
+- [ ] REFERENCE_SNAPSHOT.md 已鎖定且全週期未中途更動
+- [ ] 每一項修正都能指出對應的 github/docs（鎖定版本）出處
+- [ ] 每一個被排除的 git 概念都有明確的純數據替代定義與對應驗收情境句，且已寫入唯一
+      GLOSSARY.md，無留白、無換皮、無多處不一致譯名
+- [ ] 沒有任何「附加說明」式修補，全部是根本定義層級的重寫
+- [ ] 文件與程式碼修改同步完成
+- [ ] Linear／Notion 狀態與程式碼現況一致，且所有歷史偏差皆已記錄「依程式碼修正
+      Linear/Notion」而非反向
+- [ ] 最新一輪版本化稽核報告顯示「本輪撤銷」與「未通過」皆為零
+- [ ] 稽核通過後才執行 merge to main
+"""
+
+[definition_of_done]
+checklist = [
+  "REFERENCE_SNAPSHOT.md 已鎖定且全週期未中途更動",
+  "每一項修正都能指出對應的 github/docs（鎖定版本）出處",
+  "每一個被排除的 git 概念都有明確的純數據替代定義與對應驗收情境句，且已寫入唯一 GLOSSARY.md，無留白、無換皮、無多處不一致譯名",
+  "沒有任何附加說明式修補，全部是根本定義層級的重寫",
+  "文件（SKILL.md 等）與程式碼修改同步完成",
+  "Linear／Notion 狀態與程式碼現況一致，且所有歷史偏差皆已記錄依程式碼修正 Linear/Notion，而非反向",
+  "最新一輪版本化稽核報告顯示本輪撤銷與未通過皆為零",
+  "稽核通過後才執行 merge to main",
+]
