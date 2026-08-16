@@ -172,12 +172,44 @@ set search_path = ''
 as $$
 declare
   effective_role public.repository_role;
+  repository_visibility public.repository_visibility;
 begin
   if (select auth.uid()) is null then
     return false;
   end if;
 
+  select repository.visibility
+  into repository_visibility
+  from public.repositories as repository
+  where repository.id = target_repository_id;
+
+  if not found then
+    return false;
+  end if;
+
+  -- GitHub public repositories expose read/discovery plus authenticated Issue/Discussion
+  -- participation without fabricating a stored Repository Role.
+  if repository_visibility = 'public'
+    and requested_capability in (
+      'repository.view',
+      'resource.view',
+      'issue.create',
+      'issue.comment',
+      'discussion.create',
+      'discussion.comment'
+    ) then
+    return true;
+  end if;
+
   effective_role := private.current_repository_role(target_repository_id);
+
+  -- Public Wiki editing is collaborator-scoped by default. Any persisted/derived Repository Role
+  -- establishes that collaborator relationship; public visibility by itself does not.
+  if repository_visibility = 'public'
+    and effective_role is not null
+    and requested_capability in ('page.create', 'page.update') then
+    return true;
+  end if;
 
   return case effective_role
     when 'read' then requested_capability in (
@@ -272,6 +304,42 @@ begin
     target_repository_id,
     'repository.access.manage'
   );
+end;
+$$;
+
+create function private.is_repository_grant_role_allowed(
+  target_repository_id uuid,
+  target_role public.repository_role
+)
+returns boolean
+language sql
+stable
+security definer
+set search_path = ''
+as $$
+  select coalesce((
+    select case
+      when repository.owner_user_id is not null then target_role = 'write'::public.repository_role
+      when repository.owner_organization_id is not null then true
+      else false
+    end
+    from public.repositories as repository
+    where repository.id = target_repository_id
+  ), false);
+$$;
+
+create function private.enforce_repository_grant_owner_role()
+returns trigger
+language plpgsql
+security definer
+set search_path = ''
+as $$
+begin
+  if not private.is_repository_grant_role_allowed(new.repository_id, new.role) then
+    raise exception 'Repository owner kind does not allow this Direct Grant role'
+      using errcode = '23514';
+  end if;
+  return new;
 end;
 $$;
 
@@ -502,6 +570,10 @@ for each row
 when (old.title is distinct from new.title or old.content is distinct from new.content)
 execute function private.touch_resource_updated_at();
 
+create trigger repository_user_grants_owner_role_guard
+before insert or update of repository_id, role on public.repository_user_grants
+for each row execute function private.enforce_repository_grant_owner_role();
+
 create trigger repository_created_activity
 after insert on public.repositories
 for each row execute function private.record_repository_created();
@@ -522,6 +594,10 @@ grant execute on function private.can_manage_organization_membership(
 grant execute on function private.current_repository_role(uuid) to authenticated;
 grant execute on function private.has_repository_capability(uuid, text) to authenticated;
 grant execute on function private.can_manage_repository_grant(
+  uuid,
+  public.repository_role
+) to authenticated;
+grant execute on function private.is_repository_grant_role_allowed(
   uuid,
   public.repository_role
 ) to authenticated;
