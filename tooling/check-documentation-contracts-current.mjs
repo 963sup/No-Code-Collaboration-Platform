@@ -305,8 +305,8 @@ requireMatch(
 requireMatch(
   paths.accessDomain,
   documents.accessDomain,
-  /Operation Capability[\s\S]*delegation authority[\s\S]*distinct/i,
-  'delegation authority distinction is missing'
+  /Direct Repository access management is Admin-only[\s\S]*Role rank never grants delegation authority/i,
+  'Admin-only access management and rank-independent delegation truth are missing'
 );
 
 requireMatch(
