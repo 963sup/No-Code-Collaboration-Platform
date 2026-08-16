@@ -3,7 +3,7 @@ import {
   canMutateRepositoryGrantForPrincipal,
   effectiveRepositoryRole,
   hasRepositoryCapability,
-  repositoryRoles,
+  repositoryGrantRolesForOwner,
   type RepositoryRole
 } from '@no-code-collaboration-platform/domain/access';
 
@@ -58,16 +58,15 @@ export class GetRepositoryGrantManagement {
       return { ok: false, reason: 'forbidden' };
     }
 
+    const grantRoles = repositoryGrantRolesForOwner(repository.owner.kind);
     const grants = await this.repositoryGrantRepository.listDirectRepositoryGrants(repositoryId);
     return {
       ok: true,
       actorRole,
-      grantableRoles: repositoryRoles.filter((role) =>
-        canMutateRepositoryGrant(actorRole, null, role)
-      ),
+      grantableRoles: grantRoles.filter((role) => canMutateRepositoryGrant(actorRole, null, role)),
       grants: grants.map((grant) => ({
         ...grant,
-        allowedRoles: repositoryRoles.filter(
+        allowedRoles: grantRoles.filter(
           (role) =>
             role !== grant.role &&
             canMutateRepositoryGrantForPrincipal(actorRole, grant.role, role, actor.id, grant.id)
