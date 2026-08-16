@@ -1,3 +1,5 @@
+import type { RepositoryCapability } from '../access/capability';
+
 export const issueStatuses = ['open', 'closed'] as const;
 export const issueCloseReasons = ['completed', 'cancelled'] as const;
 export const issueTitleMaxLength = 240;
@@ -97,6 +99,33 @@ export type IssueCommand =
       readonly repositoryId: string;
       readonly type: 'reopen';
     };
+
+export function requiredIssueCapability(command: IssueCommand): RepositoryCapability {
+  switch (command.type) {
+    case 'create':
+      return 'issue.create';
+    case 'comment':
+      return 'issue.comment';
+    case 'edit':
+      return 'issue.edit';
+    case 'assign':
+    case 'unassign':
+    case 'label':
+    case 'unlabel':
+    case 'close':
+    case 'reopen':
+      return 'issue.manage';
+  }
+}
+
+export function issueAuthorMayExecute(
+  command: IssueCommand,
+  actorId: string,
+  issueCreatedBy: string
+): boolean {
+  if (actorId !== issueCreatedBy) return false;
+  return command.type === 'edit' || command.type === 'close' || command.type === 'reopen';
+}
 
 export function isIssueNumber(value: number): boolean {
   return Number.isSafeInteger(value) && value > 0;
