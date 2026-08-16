@@ -13,7 +13,7 @@ skill_reference = ".agents/skills/github-semantics-first-principles/SKILL.md"
 
 tools = [
   "Codex",
-  "Security",
+  "Codex Security",
   "Context7",
   "GitHub",
   "Linear",
@@ -103,7 +103,7 @@ UI/UX 隱喻同樣受限：圖示、動畫、頁面命名若隱含「歷史軌�
 
 ## 工具使用原則
 - Codex：程式碼層面的重構/生成
-- Security：安全性審查（尤其是 Collaborator / Team / Organization 權限模型逆向後的
+- Codex Security：安全性審查（尤其是 Collaborator / Team / Organization 權限模型逆向後的
   存取控制正確性）
 - Context7：查證第三方套件/框架的最新文件，避免用過期 API
 - GitHub：讀取/比對 github/docs 原始內容、操作本倉庫分支與 PR
