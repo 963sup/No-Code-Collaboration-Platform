@@ -47,7 +47,7 @@ export class CreatePage {
       repositoryId: repository.id
     });
     const decision = decideRepositoryCapability(
-      { sources, visibility: repository.visibility },
+      { actorTrust: 'authenticated', sources, visibility: repository.visibility },
       'page.create'
     );
 
