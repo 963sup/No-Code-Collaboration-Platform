@@ -80,6 +80,7 @@ describe('ExplainCurrentRepositoryAccess', () => {
     await expect(useCase.execute(privateRepository.id)).resolves.toEqual({
       actorId: 'actor-1',
       explanation: {
+        actorTrust: 'authenticated',
         effectiveCapabilities: [
           'repository.view',
           'resource.view',
@@ -108,7 +109,7 @@ describe('ExplainCurrentRepositoryAccess', () => {
     });
   });
 
-  it('adds public read baseline without manufacturing mutation authority', async () => {
+  it('adds authenticated public participation without manufacturing a Repository Role', async () => {
     const publicRepository: AccessibleRepository = {
       ...privateRepository,
       visibility: 'public'
@@ -126,7 +127,15 @@ describe('ExplainCurrentRepositoryAccess', () => {
 
     await expect(useCase.execute(publicRepository.id)).resolves.toMatchObject({
       explanation: {
-        effectiveCapabilities: ['repository.view', 'resource.view'],
+        actorTrust: 'authenticated',
+        effectiveCapabilities: [
+          'repository.view',
+          'resource.view',
+          'issue.create',
+          'issue.comment',
+          'discussion.create',
+          'discussion.comment'
+        ],
         effectiveRole: null,
         sources: [{ kind: 'public-visibility' }]
       },
