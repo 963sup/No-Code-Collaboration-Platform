@@ -8,13 +8,14 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { z } from 'zod';
 
+import { databaseUuidSchema } from '@/app/_validation/database-id';
 import { createRequestServices } from '@/composition/create-request-services';
 import { repositoryPath } from '@/routing/repository-routes';
 
 const repositorySchema = z.object({
   description: z.string(),
   name: z.string().trim().min(1).max(160),
-  ownerId: z.string().uuid(),
+  ownerId: databaseUuidSchema,
   ownerKind: z.enum(['organization', 'user']),
   slug: z
     .string()
