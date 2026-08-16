@@ -6,63 +6,110 @@
 
 ## Problem owned and success condition
 
-Issue owns actionable collaborative work inside one Repository. It succeeds when creation, responsibility, classification, conversation, editing, and completion remain Repository-contained, GitHub-derived Capability-authorized, optimistic-concurrency-safe, and accompanied by immutable Activity Evidence.
+Issue owns actionable collaborative work inside one Repository. It succeeds when creation, conversation, responsibility, classification, author editing, general moderation, and completion remain Repository-contained, optimistic-concurrency-safe, and authorized by the same rules in Domain/Application/PostgreSQL.
 
 Issue has no Source Code, Git, Branch, Diff, code-review, CI/CD, or arbitrary-execution meaning.
 
-## First-principles benchmark mapping
+## GitHub benchmark derivation
 
-Removing software-development-specific content from GitHub Issues leaves a general no-code work mechanism:
+After subtracting software-development-specific content, GitHub Issues preserve three independent no-code authority mechanisms:
 
 ```text
-Read
-→ create and comment on Issues
+Read / authenticated public participation
+→ create and comment
 
-Triage
-→ manage responsibility, classification, and open/closed workflow
+Issue author relationship
+→ edit own Issue
+→ close/reopen own Issue
 
-Write+
-→ additionally edit Issue title/body
+Triage-or-greater
+→ manage arbitrary Issue responsibility, classification, and workflow
+
+Write-or-greater
+→ edit arbitrary Issue title/body
 ```
 
-The target preserves that distinction. It does not collapse every Issue mutation into generic `resource.update`.
+The key rule is:
+
+```text
+Issue author
+≠
+higher Repository Role
+```
+
+Authorship is a target relationship that may authorize a specific transition without changing the Actor's Repository Role.
 
 ## Boundary and identity
 
 ```text
 Repository 1 -- contains --> * Issue
-Issue stable human identity = Repository ID + issue number
+Issue human identity = Repository ID + issue number
 Issue persistence identity = Issue UUID
 ```
 
-The positive issue number is allocated atomically and monotonically within one Repository. Assignment, labels, comments, filters, and presentation modes do not create another Container or authorization boundary.
+The positive issue number is allocated atomically and monotonically inside one Repository. Assignment, labels, comments, filters, and planning views do not create another ownership or authorization boundary.
 
 ## State and relationships
 
 - State is `open | closed`.
-- Closed Issue has exactly one close reason: `completed | cancelled`, plus `closedBy` and `closedAt`.
-- Reopen returns Issue to `open` and clears close reason/closed attribution.
+- Closed Issue has one close reason: `completed | cancelled`, plus `closedBy` and `closedAt`.
+- Reopen returns Issue to `open` and clears close attribution.
 - Title is trimmed, non-blank, at most 240 characters.
 - Body is opaque collaborative text; it is displayed, never executed.
 - Labels are Repository-scoped classifications.
-- Assignees are Users who still have Repository access. Assignment is responsibility and grants no access.
+- Assignees are Users who still have Repository read access. Assignment grants no access.
 - Comments form one flat chronological sequence.
-- Nested replies, milestones, reactions, and hard deletion are not part of v1.
+- Nested replies, milestones, reactions, and hard deletion are not accepted in v1.
 
-## Commands
+## Commands and authority
 
-| Command | Required Capability | GitHub-derived responsibility |
+| Command | Baseline Capability | Contextual rule |
 | --- | --- | --- |
-| create | `issue.create` | ordinary Repository participation |
-| comment | `issue.comment` | ordinary Repository participation |
-| edit title/body | `issue.edit` | Write-or-greater content editing |
-| assign / unassign | `issue.manage` | Triage-or-greater Issue management |
-| label / unlabel | `issue.manage` | Triage-or-greater Issue management |
-| close / reopen | `issue.manage` | Triage-or-greater workflow management |
+| create | `issue.create` | authenticated public Repository participation may supply it without a Role |
+| comment | `issue.comment` | authenticated public Repository participation may supply it without a Role |
+| edit title/body | `issue.edit` | Issue author may edit their own Issue even without `issue.edit` |
+| assign / unassign | `issue.manage` | no author exception |
+| label / unlabel | `issue.manage` | no author exception |
+| close / reopen | `issue.manage` | Issue author may close/reopen their own Issue |
 
-All mutations use integer expected version. A stale request changes neither Issue state nor Evidence. Successful meaningful mutation increments version and writes one actor-attributed Activity Event in the same transaction. A no-op does not fabricate Evidence.
+Static Role baseline:
 
-## Evidence
+```text
+Read
+→ issue.create + issue.comment
+
+Triage
+→ Read + issue.manage
+
+Write
+→ Triage + issue.edit
+
+Maintain/Admin
+→ inherit Write/Triage Issue authority
+```
+
+Public Repository authenticated participation adds `issue.create` and `issue.comment` without fabricating Read.
+
+## Command decision chain
+
+```text
+Authenticated Actor
+→ stable Repository
+→ static/contextual Repository authority
+→ required Issue Capability
+→ if denied and command is edit/close/reopen:
+     load stable Issue target
+     compare Actor with Issue.createdBy
+→ target-state validation
+→ command-specific persistence + RLS
+→ state transition + Evidence
+```
+
+The client never supplies trusted authorship. Application loads the persisted Issue target by stable Repository ID + Issue UUID before using the author rule.
+
+## Concurrency and Evidence
+
+Every mutation uses an integer expected version. A stale request changes neither Issue state nor Evidence. Meaningful success increments version and writes one actor-attributed Activity Event in the same transaction. A no-op fabricates no Evidence.
 
 Accepted event families:
 
@@ -78,65 +125,73 @@ issue.closed
 issue.reopened
 ```
 
-Evidence payloads contain identifiers and minimum transition facts. Notification, feed, Audit, analytics, search, and planning views are projections and cannot rewrite source state/Evidence.
+Notification, Activity, Audit, Search, analytics, and Project views are projections over accepted source state/Evidence.
 
 ## Authorization and failure behavior
 
-- Authentication identifies Actor; it is not authorization.
-- Application commands decide one action-specific Issue Capability using stable Actor/Repository IDs.
-- RLS and command-specific PostgreSQL functions independently enforce the same action matrix.
-- Read may create/comment but cannot edit/manage.
-- Triage may manage assignment/labels/open-closed state but cannot edit title/body.
-- Write/Maintain/Admin include Triage management and `issue.edit`.
+- Authentication identifies Actor; it does not grant private Repository access.
+- Anonymous public access is read-only.
+- Authenticated Actor may create/comment in a public Repository under the public participation baseline.
+- Public participation does not fabricate a Repository Role.
+- Read can create/comment in private Repository when explicitly assigned Read.
+- Issue author can edit/close/reopen their own accessible Issue without being promoted to Triage or Write.
+- Triage can manage assignment, labels, close/reopen for any accessible Issue but does not gain arbitrary title/body editing.
+- Write/Maintain/Admin can edit arbitrary Issue title/body and inherit Triage management.
+- Author exception never grants assignment, label management, Direct Grant management, or another Issue's mutation.
 - UI visibility and selected Context never grant authority.
 - Raw authenticated table writes are not an alternate command API.
 - Inaccessible Repository, stale version, invalid transition, ineligible assignee, cross-Repository label, or undefined operation fails closed without success Evidence.
-- Reading public Repository content does not create mutation authority by visibility alone; mutation still resolves Role/Capability.
 
 ## Invariants
 
 1. Every Issue belongs to exactly one Repository.
 2. `(repositoryId, issueNumber)` is unique and stable.
-3. Allocation is atomic and Repository-local.
+3. Number allocation is atomic and Repository-local.
 4. Status and closed attribution remain consistent.
-5. Assignment never grants access and cannot retain an assignee who no longer has Repository access.
+5. Assignment never grants Repository access.
 6. Labels never cross Repository boundaries.
 7. Comments remain flat and chronological.
-8. `issue.create`, `issue.comment`, `issue.edit`, and `issue.manage` remain distinct authorization actions.
-9. Read has create/comment; Triage adds management; Write adds title/body editing.
-10. Every mutation uses expected version; meaningful success advances version.
-11. Meaningful mutation and Activity Evidence commit atomically.
-12. Hard deletion, nested replies, milestones, reactions, and code capabilities remain impossible in v1.
+8. `issue.create`, `issue.comment`, `issue.edit`, and `issue.manage` remain distinct actions.
+9. Triage manages arbitrary Issue workflow/classification/responsibility without general content write authority.
+10. Issue author may edit/close/reopen only their own Issue; authorship does not mutate Role.
+11. Authenticated public participation may create/comment but does not imply `issue.edit` or `issue.manage`.
+12. Every meaningful mutation uses expected version and advances it once.
+13. Meaningful mutation and Activity Evidence commit atomically.
+14. Hard deletion, nested replies, milestones, reactions, and code capabilities remain unavailable in v1.
 
 ## Rejected alternatives
 
+### Role-only Issue authorization
+
+Rejected. GitHub explicitly gives Issue authors actions on their own Issue that cannot be represented faithfully by one static Repository Role matrix.
+
 ### Generic `resource.create` / `resource.update`
 
-Rejected because GitHub separates ordinary participation, Triage management, and Write content editing. A generic mutation permission destroys that proven distinction.
+Rejected. Ordinary participation, authorship, Triage management, and Write editing are different mechanisms.
 
-### Make Triage a presentation label only
+### Make Triage a presentation label
 
-Rejected because GitHub Triage solves a durable operational problem: allowing work moderation/management without general Repository write authority.
+Rejected. It solves the durable problem of work moderation without general Repository write authority.
 
-### Assignment grants Repository access
+### Assignment grants access
 
-Rejected. Responsibility and authority remain independent relationships.
+Rejected. Responsibility and authority are independent relationships.
 
 ## Minimum discriminating tests
 
-1. Read can create/comment but cannot edit, assign, label, close, or reopen.
-2. Triage can assign/unassign, label/unlabel, close/reopen but cannot edit title/body.
-3. Write can edit and inherits Triage management.
-4. Concurrent creation allocates distinct increasing Repository-local numbers.
-5. Stale expected version changes no state and emits no Activity Event.
-6. Assignment rejects User without current Repository read access and creates no Grant.
-7. Label assignment rejects another Repository's label.
-8. Close requires `completed | cancelled`; reopen clears close attribution.
-9. Comments remain flat and ordered.
-10. Raw INSERT/UPDATE/DELETE cannot bypass command functions.
-11. Public/private reads remain Repository-authorized and canonical presentation uses the Repository URL identity.
-12. No command/payload imports Source Code, Git, executable, or code-review capability.
+1. Authenticated public Actor with no Direct Grant can create and comment on an Issue.
+2. The same Actor cannot edit another User's Issue without `issue.edit`.
+3. Issue author can edit their own Issue without Triage or Write.
+4. Issue author can close/reopen their own Issue without `issue.manage`.
+5. Triage can assign/unassign, label/unlabel, close/reopen arbitrary Issue but cannot edit arbitrary title/body.
+6. Write can edit arbitrary Issue and inherits Triage management.
+7. Stale expected version changes no state and emits no Activity Event.
+8. Assignment rejects User without current Repository read access and creates no Grant.
+9. Label assignment rejects another Repository's label.
+10. Raw INSERT/UPDATE/DELETE cannot bypass command functions/RLS.
+11. Anonymous public actor cannot mutate Issue.
+12. No Issue command imports Code/Git/executable behavior.
 
 ## Falsification conditions
 
-Reopen only if real no-code work cannot use Repository-local stable numbers, flat conversation, Repository-scoped responsibility/classification, or GitHub-derived Read/Triage/Write action split without repeated exceptions.
+Reopen if real no-code work cannot use Repository-local stable numbers, flat conversation, Repository-scoped responsibility/classification, or the documented participation/authorship/Triage/Write split without repeated exceptions.
