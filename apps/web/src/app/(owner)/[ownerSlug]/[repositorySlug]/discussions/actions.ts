@@ -5,6 +5,7 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { z } from 'zod';
 
+import { databaseUuidSchema } from '@/app/_validation/database-id';
 import { createRequestServices } from '@/composition/create-request-services';
 import {
   repositoryDiscussionPath,
@@ -24,7 +25,7 @@ const createDiscussionSchema = z.object({
 
 const updateDiscussionSchema = z.object({
   body: z.string().optional(),
-  commentId: z.string().uuid().optional(),
+  commentId: databaseUuidSchema.optional(),
   expectedVersion: z.coerce.number().int().positive(),
   intent: z.enum([
     'clear-answer',
