@@ -4,7 +4,9 @@ import {
   canMutateOrganizationMembership,
   canMutateRepositoryGrant,
   canMutateRepositoryGrantForPrincipal,
-  preservesOrganizationOwnership
+  isRepositoryGrantRoleAllowed,
+  preservesOrganizationOwnership,
+  repositoryGrantRolesForOwner
 } from '../src/index';
 
 describe('organization delegation policy', () => {
@@ -44,13 +46,31 @@ describe('repository delegation policy', () => {
     }
   );
 
-  it('allows repository administrators to manage every accepted repository role', () => {
+  it('allows repository administrators to manage every accepted organization-owned role', () => {
     expect(canMutateRepositoryGrant('admin', null, 'read')).toBe(true);
     expect(canMutateRepositoryGrant('admin', 'read', 'triage')).toBe(true);
     expect(canMutateRepositoryGrant('admin', 'triage', 'write')).toBe(true);
     expect(canMutateRepositoryGrant('admin', 'write', 'maintain')).toBe(true);
     expect(canMutateRepositoryGrant('admin', 'maintain', 'admin')).toBe(true);
     expect(canMutateRepositoryGrant('admin', 'admin', null)).toBe(true);
+  });
+
+  it('keeps GitHub personal-repository collaborator assignment distinct from organization roles', () => {
+    expect(repositoryGrantRolesForOwner('user')).toEqual(['write']);
+    expect(repositoryGrantRolesForOwner('organization')).toEqual([
+      'read',
+      'triage',
+      'write',
+      'maintain',
+      'admin'
+    ]);
+
+    expect(isRepositoryGrantRoleAllowed('user', 'write')).toBe(true);
+    expect(isRepositoryGrantRoleAllowed('user', 'read')).toBe(false);
+    expect(isRepositoryGrantRoleAllowed('user', 'triage')).toBe(false);
+    expect(isRepositoryGrantRoleAllowed('user', 'maintain')).toBe(false);
+    expect(isRepositoryGrantRoleAllowed('user', 'admin')).toBe(false);
+    expect(isRepositoryGrantRoleAllowed('organization', 'admin')).toBe(true);
   });
 
   it('rejects empty transitions and self-target Direct Grant mutation', () => {
