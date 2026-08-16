@@ -39,6 +39,7 @@ async function execute(command: IssueCommand) {
     services.identityProvider,
     services.repositoryReader,
     services.repositoryAccessReader,
+    services.issueReader,
     services.issueWriter
   )
     .execute(command)
