@@ -65,7 +65,7 @@ function repositoryReader(repository: AccessibleRepository | null): RepositoryRe
 }
 
 describe('ExplainCurrentRepositoryAccess', () => {
-  it('explains current Actor direct authority without querying another User', async () => {
+  it('explains current Actor Write authority without querying another User', async () => {
     const readRepositoryAccess = vi.fn().mockResolvedValue({
       directRole: 'write',
       governanceRole: null
@@ -83,8 +83,17 @@ describe('ExplainCurrentRepositoryAccess', () => {
         effectiveCapabilities: [
           'repository.view',
           'resource.view',
-          'resource.create',
-          'resource.update'
+          'page.create',
+          'page.update',
+          'issue.create',
+          'issue.comment',
+          'issue.edit',
+          'issue.manage',
+          'discussion.create',
+          'discussion.comment',
+          'discussion.comment.locked',
+          'discussion.edit',
+          'discussion.moderate'
         ],
         effectiveRole: 'write',
         sources: [{ kind: 'direct-grant', role: 'write' }],
