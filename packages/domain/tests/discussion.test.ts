@@ -22,10 +22,19 @@ describe('Discussion Resource', () => {
     expect(isDiscussionTitle('How should onboarding work?')).toBe(true);
   });
 
-  it('keeps closed and locked comment rules independent', () => {
-    expect(canCommentOnDiscussion({ isLocked: false, status: 'open' })).toBe(true);
-    expect(canCommentOnDiscussion({ isLocked: true, status: 'open' })).toBe(false);
-    expect(canCommentOnDiscussion({ isLocked: false, status: 'closed' })).toBe(false);
+  it('keeps closed state absolute while locked state permits elevated comment authority', () => {
+    expect(
+      canCommentOnDiscussion({ canCommentWhenLocked: false, isLocked: false, status: 'open' })
+    ).toBe(true);
+    expect(
+      canCommentOnDiscussion({ canCommentWhenLocked: false, isLocked: true, status: 'open' })
+    ).toBe(false);
+    expect(
+      canCommentOnDiscussion({ canCommentWhenLocked: true, isLocked: true, status: 'open' })
+    ).toBe(true);
+    expect(
+      canCommentOnDiscussion({ canCommentWhenLocked: true, isLocked: false, status: 'closed' })
+    ).toBe(false);
   });
 
   it('allows Answer selection only for a comment in a question Discussion', () => {
