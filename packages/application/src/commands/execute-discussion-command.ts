@@ -23,11 +23,23 @@ export type ExecuteDiscussionCommandFailureReason =
   | 'unauthenticated';
 
 function requiredCapability(command: DiscussionCommand): RepositoryCapability {
-  if (command.type === 'lock' || command.type === 'unlock') return 'repository.manage';
   if (command.type === 'create') {
-    return command.category === 'announcement' ? 'repository.manage' : 'resource.create';
+    return command.category === 'announcement' ? 'discussion.announce' : 'discussion.create';
   }
-  return command.type === 'comment' ? 'resource.create' : 'resource.update';
+
+  switch (command.type) {
+    case 'comment':
+      return 'discussion.comment';
+    case 'edit':
+      return 'discussion.edit';
+    case 'close':
+    case 'reopen':
+    case 'lock':
+    case 'unlock':
+    case 'select-answer':
+    case 'clear-answer':
+      return 'discussion.moderate';
+  }
 }
 
 function normalizeCommand(command: DiscussionCommand): DiscussionCommand | null {
