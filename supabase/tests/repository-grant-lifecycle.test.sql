@@ -3,7 +3,7 @@ begin;
 create extension if not exists pgtap with schema extensions;
 set local search_path = extensions, public, pg_catalog;
 
-select plan(16);
+select plan(18);
 
 insert into auth.users (id, email, raw_user_meta_data)
 values
@@ -19,8 +19,8 @@ values
   ),
   (
     '00000000-0000-0000-0000-000000000203',
-    'grant-manager@example.com',
-    '{"username":"grant-manager"}'::jsonb
+    'grant-maintain@example.com',
+    '{"username":"grant-maintain"}'::jsonb
   );
 
 insert into public.organizations (id, slug, name, created_by)
@@ -60,13 +60,13 @@ select is(
     )
   ),
   '00000000-0000-0000-0000-000000000202'::uuid,
-  'grant manager resolves an exact User username without exposing email'
+  'Repository Admin resolves an exact User username without exposing email'
 );
 
 select is(
   (select count(*)::integer from public.list_repository_direct_grants('20000000-0000-0000-0000-000000000201')),
   1,
-  'grant management projection initially contains only the seeded manager Grant'
+  'Admin management projection initially contains the seeded Maintain Grant'
 );
 
 select is(
@@ -77,7 +77,7 @@ select is(
     'write'
   ),
   'applied',
-  'Repository admin creates a contributor Grant'
+  'Repository Admin creates a Write Direct Grant'
 );
 
 select is(
@@ -88,7 +88,7 @@ select is(
       and user_id = '00000000-0000-0000-0000-000000000202'
   ),
   'write',
-  'accepted command persists the contributor Grant'
+  'accepted command persists the Write Grant'
 );
 
 select is(
@@ -111,7 +111,19 @@ select is(
     'admin'
   ),
   'state-changed',
-  'stale expected Role fails optimistic concurrency before mutation'
+  'stale expected Role fails the persistence compare-and-swap'
+);
+
+select is(
+  (
+    select count(*)::integer
+    from public.activity_events
+    where repository_id = '20000000-0000-0000-0000-000000000201'
+      and event_type = 'repository_grant.role_changed'
+      and subject_id = '00000000-0000-0000-0000-000000000202'
+  ),
+  0,
+  'stale Grant command records no false role-change Evidence'
 );
 
 select is(
@@ -133,7 +145,7 @@ select is(
     'read'
   ),
   'applied',
-  'Repository admin changes contributor to viewer'
+  'Repository Admin changes Write to Read'
 );
 
 select is(
@@ -145,7 +157,7 @@ select is(
       and subject_id = '00000000-0000-0000-0000-000000000202'
   ),
   1,
-  'Role change records one Activity fact'
+  'actual Role change records exactly one Activity fact'
 );
 
 select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-000000000202', true);
@@ -156,23 +168,33 @@ select is(
     'repository.view'
   ),
   true,
-  'viewer Grant provides Repository read authority'
+  'Read Grant provides Repository read authority'
 );
 
 select is(
   private.has_repository_capability(
     '20000000-0000-0000-0000-000000000201',
-    'resource.update'
+    'page.update'
   ),
   false,
-  'viewer Grant does not provide mutation authority'
+  'Read Grant does not provide Page write authority'
 );
 
 select throws_ok(
   $$ select * from public.list_repository_direct_grants('20000000-0000-0000-0000-000000000201') $$,
   '42501',
   'Repository Grant management is unavailable',
-  'viewer cannot inspect the Repository Grant management projection'
+  'Read cannot call the Direct Grant management projection'
+);
+
+select is(
+  (
+    select count(*)::integer
+    from public.repository_user_grants
+    where repository_id = '20000000-0000-0000-0000-000000000201'
+  ),
+  0,
+  'Read cannot enumerate raw Direct Grant rows through RLS'
 );
 
 select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-000000000201', true);
@@ -185,7 +207,7 @@ select is(
     null
   ),
   'applied',
-  'Repository admin revokes the viewer Grant'
+  'Repository Admin revokes the Read Grant'
 );
 
 select is(
@@ -215,10 +237,10 @@ select is(
     '20000000-0000-0000-0000-000000000201',
     '00000000-0000-0000-0000-000000000202',
     null,
-    'admin'
+    'read'
   ),
   'forbidden',
-  'manager cannot delegate admin through the command boundary'
+  'Maintain cannot manage Direct Repository Grants'
 );
 
 select * from finish();
