@@ -64,7 +64,7 @@ jobs:
 
   root-repair:
     name: Root semantic and replay repair
-    if: github.event_name == 'push' && github.event.head_commit.message == 'Execute root semantic and baseline repair'
+    if: github.event_name == 'push' && github.event.head_commit.message == 'Execute root semantic and baseline repair v2'
     permissions:
       contents: write
     runs-on: ubuntu-latest
@@ -101,23 +101,6 @@ jobs:
             'No-code collaboration containers and the primary Resource/authorization/history boundary; each Repository is owned by exactly one User or Organization.',
             'No-code collaboration containers and the primary Resource/authorization/Evidence boundary; each Repository is owned by exactly one User or Organization.'
           );
-
-          const workflowPath = '.github/workflows/verify.yml';
-          let workflow = readFileSync(workflowPath, 'utf8');
-          const repairStart = workflow.indexOf('\n  root-repair:\n');
-          const repositoryStart = workflow.indexOf('\n  repository:\n', repairStart);
-          if (repairStart < 0 || repositoryStart < 0) {
-            throw new Error('Temporary root-repair job boundary is unavailable.');
-          }
-          workflow = workflow.slice(0, repairStart) + workflow.slice(repositoryStart);
-
-          const uploadStart = workflow.indexOf('\n      - name: Upload short-lived source snapshot\n');
-          const repositoryAfterUpload = workflow.indexOf('\n  repository:\n', uploadStart);
-          if (uploadStart < 0 || repositoryAfterUpload < 0) {
-            throw new Error('Temporary source-snapshot step boundary is unavailable.');
-          }
-          workflow = workflow.slice(0, uploadStart) + '\n' + workflow.slice(repositoryAfterUpload);
-          writeFileSync(workflowPath, workflow, 'utf8');
           NODE
 
           node tooling/compile-local-supabase-baseline.mjs
@@ -135,7 +118,6 @@ jobs:
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add -- \
-            .github/workflows/verify.yml \
             docs/domains/access-authority.md \
             supabase/schemas/30_repository.sql \
             supabase/migrations/20260814190012_local_development_baseline.sql
