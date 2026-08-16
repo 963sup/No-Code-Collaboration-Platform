@@ -88,6 +88,7 @@ export type {
 } from '@no-code-collaboration-platform/domain/resource';
 export type { ActivityEventReader } from './ports/activity-event-reader';
 export type {
+  AccessibleIssueByIdQuery,
   AccessibleIssueQuery,
   IssueCollection,
   IssueCollectionQuery,
