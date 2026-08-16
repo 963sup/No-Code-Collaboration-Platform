@@ -11,8 +11,11 @@ export {
   canMutateOrganizationMembership,
   canMutateRepositoryGrant,
   canMutateRepositoryGrantForPrincipal,
+  isRepositoryGrantRoleAllowed,
   preservesOrganizationOwnership,
-  type OrganizationRole
+  repositoryGrantRolesForOwner,
+  type OrganizationRole,
+  type RepositoryGrantOwnerKind
 } from './delegation';
 export {
   decideRepositoryCapability,
@@ -21,6 +24,7 @@ export {
   type RepositoryAccessExplanation,
   type RepositoryAccessExplanationInput,
   type RepositoryAccessSource,
+  type RepositoryActorTrust,
   type RepositoryAuthoritySources,
   type RepositoryCapabilityDecision
 } from './authority';
