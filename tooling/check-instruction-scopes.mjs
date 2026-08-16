@@ -284,7 +284,7 @@ function discoverInstructionScopes(directory = root) {
       discovered.push(normalize(absolute.slice(root.length + 1)));
     }
   }
-  return discovered.sort();
+  return discovered.toSorted();
 }
 
 const discoveredScopes = discoverInstructionScopes();
@@ -331,7 +331,7 @@ function instructionChain(path) {
     if (directory === '.') break;
     directory = normalize(dirname(directory));
   }
-  return chain.reverse();
+  return chain.toReversed();
 }
 
 let maxActiveChainBytes = 0;
