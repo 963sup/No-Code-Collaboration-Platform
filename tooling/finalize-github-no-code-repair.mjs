@@ -58,6 +58,11 @@ replaceOnce(
   `  'Triage cannot create an announcement Discussion'\n);\n\nselect is(\n  public.set_notification_preference(`,
   `  'Triage cannot create an announcement Discussion'\n);\n\nselect set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-000000000502', true);\n\nselect is(\n  public.set_notification_preference(`
 );
+replaceOnce(
+  lifecycle,
+  `select is(\n  (select count(*) from public.list_notifications('all', 1)),\n  0::bigint,\n  'the triggering Actor never receives a self-notification'\n);`,
+  `select is(\n  (\n    select count(*)\n    from public.notification_threads as notification\n    where notification.recipient_id = (select auth.uid())\n      and notification.repository_id = '20000000-0000-0000-0000-000000000501'\n      and notification.artifact_type = 'issue'\n      and notification.artifact_id = (\n        select id\n        from public.issues\n        where repository_id = '20000000-0000-0000-0000-000000000501'\n          and issue_number = 1\n      )\n  ),\n  0::bigint,\n  'the triggering Actor receives no self-notification for its own Issue event'\n);`
+);
 
 replaceOnce(
   'apps/web/e2e/repository-grant-lifecycle.spec.ts',
