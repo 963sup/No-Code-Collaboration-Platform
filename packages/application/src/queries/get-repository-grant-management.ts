@@ -54,7 +54,7 @@ export class GetRepositoryGrantManagement {
     if (!access) return { ok: false, reason: 'repository-unavailable' };
 
     const actorRole = effectiveRepositoryRole(access);
-    if (actorRole === null || !hasRepositoryCapability(actorRole, 'member.manage')) {
+    if (actorRole === null || !hasRepositoryCapability(actorRole, 'repository.access.manage')) {
       return { ok: false, reason: 'forbidden' };
     }
 
