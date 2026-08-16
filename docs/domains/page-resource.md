@@ -2,111 +2,97 @@
 
 - Status: Candidate
 - Contract owner: Product and Domain
-- Last reviewed: 2026-08-14
+- Last reviewed: 2026-08-16
 
 ## Problem owned and success condition
 
-A Repository must contain a real collaborative work unit rather than remain only a navigation and authorization shell.
+A Repository must contain a real collaborative knowledge unit rather than remain only a navigation and authorization shell.
 
-This contract owns the first Page Resource behavior. It succeeds when an authenticated Actor with the required Repository Capability can create, read, and update a Page through provider-neutral Application use cases; PostgreSQL independently enforces the same Repository boundary; stale updates fail closed; no-op updates preserve concurrency evidence; and every meaningful transition produces immutable historical evidence in the same transaction.
+This contract owns the first Page Resource behavior. It succeeds when an authenticated Actor with the GitHub-derived Page Capability can create, read, and update a Page through provider-neutral Application use cases; PostgreSQL independently enforces the same Repository boundary; stale updates fail closed; no-op updates preserve concurrency evidence; and every meaningful transition produces immutable historical Evidence in the same transaction.
+
+## First-principles benchmark mapping
+
+GitHub Wiki is a Repository knowledge surface. Removing Git-backed storage/history leaves the durable no-code problem:
+
+```text
+Repository
+→ durable collaborative Page/knowledge
+→ read according to Repository visibility/access
+→ edit with Repository Write-or-greater authority
+```
+
+The target therefore keeps Domain vocabulary `Page / Knowledge` while preserving GitHub's `/wiki` presentation URL. It does not import Git-backed Wiki repositories, Git history, or source files.
+
+Current Page mutation Capabilities are explicit:
+
+```text
+page.create
+page.update
+```
+
+They are present in Write, Maintain, and Admin. Read and Triage do not mutate Page state.
 
 ## Evidence ledger
 
 ### Observations
 
 - Repository Collaboration defines typed User/Organization ownership, Resource containment, and stable Repository identity.
-- Access Authority defines `resource.create`, `resource.view`, and `resource.update` Capabilities.
+- Access Authority defines GitHub-derived `read | triage | write | maintain | admin` Repository Roles.
 - PostgreSQL stores one `page` Resource kind and records accepted Page facts.
-- The prior Resources workspace advertised speculative Resource kinds without a real read or command model and has been removed.
-- Current authority combines personal-owner governance, Organization owner/admin governance, and direct User Grants before Capability evaluation.
+- Current authority combines personal-owner governance, Organization owner/admin governance, and Direct User Grants before Capability evaluation.
+- GitHub's private Repository Wiki editing boundary is Write-or-greater; the target's Page write boundary follows that surviving no-code semantic.
 
 ### Constraints
 
 - Every Page belongs to exactly one Repository.
 - Actor identity, Principal authority, UI Context, Repository ownership, and Page state remain distinct.
-- Application commands make explicit Domain authorization decisions; RLS remains an independent enforcement boundary.
-- Page state and required Activity Event evidence commit atomically.
-- Domain and Application remain independent of Supabase Rows, clients, generated types, and Postgres syntax.
+- Application commands make explicit `page.create` / `page.update` authorization decisions; RLS remains independent enforcement.
+- Page state and required Activity Evidence commit atomically.
+- Domain/Application remain independent of Supabase Rows, clients, generated database types, and PostgreSQL syntax.
 - Page optimistic-concurrency evidence is server-managed and cannot be assigned directly by authenticated clients.
 - Page deletion, archive, restore, move, copy, sharing, comments, realtime editing, and rich blocks are not accepted by this slice.
-- An unaccepted Page lifecycle operation is absent from current Capability vocabulary rather than carried as an unusable permission.
+- An unaccepted Page lifecycle operation is absent from current Capability vocabulary.
 
 ### Assumptions
 
 - A title and plain-text body are sufficient to discriminate the first useful Page lifecycle.
-- One exact Page content shape in the existing Resource row is sufficient while Page is the only implemented Resource kind. Product acceptance of Issue and Discussion does not authorize their persistence through the Page envelope.
+- One exact Page content shape in the existing Resource row is sufficient while Page is the only implemented generic Resource-envelope kind.
 - The prior `updated_at` value is sufficient optimistic concurrency evidence for the current single-row transition when only meaningful state changes advance it.
-- Personal-owner governance, Organization owner/admin governance, and direct User authority are sufficient for this slice.
+- Write-or-greater Page mutation remains sufficient until a real Page-specific moderation or review workflow proves otherwise.
 
 ### Unknowns
 
 - Rich block structure, attachments, comments, search, and simultaneous editing.
-- Whether a second Resource kind can share the Resource envelope without subtype rules leaking into generic code.
 - Whether Page needs a dedicated table for size, indexing, query, or lifecycle behavior.
 - Whether numeric versions, command identifiers, or idempotency keys must replace timestamp evidence.
 - Resource archive, retention, restore, redaction, and lawful deletion semantics.
 
 ### Value choices
 
-- Prefer one complete vertical slice over several speculative Resource kinds.
-- Prefer an exact content shape over an opaque generic JSON bucket.
-- Prefer explicit Capability checks over Role-name checks in Application code.
+- Prefer one complete Page lifecycle over speculative knowledge features.
+- Prefer an exact content shape over opaque generic JSON.
+- Prefer explicit Page Capabilities over generic Resource mutation permissions.
 - Prefer actor-attributed immutable facts over inferring history from current state.
 - Prefer no-op semantic stability: no state change means no version change and no historical fact.
-- Prefer reversible persistence until a second subtype supplies comparative evidence.
 
 ## Boundary and owner
 
-This contract owns:
+This contract owns Page title/body invariants, Page create/update transitions, optimistic concurrency evidence, Page-to-Repository containment, Page transition fact meaning, and Page read projections.
 
-- Page title and body invariants;
-- Page create and update transitions;
-- optimistic concurrency evidence;
-- Page-to-Repository containment;
-- Page transition fact meaning; and
-- Page read projections used by Repository presentation.
-
-This contract does not own:
-
-- Repository identity, ownership, visibility, or lifecycle;
-- authentication credential lifecycle;
-- Principal membership, Grants, Role bundles, or delegation;
-- generic document/plugin runtimes;
-- Activity-feed presentation beyond Page event meaning; or
-- Supabase, PostgreSQL, Next.js, and UI mechanics.
+It does not own Repository identity/ownership/visibility/lifecycle, authentication, Grants/Role bundles, other Artifact subtypes, generic document/plugin runtimes, feed presentation, or provider/framework mechanics.
 
 ## Vocabulary
 
 | Term | Meaning |
 | --- | --- |
-| Page | Repository-scoped Resource whose accepted content is a title and plain-text body |
+| Page | Repository-scoped knowledge Resource whose accepted content is a title and plain-text body |
 | Page ID | Stable Resource identity |
 | Page content | Exact object containing one string field named `body` |
 | Page draft | Validated state required to create a blank Page |
 | Page update | Validated title/body transition plus expected prior update timestamp |
-| Concurrency evidence | Server-managed `updated_at` value identifying the most recently accepted meaningful Page state |
-| Changed state | Update rejected because Page state or effective authority no longer matches the command evidence |
+| Concurrency evidence | Server-managed `updated_at` identifying the most recently accepted meaningful Page state |
+| Changed state | Update rejected because Page state no longer matches command evidence |
 | Page fact | Immutable `resource.created` or `resource.updated` Activity Event caused by an accepted transition |
-
-## Entities, relationships, and derived concepts
-
-```text
-Repository 1 ── contains ── * Page
-Actor      ── performs ────> Page transition
-Page transition ── emits ──> Activity Event
-```
-
-Page uses the shared Resource identity and containment envelope. It never creates a second ownership or authorization boundary.
-
-Current content is deliberately exact:
-
-```json
-{
-  "body": "plain text"
-}
-```
-
-Additional keys are rejected so the first slice cannot silently become a generic `type + json` runtime.
 
 ## States and transitions
 
@@ -116,12 +102,12 @@ Absent
 
 Active Page
   ├── UpdatePage (meaningful change) ──> Active updated Page + new concurrency evidence
-  └── UpdatePage (no-op) ──────────────> same Active Page + same concurrency evidence
+  └── UpdatePage (no-op) ──────────────> same Page + same concurrency evidence
 ```
 
-Create requires an authenticated Actor, accessible Repository, effective Role containing `resource.create`, valid title, and creator attribution equal to the Actor.
+Create requires authenticated Actor, accessible Repository, `page.create`, valid title, and creator attribution equal to Actor.
 
-Update requires an authenticated Actor, accessible Repository, effective Role containing `resource.update`, valid Page identity/title/body, matching expected `updated_at`, and Page identity scoped to the same Repository.
+Update requires authenticated Actor, accessible Repository, `page.update`, valid Page identity/title/body, matching expected `updated_at`, and Page identity scoped to the same Repository.
 
 No delete, archive, restore, move, copy, publish, sharing, or other lifecycle transition is accepted.
 
@@ -129,20 +115,21 @@ No delete, archive, restore, move, copy, publish, sharing, or other lifecycle tr
 
 1. Every Page belongs to exactly one Repository.
 2. Page ID and Repository ID, not route labels or selected Context, determine the authorization target.
-3. Page title contains 1 to 240 non-whitespace characters after trimming; a whitespace-only title is invalid.
-4. Page content is exactly one object with one string field named `body`.
-5. Create and update require their explicit Repository Capabilities.
-6. Personal-owner governance, Organization owner/admin governance, and direct Repository Grants combine through Access Authority before Capability evaluation; ordinary Organization Membership contributes no Repository Role.
-7. Application authorization and RLS agree; either being more permissive is a defect.
-8. Creator attribution equals the authenticated Actor.
-9. `updated_at` is server-managed concurrency evidence and cannot be directly assigned by an authenticated client.
-10. Stale optimistic concurrency evidence cannot overwrite newer state.
-11. A meaningful title/content change advances `updated_at` and its required fact atomically.
-12. A no-op update advances neither `updated_at` nor `resource.updated`.
-13. Activity facts do not copy Page body content.
-14. Page deletion is not an accepted operation and therefore has no current Capability, UI command, table DELETE privilege, or RLS delete policy.
+3. Page title contains 1 to 240 non-whitespace characters after trimming.
+4. Page content is exactly one object with one string `body` field.
+5. Create requires `page.create`; update requires `page.update`.
+6. Write, Maintain, and Admin carry current Page mutation authority; Read and Triage do not.
+7. Personal-owner governance, Organization owner/admin governance, and Direct Repository Grants resolve before Capability evaluation; ordinary Organization Membership contributes no Repository Role.
+8. Application authorization and RLS agree; either being more permissive is a defect.
+9. Creator attribution equals the authenticated Actor.
+10. `updated_at` is server-managed concurrency Evidence and cannot be directly assigned by authenticated client.
+11. Stale optimistic concurrency Evidence cannot overwrite newer state.
+12. Meaningful title/content change advances `updated_at` and required fact atomically.
+13. No-op update advances neither `updated_at` nor `resource.updated`.
+14. Activity facts do not copy Page body content.
+15. Page deletion is not accepted and therefore has no Capability, UI command, table DELETE privilege, or RLS delete policy.
 
-## Historical evidence
+## Historical Evidence
 
 Accepted immutable facts:
 
@@ -151,62 +138,47 @@ Accepted immutable facts:
 
 Page body is excluded from event payloads to avoid duplicating potentially sensitive content into historical projections.
 
-The Activity surface is a projection of facts. It does not own Page state or authorization. Raw historical Activity requires authenticated Repository read authority; public Repository visibility does not automatically publish raw evidence payloads.
-
 ## Dependencies and failure behavior
 
-- **Identity Provider**: missing Actor fails closed.
-- **Repository Collaboration**: inaccessible Repository creates or changes nothing.
-- **Access Authority**: unresolved or insufficient authority fails before persistence; a concurrent revocation is still rejected by RLS.
-- **Page persistence**: malformed content and whitespace-only titles are rejected by database constraints even if another adapter bypasses Application validation.
-- **Activity recording**: required fact failure aborts the Page transition.
-- **Concurrency**: stale timestamp returns changed state rather than silently overwriting content; direct client timestamp mutation is denied; no-op saves keep the prior evidence.
-- **Delivery**: validates transport input, invokes Application, revalidates projections, and exposes stable errors without direct database access.
+- Missing authenticated Actor fails closed.
+- Inaccessible Repository creates/changes nothing.
+- Insufficient Page Capability fails before persistence; concurrent authority revocation is independently rejected by RLS.
+- Malformed content and whitespace-only titles are rejected by database constraints.
+- Required Activity Evidence failure aborts transition.
+- Stale timestamp returns changed state rather than overwriting; no-op keeps prior Evidence.
+- Delivery validates transport input using the shared PostgreSQL database-ID lexical contract, invokes Application, revalidates projections, and exposes stable errors without direct database access.
 
-## Alternatives and removal test
+## Rejected alternatives
 
-### Keep Repository presentation as a Resource catalog
+### Generic `resource.create` / `resource.update`
 
-This avoids implementation but never proves Repository is a useful collaboration Container.
+Rejected for authorization because Issue and Discussion already prove different no-code permission semantics. Page mutation follows the surviving GitHub Wiki Write boundary directly.
 
-### Implement several Resource kinds together
+### Separate Wiki aggregate
 
-This creates breadth while hiding whether the shared model is valid and predicts speculative fields and switches.
+Rejected while Page already owns durable knowledge content. `/wiki` is presentation vocabulary, not a second Domain identity.
 
 ### Store arbitrary Page JSON
 
-This is initially flexible but creates an unbounded schema before user-defined content behavior is justified.
+Rejected because it creates an unbounded schema before product behavior requires it.
 
-### Add a dedicated Page table immediately
+### Dedicated Page table immediately
 
-This may later be correct, but one single-row subtype does not yet prove an independent storage lifecycle.
-
-### Advance `updated_at` for every SQL UPDATE
-
-This makes a transport-level no-op look like a new Domain version, creating false concurrency conflicts without a matching historical fact.
-
-Removing this contract leaves Repository with ownership, navigation, and authorization but no accepted collaborative work unit.
+Deferred until Page-specific persistence/query/lifecycle requirements prove it necessary.
 
 ## Falsification conditions
 
-Reopen when:
-
-- rich Page behavior cannot be expressed without weakly validated JSON;
-- timestamp concurrency collides or cannot explain conflicts;
-- Page content size/query requirements need independent storage;
-- a second Resource kind forces Page-specific conditionals into generic Repository behavior;
-- Page transitions require multi-row atomic state; or
-- Activity Event semantics cannot meet required audit completeness, privacy, retention, or recovery.
+Reopen when rich Page behavior cannot be expressed safely in current storage; timestamp concurrency becomes insufficient; Page needs multi-row atomic state; or a real GitHub-derived/no-code Page permission requires a distinction not expressible by current Role matrix.
 
 ## Minimum discriminating tests
 
-1. Contributor creates a typed Page; Viewer and outsider cannot.
-2. Personal Owner and Organization owner/admin resolve to Repository admin without fabricated direct Grants; ordinary Organization member does not.
-3. Contributor updates title/body with matching concurrency evidence.
-4. A no-op save preserves the same `updated_at` and emits no update fact.
+1. Write creates and updates a typed Page; Read and Triage cannot.
+2. Maintain/Admin retain Page mutation because their bundles include Write semantics.
+3. Personal Owner and Organization owner/admin resolve to Admin without fabricated Direct Grants; ordinary Organization member does not.
+4. No-op save preserves `updated_at` and emits no update fact.
 5. Stale update changes nothing.
 6. Database rejects malformed content, whitespace-only titles, forged creator attribution, and authenticated mutation of `updated_at`.
 7. Create and meaningful update each emit exactly one actor-attributed fact.
-8. Pages and authorized Activity surfaces render real projections through the canonical Repository route.
-9. Hard navigation to one Page preserves canonical Owner/Repository identity and the correct authentication/authorization result.
-10. Domain, Application, pgTAP, build, and browser checks pass on the exact head.
+8. Pages and authorized Activity render through canonical `/{ownerSlug}/{repositorySlug}/wiki` presentation.
+9. Database stable IDs accepted by PostgreSQL are not rejected by a stricter RFC-version-only Web validator.
+10. Domain, Application, pgTAP, production build, and browser checks pass on the exact head.
