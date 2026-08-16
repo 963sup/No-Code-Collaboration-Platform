@@ -5,6 +5,7 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { z } from 'zod';
 
+import { databaseUuidSchema } from '@/app/_validation/database-id';
 import { createRequestServices } from '@/composition/create-request-services';
 import {
   repositoryPath,
@@ -20,7 +21,7 @@ const slugSchema = z
 
 const createSchema = z.object({
   ownerSlug: slugSchema,
-  repositoryId: z.string().uuid(),
+  repositoryId: databaseUuidSchema,
   repositorySlug: slugSchema,
   title: z.string().trim().min(1).max(240)
 });
@@ -29,8 +30,8 @@ const updateSchema = z.object({
   body: z.string(),
   expectedUpdatedAt: z.string().min(1),
   ownerSlug: slugSchema,
-  pageId: z.string().uuid(),
-  repositoryId: z.string().uuid(),
+  pageId: databaseUuidSchema,
+  repositoryId: databaseUuidSchema,
   repositorySlug: slugSchema,
   title: z.string().trim().min(1).max(240)
 });
