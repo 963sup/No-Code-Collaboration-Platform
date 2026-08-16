@@ -1,15 +1,15 @@
-import {
-  decideRepositoryCapability,
-  type RepositoryCapability
-} from '@no-code-collaboration-platform/domain/access';
+import { decideRepositoryCapability } from '@no-code-collaboration-platform/domain/access';
 import {
   isIssueCloseReason,
   isIssueVersion,
+  issueAuthorMayExecute,
   normalizeIssueTitle,
+  requiredIssueCapability,
   type IssueCommand
 } from '@no-code-collaboration-platform/domain/resource';
 
 import type { IdentityProvider } from '../ports/identity-provider';
+import type { IssueReader } from '../ports/issue-reader';
 import type { IssueCommandPersistenceResult, IssueWriter } from '../ports/issue-writer';
 import type { RepositoryAccessReader } from '../ports/repository-access-reader';
 import type { RepositoryReader } from '../ports/repository-reader';
@@ -25,24 +25,6 @@ export type ExecuteIssueCommandFailureReason =
 export type ExecuteIssueCommandResult =
   | IssueCommandPersistenceResult
   | { readonly ok: false; readonly reason: ExecuteIssueCommandFailureReason };
-
-function requiredCapability(command: IssueCommand): RepositoryCapability {
-  switch (command.type) {
-    case 'create':
-      return 'issue.create';
-    case 'comment':
-      return 'issue.comment';
-    case 'edit':
-      return 'issue.edit';
-    case 'assign':
-    case 'unassign':
-    case 'label':
-    case 'unlabel':
-    case 'close':
-    case 'reopen':
-      return 'issue.manage';
-  }
-}
 
 function normalizeCommand(command: IssueCommand): IssueCommand | null {
   if (!command.repositoryId) return null;
@@ -65,11 +47,16 @@ function normalizeCommand(command: IssueCommand): IssueCommand | null {
   return command;
 }
 
+function needsAuthorState(command: IssueCommand): boolean {
+  return command.type === 'edit' || command.type === 'close' || command.type === 'reopen';
+}
+
 export class ExecuteIssueCommand {
   public constructor(
     private readonly identityProvider: IdentityProvider,
     private readonly repositoryReader: RepositoryReader,
     private readonly repositoryAccessReader: RepositoryAccessReader,
+    private readonly issueReader: IssueReader,
     private readonly issueWriter: IssueWriter
   ) {}
 
@@ -90,10 +77,22 @@ export class ExecuteIssueCommand {
       repositoryId: repository.id
     });
     const decision = decideRepositoryCapability(
-      { sources, visibility: repository.visibility },
-      requiredCapability(normalized)
+      { actorTrust: 'authenticated', sources, visibility: repository.visibility },
+      requiredIssueCapability(normalized)
     );
-    if (!decision.allowed) return { ok: false, reason: 'forbidden' };
+
+    if (!decision.allowed && needsAuthorState(normalized)) {
+      const issue = await this.issueReader.findAccessibleIssueById({
+        issueId: normalized.issueId,
+        repositoryId: repository.id
+      });
+      if (issue === null) return { ok: false, reason: 'state-changed' };
+      if (!issueAuthorMayExecute(normalized, actor.id, issue.createdBy)) {
+        return { ok: false, reason: 'forbidden' };
+      }
+    } else if (!decision.allowed) {
+      return { ok: false, reason: 'forbidden' };
+    }
 
     return this.issueWriter.executeIssueCommand(normalized);
   }
