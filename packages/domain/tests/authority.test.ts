@@ -3,11 +3,12 @@ import { describe, expect, it } from 'vitest';
 import {
   decideRepositoryCapability,
   effectiveRepositoryRole,
-  explainRepositoryAccess
+  explainRepositoryAccess,
+  repositoryCapabilities
 } from '../src/access';
 
 describe('effective Repository authority', () => {
-  it('maps ownership/governance authority to Repository admin', () => {
+  it('maps ownership/governance authority to Repository Admin', () => {
     expect(
       effectiveRepositoryRole({
         directRole: null,
@@ -25,7 +26,7 @@ describe('effective Repository authority', () => {
     ).toBeNull();
   });
 
-  it('selects the highest direct and governance-derived Repository role', () => {
+  it('selects the highest direct and governance-derived Repository Role', () => {
     expect(
       effectiveRepositoryRole({
         directRole: 'maintain',
@@ -52,14 +53,7 @@ describe('Repository access explanation', () => {
         visibility: 'private'
       })
     ).toEqual({
-      effectiveCapabilities: [
-        'repository.view',
-        'repository.manage',
-        'resource.view',
-        'resource.create',
-        'resource.update',
-        'member.manage'
-      ],
+      effectiveCapabilities: repositoryCapabilities,
       effectiveRole: 'admin',
       sources: [
         { kind: 'direct-grant', role: 'write' },
@@ -96,6 +90,6 @@ describe('Repository access explanation', () => {
     };
 
     expect(decideRepositoryCapability(input, 'repository.view').allowed).toBe(true);
-    expect(decideRepositoryCapability(input, 'resource.update').allowed).toBe(false);
+    expect(decideRepositoryCapability(input, 'page.update').allowed).toBe(false);
   });
 });
