@@ -10,11 +10,11 @@ values
   ('00000000-0000-0000-0000-000000000101', 'owner-one@example.com', '{}'::jsonb),
   ('00000000-0000-0000-0000-000000000102', 'owner-two@example.com', '{}'::jsonb),
   ('00000000-0000-0000-0000-000000000103', 'organization-admin@example.com', '{}'::jsonb),
-  ('00000000-0000-0000-0000-000000000104', 'repository-manager@example.com', '{}'::jsonb),
-  ('00000000-0000-0000-0000-000000000105', 'repository-viewer@example.com', '{}'::jsonb),
+  ('00000000-0000-0000-0000-000000000104', 'repository-maintain@example.com', '{}'::jsonb),
+  ('00000000-0000-0000-0000-000000000105', 'repository-read@example.com', '{}'::jsonb),
   ('00000000-0000-0000-0000-000000000106', 'ordinary-member@example.com', '{}'::jsonb),
-  ('00000000-0000-0000-0000-000000000107', 'contributor-target@example.com', '{}'::jsonb),
-  ('00000000-0000-0000-0000-000000000108', 'viewer-target@example.com', '{}'::jsonb),
+  ('00000000-0000-0000-0000-000000000107', 'write-target@example.com', '{}'::jsonb),
+  ('00000000-0000-0000-0000-000000000108', 'read-target@example.com', '{}'::jsonb),
   ('00000000-0000-0000-0000-000000000109', 'admin-target@example.com', '{}'::jsonb),
   ('00000000-0000-0000-0000-000000000110', 'forged-target@example.com', '{}'::jsonb);
 
@@ -224,17 +224,18 @@ select throws_ok(
   $$,
   '42501',
   'new row violates row-level security policy for table "repository_user_grants"',
-  'raw Data API cannot bypass the Repository Grant command boundary'
+  'Maintain cannot bypass the Direct Grant command through raw INSERT'
 );
 
-with changed as (
-  update public.repository_user_grants
-  set role = 'admin'
-  where repository_id = '20000000-0000-0000-0000-000000000101'
-    and user_id = '00000000-0000-0000-0000-000000000104'
-  returning 1
-)
-select is((select count(*)::integer from changed), 0, 'repository manager cannot promote its own manager grant');
+select is(
+  (
+    select count(*)::integer
+    from public.repository_user_grants
+    where repository_id = '20000000-0000-0000-0000-000000000101'
+  ),
+  0,
+  'Maintain cannot enumerate Direct Repository Grant management rows'
+);
 
 select is(
   public.execute_repository_grant_command(
@@ -244,7 +245,7 @@ select is(
     'admin'
   ),
   'forbidden',
-  'repository manager cannot create an admin grant through the accepted command'
+  'Maintain cannot create an Admin Direct Grant'
 );
 
 with changed as (
@@ -253,7 +254,7 @@ with changed as (
     and user_id = '00000000-0000-0000-0000-000000000102'
   returning 1
 )
-select is((select count(*)::integer from changed), 0, 'repository manager cannot delete an admin grant');
+select is((select count(*)::integer from changed), 0, 'Maintain cannot delete an Admin Direct Grant');
 
 select is(
   public.execute_repository_grant_command(
@@ -262,8 +263,8 @@ select is(
     null,
     'write'
   ),
-  'applied',
-  'repository manager can create a contributor grant through the accepted command'
+  'forbidden',
+  'Maintain cannot create a Write Direct Grant'
 );
 
 select is(
@@ -273,8 +274,8 @@ select is(
     null,
     'read'
   ),
-  'applied',
-  'repository manager can create a viewer grant through the accepted command'
+  'forbidden',
+  'Maintain cannot create a Read Direct Grant'
 );
 
 select throws_ok(
@@ -289,7 +290,7 @@ select throws_ok(
   $$,
   '42501',
   'new row violates row-level security policy for table "repository_user_grants"',
-  'raw Repository Grant mutation cannot forge attribution or skip Activity Evidence'
+  'raw Direct Grant mutation cannot forge attribution or skip Activity Evidence'
 );
 
 select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-000000000101', true);
@@ -302,7 +303,7 @@ select is(
     'admin'
   ),
   'applied',
-  'repository admin can create an admin grant through the accepted command'
+  'Repository Admin can create an Admin Direct Grant'
 );
 
 select * from finish();
