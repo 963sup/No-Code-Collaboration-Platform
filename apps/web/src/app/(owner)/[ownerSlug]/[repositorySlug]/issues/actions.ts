@@ -5,6 +5,7 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { z } from 'zod';
 
+import { databaseUuidSchema } from '@/app/_validation/database-id';
 import { createRequestServices } from '@/composition/create-request-services';
 import {
   repositoryIssuePath,
@@ -23,12 +24,12 @@ const createIssueSchema = z.object({
 });
 
 const existingIssueSchema = z.object({
-  assigneeId: z.string().uuid().optional(),
+  assigneeId: databaseUuidSchema.optional(),
   body: z.string().optional(),
   closeReason: z.enum(['completed', 'cancelled']).optional(),
   expectedVersion: z.coerce.number().int().positive(),
   intent: z.enum(['assign', 'close', 'comment', 'edit', 'label', 'reopen', 'unassign', 'unlabel']),
-  labelId: z.string().uuid().optional(),
+  labelId: databaseUuidSchema.optional(),
   title: z.string().trim().min(1).max(240).optional()
 });
 
