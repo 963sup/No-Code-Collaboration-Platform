@@ -206,8 +206,11 @@ on public.repository_user_grants
 for insert
 to authenticated
 with check (
-  (select auth.uid()) = granted_by
+  (select pg_catalog.current_setting('app.repository_grant_command', true)) = 'mutate'
+  and (select auth.uid()) = granted_by
+  and user_id <> (select auth.uid())
   and (select private.can_manage_repository_grant(repository_id, role))
+  and (select private.is_repository_grant_role_allowed(repository_id, role))
 );
 
 create policy repository_user_grants_update_delegated
@@ -215,10 +218,15 @@ on public.repository_user_grants
 for update
 to authenticated
 using (
-  (select private.can_manage_repository_grant(repository_id, role))
+  (select pg_catalog.current_setting('app.repository_grant_command', true)) = 'mutate'
+  and user_id <> (select auth.uid())
+  and (select private.can_manage_repository_grant(repository_id, role))
 )
 with check (
-  (select private.can_manage_repository_grant(repository_id, role))
+  (select pg_catalog.current_setting('app.repository_grant_command', true)) = 'mutate'
+  and user_id <> (select auth.uid())
+  and (select private.can_manage_repository_grant(repository_id, role))
+  and (select private.is_repository_grant_role_allowed(repository_id, role))
 );
 
 create policy repository_user_grants_delete_delegated
@@ -226,7 +234,9 @@ on public.repository_user_grants
 for delete
 to authenticated
 using (
-  (select private.can_manage_repository_grant(repository_id, role))
+  (select pg_catalog.current_setting('app.repository_grant_command', true)) = 'mutate'
+  and user_id <> (select auth.uid())
+  and (select private.can_manage_repository_grant(repository_id, role))
 );
 
 create policy resources_select_visible
@@ -287,20 +297,32 @@ to authenticated
 using (
   case (select pg_catalog.current_setting('app.issue_command', true))
     when 'comment' then (select private.has_repository_capability(repository_id, 'issue.comment'))
-    when 'edit' then (select private.has_repository_capability(repository_id, 'issue.edit'))
+    when 'edit' then (
+      (select private.has_repository_capability(repository_id, 'issue.edit'))
+      or created_by = (select auth.uid())
+    )
     when 'assign' then (select private.has_repository_capability(repository_id, 'issue.manage'))
     when 'label' then (select private.has_repository_capability(repository_id, 'issue.manage'))
-    when 'transition' then (select private.has_repository_capability(repository_id, 'issue.manage'))
+    when 'transition' then (
+      (select private.has_repository_capability(repository_id, 'issue.manage'))
+      or created_by = (select auth.uid())
+    )
     else false
   end
 )
 with check (
   case (select pg_catalog.current_setting('app.issue_command', true))
     when 'comment' then (select private.has_repository_capability(repository_id, 'issue.comment'))
-    when 'edit' then (select private.has_repository_capability(repository_id, 'issue.edit'))
+    when 'edit' then (
+      (select private.has_repository_capability(repository_id, 'issue.edit'))
+      or created_by = (select auth.uid())
+    )
     when 'assign' then (select private.has_repository_capability(repository_id, 'issue.manage'))
     when 'label' then (select private.has_repository_capability(repository_id, 'issue.manage'))
-    when 'transition' then (select private.has_repository_capability(repository_id, 'issue.manage'))
+    when 'transition' then (
+      (select private.has_repository_capability(repository_id, 'issue.manage'))
+      or created_by = (select auth.uid())
+    )
     else false
   end
 );
@@ -508,11 +530,11 @@ with check (
   and (select private.user_can_view_repository(recipient_id, repository_id))
 );
 
--- Activity Event payload is historical Evidence, not part of the anonymous public-read baseline.
--- A future public Activity projection requires its own privacy/redaction contract instead of
--- exposing the raw evidence envelope through public Repository visibility.
+-- Activity Event payload is historical Evidence, not part of the anonymous/authenticated public
+-- participation baseline. Public Repository visibility never exposes raw evidence without an
+-- independently assigned/derived Repository Role.
 create policy activity_events_select_authorized_viewer
 on public.activity_events
 for select
 to authenticated
-using ((select private.has_repository_capability(repository_id, 'repository.view')));
+using ((select private.current_repository_role(repository_id)) is not null);
