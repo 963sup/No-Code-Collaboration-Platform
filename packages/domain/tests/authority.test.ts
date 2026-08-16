@@ -46,6 +46,7 @@ describe('Repository access explanation', () => {
   it('preserves distinct direct and governance authority sources', () => {
     expect(
       explainRepositoryAccess({
+        actorTrust: 'authenticated',
         sources: {
           directRole: 'write',
           governanceRole: 'admin'
@@ -53,6 +54,7 @@ describe('Repository access explanation', () => {
         visibility: 'private'
       })
     ).toEqual({
+      actorTrust: 'authenticated',
       effectiveCapabilities: repositoryCapabilities,
       effectiveRole: 'admin',
       sources: [
@@ -63,9 +65,10 @@ describe('Repository access explanation', () => {
     });
   });
 
-  it('explains public visibility as read baseline without fabricating a Role', () => {
+  it('keeps anonymous public access read-only without fabricating a Role', () => {
     expect(
       explainRepositoryAccess({
+        actorTrust: 'anonymous',
         sources: {
           directRole: null,
           governanceRole: null
@@ -73,6 +76,7 @@ describe('Repository access explanation', () => {
         visibility: 'public'
       })
     ).toEqual({
+      actorTrust: 'anonymous',
       effectiveCapabilities: ['repository.view', 'resource.view'],
       effectiveRole: null,
       sources: [{ kind: 'public-visibility' }],
@@ -80,16 +84,46 @@ describe('Repository access explanation', () => {
     });
   });
 
-  it('uses the same explanation inputs for capability allow/deny', () => {
-    const input = {
-      sources: {
-        directRole: null,
-        governanceRole: null
-      },
-      visibility: 'public' as const
-    };
+  it('adds GitHub-style authenticated Issue and Discussion participation on a public Repository', () => {
+    const explanation = explainRepositoryAccess({
+      actorTrust: 'authenticated',
+      sources: { directRole: null, governanceRole: null },
+      visibility: 'public'
+    });
 
-    expect(decideRepositoryCapability(input, 'repository.view').allowed).toBe(true);
-    expect(decideRepositoryCapability(input, 'page.update').allowed).toBe(false);
+    expect(explanation.effectiveRole).toBeNull();
+    expect(explanation.effectiveCapabilities).toEqual([
+      'repository.view',
+      'resource.view',
+      'issue.create',
+      'issue.comment',
+      'discussion.create',
+      'discussion.comment'
+    ]);
+    expect(explanation.effectiveCapabilities).not.toContain('page.update');
+  });
+
+  it('allows a public Repository collaborator to edit Wiki/Page while private Read stays read-only', () => {
+    expect(
+      decideRepositoryCapability(
+        {
+          actorTrust: 'authenticated',
+          sources: { directRole: 'read', governanceRole: null },
+          visibility: 'public'
+        },
+        'page.update'
+      ).allowed
+    ).toBe(true);
+
+    expect(
+      decideRepositoryCapability(
+        {
+          actorTrust: 'authenticated',
+          sources: { directRole: 'read', governanceRole: null },
+          visibility: 'private'
+        },
+        'page.update'
+      ).allowed
+    ).toBe(false);
   });
 });
