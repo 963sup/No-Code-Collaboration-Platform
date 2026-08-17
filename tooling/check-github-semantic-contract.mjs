@@ -3,7 +3,6 @@ import { resolve } from 'node:path';
 
 const root = process.cwd();
 const failures = [];
-
 const read = (path) => {
   try {
     return readFileSync(resolve(root, path), 'utf8');
@@ -12,75 +11,53 @@ const read = (path) => {
     return '';
   }
 };
-
 const requireText = (path, content, expected, message) => {
-  if (!content.includes(expected)) {
-    failures.push(`${path}: ${message}`);
-  }
+  if (!content.includes(expected)) failures.push(`${path}: ${message}`);
 };
-
 const requireMatch = (path, content, pattern, message) => {
-  if (!pattern.test(content)) {
-    failures.push(`${path}: ${message}`);
-  }
+  if (!pattern.test(content)) failures.push(`${path}: ${message}`);
 };
-
 const forbidMatch = (path, content, pattern, message) => {
-  if (pattern.test(content)) {
-    failures.push(`${path}: ${message}`);
-  }
+  if (pattern.test(content)) failures.push(`${path}: ${message}`);
 };
-
 const section = (content, heading) => {
   const marker = `### \`${heading}\``;
   const start = content.indexOf(marker);
   if (start < 0) return '';
-  const next = content.indexOf('\n### `, start + marker.length);
+  const next = content.indexOf('\n### `', start + marker.length);
   return next < 0 ? content.slice(start) : content.slice(start, next);
 };
-
-const requiredAnswer = (content) => {
-  return content.match(/\*\*Required answer:\*\*\s*`([^`]+)`/)?.[1] ?? '';
-};
+const answer = (content) => content.match(/\*\*Required answer:\*\*\s*`([^`]+)`/)?.[1] ?? '';
 
 const skillRoot = '.agents/skills/github-semantics-first-principles';
 const retiredSkillRoot = '.agents/skills/github-semantic-reverse';
 const auditReportsDir = `${skillRoot}/audit-reports`;
-
-let latestAuditName = '';
-if (existsSync(resolve(root, auditReportsDir))) {
-  latestAuditName =
-    readdirSync(resolve(root, auditReportsDir))
+const latestAuditName = existsSync(resolve(root, auditReportsDir))
+  ? (readdirSync(resolve(root, auditReportsDir))
       .filter((name) => /^\d{4}-\d{2}-\d{2}\.md$/u.test(name))
       .toSorted()
-      .at(-1) ?? '';
-}
-if (!latestAuditName) {
-  failures.push(`${auditReportsDir}: no dated audit report found`);
-}
+      .at(-1) ?? '')
+  : '';
+if (!latestAuditName) failures.push(`${auditReportsDir}: no dated audit report found`);
 
-const latestAuditPath =
-  `${auditReportsDir}/${latestAuditName || '<missing>'}`;
 const files = {
   skill: `${skillRoot}/SKILL.md`,
   snapshot: `${skillRoot}/REFERENCE_SNAPSHOT.md`,
   glossary: `${skillRoot}/GLOSSARY.md`,
   matrix: `${skillRoot}/BENCHMARK_CONCEPT_MATRIX.md`,
   executableAudit: `${skillRoot}/EXECUTABLE_SEMANTIC_AUDIT.md`,
-  report: latestAuditPath,
-  resolution:
-    '.codex/tasks/collaboration-relationship-kernel-repair/EXECUTION_RESOLUTION.md',
+  report: `${auditReportsDir}/${latestAuditName || '<missing>'}`,
+  resolution: '.codex/tasks/collaboration-relationship-kernel-repair/EXECUTION_RESOLUTION.md',
   product: 'docs/PRODUCT.md',
   ontology: 'docs/ONTOLOGY.md',
+  architecture: 'docs/architecture/README.md',
   adr013: 'docs/architecture/ADR-013-core-no-code-data-semantic-envelope.md',
   adr014: 'docs/architecture/ADR-014-current-state-collaboration-kernel.md',
   accessDomain: 'docs/domains/access-authority.md',
   structuredChange: 'docs/domains/structured-data-change.md',
   dataMovement: 'docs/domains/data-exchange.md',
-  accessPage:
-    'apps/web/src/app/(owner)/[ownerSlug]/[repositorySlug]/settings/access/page.tsx',
-  issueDetail:
-    'apps/web/src/app/(owner)/[ownerSlug]/[repositorySlug]/_components/issue-detail.tsx'
+  accessPage: 'apps/web/src/app/(owner)/[ownerSlug]/[repositorySlug]/settings/access/page.tsx',
+  issueDetail: 'apps/web/src/app/(owner)/[ownerSlug]/[repositorySlug]/_components/issue-detail.tsx'
 };
 
 if (existsSync(resolve(root, retiredSkillRoot, 'SKILL.md'))) {
@@ -88,13 +65,10 @@ if (existsSync(resolve(root, retiredSkillRoot, 'SKILL.md'))) {
     `${retiredSkillRoot}/SKILL.md: overlapping retired semantic Skill remains discoverable`
   );
 }
-
 for (const path of Object.values(files)) {
-  if (!path.includes('<missing>') && !existsSync(resolve(root, path))) {
+  if (!path.includes('<missing>') && !existsSync(resolve(root, path)))
     failures.push(`${path}: required semantic contract is missing`);
-  }
 }
-
 const contents = Object.fromEntries(
   Object.entries(files).map(([key, path]) => [
     key,
@@ -149,11 +123,10 @@ for (const concept of [
   'Projects',
   'Issues'
 ]) {
-  const escaped = concept.replace('/', '\\/');
   requireMatch(
     files.matrix,
     contents.matrix,
-    new RegExp(`\\| ${escaped} \\|`),
+    new RegExp(`\\| ${concept.replace('/', '\\/')} \\|`),
     `benchmark matrix row is missing: ${concept}`
   );
 }
@@ -182,32 +155,23 @@ for (const concept of excluded) {
     '**Required answer:**',
     '**Forbidden answer shape:**'
   ]) {
-    requireText(
-      files.glossary,
-      conceptSection,
-      label,
-      `${concept} is missing ${label}`
-    );
+    requireText(files.glossary, conceptSection, label, `${concept} is missing ${label}`);
   }
-  if (!requiredAnswer(conceptSection)) {
-    failures.push(
-      `${files.glossary}: ${concept} required answer must be one backticked sentence`
-    );
+  if (!answer(conceptSection)) {
+    failures.push(`${files.glossary}: ${concept} required answer must be one backticked sentence`);
   }
 }
 
-const commitAnswer = requiredAnswer(section(contents.glossary, 'commit'));
-const expectedCommitAnswer =
-  'The Page Current State now contains the accepted title and body at State Revision 12.';
-if (commitAnswer !== expectedCommitAnswer) {
-  failures.push(
-    `${files.glossary}: commit answer is not the state-only criterion`
-  );
+const commitSection = section(contents.glossary, 'commit');
+const commitAnswer = answer(commitSection);
+if (
+  commitAnswer !==
+  'The Page Current State now contains the accepted title and body at State Revision 12.'
+) {
+  failures.push(`${files.glossary}: commit answer is not the state-only criterion`);
 }
 if (/Activity Event|who|when|changed|history|snapshot|author|message/i.test(commitAnswer)) {
-  failures.push(
-    `${files.glossary}: commit answer contains historical narration`
-  );
+  failures.push(`${files.glossary}: commit answer contains historical narration`);
 }
 requireText(
   files.glossary,
@@ -216,25 +180,16 @@ requireText(
   'current implementation naming boundary is missing'
 );
 
-requireMatch(
-  files.product,
-  contents.product,
-  /Repository = No-Code Collaboration Container/i,
-  'Repository axiom is missing'
-);
-requireMatch(
-  files.product,
-  contents.product,
-  /^## Current-state collaboration kernel$/m,
-  'current-state kernel is missing'
-);
-requireMatch(
-  files.product,
-  contents.product,
-  /No source-control-shaped Product primitive may be recovered through renaming/i,
-  'renaming rejection is missing'
-);
-
+for (const [pattern, message] of [
+  [/Repository = No-Code Collaboration Container/i, 'Repository axiom is missing'],
+  [/^## Current-state collaboration kernel$/m, 'current-state kernel is missing'],
+  [
+    /No source-control-shaped Product primitive may be recovered through renaming/i,
+    'renaming rejection is missing'
+  ]
+]) {
+  requireMatch(files.product, contents.product, pattern, message);
+}
 for (const [pattern, message] of [
   [/^## 15\. State Transition/m, 'State Transition ontology is missing'],
   [/^## 16\. Activity Event/m, 'Activity Event ontology is missing'],
@@ -242,7 +197,6 @@ for (const [pattern, message] of [
 ]) {
   requireMatch(files.ontology, contents.ontology, pattern, message);
 }
-
 requireMatch(
   files.adr013,
   contents.adr013,
@@ -328,6 +282,7 @@ for (const expected of [
   'Current-state revision boundary',
   'Product benchmark executable matrix',
   'Direct User Grant is causal',
+  'Browser result — **29 passed**',
   'authorization/Evidence boundary'
 ]) {
   requireText(
@@ -338,12 +293,7 @@ for (const expected of [
   );
 }
 
-for (const category of [
-  '## newly_passed',
-  '## maintained_passed',
-  '## revoked',
-  '## not_passed'
-]) {
+for (const category of ['## newly_passed', '## maintained_passed', '## revoked', '## not_passed']) {
   requireText(
     files.report,
     contents.report,
@@ -364,9 +314,7 @@ for (const expected of [
   );
 }
 
-const auditRound = Number(
-  contents.report.match(/Audit round: \*\*(\d+)/)?.[1] ?? 0
-);
+const auditRound = Number(contents.report.match(/Audit round: \*\*(\d+)/)?.[1] ?? 0);
 if (!Number.isInteger(auditRound) || auditRound < 1) {
   failures.push(`${files.report}: audit round is missing or invalid`);
 }
@@ -394,24 +342,21 @@ for (const path of [
   `${inputRoot}/collaboration-relationship-kernel-repair-v2.toml`,
   `${inputRoot}/collaboration-relationship-kernel-repair-v2.md`
 ]) {
-  if (!existsSync(resolve(root, path))) {
-    failures.push(`${path}: preserved task input is missing`);
-  }
+  if (!existsSync(resolve(root, path))) failures.push(`${path}: preserved task input is missing`);
 }
 for (const path of [
   '.codex/agents/collaboration-relationship-kernel-repair.toml',
   '.codex/agents/collaboration-relationship-kernel-repair-v2.toml',
   '.codex/agents/collaboration-relationship-kernel-repair-v2.md'
 ]) {
-  if (existsSync(resolve(root, path))) {
+  if (existsSync(resolve(root, path)))
     failures.push(`${path}: task input remains in executable agent discovery`);
-  }
 }
 
 const result = {
   ok: failures.length === 0,
   auditRound,
-  auditReport: latestAuditPath,
+  auditReport: files.report,
   converged,
   excludedConcepts: excluded.length,
   benchmarkConcepts: 8,
