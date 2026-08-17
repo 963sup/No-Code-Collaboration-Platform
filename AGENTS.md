@@ -37,7 +37,7 @@ Use `docs/README.md` as the question-specific truth router. Current implementati
 
 Preserve task/session context and established decisions. Ground them against the current task, applicable `AGENTS.md` chain, `docs/README.md`, the narrowest current contract, then executable evidence. This does not require discarding context or simulating a fresh start. Prior conversation, summaries, project memory, and history are evidence, not current truth by themselves.
 
-Select skills by narrowest ownership. Explicit user-named skills win. `github-semantic-reverse` owns GitHub-derived Product decisions and repository-wide GitHub semantic repair; `first-principles` owns broader or non-GitHub decisions. Skills route work and never replace current repository contracts. Do not create overlapping Skills for the same decision merely to obtain consensus.
+Select skills by narrowest ownership. Explicit user-named skills win. `github-semantics-first-principles` owns GitHub-derived Product decisions and repository-wide GitHub semantic repair; `first-principles` owns broader or non-GitHub decisions. Skills route work and never replace current repository contracts. Do not create overlapping Skills for the same decision merely to obtain consensus.
 
 When required context is missing or authorities disagree, do not invent the missing architecture. Resolve the nearest current contract and executable evidence or register the mismatch.
 

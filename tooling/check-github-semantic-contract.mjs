@@ -1,4 +1,4 @@
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { resolve } from 'node:path';
 
 const root = process.cwd();
@@ -29,14 +29,26 @@ const section = (content, heading) => {
 };
 const answer = (content) => content.match(/\*\*Required answer:\*\*\s*`([^`]+)`/)?.[1] ?? '';
 
-const skillRoot = '.agents/skills/github-semantic-reverse';
+const skillRoot = '.agents/skills/github-semantics-first-principles';
+const retiredSkillRoot = '.agents/skills/github-semantic-reverse';
+const auditReportsDir = `${skillRoot}/audit-reports`;
+let latestAuditName = '';
+if (existsSync(resolve(root, auditReportsDir))) {
+  latestAuditName = readdirSync(resolve(root, auditReportsDir))
+    .filter((name) => /^\d{4}-\d{2}-\d{2}\.md$/u.test(name))
+    .toSorted()
+    .at(-1) ?? '';
+}
+if (!latestAuditName) failures.push(`${auditReportsDir}: no dated audit report found`);
+const latestAuditPath = `${auditReportsDir}/${latestAuditName || '<missing>'}`;
+
 const files = {
   skill: `${skillRoot}/SKILL.md`,
   snapshot: `${skillRoot}/REFERENCE_SNAPSHOT.md`,
   glossary: `${skillRoot}/GLOSSARY.md`,
   matrix: `${skillRoot}/BENCHMARK_CONCEPT_MATRIX.md`,
   executableAudit: `${skillRoot}/EXECUTABLE_SEMANTIC_AUDIT.md`,
-  report: `${skillRoot}/audit-reports/2026-08-17.md`,
+  report: latestAuditPath,
   resolution: '.codex/tasks/collaboration-relationship-kernel-repair/EXECUTION_RESOLUTION.md',
   product: 'docs/PRODUCT.md',
   ontology: 'docs/ONTOLOGY.md',
@@ -50,11 +62,33 @@ const files = {
   issueDetail: 'apps/web/src/app/(owner)/[ownerSlug]/[repositorySlug]/_components/issue-detail.tsx'
 };
 
-for (const path of Object.values(files)) {
-  if (!existsSync(resolve(root, path)))
-    failures.push(`${path}: required semantic contract is missing`);
+if (existsSync(resolve(root, retiredSkillRoot, 'SKILL.md'))) {
+  failures.push(`${retiredSkillRoot}/SKILL.md: overlapping retired semantic Skill remains discoverable`);
 }
-const contents = Object.fromEntries(Object.entries(files).map(([key, path]) => [key, read(path)]));
+for (const path of Object.values(files)) {
+  if (path.includes('<missing>')) continue;
+  if (!existsSync(resolve(root, path))) failures.push(`${path}: required semantic contract is missing`);
+}
+const contents = Object.fromEntries(
+  Object.entries(files).map(([key, path]) => [key, path.includes('<missing>') ? '' : read(path)])
+);
+
+requireMatch(
+  files.skill,
+  contents.skill,
+  /^name: github-semantics-first-principles$/m,
+  'canonical Skill name is missing'
+);
+for (const expected of [
+  'Repository = No-Code Collaboration Container',
+  'Continuous reverse → implement cycle',
+  'code_and_docs → Linear → Notion',
+  'revoked',
+  'not_passed',
+  'github_semantics_first_principles'
+]) {
+  requireText(files.skill, contents.skill, expected, `continuous semantic workflow is missing: ${expected}`);
+}
 
 for (const expected of [
   '81ade08c26f13325c0cde8a23cd3bfb85bd0778e',
@@ -63,12 +97,7 @@ for (const expected of [
   'must not move during the cycle',
   'enumerates eight names'
 ]) {
-  requireText(
-    files.snapshot,
-    contents.snapshot,
-    expected,
-    `locked snapshot boundary is missing: ${expected}`
-  );
+  requireText(files.snapshot, contents.snapshot, expected, `locked snapshot boundary is missing: ${expected}`);
 }
 
 for (const concept of [
@@ -120,8 +149,7 @@ for (const concept of excluded) {
   }
 }
 
-const commitSection = section(contents.glossary, 'commit');
-const commitAnswer = answer(commitSection);
+const commitAnswer = answer(section(contents.glossary, 'commit'));
 if (
   commitAnswer !==
   'The Page Current State now contains the accepted title and body at State Revision 12.'
@@ -141,10 +169,7 @@ requireText(
 for (const [pattern, message] of [
   [/Repository = No-Code Collaboration Container/i, 'Repository axiom is missing'],
   [/^## Current-state collaboration kernel$/m, 'current-state kernel is missing'],
-  [
-    /No source-control-shaped Product primitive may be recovered through renaming/i,
-    'renaming rejection is missing'
-  ]
+  [/No source-control-shaped Product primitive may be recovered through renaming/i, 'renaming rejection is missing']
 ]) {
   requireMatch(files.product, contents.product, pattern, message);
 }
@@ -155,18 +180,8 @@ for (const [pattern, message] of [
 ]) {
   requireMatch(files.ontology, contents.ontology, pattern, message);
 }
-requireMatch(
-  files.adr013,
-  contents.adr013,
-  /^- Status: Superseded by ADR-014$/m,
-  'ADR-013 must remain superseded'
-);
-requireMatch(
-  files.adr014,
-  contents.adr014,
-  /^- Status: Accepted$/m,
-  'ADR-014 must remain accepted'
-);
+requireMatch(files.adr013, contents.adr013, /^- Status: Superseded by ADR-014$/m, 'ADR-013 must remain superseded');
+requireMatch(files.adr014, contents.adr014, /^- Status: Accepted$/m, 'ADR-014 must remain accepted');
 requireMatch(
   files.structuredChange,
   contents.structuredChange,
@@ -187,12 +202,7 @@ for (const expected of [
   'Collaborator ≠ Direct User Grant',
   'Assignment / mention / participation ≠ authority'
 ]) {
-  requireText(
-    files.accessDomain,
-    contents.accessDomain,
-    expected,
-    `Access Authority boundary is missing: ${expected}`
-  );
+  requireText(files.accessDomain, contents.accessDomain, expected, `Access Authority boundary is missing: ${expected}`);
 }
 forbidMatch(
   files.accessDomain,
@@ -207,12 +217,7 @@ for (const expected of [
   'Grant access',
   "placeholder='user-name'"
 ]) {
-  requireText(
-    files.accessPage,
-    contents.accessPage,
-    expected,
-    `access UI correction is missing: ${expected}`
-  );
+  requireText(files.accessPage, contents.accessPage, expected, `access UI correction is missing: ${expected}`);
 }
 for (const [pattern, message] of [
   [/Direct collaborators/i, 'access UI still labels Grants as collaborators'],
@@ -221,12 +226,7 @@ for (const [pattern, message] of [
 ]) {
   forbidMatch(files.accessPage, contents.accessPage, pattern, message);
 }
-requireText(
-  files.issueDetail,
-  contents.issueDetail,
-  'Opened by {issue.createdBy}',
-  'Issue UI does not attribute the actual creator'
-);
+requireText(files.issueDetail, contents.issueDetail, 'Opened by {issue.createdBy}', 'Issue UI does not attribute the actual creator');
 forbidMatch(
   files.issueDetail,
   contents.issueDetail,
@@ -240,63 +240,35 @@ for (const expected of [
   'Current-state revision boundary',
   'Product benchmark executable matrix',
   'Direct User Grant is causal',
-  'Browser result — **29 passed**',
   'authorization/Evidence boundary'
 ]) {
-  requireText(
-    files.executableAudit,
-    contents.executableAudit,
-    expected,
-    `round-4 executable audit evidence is missing: ${expected}`
-  );
+  requireText(files.executableAudit, contents.executableAudit, expected, `executable semantic evidence is missing: ${expected}`);
 }
 
 for (const category of ['## newly_passed', '## maintained_passed', '## revoked', '## not_passed']) {
-  requireText(
-    files.report,
-    contents.report,
-    category,
-    `round-4 audit category is missing: ${category}`
-  );
+  requireText(files.report, contents.report, category, `latest audit category is missing: ${category}`);
 }
 for (const expected of [
-  'Audit round: **4 — executable convergence**',
-  'Overall status: **passed**',
-  'Verified functional commit: `342284745b71d1428d368af2e1635e8a4cf26110`',
-  'Verification run: `31983106845`',
-  '## revoked\n\nNone.',
-  '## not_passed\n\nNone.',
-  'Full repository verification',
-  'Browser contracts',
-  '29/29',
-  'authorization/Evidence boundary',
-  'Repository code and documentation are the authority'
+  'Locked benchmark: `github/docs@81ade08c26f13325c0cde8a23cd3bfb85bd0778e`',
+  'Authority order: repository code/docs first; Linear and Notion are mirrors only',
+  'Overall status: **'
 ]) {
-  requireText(
-    files.report,
-    contents.report,
-    expected,
-    `round-4 audit evidence is missing: ${expected}`
-  );
+  requireText(files.report, contents.report, expected, `latest audit identity is missing: ${expected}`);
 }
-forbidMatch(
-  files.report,
-  contents.report,
-  /`commit` verification scenario — revoked once/,
-  'round-2 active revocation heading remains in round 4'
-);
+
+const auditRound = Number(contents.report.match(/Audit round: \*\*(\d+)/)?.[1] ?? 0);
+if (!Number.isInteger(auditRound) || auditRound < 1) failures.push(`${files.report}: audit round is missing or invalid`);
+const overallPassed = /Overall status: \*\*passed\*\*/u.test(contents.report);
+const revokedEmpty = /## revoked\s+None\./u.test(contents.report);
+const notPassedEmpty = /## not_passed\s+None\./u.test(contents.report);
+const converged = overallPassed && revokedEmpty && notPassedEmpty;
 
 for (const expected of [
   'existing single owner',
   'Repository code and documentation are authoritative',
   'Linear and Notion are mirrors'
 ]) {
-  requireText(
-    files.resolution,
-    contents.resolution,
-    expected,
-    `execution resolution is missing: ${expected}`
-  );
+  requireText(files.resolution, contents.resolution, expected, `execution resolution is missing: ${expected}`);
 }
 
 const inputRoot = '.codex/tasks/collaboration-relationship-kernel-repair/input';
@@ -312,18 +284,17 @@ for (const path of [
   '.codex/agents/collaboration-relationship-kernel-repair-v2.toml',
   '.codex/agents/collaboration-relationship-kernel-repair-v2.md'
 ]) {
-  if (existsSync(resolve(root, path)))
-    failures.push(`${path}: task input remains in executable agent discovery`);
+  if (existsSync(resolve(root, path))) failures.push(`${path}: task input remains in executable agent discovery`);
 }
 
 const result = {
   ok: failures.length === 0,
-  auditRound: 4,
+  auditRound,
+  auditReport: latestAuditPath,
+  converged,
   excludedConcepts: excluded.length,
   benchmarkConcepts: 8,
   filesChecked: Object.keys(files).length,
-  verifiedCommit: '342284745b71d1428d368af2e1635e8a4cf26110',
-  verificationRun: 31983106845,
   failures
 };
 process.stdout.write(`${JSON.stringify(result)}\n`);

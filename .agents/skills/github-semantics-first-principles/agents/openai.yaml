@@ -1,0 +1,6 @@
+interface:
+  display_name: "GitHub Semantics First Principles"
+  short_description: "Continuously reverse GitHub collaboration semantics into the no-code Repository model."
+  default_prompt: "Use $github-semantics-first-principles to reverse-engineer the underlying GitHub collaboration problem, rebuild the minimum no-code model, implement root-level corrections, verify them, and converge the semantic audit under the locked snapshot and canonical glossary."
+policy:
+  allow_implicit_invocation: true

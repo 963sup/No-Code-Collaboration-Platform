@@ -114,8 +114,7 @@ for (const [name, url, tools] of mcpContracts) {
     [/^default_tools_approval_mode = "auto"$/m, `${name} documentation tools are not automatic`]
   ]);
   for (const tool of tools) {
-    if (!content.includes(`"${tool}"`))
-      failures.push(`${configPath}: ${name} does not allow ${tool}`);
+    if (!content.includes(`"${tool}"`)) failures.push(`${configPath}: ${name} does not allow ${tool}`);
   }
 }
 
@@ -126,10 +125,9 @@ const secretPatterns = [
   /authorization\s*=\s*["']/i
 ];
 for (const pattern of secretPatterns) {
-  if (pattern.test(config))
-    failures.push(
-      `${configPath}: committed MCP configuration contains a secret or project binding`
-    );
+  if (pattern.test(config)) {
+    failures.push(`${configPath}: committed MCP configuration contains a secret or project binding`);
+  }
 }
 
 const hooks = json('.codex/hooks.json');
@@ -142,9 +140,11 @@ const requiredAgents = [
   'architecture-auditor.toml',
   'change-reviewer.toml',
   'dependency-docs-researcher.toml',
+  'github-semantics-first-principles.toml',
   'openai-docs-researcher.toml',
   'supabase-docs-researcher.toml'
 ];
+const workspaceWriteAgents = new Set(['github-semantics-first-principles.toml']);
 const agentFiles = list('.codex/agents')
   .filter((name) => name.endsWith('.toml'))
   .toSorted();
@@ -154,12 +154,13 @@ for (const required of requiredAgents) {
 for (const file of agentFiles) {
   const path = `.codex/agents/${file}`;
   const content = read(path);
+  const expectedSandbox = workspaceWriteAgents.has(file) ? 'workspace-write' : 'read-only';
   check(path, content, [
     [/^name = "[a-z0-9_]+"$/m, 'canonical name is missing'],
     [/^description = ".+"$/m, 'description is missing'],
     [/^model = "gpt-5\.6-(?:terra|luna)"$/m, 'purpose-fit model is not pinned'],
     [/^model_reasoning_effort = "(?:medium|high)"$/m, 'reasoning effort is not bounded'],
-    [/^sandbox_mode = "read-only"$/m, 'sandbox is not read-only'],
+    [new RegExp(`^sandbox_mode = "${expectedSandbox}"$`, 'm'), `sandbox must be ${expectedSandbox}`],
     [/^developer_instructions = """$/m, 'developer instructions are missing']
   ]);
   for (const pattern of secretPatterns) {
@@ -167,6 +168,19 @@ for (const file of agentFiles) {
   }
 }
 
+check(
+  '.codex/agents/github-semantics-first-principles.toml',
+  read('.codex/agents/github-semantics-first-principles.toml'),
+  [
+    [/^name = "github_semantics_first_principles"$/m, 'paired semantic agent name is not canonical'],
+    [/^sandbox_mode = "workspace-write"$/m, 'paired semantic agent cannot implement root corrections'],
+    [/^\[\[skills\.config\]\]$/m, 'paired semantic Skill config is missing'],
+    [/^name = "github-semantics-first-principles"$/m, 'paired semantic Skill is not selected by name'],
+    [/^enabled = true$/m, 'paired semantic Skill is not enabled'],
+    [/Do not commit, push, merge, deploy, promote, mutate a remote Supabase project/i, 'publication and provider boundaries are missing'],
+    [/code and repository documentation authoritative/i, 'source-of-truth direction is missing']
+  ]
+);
 check(
   '.codex/agents/openai-docs-researcher.toml',
   read('.codex/agents/openai-docs-researcher.toml'),
@@ -185,10 +199,7 @@ check(
   '.codex/agents/supabase-docs-researcher.toml',
   read('.codex/agents/supabase-docs-researcher.toml'),
   [
-    [
-      /https:\/\/mcp\.supabase\.com\/mcp\?read_only=true&features=docs/,
-      'docs-only Supabase MCP is missing'
-    ],
+    [/https:\/\/mcp\.supabase\.com\/mcp\?read_only=true&features=docs/, 'docs-only Supabase MCP is missing'],
     [/"search_docs"/, 'Supabase documentation search is missing'],
     [/\/supabase\/supabase/, 'exact Supabase Context7 library ID is missing']
   ]
@@ -196,14 +207,14 @@ check(
 
 const requiredSkills = [
   'first-principles',
-  'github-semantic-reverse',
+  'github-semantics-first-principles',
   'verify-change',
   'workspace-impact-analysis'
 ];
 const retiredSkills = [
   'first-principles-architecture',
   'github-product-semantics',
-  'github-semantics-first-principles'
+  'github-semantic-reverse'
 ];
 const skills = list('.agents/skills', { withFileTypes: true })
   .filter(
@@ -238,19 +249,15 @@ for (const skill of skills) {
   }
 }
 check(
-  '.agents/skills/github-semantic-reverse/SKILL.md',
-  read('.agents/skills/github-semantic-reverse/SKILL.md'),
+  '.agents/skills/github-semantics-first-principles/SKILL.md',
+  read('.agents/skills/github-semantics-first-principles/SKILL.md'),
   [
-    [
-      /Absolute Product axiom without reinterpretation/,
-      'no-code Repository axiom route is missing'
-    ],
-    [
-      /code, source-control, arbitrary execution, CI\/CD, build, test, deployment/,
-      'code/source-control exclusion is missing'
-    ],
-    [/do not also invoke `first-principles` unless/i, 'general-method boundary is missing'],
-    [/never replaces those contracts/i, 'canonical-contract boundary is missing']
+    [/Absolute Product axiom without reinterpretation/, 'no-code Repository axiom route is missing'],
+    [/code, source-control, arbitrary execution, CI\/CD, build, test, deployment/, 'code/source-control exclusion is missing'],
+    [/Use `first-principles` only for a separate broader or non-GitHub decision/i, 'general-method boundary is missing'],
+    [/remain the repository truth surfaces/i, 'canonical-contract boundary is missing'],
+    [/Continuous reverse → implement cycle/, 'continuous implementation cycle is missing'],
+    [/code_and_docs → Linear → Notion/, 'mirror arbitration direction is missing']
   ]
 );
 check(
@@ -258,10 +265,7 @@ check(
   read('.agents/skills/plugin-development-workflow/SKILL.md'),
   [
     [/active decision Skill selected by narrowest ownership/, 'plugin router bypasses Skill owner'],
-    [
-      /github-semantic-reverse for GitHub-derived Product decisions/,
-      'GitHub decision route is missing'
-    ],
+    [/github-semantics-first-principles for GitHub-derived Product decisions/, 'GitHub decision route is missing'],
     [/first-principles for broader or non-GitHub decisions/, 'general decision route is missing']
   ]
 );
@@ -284,25 +288,17 @@ for (const path of instructionScopes) {
 const rootInstructions = read('AGENTS.md');
 check('AGENTS.md', rootInstructions, [
   [/## Context continuity and skill routing/, 'context-continuity contract is missing'],
-  [
-    /does not require discarding context or simulating a fresh start/i,
-    'fresh-start reset is not explicitly rejected'
-  ],
+  [/does not require discarding context or simulating a fresh start/i, 'fresh-start reset is not explicitly rejected'],
   [/Select skills by narrowest ownership/, 'narrowest-owner skill routing is missing'],
   [/Explicit user-named skills win/, 'explicit skill precedence is missing'],
-  [/github-semantic-reverse/, 'GitHub decision Skill owner is missing'],
+  [/github-semantics-first-principles/, 'GitHub decision Skill owner is missing'],
   [/docs\/README\.md/, 'current-truth router is missing'],
-  [
-    /Do not redesign architecture while solving a local task/,
-    'task-scoped architecture redesign guard is missing'
-  ],
+  [/Do not redesign architecture while solving a local task/, 'task-scoped architecture redesign guard is missing'],
   [/do not invent the missing architecture/i, 'missing-context speculation guard is missing']
 ]);
 const rootInstructionBytes = Buffer.byteLength(rootInstructions, 'utf8');
 if (rootInstructionBytes > ROOT_INSTRUCTION_MAX_BYTES) {
-  failures.push(
-    `AGENTS.md: always-on context exceeds ${ROOT_INSTRUCTION_MAX_BYTES} bytes (${rootInstructionBytes})`
-  );
+  failures.push(`AGENTS.md: always-on context exceeds ${ROOT_INSTRUCTION_MAX_BYTES} bytes (${rootInstructionBytes})`);
 }
 
 const workspace = read('pnpm-workspace.yaml');
@@ -312,39 +308,26 @@ check('pnpm-workspace.yaml', workspace, [
   [/^disallowWorkspaceCycles: true$/m, 'workspace cycles are not configured to fail'],
   [/^failIfNoMatch: true$/m, 'unmatched filters are not configured to fail']
 ]);
-if (/^\s*- ['"]?\.['"]?$/m.test(workspace))
-  failures.push("pnpm-workspace.yaml: remove redundant '.'");
+if (/^\s*- ['"]?\.['"]?$/m.test(workspace)) failures.push("pnpm-workspace.yaml: remove redundant '.'");
 
 const turbo = json('turbo.json');
-if (!turbo?.tasks?.lint?.dependsOn?.includes('^lint'))
-  failures.push('turbo.json: lint dependency order is missing');
-if (!turbo?.tasks?.typecheck?.dependsOn?.includes('^typecheck'))
-  failures.push('turbo.json: typecheck dependency order is missing');
+if (!turbo?.tasks?.lint?.dependsOn?.includes('^lint')) failures.push('turbo.json: lint dependency order is missing');
+if (!turbo?.tasks?.typecheck?.dependsOn?.includes('^typecheck')) failures.push('turbo.json: typecheck dependency order is missing');
 for (const dependency of ['tsconfig.base.json', '.oxlintrc.json']) {
-  if (!turbo?.globalDependencies?.includes(dependency))
-    failures.push(`turbo.json: missing ${dependency}`);
+  if (!turbo?.globalDependencies?.includes(dependency)) failures.push(`turbo.json: missing ${dependency}`);
 }
 
 const rootPackage = json('package.json');
-if (rootPackage?.scripts?.['turbo:graph'] !== 'turbo ls')
-  failures.push('package.json: bounded Turbo discovery is missing');
-if (!rootPackage?.scripts?.['supabase:verify']?.includes('supabase:reset'))
-  failures.push('package.json: migration replay is not verified');
-if (!rootPackage?.devDependencies?.turbo || !rootPackage?.devDependencies?.supabase)
-  failures.push('package.json: baseline CLI dependencies are missing');
+if (rootPackage?.scripts?.['turbo:graph'] !== 'turbo ls') failures.push('package.json: bounded Turbo discovery is missing');
+if (!rootPackage?.scripts?.['supabase:verify']?.includes('supabase:reset')) failures.push('package.json: migration replay is not verified');
+if (!rootPackage?.devDependencies?.turbo || !rootPackage?.devDependencies?.supabase) failures.push('package.json: baseline CLI dependencies are missing');
 const domainPackage = json('packages/domain/package.json');
-if (
-  domainPackage?.name !== '@no-code-collaboration-platform/domain' ||
-  domainPackage?.private !== true
-) {
+if (domainPackage?.name !== '@no-code-collaboration-platform/domain' || domainPackage?.private !== true) {
   failures.push('packages/domain/package.json: canonical private domain package contract changed');
 }
 
 check('README.md', read('README.md'), [
-  [
-    /(?:Repository.*no-code collaboration container|Repository.*無代碼協作容器)/is,
-    'project definition is missing'
-  ],
+  [/(?:Repository.*no-code collaboration container|Repository.*無代碼協作容器)/is, 'project definition is missing'],
   [/docs\/CODEX_DESKTOP\.md/, 'Codex Desktop documentation is not linked']
 ]);
 check('docs/CODEX_DESKTOP.md', read('docs/CODEX_DESKTOP.md'), [
@@ -358,7 +341,8 @@ check('docs/CODEX_DESKTOP.md', read('docs/CODEX_DESKTOP.md'), [
   [/docs\/architecture\/ADR_INDEX\.md/, 'ADR history router is missing'],
   [/## Skill routing/, 'Skill routing contract is missing'],
   [/narrowest applicable owner/, 'narrowest-owner Skill routing is missing'],
-  [/does not replace the active domain or decision Skill/, 'tool-router boundary is missing']
+  [/does not replace the active domain or decision Skill/, 'tool-router boundary is missing'],
+  [/github_semantics_first_principles/, 'paired semantic implementation agent is missing']
 ]);
 check('supabase/config.toml', read('supabase/config.toml'), [
   [/^\[db\.migrations\]$/m, 'declarative migrations are missing'],
@@ -390,44 +374,21 @@ check(pnpmRulesPath, pnpmRules, [
   [/"supabase:types:check"/, 'generated database type verification is not covered'],
   [/"turbo:graph"/, 'bounded workspace discovery is not covered'],
   [/@no-code-collaboration-platform\/web/, 'current Web package filter is missing'],
-  [
-    /"codex:check"[\s\S]*?decision = "prompt"/,
-    'repository-executing verification is not approval-gated for host escalation'
-  ],
+  [/"codex:check"[\s\S]*?decision = "prompt"/, 'repository-executing verification is not approval-gated for host escalation'],
   [/"supabase:reset"[\s\S]*?decision = "prompt"/, 'local database reset is not approval-gated'],
-  [
-    /\["install", "add", "remove", "update", "up"\][\s\S]*?decision = "prompt"/,
-    'dependency mutation is not approval-gated'
-  ]
+  [/\["install", "add", "remove", "update", "up"\][\s\S]*?decision = "prompt"/, 'dependency mutation is not approval-gated']
 ]);
-if (/@ecp\//.test(pnpmRules)) {
-  failures.push(`${pnpmRulesPath}: obsolete @ecp package filters remain`);
-}
+if (/@ecp\//.test(pnpmRules)) failures.push(`${pnpmRulesPath}: obsolete @ecp package filters remain`);
 check('.codex/rules/.rg.rules', read('.codex/rules/.rg.rules'), [
-  [
-    /pattern = \[\["rg", "rg\.exe"\]\][\s\S]*?decision = "allow"/,
-    'read-only ripgrep discovery is not allowed outside the workspace sandbox'
-  ]
+  [/pattern = \[\["rg", "rg\.exe"\]\][\s\S]*?decision = "allow"/, 'read-only ripgrep discovery is not allowed outside the workspace sandbox']
 ]);
 check('.codex/rules/.uv.rules', read('.codex/rules/.uv.rules'), [
-  [
-    /pattern = \["uv", "tool", "list"\][\s\S]*?decision = "prompt"/,
-    'open-ended uv tool discovery is not approval-gated'
-  ],
-  [
-    /pattern = \["uv", "tool", "upgrade", "serena-agent"\][\s\S]*?decision = "prompt"/,
-    'user-level Serena upgrades are not approval-gated'
-  ]
+  [/pattern = \["uv", "tool", "list"\][\s\S]*?decision = "prompt"/, 'open-ended uv tool discovery is not approval-gated'],
+  [/pattern = \["uv", "tool", "upgrade", "serena-agent"\][\s\S]*?decision = "prompt"/, 'user-level Serena upgrades are not approval-gated']
 ]);
 check('.codex/rules/.serena.rules', read('.codex/rules/.serena.rules'), [
-  [
-    /pattern = \["serena", "project", "health-check", "\."\][\s\S]*?decision = "allow"/,
-    'the Serena project health check is not restricted to the current repository'
-  ],
-  [
-    /pattern = \["serena", "memories", "check", "\."\][\s\S]*?decision = "allow"/,
-    'Serena memory validation is not restricted to the current repository'
-  ]
+  [/pattern = \["serena", "project", "health-check", "\."\][\s\S]*?decision = "allow"/, 'the Serena project health check is not restricted to the current repository'],
+  [/pattern = \["serena", "memories", "check", "\."\][\s\S]*?decision = "allow"/, 'Serena memory validation is not restricted to the current repository']
 ]);
 for (const [path, command, decision] of [
   ['.codex/rules/.fd.rules', 'fd', 'prompt'],
@@ -442,45 +403,23 @@ for (const [path, command, decision] of [
   ['.codex/rules/.just.rules', 'just', 'allow']
 ]) {
   check(path, read(path), [
-    [
-      new RegExp(`\\["${command}", "${command}\\.(?:exe|com)"\\]`),
-      `${command} executable variants are missing`
-    ],
+    [new RegExp(`\\["${command}", "${command}\\.(?:exe|com)"\\]`), `${command} executable variants are missing`],
     [new RegExp(`decision = "${decision}"`), `${command} decision must be ${decision}`]
   ]);
 }
 check('.codex/rules/.gh.rules', read('.codex/rules/.gh.rules'), [
-  [
-    /pattern = \["gh", "api", \["--method", "-X"\], "GET"\][\s\S]*?decision = "prompt"/,
-    'authenticated GitHub API requests are not approval-gated'
-  ]
+  [/pattern = \["gh", "api", \["--method", "-X"\], "GET"\][\s\S]*?decision = "prompt"/, 'authenticated GitHub API requests are not approval-gated']
 ]);
 check('.idea/modules.xml', read('.idea/modules.xml'), [
   [/\.idea\/No-Code-Collaboration-Platform\.iml/, 'the IntelliJ project module is not registered']
 ]);
-check(
-  '.idea/No-Code-Collaboration-Platform.iml',
-  read('.idea/No-Code-Collaboration-Platform.iml'),
-  [
-    [
-      /<content url="file:\/\/\$MODULE_DIR\$\/\.\.">/,
-      'the IntelliJ module content root must be the repository root'
-    ]
-  ]
-);
+check('.idea/No-Code-Collaboration-Platform.iml', read('.idea/No-Code-Collaboration-Platform.iml'), [
+  [/<content url="file:\/\/\$MODULE_DIR\$\/\.\.">/, 'the IntelliJ module content root must be the repository root']
+]);
 check('.codex/rules/.supabase.rules', read('.codex/rules/.supabase.rules'), [
-  [
-    /pattern = \["supabase", "db", "reset", "--local"\][\s\S]*?decision = "prompt"/,
-    'explicitly local reset is not approval-gated'
-  ],
-  [
-    /pattern = \["supabase", "db", "reset", "--linked"\][\s\S]*?decision = "forbidden"/,
-    'linked reset is not forbidden'
-  ],
-  [
-    /pattern = \["supabase", "db", "push"\][\s\S]*?decision = "prompt"/,
-    'remote push is not approval-gated'
-  ]
+  [/pattern = \["supabase", "db", "reset", "--local"\][\s\S]*?decision = "prompt"/, 'explicitly local reset is not approval-gated'],
+  [/pattern = \["supabase", "db", "reset", "--linked"\][\s\S]*?decision = "forbidden"/, 'linked reset is not forbidden'],
+  [/pattern = \["supabase", "db", "push"\][\s\S]*?decision = "prompt"/, 'remote push is not approval-gated']
 ]);
 
 let sessionContextBytes = 0;
@@ -498,12 +437,9 @@ if (hookRun.status !== 0) {
     const context = output?.hookSpecificOutput?.additionalContext ?? '';
     sessionContextBytes = Buffer.byteLength(context, 'utf8');
     if (sessionContextBytes > SESSION_CONTEXT_MAX_BYTES) {
-      failures.push(
-        `SessionStart context exceeds ${SESSION_CONTEXT_MAX_BYTES} bytes (${sessionContextBytes})`
-      );
+      failures.push(`SessionStart context exceeds ${SESSION_CONTEXT_MAX_BYTES} bytes (${sessionContextBytes})`);
     }
-    if (output?.hookSpecificOutput?.hookEventName !== 'SessionStart')
-      failures.push('SessionStart event shape is invalid');
+    if (output?.hookSpecificOutput?.hookEventName !== 'SessionStart') failures.push('SessionStart event shape is invalid');
     for (const expected of [
       'Context continuity',
       'does not require discarding context',
@@ -511,6 +447,7 @@ if (hookRun.status !== 0) {
       'Historical and prior context',
       'Skill routing',
       'GitHub-derived Product decisions',
+      'github_semantics_first_principles',
       'do not invent architecture',
       'Workspace packages',
       'Turbo',
@@ -519,8 +456,7 @@ if (hookRun.status !== 0) {
       'Context7',
       'Supabase Docs'
     ]) {
-      if (!context.includes(expected))
-        failures.push(`SessionStart hook does not report ${expected}`);
+      if (!context.includes(expected)) failures.push(`SessionStart hook does not report ${expected}`);
     }
   } catch (error) {
     failures.push(`SessionStart hook did not return JSON: ${error.message}`);
@@ -542,6 +478,7 @@ const result = {
   ok: failures.length === 0,
   contextSources: { found: mcpContracts.length, required: mcpContracts.length },
   agents: { found: agentFiles.length, required: requiredAgents.length },
+  workspaceWriteAgents: [...workspaceWriteAgents],
   skills: { found: skills.length, required: requiredSkills.length },
   hooks: Array.isArray(sessionHandlers) ? sessionHandlers.length : 0,
   instructionScopes: instructionScopes.length,
