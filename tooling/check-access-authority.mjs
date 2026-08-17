@@ -526,7 +526,7 @@ for (const phrase of [
 }
 for (const symbol of [
   'test.describe.configure({ retries: 0 })',
-  'Add collaborator',
+  'Grant access',
   'Change role',
   'Revoke',
   "selectOption('write')",
