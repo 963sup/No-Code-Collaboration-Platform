@@ -51,6 +51,7 @@ test('Direct Repository Grant create, role change, and revoke form one complete 
 
   await page.goto('/search?q=Grant+lifecycle+proof');
   await expect(page.getByText('Grant lifecycle proof', { exact: true })).toBeVisible();
+  await page.goto('/dashboard');
   await signOut(page);
 
   await signIn(page, 'sup@a-i.tw', 'Aa12341234', accessPath);
