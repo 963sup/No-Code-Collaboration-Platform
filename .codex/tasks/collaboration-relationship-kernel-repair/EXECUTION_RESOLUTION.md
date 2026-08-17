@@ -12,7 +12,7 @@ Active on `first-principles/collaboration-relationship-kernel-repair`. No additi
 
 ## First-principles resolution of repository conflicts
 
-The repository must have one GitHub-derived Product semantic Skill owner, not two. The earlier cycle satisfied that invariant by keeping `.agents/skills/github-semantic-reverse/` and treating the v2 path as retired. The current task explicitly requires a reusable Skill at the v2 canonical location plus a paired Codex implementation agent.
+The repository must have one GitHub-derived Product semantic Skill owner, not two. The existing single owner invariant remains; this round changes that owner's canonical identity instead of adding a peer. The earlier cycle satisfied the invariant by keeping `.agents/skills/github-semantic-reverse/` and treating the v2 path as retired. The current task explicitly requires a reusable Skill at the v2 canonical location plus a paired Codex implementation agent.
 
 The root correction is therefore an atomic owner migration rather than an additive second Skill:
 
