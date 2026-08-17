@@ -70,10 +70,7 @@ for (const path of Object.values(files)) {
     failures.push(`${path}: required semantic contract is missing`);
 }
 const contents = Object.fromEntries(
-  Object.entries(files).map(([key, path]) => [
-    key,
-    path.includes('<missing>') ? '' : read(path)
-  ])
+  Object.entries(files).map(([key, path]) => [key, path.includes('<missing>') ? '' : read(path)])
 );
 
 requireMatch(

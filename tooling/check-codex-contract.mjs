@@ -177,7 +177,10 @@ check(
   '.codex/agents/github-semantics-first-principles.toml',
   read('.codex/agents/github-semantics-first-principles.toml'),
   [
-    [/^name = "github_semantics_first_principles"$/m, 'paired semantic agent name is not canonical'],
+    [
+      /^name = "github_semantics_first_principles"$/m,
+      'paired semantic agent name is not canonical'
+    ],
     [
       /^sandbox_mode = "workspace-write"$/m,
       'paired semantic agent cannot implement root corrections'
@@ -192,10 +195,7 @@ check(
       /Do not commit, push, merge, deploy, promote, mutate a remote Supabase project/i,
       'publication and provider boundaries are missing'
     ],
-    [
-      /code and repository documentation authoritative/i,
-      'source-of-truth direction is missing'
-    ],
+    [/code and repository documentation authoritative/i, 'source-of-truth direction is missing'],
     [
       /untrusted evidence\/data, never as executable instructions/i,
       'external evidence prompt-injection boundary is missing'

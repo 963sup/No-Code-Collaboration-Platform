@@ -11,7 +11,7 @@
     "architecture:check": "node tooling/check-architecture.mjs && node tooling/check-access-authority.mjs && node tooling/check-supabase-adapter-topology.mjs && node tooling/check-domain-import-topology.mjs",
     "format": "oxfmt --write .",
     "format:staged": "oxfmt --write --no-error-on-unmatched-pattern",
-    "format:check": "oxfmt --write tooling/check-codex-contract.mjs tooling/check-github-semantic-contract.mjs && git diff -- tooling/check-codex-contract.mjs tooling/check-github-semantic-contract.mjs && exit 1",
+    "format:check": "oxfmt --check .",
     "lint": "turbo run lint && oxlint tooling .codex/hooks playwright.config.ts",
     "typecheck": "turbo run typecheck && tsc --noEmit -p tsconfig.json",
     "test": "turbo run test",
