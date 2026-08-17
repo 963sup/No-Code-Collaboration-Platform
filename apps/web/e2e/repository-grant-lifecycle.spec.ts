@@ -35,7 +35,7 @@ test('Direct Repository Grant create, role change, and revoke form one complete 
   await signIn(page, 'sup@a-i.tw', 'Aa12341234', accessPath);
   await page.getByLabel('User username').fill('collaborator-demo');
   await page.getByLabel('Role').selectOption('write');
-  await page.getByRole('button', { name: 'Add collaborator' }).click();
+  await page.getByRole('button', { name: 'Grant access' }).click();
   await expect(page).toHaveURL(`${accessPath}?saved=1`);
   await expect(page.getByText('@collaborator-demo', { exact: true })).toBeVisible();
   await expect(page.getByText('write', { exact: true }).last()).toBeVisible();
