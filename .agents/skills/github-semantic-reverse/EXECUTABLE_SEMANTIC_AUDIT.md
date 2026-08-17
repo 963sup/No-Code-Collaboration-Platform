@@ -147,6 +147,8 @@ GitHub Actions run `31983106845` on commit `342284745b71d1428d368af2e1635e8a4cf2
 
 The Supabase job successfully started the local stack, replayed the unique LocalOnly baseline, executed the repository database verification chain, and stopped cleanly. The Browser job built the application and passed all 29 contracts against the replayed local state.
 
+Round-4 authority publication was then verified again by GitHub Actions run `31983862931` on `9d11e36c2382fbad5a41c46c766110b0c75e96cf`; Workflow guardrails, Repository contracts, Supabase contracts, and Browser contracts all completed successfully.
+
 This is repository CI/reproducibility evidence. It is not evidence that a hosted Supabase or Vercel environment has applied or deployed this branch.
 
 ## Authorization / Evidence boundary
@@ -169,8 +171,10 @@ The 2026-08-17 Round-4 report records:
 - `revoked`: None;
 - `not_passed`: None.
 
+Linear and Notion were synchronized only after the Round-4 authority publication itself passed repository verification. `963-5`, `963-6`, `963-7`, and `963-9` are completed mirrors, `963-8` is deduplicated to `963-5`, and the Notion audit page is marked Completed with both verification runs recorded.
+
 No source-control-shaped Product primitive remains admitted through naming, persistence, route structure, UI mental model, or authorization semantics.
 
 ## Conclusion
 
-The collaboration-relationship kernel is semantically converged at the repository authority layer. The next operation is mirror synchronization to Linear and Notion, followed by normal integration review. This document does not authorize or perform a merge to `main`.
+The collaboration-relationship kernel is semantically converged at the repository authority layer and its Linear/Notion mirrors are synchronized. The branch is ready for normal integration review when separately authorized. This document does not authorize or perform a merge to `main`.
